@@ -143,13 +143,64 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| - | - | Pending |
+| AUTH-01 | Phase 3 | Pending |
+| AUTH-02 | Phase 3 | Pending |
+| AUTH-03 | Phase 3 | Pending |
+| AUTH-04 | Phase 3 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| AUTH-06 | Phase 6 | Pending |
+| NAV-01 | Phase 4 | Pending |
+| NAV-02 | Phase 4 | Pending |
+| NAV-03 | Phase 3 | Pending |
+| NAV-04 | Phase 3, Phase 4 | Pending |
+| NAV-05 | Phase 3, Phase 4 | Pending |
+| NAV-06 | Phase 3, Phase 4 | Pending |
+| NAV-07 | Phase 3, Phase 4 | Pending |
+| UI-01 | Phase 3 | Pending |
+| UI-02 | Phase 3 | Pending |
+| UI-03 | Phase 3 | Pending |
+| UI-04 | Phase 3, Phase 4 | Pending |
+| UI-05 | Phase 1 | Pending |
+| DASH-01 | Phase 3 | Pending |
+| DASH-02 | Phase 3 | Pending |
+| DASH-03 | Phase 3 | Pending |
+| API-01 | Phase 2 | Pending |
+| API-02 | Phase 2 | Pending |
+| API-03 | Phase 2 | Pending |
+| API-04 | Phase 2 | Pending |
+| API-05 | Phase 2 | Pending |
+| API-06 | Phase 2 | Pending |
+| API-07 | Phase 2 | Pending |
+| API-08 | Phase 2 | Pending |
+| API-09 | Phase 2 | Pending |
+| MONO-01 | Phase 1 | Pending |
+| MONO-02 | Phase 1 | Pending |
+| MONO-03 | Phase 1 | Pending |
+| MONO-04 | Phase 1 | Pending |
+| MONO-05 | Phase 3 | Pending |
+| MONO-06 | Phase 4 | Pending |
+| MONO-07 | Phase 3 | Pending |
+| MONO-08 | Phase 2 | Pending |
+| MONO-09 | Phase 2 | Pending |
+| SET-01 | Phase 3 | Pending |
+| SET-02 | Phase 3 | Pending |
+| SET-03 | Phase 3 | Pending |
+| SET-04 | Phase 3 | Pending |
+| DOC-01 | Phase 1 | Pending |
+| DOC-02 | Phase 1 | Pending |
+| DOC-03 | Phase 3 | Pending |
+| DOC-04 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 0 total (to be calculated after roadmap)
-- Mapped to phases: 0
+- v1 requirements: 47 total
+- Mapped to phases: 47
 - Unmapped: 0
+
+**Coverage Notes:**
+- Some requirements (NAV-04, NAV-05, NAV-06, NAV-07, UI-04) appear in multiple phases because they apply to both web and mobile platforms
+- Each requirement's primary delivery phase is the first listed
+- 100% coverage achieved
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after initial definition*
+*Last updated: 2026-01-23 after roadmap creation*
