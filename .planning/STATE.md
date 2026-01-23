@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 1 of 6 (Foundation & Monorepo)
-Plan: 1 of 4
+Plan: 2 of 4
 Status: In progress
-Last activity: 2026-01-23 — Completed 01-01-PLAN.md
+Last activity: 2026-01-23 — Completed 01-02-PLAN.md
 
-Progress: [█░░░░░░░░░] 6% (1/16 total plans)
+Progress: [██░░░░░░░░] 13% (2/16 total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 14 min
-- Total execution time: 0.23 hours
+- Total plans completed: 2
+- Average duration: 17 min
+- Total execution time: 0.57 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 - Foundation & Monorepo | 1 | 14min | 14min |
+| 1 - Foundation & Monorepo | 2 | 34min | 17min |
 
 **Recent Trend:**
-- Last 5 plans: 14min
+- Last 5 plans: 14min, 20min
 - Trend: Not enough data (need 3+ plans)
 
 *Updated after each plan completion*
@@ -56,6 +56,12 @@ Recent decisions affecting current work:
 - Design tokens as TypeScript constants with type exports
 - shadcn/ui utilities (cn function) included in @objetiva/ui
 
+**From 01-02 (NestJS Backend with JWT Auth):**
+- Used jose library for JWT verification via JWKS endpoint (asymmetric key validation)
+- NestJS tsconfig uses moduleResolution: node for CommonJS compatibility
+- CORS enabled for localhost:3000 and localhost:5173 frontend apps
+- Disabled noUnusedLocals/noUnusedParameters in backend tsconfig for NestJS DI compatibility
+
 ### Pending Todos
 
 None yet.
@@ -67,7 +73,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-23 (plan execution)
-Stopped at: Completed 01-01-PLAN.md (Monorepo foundation)
+Stopped at: Completed 01-02-PLAN.md (NestJS backend with JWT auth)
 Resume file: None
 
 ---
