@@ -33,10 +33,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Supabase Auth project exists and credentials are configured in all apps
   6. Backend validates JWT tokens from Supabase successfully in test endpoint
   7. README guides developer through environment setup and running all apps
-**Plans**: TBD
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] TBD (will be created during plan-phase)
+- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
+- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
+- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
+- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
 
 ### Phase 2: Backend API with Mock Data
 **Goal**: Build complete backend API with realistic mock data endpoints, validating the frontend-backend contract before real database work
@@ -51,10 +54,13 @@ Plans:
   6. Inventory endpoint returns stock levels matching products
   7. Sales and purchases endpoints return realistic transaction history
   8. Developer can run backend concurrently with other apps in dev mode
-**Plans**: TBD
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] TBD (will be created during plan-phase)
+- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
+- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
+- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
+- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
 
 ### Phase 3: Web Application
 **Goal**: Deliver complete web admin interface with authentication, navigation, and all operational sections displaying backend data
@@ -71,10 +77,13 @@ Plans:
   8. UI follows shadcn aesthetic with dark theme working correctly
   9. User can view and update their profile from Settings
   10. Layout is responsive and adapts to desktop, tablet, and mobile screen sizes
-**Plans**: TBD
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] TBD (will be created during plan-phase)
+- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
+- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
+- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
+- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
 
 ### Phase 4: Mobile Application
 **Goal**: Deliver iOS/Android mobile app with platform-specific navigation (bottom tabs + drawer) consuming same backend as web
@@ -89,10 +98,13 @@ Plans:
   6. Mobile app builds and runs in browser for development
   7. Mobile app can be built for iOS and Android via Capacitor
   8. App feels cohesive with web despite platform-specific UI implementations
-**Plans**: TBD
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] TBD (will be created during plan-phase)
+- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
+- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
+- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
+- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
 
 ### Phase 5: Database Integration
 **Goal**: Replace mock data services with real PostgreSQL database using Drizzle ORM, maintaining API contract so frontends work unchanged
@@ -105,10 +117,13 @@ Plans:
   4. Database is seeded with 500+ realistic products and related data
   5. Frontend applications continue working without code changes
   6. CRUD operations persist data correctly across sessions
-**Plans**: TBD
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] TBD (will be created during plan-phase)
+- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
+- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
+- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
+- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
 
 ### Phase 6: Polish & Production
 **Goal**: Harden application for production with error handling, loading states, RBAC, responsive refinements, and performance optimization
@@ -122,10 +137,13 @@ Plans:
   5. Web app loads under 3 seconds on 3G connection
   6. All forms validate input and show helpful error messages
   7. Application handles offline scenarios gracefully on mobile
-**Plans**: TBD
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] TBD (will be created during plan-phase)
+- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
+- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
+- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
+- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
 
 ## Progress
 
@@ -134,7 +152,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Monorepo | 0/? | Not started | - |
+| 1. Foundation & Monorepo | 0/4 | Planned | - |
 | 2. Backend API with Mock Data | 0/? | Not started | - |
 | 3. Web Application | 0/? | Not started | - |
 | 4. Mobile Application | 0/? | Not started | - |
