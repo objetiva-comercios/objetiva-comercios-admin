@@ -5,35 +5,36 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 1: Foundation & Monorepo
+**Current focus:** Phase 2: Backend API with Mock Data
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation & Monorepo)
-Plan: 4 of 4
-Status: Phase complete
-Last activity: 2026-01-24 — Completed 01-04-PLAN.md
+Phase: 2 of 6 (Backend API with Mock Data)
+Plan: 2 of 3
+Status: In progress
+Last activity: 2026-01-24 — Completed 02-02-PLAN.md
 
-Progress: [██░░░░░░░░] 25% (4/16 total plans)
+Progress: [███░░░░░░░] 31% (5/16 total plans)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 4
-- Average duration: 29 min
-- Total execution time: 1.93 hours
+- Total plans completed: 5
+- Average duration: 24 min
+- Total execution time: 2.03 hours
 
 **By Phase:**
 
-| Phase                     | Plans | Total  | Avg/Plan |
-| ------------------------- | ----- | ------ | -------- |
-| 1 - Foundation & Monorepo | 4     | 116min | 29min    |
+| Phase                          | Plans | Total  | Avg/Plan |
+| ------------------------------ | ----- | ------ | -------- |
+| 1 - Foundation & Monorepo      | 4     | 116min | 29min    |
+| 2 - Backend API with Mock Data | 1     | 6min   | 6min     |
 
 **Recent Trend:**
 
-- Last 5 plans: 14min, 20min, 67min, 15min
-- Trend: Variable (last plan 15min, phase avg 29min)
+- Last 5 plans: 20min, 67min, 15min, 6min
+- Trend: Improving (last plan 6min, overall avg 24min)
 
 _Updated after each plan completion_
 
@@ -81,6 +82,15 @@ Recent decisions affecting current work:
 - Comprehensive README (295 lines) for developer onboarding
 - Auth test script validates AUTH-05 without requiring Supabase credentials
 
+**From 02-02 (Mock Data Generators):**
+
+- @faker-js/faker for deterministic test data generation
+- Deterministic seeding pattern: faker.seed(id + offset) for reproducibility
+- Referential integrity: All entities reference valid product IDs from products array
+- Weighted distributions for realistic status mix (85% active products, 50% delivered orders)
+- 1:1 inventory mapping with derived status (in_stock/low_stock/out_of_stock)
+- seedAll() function generates 500 products, 200 orders, 150 sales, 50 purchases
+
 ### Pending Todos
 
 None yet.
@@ -93,11 +103,11 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23 (plan execution)
-Stopped at: Completed 01-03-PLAN.md (Web and mobile app skeletons)
+Last session: 2026-01-24 (plan execution)
+Stopped at: Completed 02-02-PLAN.md (Mock Data Generators)
 Resume file: None
 
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-01-23_
+_Last updated: 2026-01-24_
