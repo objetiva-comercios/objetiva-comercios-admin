@@ -64,10 +64,10 @@ Plans:
 
 Plans:
 
-- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
-- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
-- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
-- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
+- [ ] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
+- [ ] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
+- [ ] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
+- [ ] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
 
 ### Phase 3: Web Application
 
@@ -90,10 +90,10 @@ Plans:
 
 Plans:
 
-- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
-- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
-- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
-- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
+- [ ] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
+- [ ] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
+- [ ] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
+- [ ] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
 
 ### Phase 4: Mobile Application
 
@@ -114,10 +114,10 @@ Plans:
 
 Plans:
 
-- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
-- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
-- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
-- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
+- [ ] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
+- [ ] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
+- [ ] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
+- [ ] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
 
 ### Phase 5: Database Integration
 
@@ -136,10 +136,10 @@ Plans:
 
 Plans:
 
-- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
-- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
-- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
-- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
+- [ ] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
+- [ ] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
+- [ ] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
+- [ ] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
 
 ### Phase 6: Polish & Production
 
@@ -159,10 +159,10 @@ Plans:
 
 Plans:
 
-- [ ] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
-- [ ] 01-02-PLAN.md - NestJS backend with JWT authentication
-- [ ] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
-- [ ] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
+- [ ] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
+- [ ] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
+- [ ] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
+- [ ] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
 
 ## Progress
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase                         | Plans Complete | Status      | Completed  |
 | ----------------------------- | -------------- | ----------- | ---------- |
 | 1. Foundation & Monorepo      | 4/4            | Complete    | 2026-01-24 |
-| 2. Backend API with Mock Data | 0/?            | Not started | -          |
+| 2. Backend API with Mock Data | 0/4            | In Progress | -          |
 | 3. Web Application            | 0/?            | Not started | -          |
 | 4. Mobile Application         | 0/?            | Not started | -          |
 | 5. Database Integration       | 0/?            | Not started | -          |
