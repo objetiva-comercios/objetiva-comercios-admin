@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 import { AppModule } from './app.module'
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -16,6 +18,9 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Throw error on unknown properties
     })
   )
+
+  // Configure global JWT authentication guard
+  app.useGlobalGuards(new JwtAuthGuard(new Reflector()))
 
   // Enable CORS for frontend apps
   app.enableCors({

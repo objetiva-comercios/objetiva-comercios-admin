@@ -1,7 +1,7 @@
 import { Controller, Get, Req } from '@nestjs/common'
 import { AuthenticatedRequest } from './auth.types'
 
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
   @Get('verify')
   verify(@Req() req: AuthenticatedRequest) {
