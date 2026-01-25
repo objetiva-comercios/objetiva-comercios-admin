@@ -10,19 +10,19 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 3 of 6 (Web Frontend Development)
-Plan: 1 of 4
+Plan: 2 of 4
 Status: In progress
-Last activity: 2026-01-25 — Completed 03-01-PLAN.md
+Last activity: 2026-01-25 — Completed 03-02-PLAN.md
 
-Progress: [█████░░░░░] 50% (8/16 total plans)
+Progress: [██████░░░░] 56% (9/16 total plans)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 8
-- Average duration: 21 min
-- Total execution time: 2.8 hours
+- Total plans completed: 9
+- Average duration: 23 min
+- Total execution time: 3.3 hours
 
 **By Phase:**
 
@@ -30,12 +30,12 @@ Progress: [█████░░░░░] 50% (8/16 total plans)
 | ------------------------------ | ----- | ------ | -------- |
 | 1 - Foundation & Monorepo      | 4     | 116min | 29min    |
 | 2 - Backend API with Mock Data | 3     | 35min  | 12min    |
-| 3 - Web Frontend Development   | 1     | 18min  | 18min    |
+| 3 - Web Frontend Development   | 2     | 49min  | 25min    |
 
 **Recent Trend:**
 
-- Last 5 plans: 6min, 13min, 16min, 18min
-- Trend: Stable (Phase 3 start: 18min)
+- Last 5 plans: 13min, 16min, 18min, 31min
+- Trend: Phase 3 averaging 25min (auth complexity)
 
 _Updated after each plan completion_
 
@@ -116,11 +116,20 @@ Recent decisions affecting current work:
 - ThemeProvider via next-themes with system detection and no hydration errors
 - Installed form libraries (react-hook-form, zod) and table libraries (@tanstack/react-table) early
 
+**From 03-02 (Authentication Pages):**
+
+- Middleware-based auth redirects centralize route protection logic
+- Email confirmation flow via auth callback route for Supabase signUp
+- SSR-safe window.location handling with typeof guards in client components
+- Simplified middleware matcher pattern to avoid ESLint regex complaints
+
 ### Pending Todos
 
 None yet.
 
 ### Blockers/Concerns
+
+**Phase 3 (Web):** Email confirmation requires Supabase SMTP configuration. Auth flow complete but email delivery needs production setup.
 
 **Phase 4 (Mobile):** iOS navigation with Capacitor + Next.js router may require workarounds (custom scheme compatibility). Research flag set for deeper investigation during planning.
 
@@ -129,9 +138,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-25 (plan execution)
-Stopped at: Completed 03-01-PLAN.md (Authentication Infrastructure & UI Foundation)
+Stopped at: Completed 03-02-PLAN.md (Authentication Pages)
 Resume file: None
-Next up: 03-02 (Authentication Pages)
+Next up: 03-03 (Dashboard & Data Display)
 
 ---
 
