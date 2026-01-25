@@ -89,6 +89,53 @@ SUPABASE_PROJECT_ID=your-project-reference-id
 PORT=3001
 ```
 
+## Apps
+
+### Web Application
+
+The Next.js admin web app provides a complete interface for managing your business operations.
+
+**Running the web app:**
+
+```bash
+# Start web app only
+pnpm dev --filter=@objetiva/web
+
+# Start web + backend together
+pnpm dev --filter=@objetiva/web --filter=@objetiva/backend
+```
+
+Available at: http://localhost:3000
+
+**Environment variables** (`apps/web/.env`):
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+**Available routes:**
+
+- `/login` - User authentication
+- `/signup` - User registration
+- `/dashboard` - Main dashboard with KPIs and charts
+- `/articles` - Products/inventory management
+- `/orders` - Order tracking and management
+- `/inventory` - Stock levels and alerts
+- `/sales` - Sales transactions
+- `/purchases` - Purchase orders
+- `/settings` - User profile and business settings
+
+**Features:**
+
+- JWT authentication with Supabase
+- Responsive design (desktop, tablet, mobile)
+- Dark/light theme toggle
+- Data tables with sorting, filtering, and pagination
+- Real-time backend API integration
+- Profile management
+
 ## Development Commands
 
 ```bash
