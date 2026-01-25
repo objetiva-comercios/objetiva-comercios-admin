@@ -73,7 +73,7 @@ Plans:
 
 **Goal**: Deliver complete web admin interface with authentication, navigation, and all operational sections displaying backend data
 **Depends on**: Phase 2
-**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, NAV-03, NAV-04, NAV-05, NAV-06, NAV-07, UI-01, UI-02, UI-03, UI-04, DASH-01, DASH-02, DASH-03, SET-01, SET-02, SET-03, SET-04, MONO-05, MONO-07, DOC-03
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, NAV-03, NAV-04, NAV-05, NAV-06, NAV-07, UI-01, UI-02, UI-03, UI-04, DASH-01, DASH-02, DASH-03, SET-01, SET-02, SET-03, SET-04, MONO-07, DOC-03
 **Success Criteria** (what must be TRUE):
 
 1. User can sign up with email/password and receives confirmation
@@ -103,7 +103,7 @@ Plans:
 
 **Goal**: Deliver iOS/Android mobile app with platform-specific navigation (bottom tabs + drawer) consuming same backend as web
 **Depends on**: Phase 3
-**Requirements**: NAV-01, NAV-02, NAV-04, NAV-05, NAV-06, NAV-07, UI-04, MONO-06
+**Requirements**: NAV-01, NAV-02, NAV-04, NAV-05, NAV-06, NAV-07, UI-04, MONO-05, MONO-06
 **Success Criteria** (what must be TRUE):
 
 1. User can log in with email/password on mobile and session persists across app restarts
@@ -185,4 +185,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-01-24_
+_Last updated: 2026-01-25_
