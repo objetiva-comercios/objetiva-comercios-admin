@@ -1,10 +1,16 @@
 import type { DashboardResponse } from '@/types/dashboard'
+import type { Product } from '@/types/product'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
-/**
- * Generic fetch helper with error handling
- */
+interface PaginatedResponse<T> {
+  items: T[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
 async function fetchWithAuth<T>(endpoint: string): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`
 
@@ -22,23 +28,17 @@ async function fetchWithAuth<T>(endpoint: string): Promise<T> {
   return response.json()
 }
 
-/**
- * Fetch dashboard KPIs, low stock items, and recent orders
- */
 export async function fetchDashboard(): Promise<DashboardResponse> {
   return fetchWithAuth<DashboardResponse>('/dashboard')
 }
 
-/**
- * Fetch products list with optional filters
- */
 export async function fetchProducts(params?: {
   page?: number
   limit?: number
   search?: string
   category?: string
   status?: string
-}) {
+}): Promise<PaginatedResponse<Product>> {
   const searchParams = new URLSearchParams()
 
   if (params?.page) searchParams.set('page', params.page.toString())
@@ -50,5 +50,5 @@ export async function fetchProducts(params?: {
   const queryString = searchParams.toString()
   const endpoint = `/products${queryString ? `?${queryString}` : ''}`
 
-  return fetchWithAuth(endpoint)
+  return fetchWithAuth<PaginatedResponse<Product>>(endpoint)
 }
