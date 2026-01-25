@@ -3,6 +3,7 @@ import type { Product } from '@/types/product'
 import type { Order } from '@/types/order'
 import type { Sale } from '@/types/sale'
 import type { Purchase } from '@/types/purchase'
+import type { Inventory } from '@/types/inventory'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
@@ -107,4 +108,25 @@ export async function fetchPurchases(params?: {
   const endpoint = `/purchases${queryString ? `?${queryString}` : ''}`
 
   return fetchWithAuth<PaginatedResponse<Purchase>>(endpoint)
+}
+
+export async function fetchInventory(params?: {
+  page?: number
+  limit?: number
+  status?: string
+}): Promise<PaginatedResponse<Inventory>> {
+  const searchParams = new URLSearchParams()
+
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.status) searchParams.set('status', params.status)
+
+  const queryString = searchParams.toString()
+  const endpoint = `/inventory${queryString ? `?${queryString}` : ''}`
+
+  return fetchWithAuth<PaginatedResponse<Inventory>>(endpoint)
+}
+
+export async function fetchLowStock(): Promise<Inventory[]> {
+  return fetchWithAuth<Inventory[]>('/inventory/low-stock')
 }
