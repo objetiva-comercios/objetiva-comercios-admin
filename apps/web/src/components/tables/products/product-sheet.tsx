@@ -99,13 +99,17 @@ export function ProductSheet({ product, open, onOpenChange }: ProductSheetProps)
               <div>
                 <span className="text-sm text-muted-foreground block">Created</span>
                 <span className="text-sm">
-                  {format(new Date(product.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                  {product.createdAt
+                    ? format(new Date(product.createdAt), "MMM d, yyyy 'at' h:mm a")
+                    : 'N/A'}
                 </span>
               </div>
               <div>
                 <span className="text-sm text-muted-foreground block">Last Updated</span>
                 <span className="text-sm">
-                  {format(new Date(product.updatedAt), "MMM d, yyyy 'at' h:mm a")}
+                  {product.updatedAt
+                    ? format(new Date(product.updatedAt), "MMM d, yyyy 'at' h:mm a")
+                    : 'N/A'}
                 </span>
               </div>
             </div>

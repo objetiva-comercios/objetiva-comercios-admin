@@ -13,7 +13,7 @@ export default async function OrdersPage() {
           Manage customer orders and track their fulfillment status.
         </p>
       </div>
-      <OrdersClient orders={response.items} />
+      <OrdersClient orders={response.data} />
     </div>
   )
 }

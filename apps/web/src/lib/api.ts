@@ -4,25 +4,41 @@ import type { Order } from '@/types/order'
 import type { Sale } from '@/types/sale'
 import type { Purchase } from '@/types/purchase'
 import type { Inventory } from '@/types/inventory'
+import { createClient } from '@/lib/supabase/server'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 interface PaginatedResponse<T> {
-  items: T[]
-  total: number
-  page: number
-  limit: number
-  totalPages: number
+  data: T[]
+  meta: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+  }
 }
 
 async function fetchWithAuth<T>(endpoint: string): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`
+  const url = `${API_BASE_URL}/api${endpoint}`
+
+  // Get Supabase session for authentication
+  const supabase = await createClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  }
+
+  // Add Authorization header if session exists
+  if (session?.access_token) {
+    headers['Authorization'] = `Bearer ${session.access_token}`
+  }
 
   const response = await fetch(url, {
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
   })
 
   if (!response.ok) {

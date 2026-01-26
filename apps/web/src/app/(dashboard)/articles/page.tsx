@@ -11,7 +11,7 @@ export default async function ArticlesPage() {
         <h1 className="text-3xl font-bold tracking-tight">Articles</h1>
         <p className="text-muted-foreground">Manage your product catalog and inventory items.</p>
       </div>
-      <ArticlesClient products={response.items} />
+      <ArticlesClient products={response.data} />
     </div>
   )
 }

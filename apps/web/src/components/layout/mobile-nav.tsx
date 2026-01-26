@@ -22,7 +22,7 @@ export function MobileNav() {
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
+      <SheetContent side="left" className="w-64 p-0 bg-background">
         <div className="flex h-full flex-col">
           {/* Logo/Brand Area */}
           <div className="flex h-14 items-center border-b px-4">

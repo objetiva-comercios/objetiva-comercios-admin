@@ -37,8 +37,7 @@ export function generateProduct(id: number): Product {
     cost,
     category: faker.helpers.arrayElement(CATEGORIES),
     stock: faker.number.int({ min: 0, max: 500 }),
-    imageUrl: faker.image.urlLoremFlickr({
-      category: 'product',
+    imageUrl: faker.image.url({
       width: 400,
       height: 400,
     }),

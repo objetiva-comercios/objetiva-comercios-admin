@@ -11,7 +11,7 @@ export default async function PurchasesPage() {
         <h1 className="text-3xl font-bold tracking-tight">Purchases</h1>
         <p className="text-muted-foreground">View and manage purchase orders from suppliers.</p>
       </div>
-      <PurchasesClient purchases={response.items} />
+      <PurchasesClient purchases={response.data} />
     </div>
   )
 }

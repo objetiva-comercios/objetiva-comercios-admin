@@ -11,7 +11,7 @@ export default async function SalesPage() {
         <h1 className="text-3xl font-bold tracking-tight">Sales</h1>
         <p className="text-muted-foreground">View and manage sales transactions.</p>
       </div>
-      <SalesClient sales={response.items} />
+      <SalesClient sales={response.data} />
     </div>
   )
 }

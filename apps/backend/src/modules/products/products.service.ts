@@ -70,4 +70,20 @@ export class ProductsService {
   getCategories(): string[] {
     return [...new Set(this.products.map(p => p.category))].sort()
   }
+
+  getStats() {
+    const total = this.products.length
+    const active = this.products.filter(p => p.status === 'active').length
+    const inactive = this.products.filter(p => p.status === 'inactive').length
+    const discontinued = this.products.filter(p => p.status === 'discontinued').length
+
+    return {
+      total,
+      byStatus: {
+        active,
+        inactive,
+        discontinued,
+      },
+    }
+  }
 }

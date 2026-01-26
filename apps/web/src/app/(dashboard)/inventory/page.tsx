@@ -11,7 +11,7 @@ export default async function InventoryPage() {
         <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
         <p className="text-muted-foreground">Monitor stock levels and inventory status.</p>
       </div>
-      <InventoryClient inventory={response.items} />
+      <InventoryClient inventory={response.data} />
     </div>
   )
 }

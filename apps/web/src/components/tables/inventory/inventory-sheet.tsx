@@ -107,13 +107,9 @@ export function InventorySheet({ inventory, open, onOpenChange }: InventorySheet
               <div>
                 <span className="text-sm text-muted-foreground block">Last Restocked</span>
                 <span className="text-sm">
-                  {format(new Date(inventory.lastRestocked), "MMM d, yyyy 'at' h:mm a")}
-                </span>
-              </div>
-              <div>
-                <span className="text-sm text-muted-foreground block">Last Updated</span>
-                <span className="text-sm">
-                  {format(new Date(inventory.updatedAt), "MMM d, yyyy 'at' h:mm a")}
+                  {inventory.lastRestocked
+                    ? format(new Date(inventory.lastRestocked), "MMM d, yyyy 'at' h:mm a")
+                    : 'N/A'}
                 </span>
               </div>
             </div>
