@@ -4,6 +4,9 @@ import { Login } from '../../pages/Login'
 import { Signup } from '../../pages/Signup'
 import { AppShell } from '../layout/AppShell'
 import { Dashboard } from '../../pages/Dashboard'
+import { Articles } from '../../pages/Articles'
+import { Orders } from '../../pages/Orders'
+import { Inventory } from '../../pages/Inventory'
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -48,9 +51,9 @@ export function SplashGate() {
       <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
       <Route element={<AppShell />}>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/articles" element={<PlaceholderPage title="Articles" />} />
-        <Route path="/orders" element={<PlaceholderPage title="Orders" />} />
-        <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
+        <Route path="/articles" element={<Articles />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/inventory" element={<Inventory />} />
         <Route path="/sales" element={<PlaceholderPage title="Sales" />} />
         <Route path="/purchases" element={<PlaceholderPage title="Purchases" />} />
         <Route path="/profile" element={<PlaceholderPage title="Profile" />} />
