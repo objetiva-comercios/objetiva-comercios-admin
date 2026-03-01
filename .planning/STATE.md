@@ -83,6 +83,15 @@ Recent decisions affecting current work:
 - Comprehensive README (295 lines) for developer onboarding
 - Auth test script validates AUTH-05 without requiring Supabase credentials
 
+**From 02-01 (Common Backend Infrastructure):**
+
+- Global JWT auth guard with @Public() decorator pattern replaces route-based middleware
+- ValidationPipe with transform:true auto-converts query string params to typed DTO fields
+- HttpExceptionFilter returns { statusCode, message, path, method, timestamp } for all HTTP exceptions
+- QueryDto base class with page/limit/sort/search/status fields for all feature controllers
+- PaginatedResponseDto<T> with paginate() helper standardizes all list endpoint responses
+- All routes require JWT by default; opt-out with @Public() for public endpoints
+
 **From 02-02 (Mock Data Generators):**
 
 - @faker-js/faker for deterministic test data generation
@@ -188,14 +197,14 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-26 (Phase 3 completion & verification)
-Stopped at: Completed 03-08-PLAN.md (Settings Section + Human Verification)
+Last session: 2026-03-01 (Phase 2 Plan 01 SUMMARY.md created - backfill)
+Stopped at: Completed 02-01-PLAN.md (Common Backend Infrastructure)
 Resume file: None
 Next up: Phase 4 planning (Mobile Frontend Development)
 
-**Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed ✅
+**Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-01-26_
+_Last updated: 2026-03-01_
