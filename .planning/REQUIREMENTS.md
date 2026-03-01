@@ -42,15 +42,15 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Backend & API
 
-- [ ] **API-01**: Backend exposes /api/dashboard endpoint with mock data
-- [ ] **API-02**: Backend exposes /api/products endpoint with mock data
-- [ ] **API-03**: Backend exposes /api/orders endpoint with mock data
-- [ ] **API-04**: Backend exposes /api/inventory endpoint with mock data
-- [ ] **API-05**: Backend exposes /api/sales endpoint with mock data
-- [ ] **API-06**: Backend exposes /api/purchases endpoint with mock data
-- [ ] **API-07**: Backend serves realistic dummy data (500+ products minimum)
-- [ ] **API-08**: Backend has health check endpoint
-- [ ] **API-09**: All API endpoints require valid JWT token
+- [x] **API-01**: Backend exposes /api/dashboard endpoint with mock data
+- [x] **API-02**: Backend exposes /api/products endpoint with mock data
+- [x] **API-03**: Backend exposes /api/orders endpoint with mock data
+- [x] **API-04**: Backend exposes /api/inventory endpoint with mock data
+- [x] **API-05**: Backend exposes /api/sales endpoint with mock data
+- [x] **API-06**: Backend exposes /api/purchases endpoint with mock data
+- [x] **API-07**: Backend serves realistic dummy data (500+ products minimum)
+- [x] **API-08**: Backend has health check endpoint
+- [x] **API-09**: All API endpoints require valid JWT token
 
 ### Monorepo & Tooling
 
@@ -61,8 +61,8 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
 - [ ] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
 - [ ] **MONO-07**: Web app (apps/web) builds and runs
-- [ ] **MONO-08**: Backend (apps/backend) builds and runs
-- [ ] **MONO-09**: All apps can run concurrently in development mode
+- [x] **MONO-08**: Backend (apps/backend) builds and runs
+- [x] **MONO-09**: All apps can run concurrently in development mode
 
 ### Settings & Profile
 
@@ -164,15 +164,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-01     | Phase 3          | Pending  |
 | DASH-02     | Phase 3          | Pending  |
 | DASH-03     | Phase 3          | Pending  |
-| API-01      | Phase 2          | Pending  |
-| API-02      | Phase 2          | Pending  |
-| API-03      | Phase 2          | Pending  |
-| API-04      | Phase 2          | Pending  |
-| API-05      | Phase 2          | Pending  |
-| API-06      | Phase 2          | Pending  |
-| API-07      | Phase 2          | Pending  |
-| API-08      | Phase 2          | Pending  |
-| API-09      | Phase 2          | Pending  |
+| API-01      | Phase 2          | Complete |
+| API-02      | Phase 2          | Complete |
+| API-03      | Phase 2          | Complete |
+| API-04      | Phase 2          | Complete |
+| API-05      | Phase 2          | Complete |
+| API-06      | Phase 2          | Complete |
+| API-07      | Phase 2          | Complete |
+| API-08      | Phase 2          | Complete |
+| API-09      | Phase 2          | Complete |
 | MONO-01     | Phase 1          | Complete |
 | MONO-02     | Phase 1          | Complete |
 | MONO-03     | Phase 1          | Complete |
@@ -180,8 +180,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MONO-05     | Phase 3          | Pending  |
 | MONO-06     | Phase 4          | Pending  |
 | MONO-07     | Phase 3          | Pending  |
-| MONO-08     | Phase 2          | Pending  |
-| MONO-09     | Phase 2          | Pending  |
+| MONO-08     | Phase 2          | Complete |
+| MONO-09     | Phase 2          | Complete |
 | SET-01      | Phase 3          | Pending  |
 | SET-02      | Phase 3          | Pending  |
 | SET-03      | Phase 3          | Pending  |

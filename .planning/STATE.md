@@ -1,3 +1,16 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: unknown
+last_updated: '2026-03-01T14:26:50.495Z'
+progress:
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 17
+  completed_plans: 17
+---
+
 # Project State
 
 ## Project Reference
@@ -38,6 +51,7 @@ Progress: [████████░░] 88% (14/16 total plans)
 - Trend: Phase 3 completed with Settings + verification (45min including debugging)
 
 _Updated after each plan completion_
+| Phase 02-backend-api-with-mock-data P05 | 5 | 1 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -176,6 +190,8 @@ Recent decisions affecting current work:
 - Tailwind colors must use CSS variables (hsl(var(--background))) not static hex for theme switching
 - Mobile Sheet components need explicit bg-background class to prevent transparency
 - faker.js v10+ uses faker.image.url() instead of urlLoremFlickr()
+- [Phase 02-backend-api-with-mock-data]: Removed @Public() from all 6 feature controllers — global JWT guard now enforces auth everywhere except /api/health
+- [Phase 02-backend-api-with-mock-data]: DashboardService injects PurchasesService (already available via PurchasesModule import in DashboardModule) for purchases KPI
 
 ### Pending Todos
 
@@ -193,12 +209,12 @@ None yet.
 
 **Phase 4 (Mobile):** iOS navigation with Capacitor + Vite router may require workarounds (custom scheme compatibility). Research flag set for deeper investigation during planning.
 
-**Temporary State - Auth:** Backend endpoints currently public (@Public() decorator) for Phase 3 testing. Will re-enable JWT auth guards in Phase 5 when proper auth flow is implemented.
+**Temporary State - Auth - RESOLVED (02-05):** @Public() bypass removed from all 6 feature controllers. JWT auth is now properly enforced on all feature routes. Only /api/health remains public.
 
 ## Session Continuity
 
-Last session: 2026-03-01 (Phase 2 Plan 01 SUMMARY.md created - backfill)
-Stopped at: Completed 02-01-PLAN.md (Common Backend Infrastructure)
+Last session: 2026-03-01 (Phase 2 gap closure plan executed)
+Stopped at: Completed 02-05-PLAN.md (JWT Auth Enforcement and Dashboard Purchases KPI)
 Resume file: None
 Next up: Phase 4 planning (Mobile Frontend Development)
 
