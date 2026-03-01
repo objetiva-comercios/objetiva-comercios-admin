@@ -31,7 +31,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **UI-01**: UI follows shadcn aesthetic (modern, dense, admin-oriented)
 - [ ] **UI-02**: Dark theme implemented and works across platforms
 - [ ] **UI-03**: Layout is responsive and adapts to screen sizes
-- [ ] **UI-04**: Mobile and web feel cohesive despite platform-specific implementations
+- [x] **UI-04**: Mobile and web feel cohesive despite platform-specific implementations
 - [ ] **UI-05**: Components live in packages/ui with shared design tokens
 
 ### Dashboard
@@ -58,8 +58,8 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **MONO-02**: Turborepo configured for builds and caching
 - [ ] **MONO-03**: TypeScript workspace resolution works across packages
 - [ ] **MONO-04**: packages/ui exports shared design tokens and types
-- [ ] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
-- [ ] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
+- [x] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
+- [x] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
 - [ ] **MONO-07**: Web app (apps/web) builds and runs
 - [x] **MONO-08**: Backend (apps/backend) builds and runs
 - [x] **MONO-09**: All apps can run concurrently in development mode
@@ -159,7 +159,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-01       | Phase 3          | Pending  |
 | UI-02       | Phase 3          | Pending  |
 | UI-03       | Phase 3          | Pending  |
-| UI-04       | Phase 3, Phase 4 | Pending  |
+| UI-04       | Phase 3, Phase 4 | Complete |
 | UI-05       | Phase 1          | Complete |
 | DASH-01     | Phase 3          | Pending  |
 | DASH-02     | Phase 3          | Pending  |
@@ -177,8 +177,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MONO-02     | Phase 1          | Complete |
 | MONO-03     | Phase 1          | Complete |
 | MONO-04     | Phase 1          | Complete |
-| MONO-05     | Phase 3          | Pending  |
-| MONO-06     | Phase 4          | Pending  |
+| MONO-05     | Phase 3          | Complete |
+| MONO-06     | Phase 4          | Complete |
 | MONO-07     | Phase 3          | Pending  |
 | MONO-08     | Phase 2          | Complete |
 | MONO-09     | Phase 2          | Complete |

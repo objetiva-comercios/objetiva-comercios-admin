@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-01T14:31:09.568Z'
+last_updated: '2026-03-01T22:50:30.846Z'
 progress:
-  total_phases: 3
+  total_phases: 4
   completed_phases: 3
-  total_plans: 17
-  completed_plans: 17
+  total_plans: 21
+  completed_plans: 18
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 4 of 6 (Mobile Frontend Development)
-Plan: 0 of TBD
-Status: Ready to plan
-Last activity: 2026-01-26 — Completed Phase 3 (Web Frontend Development)
+Plan: 1 of 4
+Status: In Progress
+Last activity: 2026-03-01 — Completed 04-01 (Mobile App Foundation)
 
-Progress: [████████░░] 88% (14/16 total plans)
+Progress: [████████░░] 90% (18/21 total plans)
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [████████░░] 88% (14/16 total plans)
 
 _Updated after each plan completion_
 | Phase 02-backend-api-with-mock-data P05 | 5 | 1 tasks | 7 files |
+| Phase 04-mobile-application P01 | 5 | 3 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -192,6 +193,10 @@ Recent decisions affecting current work:
 - faker.js v10+ uses faker.image.url() instead of urlLoremFlickr()
 - [Phase 02-backend-api-with-mock-data]: Removed @Public() from all 6 feature controllers — global JWT guard now enforces auth everywhere except /api/health
 - [Phase 02-backend-api-with-mock-data]: DashboardService injects PurchasesService (already available via PurchasesModule import in DashboardModule) for purchases KPI
+- [Phase 04-01]: HashRouter over BrowserRouter: Capacitor native uses file:// protocol where BrowserRouter fails
+- [Phase 04-01]: @supabase/supabase-js over @supabase/ssr: mobile is client-side only, no server rendering
+- [Phase 04-01]: onAuthStateChange over getSession: fires synchronously with cached session on mount and handles token refresh
+- [Phase 04-01]: @capacitor/ios and @capacitor/android as devDependencies: native builds happen on developer machines
 
 ### Pending Todos
 
@@ -207,18 +212,20 @@ None yet.
 - Mobile menu transparency fixed
 - Date formatting errors resolved with null checks
 
-**Phase 4 (Mobile):** iOS navigation with Capacitor + Vite router may require workarounds (custom scheme compatibility). Research flag set for deeper investigation during planning.
+**Phase 4 (Mobile) - RESOLVED (04-01):** HashRouter is the solution for Capacitor + Vite router compatibility. Uses URL hash (#/path) which works on file:// protocol. BrowserRouter would fail on iOS/Android native.
 
 **Temporary State - Auth - RESOLVED (02-05):** @Public() bypass removed from all 6 feature controllers. JWT auth is now properly enforced on all feature routes. Only /api/health remains public.
 
 ## Session Continuity
 
-Last session: 2026-03-01 (Phase 2 gap closure plan executed)
-Stopped at: Completed 02-05-PLAN.md (JWT Auth Enforcement and Dashboard Purchases KPI)
+Last session: 2026-03-01 (Phase 4 Plan 01 executed)
+Stopped at: Completed 04-01-PLAN.md (Mobile App Foundation)
 Resume file: None
-Next up: Phase 4 planning (Mobile Frontend Development)
+Next up: Phase 4 Plan 02 (AppShell + bottom tabs + navigation)
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
+
+**Phase 4 Plan 01 Achievement:** Capacitor-configured mobile app with Supabase auth (HashRouter, SplashGate, Login/Signup), full CSS variable design system, and complete auth infrastructure ready for navigation and data pages
 
 ---
 
