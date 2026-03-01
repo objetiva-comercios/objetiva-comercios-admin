@@ -24,7 +24,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [x] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
 - [x] **NAV-05**: Layout includes header with app name and user menu
 - [x] **NAV-06**: Layout includes content area that adapts to navigation
-- [ ] **NAV-07**: All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
+- [x] **NAV-07**: All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
 
 ### UI & Responsiveness
 
@@ -155,7 +155,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NAV-04      | Phase 3, Phase 4 | Complete |
 | NAV-05      | Phase 3, Phase 4 | Complete |
 | NAV-06      | Phase 3, Phase 4 | Complete |
-| NAV-07      | Phase 3, Phase 4 | Pending  |
+| NAV-07      | Phase 3, Phase 4 | Complete |
 | UI-01       | Phase 3          | Pending  |
 | UI-02       | Phase 3          | Pending  |
 | UI-03       | Phase 3          | Pending  |
