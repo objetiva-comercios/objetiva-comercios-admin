@@ -18,12 +18,12 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Navigation & Layout
 
-- [ ] **NAV-01**: Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
-- [ ] **NAV-02**: Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
+- [x] **NAV-01**: Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
+- [x] **NAV-02**: Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
 - [ ] **NAV-03**: Web app displays sidebar navigation for all sections
-- [ ] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
-- [ ] **NAV-05**: Layout includes header with app name and user menu
-- [ ] **NAV-06**: Layout includes content area that adapts to navigation
+- [x] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
+- [x] **NAV-05**: Layout includes header with app name and user menu
+- [x] **NAV-06**: Layout includes content area that adapts to navigation
 - [ ] **NAV-07**: All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
 
 ### UI & Responsiveness
@@ -149,12 +149,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04     | Phase 3          | Pending  |
 | AUTH-05     | Phase 1          | Complete |
 | AUTH-06     | Phase 6          | Pending  |
-| NAV-01      | Phase 4          | Pending  |
-| NAV-02      | Phase 4          | Pending  |
+| NAV-01      | Phase 4          | Complete |
+| NAV-02      | Phase 4          | Complete |
 | NAV-03      | Phase 3          | Pending  |
-| NAV-04      | Phase 3, Phase 4 | Pending  |
-| NAV-05      | Phase 3, Phase 4 | Pending  |
-| NAV-06      | Phase 3, Phase 4 | Pending  |
+| NAV-04      | Phase 3, Phase 4 | Complete |
+| NAV-05      | Phase 3, Phase 4 | Complete |
+| NAV-06      | Phase 3, Phase 4 | Complete |
 | NAV-07      | Phase 3, Phase 4 | Pending  |
 | UI-01       | Phase 3          | Pending  |
 | UI-02       | Phase 3          | Pending  |
