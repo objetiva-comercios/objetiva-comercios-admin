@@ -1,9 +1,7 @@
 import { Controller, Get, Query, Param, ParseIntPipe, NotFoundException } from '@nestjs/common'
 import { OrdersService } from './orders.service'
 import { OrderQueryDto } from './dto/order-query.dto'
-import { Public } from '../../common/decorators/public.decorator'
 
-@Public()
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}

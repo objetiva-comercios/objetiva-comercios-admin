@@ -3,6 +3,7 @@ import { ProductsService } from '../products/products.service'
 import { OrdersService } from '../orders/orders.service'
 import { InventoryService } from '../inventory/inventory.service'
 import { SalesService } from '../sales/sales.service'
+import { PurchasesService } from '../purchases/purchases.service'
 
 interface DashboardStats {
   totalProducts: number
@@ -36,6 +37,10 @@ interface RecentOrder {
 
 interface DashboardResponse {
   stats: DashboardStats
+  purchases: {
+    pendingOrders: number
+    pendingValue: number
+  }
   lowStockItems: LowStockItem[]
   recentOrders: RecentOrder[]
 }
@@ -46,7 +51,8 @@ export class DashboardService {
     private productsService: ProductsService,
     private ordersService: OrdersService,
     private inventoryService: InventoryService,
-    private salesService: SalesService
+    private salesService: SalesService,
+    private purchasesService: PurchasesService
   ) {}
 
   getKpis(): DashboardResponse {
@@ -54,6 +60,7 @@ export class DashboardService {
     const orderStats = this.ordersService.getStats()
     const inventoryStats = this.inventoryService.getStats()
     const productStats = this.productsService.getStats()
+    const purchaseStats = this.purchasesService.getStats()
 
     // Get recent orders (last 5)
     const allOrders = this.ordersService.findAll({})
@@ -87,6 +94,10 @@ export class DashboardService {
         todayRevenue: salesStats.todayRevenue,
         weekSales: salesStats.thisWeekSales,
         weekRevenue: salesStats.thisWeekRevenue,
+      },
+      purchases: {
+        pendingOrders: purchaseStats.pendingOrders,
+        pendingValue: purchaseStats.pendingValue,
       },
       lowStockItems,
       recentOrders,
