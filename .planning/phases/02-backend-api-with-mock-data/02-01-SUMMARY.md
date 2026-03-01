@@ -148,6 +148,27 @@ None - no external service configuration required beyond SUPABASE_PROJECT_ID alr
 - JwtAuthGuard requires SUPABASE_PROJECT_ID env var at startup
 - Endpoints currently decorated with @Public() for Phase 3 testing (re-enable in Phase 5)
 
+## Self-Check: PASSED
+
+All files verified present on disk:
+
+- `apps/backend/src/common/decorators/public.decorator.ts` - FOUND
+- `apps/backend/src/common/guards/jwt-auth.guard.ts` - FOUND
+- `apps/backend/src/common/filters/http-exception.filter.ts` - FOUND
+- `apps/backend/src/common/dto/query.dto.ts` - FOUND
+- `apps/backend/src/common/dto/paginated-response.dto.ts` - FOUND
+- `apps/backend/src/main.ts` - FOUND
+- `apps/backend/src/app.controller.ts` - FOUND
+
+All commits verified in git history:
+
+- `f06f521` feat(02-01): install dependencies and configure global ValidationPipe - FOUND
+- `0b3d767` feat(02-01): create global JWT auth guard and @Public decorator - FOUND
+- `473945f` feat(02-01): create exception filter and reusable DTOs - FOUND
+- `26f76a8` docs(02-01): complete Common Backend Infrastructure plan - FOUND
+
+Build verification: `pnpm build` completed successfully (no errors).
+
 ---
 
 _Phase: 02-backend-api-with-mock-data_
