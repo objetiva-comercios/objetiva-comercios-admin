@@ -68,7 +68,7 @@ Plans:
 - [x] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
 - [x] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
 - [x] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
-- [ ] 02-05-PLAN.md - Gap closure: enforce JWT auth on all endpoints, add purchases KPI to dashboard
+- [x] 02-05-PLAN.md - Gap closure: enforce JWT auth on all endpoints, add purchases KPI to dashboard
 
 ### Phase 3: Web Application
 
