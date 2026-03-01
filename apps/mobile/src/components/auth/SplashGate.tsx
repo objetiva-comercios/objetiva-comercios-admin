@@ -2,10 +2,12 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { Login } from '../../pages/Login'
 import { Signup } from '../../pages/Signup'
+import { AppShell } from '../layout/AppShell'
+import { Dashboard } from '../../pages/Dashboard'
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+    <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
       <h1 className="text-2xl font-bold text-foreground">{title}</h1>
       <p className="text-muted-foreground mt-2">Coming soon</p>
     </div>
@@ -39,21 +41,22 @@ export function SplashGate() {
     )
   }
 
-  // Authenticated — render app routes
-  // Plan 02 will replace PlaceholderPage with AppShell + real pages
+  // Authenticated — render app routes inside AppShell layout
   return (
     <Routes>
       <Route path="/login" element={<Navigate to="/dashboard" replace />} />
       <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
-      <Route path="/articles" element={<PlaceholderPage title="Articles" />} />
-      <Route path="/orders" element={<PlaceholderPage title="Orders" />} />
-      <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
-      <Route path="/sales" element={<PlaceholderPage title="Sales" />} />
-      <Route path="/purchases" element={<PlaceholderPage title="Purchases" />} />
-      <Route path="/profile" element={<PlaceholderPage title="Profile" />} />
-      <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route element={<AppShell />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/articles" element={<PlaceholderPage title="Articles" />} />
+        <Route path="/orders" element={<PlaceholderPage title="Orders" />} />
+        <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
+        <Route path="/sales" element={<PlaceholderPage title="Sales" />} />
+        <Route path="/purchases" element={<PlaceholderPage title="Purchases" />} />
+        <Route path="/profile" element={<PlaceholderPage title="Profile" />} />
+        <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Route>
     </Routes>
   )
 }
