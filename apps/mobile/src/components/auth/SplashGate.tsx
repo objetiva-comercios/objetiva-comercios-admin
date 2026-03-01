@@ -7,15 +7,10 @@ import { Dashboard } from '../../pages/Dashboard'
 import { Articles } from '../../pages/Articles'
 import { Orders } from '../../pages/Orders'
 import { Inventory } from '../../pages/Inventory'
-
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
-      <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-      <p className="text-muted-foreground mt-2">Coming soon</p>
-    </div>
-  )
-}
+import { Sales } from '../../pages/Sales'
+import { Purchases } from '../../pages/Purchases'
+import { Profile } from '../../pages/Profile'
+import { Settings } from '../../pages/Settings'
 
 export function SplashGate() {
   const { user, loading } = useAuth()
@@ -54,10 +49,10 @@ export function SplashGate() {
         <Route path="/articles" element={<Articles />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/inventory" element={<Inventory />} />
-        <Route path="/sales" element={<PlaceholderPage title="Sales" />} />
-        <Route path="/purchases" element={<PlaceholderPage title="Purchases" />} />
-        <Route path="/profile" element={<PlaceholderPage title="Profile" />} />
-        <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+        <Route path="/sales" element={<Sales />} />
+        <Route path="/purchases" element={<Purchases />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
