@@ -22,7 +22,8 @@ const STATUS_COLOR_MAP: Record<string, BadgeVariant> = {
   // Blue — in transit
   shipped: 'blue',
   partial_refund: 'blue',
-  // Gray — inactive
+  // Gray — inactive / draft
+  draft: 'gray',
   inactive: 'gray',
 }
 

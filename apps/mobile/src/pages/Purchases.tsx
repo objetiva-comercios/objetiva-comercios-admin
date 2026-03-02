@@ -9,7 +9,7 @@ import { useInfiniteList } from '../hooks/useInfiniteList'
 import type { Purchase } from '../types'
 
 const STATUS_FILTERS = [
-  { label: 'Pending', value: 'pending' },
+  { label: 'Draft', value: 'draft' },
   { label: 'Ordered', value: 'ordered' },
   { label: 'Received', value: 'received' },
   { label: 'Cancelled', value: 'cancelled' },
@@ -153,7 +153,7 @@ export function Purchases() {
                       </span>
                     </div>
                     <span className="text-foreground font-medium">
-                      {formatCurrency(item.total)}
+                      {formatCurrency(item.subtotal)}
                     </span>
                   </div>
                 ))}
