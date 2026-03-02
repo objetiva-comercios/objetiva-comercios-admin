@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-02T03:39:36.878Z'
+last_updated: '2026-03-02T03:47:00.000Z'
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 24
-  completed_plans: 23
+  completed_plans: 24
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 5 of 6 (Database Integration)
-Plan: 2 of 3
-Status: In Progress
-Last activity: 2026-03-02 — Completed 05-02 (Service Migration to Drizzle)
+Plan: 3 of 3
+Status: Complete
+Last activity: 2026-03-02 — Completed 05-03 (Dashboard Migration and Mock Data Removal)
 
-Progress: [████████░░] 85% (23/27 total plans)
+Progress: [█████████░] 89% (24/27 total plans)
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ _Updated after each plan completion_
 | Phase 04-mobile-application P04 | 65 | 2 tasks | 5 files |
 | Phase 05-database-integration P01 | 4 | 3 tasks | 10 files |
 | Phase 05-database-integration P02 | 6 | 2 tasks | 11 files |
+| Phase 05-database-integration P03 | 5 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -214,6 +215,8 @@ Recent decisions affecting current work:
 - [Phase 05-02]: Column map pattern (Record<string, Column>) for dynamic sort: maps query.sort field name string to actual Drizzle column reference
 - [Phase 05-02]: Two-query findOne for parent+items (not JOIN): simpler code, avoids row-multiplication, adequate performance at this scale
 - [Phase 05-02]: Dashboard getKpis() converted to async with Promise.all: required fix after all services became async
+- [Phase 05-03]: Generator files relocated to src/db/generators/ (Option A): preserves existing faker logic, clean db tooling co-location
+- [Phase 05-03]: Local Generated\* interfaces in generator files (not schema $inferInsert): generators return ISO string dates, schema Insert types expect Date objects
 
 ### Pending Todos
 
@@ -235,10 +238,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 5 Plan 02 executed)
-Stopped at: Completed 05-02-PLAN.md (Service Migration to Drizzle)
+Last session: 2026-03-02 (Phase 5 Plan 03 executed)
+Stopped at: Completed 05-03-PLAN.md (Dashboard Migration and Mock Data Removal)
 Resume file: None
-Next up: Phase 5 Plan 03 (dashboard KPI updates and verification)
+Next up: Phase 6 (next phase)
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -254,7 +257,9 @@ Next up: Phase 5 Plan 03 (dashboard KPI updates and verification)
 
 **Phase 5 Plan 02 Achievement:** All 5 domain services migrated to Drizzle — products/orders/inventory/sales/purchases now query PostgreSQL via DrizzleService with two-query pagination, findOne returns nested items array for orders/sales/purchases, getStats() uses SQL aggregation (groupBy/count/sum/coalesce), CRUD endpoints (POST/PATCH/DELETE) added to all controllers, dashboard converted to async with Promise.all; backend compiles clean with zero TypeScript errors
 
+**Phase 5 Plan 03 Achievement (PHASE COMPLETE):** Async DashboardService confirmed with Promise.all parallelizing 6 service calls, controller made explicitly async, entire src/data/ mock directory deleted, generator files relocated to src/db/generators/ with self-contained Generated\* interfaces, seed script imports updated; zero mock code remains, backend compiles clean, all 8 modules initialize correctly
+
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-02_
+_Last updated: 2026-03-02 (05-03 complete — Phase 5 complete)_
