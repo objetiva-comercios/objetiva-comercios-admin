@@ -18,8 +18,8 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Navigation & Layout
 
-- [ ] **NAV-01**: Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
-- [ ] **NAV-02**: Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
+- [x] **NAV-01**: Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
+- [x] **NAV-02**: Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
 - [x] **NAV-03**: Web app displays sidebar navigation for all sections
 - [x] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
 - [x] **NAV-05**: Layout includes header with app name and user menu
@@ -58,8 +58,8 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **MONO-02**: Turborepo configured for builds and caching
 - [ ] **MONO-03**: TypeScript workspace resolution works across packages
 - [ ] **MONO-04**: packages/ui exports shared design tokens and types
-- [ ] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
-- [ ] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
+- [x] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
+- [x] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
 - [x] **MONO-07**: Web app (apps/web) builds and runs
 - [x] **MONO-08**: Backend (apps/backend) builds and runs
 - [x] **MONO-09**: All apps can run concurrently in development mode
@@ -149,8 +149,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04     | Phase 3, Phase 8          | Complete |
 | AUTH-05     | Phase 1                   | Complete |
 | AUTH-06     | Phase 6                   | Complete |
-| NAV-01      | Phase 4, Phase 8          | Pending  |
-| NAV-02      | Phase 4, Phase 8          | Pending  |
+| NAV-01      | Phase 4, Phase 8          | Complete |
+| NAV-02      | Phase 4, Phase 8          | Complete |
 | NAV-03      | Phase 3, Phase 8          | Complete |
 | NAV-04      | Phase 3, Phase 4, Phase 8 | Complete |
 | NAV-05      | Phase 3, Phase 4, Phase 8 | Complete |
@@ -177,8 +177,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MONO-02     | Phase 1                   | Complete |
 | MONO-03     | Phase 1                   | Complete |
 | MONO-04     | Phase 1                   | Complete |
-| MONO-05     | Phase 4, Phase 8          | Pending  |
-| MONO-06     | Phase 4, Phase 8          | Pending  |
+| MONO-05     | Phase 4, Phase 8          | Complete |
+| MONO-06     | Phase 4, Phase 8          | Complete |
 | MONO-07     | Phase 3, Phase 8          | Complete |
 | MONO-08     | Phase 2                   | Complete |
 | MONO-09     | Phase 2                   | Complete |
