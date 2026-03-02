@@ -19,14 +19,14 @@ interface PurchaseSheetProps {
 }
 
 const statusVariants = {
-  pending: 'secondary',
+  draft: 'secondary',
   ordered: 'default',
   received: 'default',
   cancelled: 'destructive',
 } as const
 
 const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100',
+  draft: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
   ordered: 'bg-blue-100 text-blue-800 hover:bg-blue-100',
   received: 'bg-green-100 text-green-800 hover:bg-green-100',
   cancelled: 'bg-red-100 text-red-800 hover:bg-red-100',
@@ -81,7 +81,7 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
                       {item.quantity} x {formatCurrency(item.unitCost)}
                     </p>
                   </div>
-                  <p className="text-sm font-medium">{formatCurrency(item.total)}</p>
+                  <p className="text-sm font-medium">{formatCurrency(item.subtotal)}</p>
                 </div>
               ))}
             </div>
