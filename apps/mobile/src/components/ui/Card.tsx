@@ -12,7 +12,7 @@ export function Card({ onClick, className, children }: CardProps) {
       onClick={onClick}
       className={cn(
         'bg-card rounded-lg border border-border p-4 transition-colors',
-        onClick && 'cursor-pointer active:bg-accent/50',
+        onClick && 'cursor-pointer active:bg-accent/50 min-h-[44px]',
         className
       )}
     >

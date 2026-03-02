@@ -33,7 +33,7 @@ export function FilterChips({ filters, selected, onSelect, className }: FilterCh
       <button
         onClick={() => handleSelect(null)}
         className={cn(
-          'whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+          'whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-colors min-h-[44px] flex items-center',
           selected === null
             ? 'bg-primary text-primary-foreground'
             : 'bg-secondary text-secondary-foreground'
@@ -47,7 +47,7 @@ export function FilterChips({ filters, selected, onSelect, className }: FilterCh
           key={filter.value}
           onClick={() => handleSelect(filter.value)}
           className={cn(
-            'whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+            'whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-colors min-h-[44px] flex items-center',
             selected === filter.value
               ? 'bg-primary text-primary-foreground'
               : 'bg-secondary text-secondary-foreground'
