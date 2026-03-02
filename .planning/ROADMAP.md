@@ -21,6 +21,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Polish & Production** - Error handling, responsive refinement, RBAC, performance optimization (completed 2026-03-02)
 - [x] **Phase 7: Fix Integration Bugs & Deployment Blockers** - Fix runtime crashes, type mismatches, middleware gaps, and deployment blockers (Gap Closure) (completed 2026-03-02)
 - [x] **Phase 8: Verify & Close Phases 3+4** - Create missing VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies (Gap Closure)
+- [ ] **Phase 9: Fix Mobile Purchase & Login Bugs** - Align purchase status enum, fix PurchaseItem field name, add mobile login password validation (Gap Closure)
+- [ ] **Phase 10: Code Quality & Type Safety Cleanup** - Remove dead code, consolidate utils, import shared schemas, fix type mismatches (Gap Closure)
 
 ## Phase Details
 
@@ -212,10 +214,36 @@ Plans:
 - [x] 08-02-PLAN.md — Phase 4 mobile application verification report
 - [x] 08-03-PLAN.md — ROADMAP.md and REQUIREMENTS.md data reconciliation
 
+### Phase 9: Fix Mobile Purchase & Login Bugs
+
+**Goal**: Fix broken mobile flows: purchase status filter returning zero results, purchase detail showing NaN amounts, and login password validation bypass in native mode
+**Depends on**: Phase 8
+**Requirements**: API-06, NAV-07, AUTH-02
+**Gap Closure:** Closes integration gaps #1, #2 and flow gaps #1, #2, #3 from audit
+**Success Criteria** (what must be TRUE):
+
+1. Mobile "Pending" filter returns correct purchase results (status enum aligned)
+2. Mobile purchase detail displays correct MXN amounts (field name aligned)
+3. Mobile Login validates password before submission in Capacitor native mode
+4. Web purchase badge renders correctly for all statuses
+
+### Phase 10: Code Quality & Type Safety Cleanup
+
+**Goal**: Remove dead code, consolidate duplicated utilities, import shared validation schemas, and fix type mismatches between frontend and backend
+**Depends on**: Phase 9
+**Requirements**: AUTH-01, AUTH-05, UI-05, MONO-04
+**Gap Closure:** Closes integration gaps #3, #4 and medium-priority tech debt from audit
+**Success Criteria** (what must be TRUE):
+
+1. AuthMiddleware class removed (dead code — JwtAuthGuard covers all routes)
+2. @objetiva/utils formatCurrency/formatDate imported by apps instead of local duplicates
+3. Mobile Signup imports signupSchema from @objetiva/types instead of duplicating rules
+4. Mobile Order/Purchase id typed as number matching backend response
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase                                         | Plans Complete | Status   | Completed  |
 | --------------------------------------------- | -------------- | -------- | ---------- |
@@ -227,8 +255,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 6. Polish & Production                        | 4/4            | Complete | 2026-03-02 |
 | 7. Fix Integration Bugs & Deployment Blockers | 2/2            | Complete | 2026-03-02 |
 | 8. Verify & Close Phases 3+4                  | 3/3            | Complete | 2026-03-02 |
+| 9. Fix Mobile Purchase & Login Bugs           | 0/0            | Pending  | —          |
+| 10. Code Quality & Type Safety Cleanup        | 0/0            | Pending  | —          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-02_
+_Last updated: 2026-03-02 (gap closure phases 9-10 added)_

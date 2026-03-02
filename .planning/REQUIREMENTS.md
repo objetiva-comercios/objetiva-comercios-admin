@@ -141,55 +141,55 @@ Explicitly excluded. Documented to prevent scope creep.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase                     | Status   |
-| ----------- | ------------------------- | -------- |
-| AUTH-01     | Phase 3, Phase 8          | Complete |
-| AUTH-02     | Phase 3, Phase 8          | Complete |
-| AUTH-03     | Phase 3, Phase 7, Phase 8 | Complete |
-| AUTH-04     | Phase 3, Phase 8          | Complete |
-| AUTH-05     | Phase 1                   | Complete |
-| AUTH-06     | Phase 6                   | Complete |
-| NAV-01      | Phase 4, Phase 8          | Complete |
-| NAV-02      | Phase 4, Phase 8          | Complete |
-| NAV-03      | Phase 3, Phase 8          | Complete |
-| NAV-04      | Phase 3, Phase 4, Phase 8 | Complete |
-| NAV-05      | Phase 3, Phase 4, Phase 8 | Complete |
-| NAV-06      | Phase 3, Phase 4, Phase 8 | Complete |
-| NAV-07      | Phase 3, Phase 4, Phase 8 | Complete |
-| UI-01       | Phase 3, Phase 8          | Complete |
-| UI-02       | Phase 3, Phase 8          | Complete |
-| UI-03       | Phase 3, Phase 8          | Complete |
-| UI-04       | Phase 3, Phase 4, Phase 8 | Complete |
-| UI-05       | Phase 1                   | Complete |
-| DASH-01     | Phase 3, Phase 7, Phase 8 | Complete |
-| DASH-02     | Phase 3, Phase 7, Phase 8 | Complete |
-| DASH-03     | Phase 3, Phase 8          | Complete |
-| API-01      | Phase 2                   | Complete |
-| API-02      | Phase 2                   | Complete |
-| API-03      | Phase 2                   | Complete |
-| API-04      | Phase 2                   | Complete |
-| API-05      | Phase 2                   | Complete |
-| API-06      | Phase 2                   | Complete |
-| API-07      | Phase 2                   | Complete |
-| API-08      | Phase 2                   | Complete |
-| API-09      | Phase 2                   | Complete |
-| MONO-01     | Phase 1                   | Complete |
-| MONO-02     | Phase 1                   | Complete |
-| MONO-03     | Phase 1                   | Complete |
-| MONO-04     | Phase 1                   | Complete |
-| MONO-05     | Phase 4, Phase 8          | Complete |
-| MONO-06     | Phase 4, Phase 8          | Complete |
-| MONO-07     | Phase 3, Phase 8          | Complete |
-| MONO-08     | Phase 2                   | Complete |
-| MONO-09     | Phase 2                   | Complete |
-| SET-01      | Phase 3, Phase 8          | Complete |
-| SET-02      | Phase 3, Phase 8          | Complete |
-| SET-03      | Phase 3, Phase 8          | Complete |
-| SET-04      | Phase 3, Phase 8          | Complete |
-| DOC-01      | Phase 1                   | Complete |
-| DOC-02      | Phase 1                   | Complete |
-| DOC-03      | Phase 3, Phase 8          | Complete |
-| DOC-04      | Phase 1                   | Complete |
+| Requirement | Phase                              | Status   |
+| ----------- | ---------------------------------- | -------- |
+| AUTH-01     | Phase 3, Phase 8, Phase 10         | Complete |
+| AUTH-02     | Phase 3, Phase 8, Phase 9          | Complete |
+| AUTH-03     | Phase 3, Phase 7, Phase 8          | Complete |
+| AUTH-04     | Phase 3, Phase 8                   | Complete |
+| AUTH-05     | Phase 1, Phase 10                  | Complete |
+| AUTH-06     | Phase 6                            | Complete |
+| NAV-01      | Phase 4, Phase 8                   | Complete |
+| NAV-02      | Phase 4, Phase 8                   | Complete |
+| NAV-03      | Phase 3, Phase 8                   | Complete |
+| NAV-04      | Phase 3, Phase 4, Phase 8          | Complete |
+| NAV-05      | Phase 3, Phase 4, Phase 8          | Complete |
+| NAV-06      | Phase 3, Phase 4, Phase 8          | Complete |
+| NAV-07      | Phase 3, Phase 4, Phase 8, Phase 9 | Complete |
+| UI-01       | Phase 3, Phase 8                   | Complete |
+| UI-02       | Phase 3, Phase 8                   | Complete |
+| UI-03       | Phase 3, Phase 8                   | Complete |
+| UI-04       | Phase 3, Phase 4, Phase 8          | Complete |
+| UI-05       | Phase 1, Phase 10                  | Complete |
+| DASH-01     | Phase 3, Phase 7, Phase 8          | Complete |
+| DASH-02     | Phase 3, Phase 7, Phase 8          | Complete |
+| DASH-03     | Phase 3, Phase 8                   | Complete |
+| API-01      | Phase 2                            | Complete |
+| API-02      | Phase 2                            | Complete |
+| API-03      | Phase 2                            | Complete |
+| API-04      | Phase 2                            | Complete |
+| API-05      | Phase 2                            | Complete |
+| API-06      | Phase 2, Phase 9                   | Complete |
+| API-07      | Phase 2                            | Complete |
+| API-08      | Phase 2                            | Complete |
+| API-09      | Phase 2                            | Complete |
+| MONO-01     | Phase 1                            | Complete |
+| MONO-02     | Phase 1                            | Complete |
+| MONO-03     | Phase 1                            | Complete |
+| MONO-04     | Phase 1, Phase 10                  | Complete |
+| MONO-05     | Phase 4, Phase 8                   | Complete |
+| MONO-06     | Phase 4, Phase 8                   | Complete |
+| MONO-07     | Phase 3, Phase 8                   | Complete |
+| MONO-08     | Phase 2                            | Complete |
+| MONO-09     | Phase 2                            | Complete |
+| SET-01      | Phase 3, Phase 8                   | Complete |
+| SET-02      | Phase 3, Phase 8                   | Complete |
+| SET-03      | Phase 3, Phase 8                   | Complete |
+| SET-04      | Phase 3, Phase 8                   | Complete |
+| DOC-01      | Phase 1                            | Complete |
+| DOC-02      | Phase 1                            | Complete |
+| DOC-03      | Phase 3, Phase 8                   | Complete |
+| DOC-04      | Phase 1                            | Complete |
 
 **Coverage:**
 
@@ -206,4 +206,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 
 _Requirements defined: 2026-01-22_
-_Last updated: 2026-03-02 after gap closure phases 7-8 added_
+_Last updated: 2026-03-02 after gap closure phases 9-10 added_
