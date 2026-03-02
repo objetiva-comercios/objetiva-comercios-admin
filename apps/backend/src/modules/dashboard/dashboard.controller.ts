@@ -6,7 +6,7 @@ export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get()
-  getKpis() {
-    return this.dashboardService.getKpis()
+  async getKpis() {
+    return await this.dashboardService.getKpis()
   }
 }
