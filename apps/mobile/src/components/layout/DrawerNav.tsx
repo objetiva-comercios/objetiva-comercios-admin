@@ -53,7 +53,7 @@ export function DrawerNav({ open, onClose }: DrawerNavProps) {
               onClick={onClose}
               className={({ isActive }) =>
                 [
-                  'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium',
+                  'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium min-h-[44px]',
                   isActive
                     ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -70,7 +70,7 @@ export function DrawerNav({ open, onClose }: DrawerNavProps) {
         <div className="border-t border-border px-3 py-4">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10"
+            className="flex w-full items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 min-h-[44px]"
           >
             <LogOut size={20} />
             <span>Logout</span>

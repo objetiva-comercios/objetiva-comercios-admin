@@ -23,7 +23,11 @@ export function AppHeader({ onMenuOpen }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border">
       <div className="flex items-center h-14 px-4 gap-3">
-        <button onClick={onMenuOpen} aria-label="Open menu" className="p-1 -ml-1 text-foreground">
+        <button
+          onClick={onMenuOpen}
+          aria-label="Open menu"
+          className="min-h-[44px] min-w-[44px] flex items-center justify-center -ml-2 text-foreground"
+        >
           <Menu size={24} />
         </button>
         <h1 className="font-semibold text-lg text-foreground flex-1">{title}</h1>

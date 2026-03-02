@@ -18,7 +18,7 @@ export function BottomTabs() {
             to={to}
             className={({ isActive }) =>
               [
-                'flex-1 flex flex-col items-center justify-center gap-1 py-2',
+                'flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px]',
                 isActive ? 'text-primary' : 'text-muted-foreground',
               ].join(' ')
             }
