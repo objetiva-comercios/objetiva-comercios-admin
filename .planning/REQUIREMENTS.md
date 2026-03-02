@@ -18,20 +18,20 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Navigation & Layout
 
-- [x] **NAV-01**: Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
-- [x] **NAV-02**: Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
+- [ ] **NAV-01**: Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
+- [ ] **NAV-02**: Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
 - [ ] **NAV-03**: Web app displays sidebar navigation for all sections
-- [x] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
-- [x] **NAV-05**: Layout includes header with app name and user menu
-- [x] **NAV-06**: Layout includes content area that adapts to navigation
-- [x] **NAV-07**: All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
+- [ ] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
+- [ ] **NAV-05**: Layout includes header with app name and user menu
+- [ ] **NAV-06**: Layout includes content area that adapts to navigation
+- [ ] **NAV-07**: All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
 
 ### UI & Responsiveness
 
 - [ ] **UI-01**: UI follows shadcn aesthetic (modern, dense, admin-oriented)
 - [ ] **UI-02**: Dark theme implemented and works across platforms
 - [ ] **UI-03**: Layout is responsive and adapts to screen sizes
-- [x] **UI-04**: Mobile and web feel cohesive despite platform-specific implementations
+- [ ] **UI-04**: Mobile and web feel cohesive despite platform-specific implementations
 - [ ] **UI-05**: Components live in packages/ui with shared design tokens
 
 ### Dashboard
@@ -58,8 +58,8 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **MONO-02**: Turborepo configured for builds and caching
 - [ ] **MONO-03**: TypeScript workspace resolution works across packages
 - [ ] **MONO-04**: packages/ui exports shared design tokens and types
-- [x] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
-- [x] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
+- [ ] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
+- [ ] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
 - [ ] **MONO-07**: Web app (apps/web) builds and runs
 - [x] **MONO-08**: Backend (apps/backend) builds and runs
 - [x] **MONO-09**: All apps can run concurrently in development mode
@@ -141,55 +141,55 @@ Explicitly excluded. Documented to prevent scope creep.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase            | Status   |
-| ----------- | ---------------- | -------- |
-| AUTH-01     | Phase 3          | Pending  |
-| AUTH-02     | Phase 3          | Pending  |
-| AUTH-03     | Phase 3          | Pending  |
-| AUTH-04     | Phase 3          | Pending  |
-| AUTH-05     | Phase 1          | Complete |
-| AUTH-06     | Phase 6          | Complete |
-| NAV-01      | Phase 4          | Complete |
-| NAV-02      | Phase 4          | Complete |
-| NAV-03      | Phase 3          | Pending  |
-| NAV-04      | Phase 3, Phase 4 | Complete |
-| NAV-05      | Phase 3, Phase 4 | Complete |
-| NAV-06      | Phase 3, Phase 4 | Complete |
-| NAV-07      | Phase 3, Phase 4 | Complete |
-| UI-01       | Phase 3          | Pending  |
-| UI-02       | Phase 3          | Pending  |
-| UI-03       | Phase 3          | Pending  |
-| UI-04       | Phase 3, Phase 4 | Complete |
-| UI-05       | Phase 1          | Complete |
-| DASH-01     | Phase 3          | Pending  |
-| DASH-02     | Phase 3          | Pending  |
-| DASH-03     | Phase 3          | Pending  |
-| API-01      | Phase 2          | Complete |
-| API-02      | Phase 2          | Complete |
-| API-03      | Phase 2          | Complete |
-| API-04      | Phase 2          | Complete |
-| API-05      | Phase 2          | Complete |
-| API-06      | Phase 2          | Complete |
-| API-07      | Phase 2          | Complete |
-| API-08      | Phase 2          | Complete |
-| API-09      | Phase 2          | Complete |
-| MONO-01     | Phase 1          | Complete |
-| MONO-02     | Phase 1          | Complete |
-| MONO-03     | Phase 1          | Complete |
-| MONO-04     | Phase 1          | Complete |
-| MONO-05     | Phase 3          | Complete |
-| MONO-06     | Phase 4          | Complete |
-| MONO-07     | Phase 3          | Pending  |
-| MONO-08     | Phase 2          | Complete |
-| MONO-09     | Phase 2          | Complete |
-| SET-01      | Phase 3          | Pending  |
-| SET-02      | Phase 3          | Pending  |
-| SET-03      | Phase 3          | Pending  |
-| SET-04      | Phase 3          | Pending  |
-| DOC-01      | Phase 1          | Complete |
-| DOC-02      | Phase 1          | Complete |
-| DOC-03      | Phase 3          | Pending  |
-| DOC-04      | Phase 1          | Complete |
+| Requirement | Phase                     | Status   |
+| ----------- | ------------------------- | -------- |
+| AUTH-01     | Phase 3, Phase 8          | Pending  |
+| AUTH-02     | Phase 3, Phase 8          | Pending  |
+| AUTH-03     | Phase 3, Phase 7, Phase 8 | Pending  |
+| AUTH-04     | Phase 3, Phase 8          | Pending  |
+| AUTH-05     | Phase 1                   | Complete |
+| AUTH-06     | Phase 6                   | Complete |
+| NAV-01      | Phase 4, Phase 8          | Pending  |
+| NAV-02      | Phase 4, Phase 8          | Pending  |
+| NAV-03      | Phase 3, Phase 8          | Pending  |
+| NAV-04      | Phase 3, Phase 4, Phase 8 | Pending  |
+| NAV-05      | Phase 3, Phase 4, Phase 8 | Pending  |
+| NAV-06      | Phase 3, Phase 4, Phase 8 | Pending  |
+| NAV-07      | Phase 3, Phase 4, Phase 8 | Pending  |
+| UI-01       | Phase 3, Phase 8          | Pending  |
+| UI-02       | Phase 3, Phase 8          | Pending  |
+| UI-03       | Phase 3, Phase 8          | Pending  |
+| UI-04       | Phase 3, Phase 4, Phase 8 | Pending  |
+| UI-05       | Phase 1                   | Complete |
+| DASH-01     | Phase 3, Phase 7, Phase 8 | Pending  |
+| DASH-02     | Phase 3, Phase 7, Phase 8 | Pending  |
+| DASH-03     | Phase 3, Phase 8          | Pending  |
+| API-01      | Phase 2                   | Complete |
+| API-02      | Phase 2                   | Complete |
+| API-03      | Phase 2                   | Complete |
+| API-04      | Phase 2                   | Complete |
+| API-05      | Phase 2                   | Complete |
+| API-06      | Phase 2                   | Complete |
+| API-07      | Phase 2                   | Complete |
+| API-08      | Phase 2                   | Complete |
+| API-09      | Phase 2                   | Complete |
+| MONO-01     | Phase 1                   | Complete |
+| MONO-02     | Phase 1                   | Complete |
+| MONO-03     | Phase 1                   | Complete |
+| MONO-04     | Phase 1                   | Complete |
+| MONO-05     | Phase 4, Phase 8          | Pending  |
+| MONO-06     | Phase 4, Phase 8          | Pending  |
+| MONO-07     | Phase 3, Phase 8          | Pending  |
+| MONO-08     | Phase 2                   | Complete |
+| MONO-09     | Phase 2                   | Complete |
+| SET-01      | Phase 3, Phase 8          | Pending  |
+| SET-02      | Phase 3, Phase 8          | Pending  |
+| SET-03      | Phase 3, Phase 8          | Pending  |
+| SET-04      | Phase 3, Phase 8          | Pending  |
+| DOC-01      | Phase 1                   | Complete |
+| DOC-02      | Phase 1                   | Complete |
+| DOC-03      | Phase 3, Phase 8          | Pending  |
+| DOC-04      | Phase 1                   | Complete |
 
 **Coverage:**
 
@@ -206,4 +206,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 
 _Requirements defined: 2026-01-22_
-_Last updated: 2026-01-24 after Phase 1 completion_
+_Last updated: 2026-03-02 after gap closure phases 7-8 added_

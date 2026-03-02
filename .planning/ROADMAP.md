@@ -19,6 +19,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Mobile Application** - Build Capacitor mobile app with platform-specific UI and navigation patterns (completed 2026-03-02)
 - [x] **Phase 5: Database Integration** - Replace mock data with PostgreSQL and Drizzle ORM for real persistence (completed 2026-03-02)
 - [x] **Phase 6: Polish & Production** - Error handling, responsive refinement, RBAC, performance optimization (completed 2026-03-02)
+- [ ] **Phase 7: Fix Integration Bugs & Deployment Blockers** - Fix runtime crashes, type mismatches, middleware gaps, and deployment blockers (Gap Closure)
+- [ ] **Phase 8: Verify & Close Phases 3+4** - Create missing VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies (Gap Closure)
 
 ## Phase Details
 
@@ -168,19 +170,49 @@ Plans:
 - [ ] 06-03-PLAN.md — Form validation (shared schemas, password strength), business settings form, bundle analysis, and Lighthouse measurement
 - [ ] 06-04-PLAN.md — Mobile touch target audit and fixes (44x44px minimum on all interactive elements)
 
+### Phase 7: Fix Integration Bugs & Deployment Blockers
+
+**Goal**: Fix runtime crashes, type mismatches, middleware gaps, and deployment blockers identified by milestone audit
+**Depends on**: Phase 6
+**Requirements**: DASH-01, DASH-02, AUTH-03
+**Gap Closure:** Closes gaps from audit
+**Success Criteria** (what must be TRUE):
+
+1. Web OrderSheet opens without crashing (items loaded from list endpoint)
+2. Web PurchaseSheet opens without crashing (items loaded from list endpoint)
+3. Dashboard displays purchases KPI (DashboardResponse type includes purchases)
+4. Frontend types match DB schema (no phantom fields causing silent blanks)
+5. Auth middleware protects all authenticated routes, not just /dashboard
+6. DATABASE_URL documented in .env.example for deployment
+
+### Phase 8: Verify & Close Phases 3+4
+
+**Goal**: Create formal VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies, and close all 26 unverified requirements
+**Depends on**: Phase 7
+**Requirements**: AUTH-01, AUTH-02, AUTH-04, NAV-03, UI-01, UI-02, UI-03, DASH-03, SET-01, SET-02, SET-03, SET-04, MONO-07, DOC-03, NAV-04, NAV-05, NAV-06, NAV-07, UI-04, NAV-01, NAV-02, MONO-05, MONO-06
+**Gap Closure:** Closes gaps from audit
+**Success Criteria** (what must be TRUE):
+
+1. Phase 3 VERIFICATION.md exists and confirms all 17 requirements satisfied
+2. Phase 4 VERIFICATION.md exists and confirms all 9 requirements satisfied
+3. ROADMAP.md Phase 3 checkboxes reflect actual completion status
+4. REQUIREMENTS.md traceability marks all verified requirements as Complete
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
-| Phase                         | Plans Complete | Status      | Completed  |
-| ----------------------------- | -------------- | ----------- | ---------- |
-| 1. Foundation & Monorepo      | 4/4            | Complete    | 2026-01-24 |
-| 2. Backend API with Mock Data | 5/5            | Complete    | 2026-03-01 |
-| 3. Web Application            | 0/8            | In Progress | -          |
-| 4. Mobile Application         | 4/4            | Complete    | 2026-03-02 |
-| 5. Database Integration       | 3/3            | Complete    | 2026-03-02 |
-| 6. Polish & Production        | 4/4            | Complete    | 2026-03-02 |
+| Phase                                         | Plans Complete | Status      | Completed  |
+| --------------------------------------------- | -------------- | ----------- | ---------- |
+| 1. Foundation & Monorepo                      | 4/4            | Complete    | 2026-01-24 |
+| 2. Backend API with Mock Data                 | 5/5            | Complete    | 2026-03-01 |
+| 3. Web Application                            | 0/8            | In Progress | -          |
+| 4. Mobile Application                         | 4/4            | Complete    | 2026-03-02 |
+| 5. Database Integration                       | 3/3            | Complete    | 2026-03-02 |
+| 6. Polish & Production                        | 4/4            | Complete    | 2026-03-02 |
+| 7. Fix Integration Bugs & Deployment Blockers | 0/0            | Pending     | -          |
+| 8. Verify & Close Phases 3+4                  | 0/0            | Pending     | -          |
 
 ---
 
