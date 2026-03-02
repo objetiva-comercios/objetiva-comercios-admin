@@ -11,7 +11,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 - [ ] **AUTH-01**: User can sign up with email and password via Supabase Auth
 - [ ] **AUTH-02**: User can log in with email and password
-- [ ] **AUTH-03**: User session persists across browser/app refresh
+- [x] **AUTH-03**: User session persists across browser/app refresh
 - [ ] **AUTH-04**: User can log out from any page
 - [ ] **AUTH-05**: Backend validates JWT tokens from Supabase on every request
 - [x] **AUTH-06**: User roles and permissions system (RBAC) implemented
@@ -36,7 +36,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Dashboard
 
-- [ ] **DASH-01**: Dashboard displays key metrics (sales, inventory, orders)
+- [x] **DASH-01**: Dashboard displays key metrics (sales, inventory, orders)
 - [x] **DASH-02**: Dashboard shows realistic operational data from backend
 - [ ] **DASH-03**: Dashboard demonstrates layout density (not empty states)
 
@@ -145,7 +145,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ----------- | ------------------------- | -------- |
 | AUTH-01     | Phase 3, Phase 8          | Pending  |
 | AUTH-02     | Phase 3, Phase 8          | Pending  |
-| AUTH-03     | Phase 3, Phase 7, Phase 8 | Pending  |
+| AUTH-03     | Phase 3, Phase 7, Phase 8 | Complete |
 | AUTH-04     | Phase 3, Phase 8          | Pending  |
 | AUTH-05     | Phase 1                   | Complete |
 | AUTH-06     | Phase 6                   | Complete |
@@ -161,7 +161,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-03       | Phase 3, Phase 8          | Pending  |
 | UI-04       | Phase 3, Phase 4, Phase 8 | Pending  |
 | UI-05       | Phase 1                   | Complete |
-| DASH-01     | Phase 3, Phase 7, Phase 8 | Pending  |
+| DASH-01     | Phase 3, Phase 7, Phase 8 | Complete |
 | DASH-02     | Phase 3, Phase 7, Phase 8 | Complete |
 | DASH-03     | Phase 3, Phase 8          | Pending  |
 | API-01      | Phase 2                   | Complete |
