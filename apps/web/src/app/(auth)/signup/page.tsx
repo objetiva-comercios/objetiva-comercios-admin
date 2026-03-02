@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { signupSchema, getPasswordStrength } from '@objetiva/types'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,17 +28,6 @@ import {
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
 
-const signupSchema = z
-  .object({
-    email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine(data => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  })
-
 type SignupFormValues = z.infer<typeof signupSchema>
 
 export default function SignupPage() {
@@ -53,6 +43,9 @@ export default function SignupPage() {
       confirmPassword: '',
     },
   })
+
+  const passwordValue = form.watch('password')
+  const passwordStrength = passwordValue ? getPasswordStrength(passwordValue) : null
 
   async function onSubmit(values: SignupFormValues) {
     setIsLoading(true)
@@ -151,6 +144,38 @@ export default function SignupPage() {
                       {...field}
                     />
                   </FormControl>
+                  {passwordStrength && (
+                    <div className="mt-1 space-y-1">
+                      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={[
+                            'h-full rounded-full transition-all duration-300',
+                            passwordStrength === 'weak'
+                              ? 'w-1/3 bg-red-500'
+                              : passwordStrength === 'fair'
+                                ? 'w-2/3 bg-yellow-500'
+                                : 'w-full bg-green-500',
+                          ].join(' ')}
+                        />
+                      </div>
+                      <p
+                        className={[
+                          'text-xs font-medium',
+                          passwordStrength === 'weak'
+                            ? 'text-red-500'
+                            : passwordStrength === 'fair'
+                              ? 'text-yellow-500'
+                              : 'text-green-500',
+                        ].join(' ')}
+                      >
+                        {passwordStrength === 'weak'
+                          ? 'Weak'
+                          : passwordStrength === 'fair'
+                            ? 'Fair'
+                            : 'Strong'}
+                      </p>
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

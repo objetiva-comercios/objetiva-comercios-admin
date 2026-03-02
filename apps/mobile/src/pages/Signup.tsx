@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { getPasswordStrength } from '@objetiva/types'
 
 export function Signup() {
   const [email, setEmail] = useState('')
@@ -10,12 +11,28 @@ export function Signup() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
+  const passwordStrength = password ? getPasswordStrength(password) : null
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
 
     if (password !== confirmPassword) {
       setError('Passwords do not match')
+      return
+    }
+
+    // Validate password strength requirements
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter')
+      return
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number')
+      return
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters')
       return
     }
 
@@ -95,6 +112,38 @@ export function Signup() {
                 className="w-full h-11 px-3 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
                 placeholder="••••••••"
               />
+              {passwordStrength && (
+                <div className="mt-1">
+                  <div className="h-1 rounded-full bg-muted mt-1 overflow-hidden">
+                    <div
+                      className={[
+                        'h-full rounded-full transition-all duration-300',
+                        passwordStrength === 'weak'
+                          ? 'w-1/3 bg-red-500'
+                          : passwordStrength === 'fair'
+                            ? 'w-2/3 bg-yellow-500'
+                            : 'w-full bg-green-500',
+                      ].join(' ')}
+                    />
+                  </div>
+                  <p
+                    className={[
+                      'text-xs font-medium mt-0.5',
+                      passwordStrength === 'weak'
+                        ? 'text-red-500'
+                        : passwordStrength === 'fair'
+                          ? 'text-yellow-500'
+                          : 'text-green-500',
+                    ].join(' ')}
+                  >
+                    {passwordStrength === 'weak'
+                      ? 'Weak'
+                      : passwordStrength === 'fair'
+                        ? 'Fair'
+                        : 'Strong'}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div>

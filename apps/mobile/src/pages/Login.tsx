@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { emailSchema } from '@objetiva/types'
 
 export function Login() {
   const [email, setEmail] = useState('')
@@ -12,6 +13,14 @@ export function Login() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+
+    // Validate email format before submitting
+    const emailResult = emailSchema.safeParse(email)
+    if (!emailResult.success) {
+      setError(emailResult.error.errors[0]?.message ?? 'Please enter a valid email address')
+      setLoading(false)
+      return
+    }
 
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
