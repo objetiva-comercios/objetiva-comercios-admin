@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { eq, ilike, or, and, gte, lte, desc, asc, count, sql, Column } from 'drizzle-orm'
+import { eq, ilike, or, and, gte, lte, desc, asc, count, sql, Column, inArray } from 'drizzle-orm'
 import { DrizzleService } from '../../db/index'
 import { purchases, purchaseItems } from '../../db/schema'
 import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
@@ -90,9 +90,33 @@ export class PurchasesService {
       .limit(limit)
       .offset(offset)
 
+    // Batch load items for all purchases on this page
+    const purchaseIds = data.map(p => p.id)
+    const allItems =
+      purchaseIds.length > 0
+        ? await this.drizzle.db
+            .select()
+            .from(purchaseItems)
+            .where(inArray(purchaseItems.purchaseId, purchaseIds))
+        : []
+
+    // Build lookup map
+    const itemsByPurchaseId = new Map<number, (typeof allItems)[number][]>()
+    for (const item of allItems) {
+      const list = itemsByPurchaseId.get(item.purchaseId) ?? []
+      list.push(item)
+      itemsByPurchaseId.set(item.purchaseId, list)
+    }
+
+    // Zip items into purchase rows
+    const dataWithItems = data.map(purchase => ({
+      ...purchase,
+      items: itemsByPurchaseId.get(purchase.id) ?? [],
+    }))
+
     const totalPages = Math.ceil(total / limit)
 
-    return new PaginatedResponseDto(data, { total, page, limit, totalPages })
+    return new PaginatedResponseDto(dataWithItems, { total, page, limit, totalPages })
   }
 
   async findOne(id: number) {
