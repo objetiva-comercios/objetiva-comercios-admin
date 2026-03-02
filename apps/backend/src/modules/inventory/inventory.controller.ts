@@ -7,9 +7,12 @@ import {
   ParseIntPipe,
   NotFoundException,
   Body,
+  UseGuards,
 } from '@nestjs/common'
 import { InventoryService } from './inventory.service'
 import { InventoryQueryDto } from './dto/inventory-query.dto'
+import { RolesGuard } from '../../common/guards/roles.guard'
+import { Roles } from '../../common/decorators/roles.decorator'
 
 @Controller('inventory')
 export class InventoryController {
@@ -39,6 +42,8 @@ export class InventoryController {
     return inventoryItem
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: Record<string, unknown>) {
     return this.inventoryService.update(id, dto)

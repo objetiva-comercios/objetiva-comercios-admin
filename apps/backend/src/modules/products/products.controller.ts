@@ -9,9 +9,12 @@ import {
   ParseIntPipe,
   NotFoundException,
   Body,
+  UseGuards,
 } from '@nestjs/common'
 import { ProductsService } from './products.service'
 import { ProductQueryDto } from './dto/product-query.dto'
+import { RolesGuard } from '../../common/guards/roles.guard'
+import { Roles } from '../../common/decorators/roles.decorator'
 
 @Controller('products')
 export class ProductsController {
@@ -41,16 +44,22 @@ export class ProductsController {
     return product
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Post()
   create(@Body() dto: Record<string, unknown>) {
     return this.productsService.create(dto)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: Record<string, unknown>) {
     return this.productsService.update(id, dto)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id)

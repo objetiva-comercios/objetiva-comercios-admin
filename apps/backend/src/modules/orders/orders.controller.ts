@@ -9,9 +9,12 @@ import {
   ParseIntPipe,
   NotFoundException,
   Body,
+  UseGuards,
 } from '@nestjs/common'
 import { OrdersService } from './orders.service'
 import { OrderQueryDto } from './dto/order-query.dto'
+import { RolesGuard } from '../../common/guards/roles.guard'
+import { Roles } from '../../common/decorators/roles.decorator'
 
 @Controller('orders')
 export class OrdersController {
@@ -36,16 +39,22 @@ export class OrdersController {
     return order
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Post()
   create(@Body() dto: Record<string, unknown>) {
     return this.ordersService.create(dto)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: Record<string, unknown>) {
     return this.ordersService.update(id, dto)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.ordersService.remove(id)
