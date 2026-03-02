@@ -55,15 +55,18 @@ export class DashboardService {
     private purchasesService: PurchasesService
   ) {}
 
-  getKpis(): DashboardResponse {
-    const salesStats = this.salesService.getStats()
-    const orderStats = this.ordersService.getStats()
-    const inventoryStats = this.inventoryService.getStats()
-    const productStats = this.productsService.getStats()
-    const purchaseStats = this.purchasesService.getStats()
+  async getKpis(): Promise<DashboardResponse> {
+    const [salesStats, orderStats, inventoryStats, productStats, purchaseStats, allOrders] =
+      await Promise.all([
+        this.salesService.getStats(),
+        this.ordersService.getStats(),
+        this.inventoryService.getStats(),
+        this.productsService.getStats(),
+        this.purchasesService.getStats(),
+        this.ordersService.findAll({ page: 1, limit: 5 }),
+      ])
 
     // Get recent orders (last 5)
-    const allOrders = this.ordersService.findAll({})
     const recentOrders = allOrders.data.slice(0, 5).map((order: any) => ({
       id: order.id,
       orderNumber: order.orderNumber,
@@ -79,7 +82,7 @@ export class DashboardService {
       productId: item.productId,
       productName: item.productName,
       quantity: item.quantity,
-      status: item.status,
+      status: item.status as 'in_stock' | 'low_stock' | 'out_of_stock',
     }))
 
     return {

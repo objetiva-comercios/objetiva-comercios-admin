@@ -1,89 +1,170 @@
-import { Injectable } from '@nestjs/common'
-import { Product } from '../../data/types'
-import { seedAll } from '../../data/seed'
-import { PaginatedResponseDto, paginate } from '../../common/dto/paginated-response.dto'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { eq, ilike, or, and, gte, lte, desc, asc, count, Column } from 'drizzle-orm'
+import { DrizzleService } from '../../db/index'
+import { products } from '../../db/schema'
+import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
 import { ProductQueryDto } from './dto/product-query.dto'
 
 @Injectable()
 export class ProductsService {
-  private products: Product[]
+  constructor(private readonly drizzle: DrizzleService) {}
 
-  constructor() {
-    // Initialize once at startup
-    const { products } = seedAll()
-    this.products = products
-  }
+  async findAll(
+    query: ProductQueryDto
+  ): Promise<PaginatedResponseDto<typeof products.$inferSelect>> {
+    const page = query.page ?? 1
+    const limit = query.limit ?? 20
+    const offset = (page - 1) * limit
 
-  findAll(query: ProductQueryDto): PaginatedResponseDto<Product> {
-    let filtered = [...this.products]
+    // Build conditions
+    const conditions = []
 
-    // Text search (name, description, sku)
     if (query.search) {
-      const search = query.search.toLowerCase()
-      filtered = filtered.filter(
-        p =>
-          p.name.toLowerCase().includes(search) ||
-          p.description.toLowerCase().includes(search) ||
-          p.sku.toLowerCase().includes(search)
+      const pattern = `%${query.search}%`
+      conditions.push(
+        or(
+          ilike(products.name, pattern),
+          ilike(products.description, pattern),
+          ilike(products.sku, pattern)
+        )
       )
     }
 
-    // Filter by category
     if (query.category) {
-      filtered = filtered.filter(p => p.category === query.category)
+      conditions.push(eq(products.category, query.category))
     }
 
-    // Filter by status
     if (query.status) {
-      filtered = filtered.filter(p => p.status === query.status)
+      conditions.push(eq(products.status, query.status))
     }
 
-    // Filter by price range
     if (query.minPrice !== undefined) {
-      filtered = filtered.filter(p => p.price >= query.minPrice!)
-    }
-    if (query.maxPrice !== undefined) {
-      filtered = filtered.filter(p => p.price <= query.maxPrice!)
+      conditions.push(gte(products.price, query.minPrice))
     }
 
-    // Sorting
+    if (query.maxPrice !== undefined) {
+      conditions.push(lte(products.price, query.maxPrice))
+    }
+
+    const where = conditions.length > 0 ? and(...conditions) : undefined
+
+    // Count query
+    const [{ total }] = await this.drizzle.db.select({ total: count() }).from(products).where(where)
+
+    // Build order by
+    const colMap: Record<string, Column> = {
+      id: products.id,
+      name: products.name,
+      sku: products.sku,
+      price: products.price,
+      cost: products.cost,
+      category: products.category,
+      stock: products.stock,
+      status: products.status,
+      createdAt: products.createdAt,
+      updatedAt: products.updatedAt,
+    }
+
+    let orderBy = desc(products.createdAt)
     if (query.sort) {
       const descending = query.sort.startsWith('-')
       const field = descending ? query.sort.slice(1) : query.sort
-      filtered.sort((a, b) => {
-        const aVal = a[field as keyof Product]
-        const bVal = b[field as keyof Product]
-        if (aVal < bVal) return descending ? 1 : -1
-        if (aVal > bVal) return descending ? -1 : 1
-        return 0
-      })
+      const col = colMap[field]
+      if (col) {
+        orderBy = descending ? desc(col) : asc(col)
+      }
     }
 
-    // Paginate using helper from common/dto
-    return paginate(filtered, query)
+    // Data query
+    const data = await this.drizzle.db
+      .select()
+      .from(products)
+      .where(where)
+      .orderBy(orderBy)
+      .limit(limit)
+      .offset(offset)
+
+    const totalPages = Math.ceil(total / limit)
+
+    return new PaginatedResponseDto(data, { total, page, limit, totalPages })
   }
 
-  findOne(id: number): Product | null {
-    return this.products.find(p => p.id === id) || null
+  async findOne(id: number) {
+    const rows = await this.drizzle.db.select().from(products).where(eq(products.id, id))
+
+    return rows[0] ?? null
   }
 
-  getCategories(): string[] {
-    return [...new Set(this.products.map(p => p.category))].sort()
+  async getCategories(): Promise<string[]> {
+    const rows = await this.drizzle.db
+      .selectDistinct({ category: products.category })
+      .from(products)
+      .orderBy(asc(products.category))
+
+    return rows.map(r => r.category)
   }
 
-  getStats() {
-    const total = this.products.length
-    const active = this.products.filter(p => p.status === 'active').length
-    const inactive = this.products.filter(p => p.status === 'inactive').length
-    const discontinued = this.products.filter(p => p.status === 'discontinued').length
+  async getStats() {
+    const rows = await this.drizzle.db
+      .select({
+        status: products.status,
+        count: count(),
+      })
+      .from(products)
+      .groupBy(products.status)
+
+    const byStatus: Record<string, number> = {
+      active: 0,
+      inactive: 0,
+      discontinued: 0,
+    }
+
+    let total = 0
+    for (const row of rows) {
+      byStatus[row.status] = row.count
+      total += row.count
+    }
 
     return {
       total,
       byStatus: {
-        active,
-        inactive,
-        discontinued,
+        active: byStatus['active'] ?? 0,
+        inactive: byStatus['inactive'] ?? 0,
+        discontinued: byStatus['discontinued'] ?? 0,
       },
     }
+  }
+
+  async create(dto: Record<string, unknown>) {
+    const rows = await this.drizzle.db
+      .insert(products)
+      .values(dto as typeof products.$inferInsert)
+      .returning()
+
+    return rows[0]
+  }
+
+  async update(id: number, dto: Record<string, unknown>) {
+    const rows = await this.drizzle.db
+      .update(products)
+      .set({ ...(dto as Partial<typeof products.$inferInsert>), updatedAt: new Date() })
+      .where(eq(products.id, id))
+      .returning()
+
+    if (!rows[0]) {
+      throw new NotFoundException(`Product with ID ${id} not found`)
+    }
+
+    return rows[0]
+  }
+
+  async remove(id: number) {
+    const rows = await this.drizzle.db.delete(products).where(eq(products.id, id)).returning()
+
+    if (!rows[0]) {
+      throw new NotFoundException(`Product with ID ${id} not found`)
+    }
+
+    return rows[0]
   }
 }

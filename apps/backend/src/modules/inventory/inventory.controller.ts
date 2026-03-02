@@ -1,4 +1,13 @@
-import { Controller, Get, Query, Param, ParseIntPipe, NotFoundException } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Patch,
+  Query,
+  Param,
+  ParseIntPipe,
+  NotFoundException,
+  Body,
+} from '@nestjs/common'
 import { InventoryService } from './inventory.service'
 import { InventoryQueryDto } from './dto/inventory-query.dto'
 
@@ -22,11 +31,16 @@ export class InventoryController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    const inventoryItem = this.inventoryService.findOne(id)
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const inventoryItem = await this.inventoryService.findOne(id)
     if (!inventoryItem) {
       throw new NotFoundException(`Inventory item with ID ${id} not found`)
     }
     return inventoryItem
+  }
+
+  @Patch(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: Record<string, unknown>) {
+    return this.inventoryService.update(id, dto)
   }
 }
