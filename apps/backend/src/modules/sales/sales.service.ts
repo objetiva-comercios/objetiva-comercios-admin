@@ -1,120 +1,254 @@
-import { Injectable } from '@nestjs/common'
-import { Sale } from '../../data/types'
-import { seedAll } from '../../data/seed'
-import { PaginatedResponseDto, paginate } from '../../common/dto/paginated-response.dto'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { eq, ilike, or, and, gte, lte, desc, asc, count, sql, Column } from 'drizzle-orm'
+import { DrizzleService } from '../../db/index'
+import { sales, saleItems } from '../../db/schema'
+import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
 import { SaleQueryDto } from './dto/sale-query.dto'
 
 @Injectable()
 export class SalesService {
-  private sales: Sale[]
+  constructor(private readonly drizzle: DrizzleService) {}
 
-  constructor() {
-    // Initialize once at startup
-    const { sales } = seedAll()
-    this.sales = sales
-  }
+  async findAll(query: SaleQueryDto): Promise<PaginatedResponseDto<typeof sales.$inferSelect>> {
+    const page = query.page ?? 1
+    const limit = query.limit ?? 20
+    const offset = (page - 1) * limit
 
-  findAll(query: SaleQueryDto): PaginatedResponseDto<Sale> {
-    let filtered = [...this.sales]
+    const conditions = []
 
-    // Text search (saleNumber, customerName)
     if (query.search) {
-      const search = query.search.toLowerCase()
-      filtered = filtered.filter(
-        s =>
-          s.saleNumber.toLowerCase().includes(search) ||
-          s.customerName.toLowerCase().includes(search)
-      )
+      const pattern = `%${query.search}%`
+      conditions.push(or(ilike(sales.saleNumber, pattern), ilike(sales.customerName, pattern)))
     }
 
-    // Filter by status
     if (query.status) {
-      filtered = filtered.filter(s => s.status === query.status)
+      conditions.push(eq(sales.status, query.status))
     }
 
-    // Filter by paymentMethod
     if (query.paymentMethod) {
-      filtered = filtered.filter(s => s.paymentMethod === query.paymentMethod)
+      conditions.push(eq(sales.paymentMethod, query.paymentMethod))
     }
 
-    // Filter by customerId
     if (query.customerId !== undefined) {
-      filtered = filtered.filter(s => s.customerId === query.customerId)
+      conditions.push(eq(sales.customerId, query.customerId))
     }
 
-    // Filter by total range
     if (query.minTotal !== undefined) {
-      filtered = filtered.filter(s => s.total >= query.minTotal!)
+      conditions.push(gte(sales.total, query.minTotal))
     }
+
     if (query.maxTotal !== undefined) {
-      filtered = filtered.filter(s => s.total <= query.maxTotal!)
+      conditions.push(lte(sales.total, query.maxTotal))
     }
 
-    // Filter by date range
     if (query.startDate) {
-      filtered = filtered.filter(s => s.createdAt >= query.startDate!)
-    }
-    if (query.endDate) {
-      filtered = filtered.filter(s => s.createdAt <= query.endDate!)
+      conditions.push(gte(sales.createdAt, new Date(query.startDate)))
     }
 
-    // Sorting
+    if (query.endDate) {
+      conditions.push(lte(sales.createdAt, new Date(query.endDate)))
+    }
+
+    const where = conditions.length > 0 ? and(...conditions) : undefined
+
+    // Count query
+    const [{ total }] = await this.drizzle.db.select({ total: count() }).from(sales).where(where)
+
+    // Build order by
+    const colMap: Record<string, Column> = {
+      id: sales.id,
+      saleNumber: sales.saleNumber,
+      customerName: sales.customerName,
+      subtotal: sales.subtotal,
+      tax: sales.tax,
+      discount: sales.discount,
+      total: sales.total,
+      paymentMethod: sales.paymentMethod,
+      status: sales.status,
+      createdAt: sales.createdAt,
+      updatedAt: sales.updatedAt,
+    }
+
+    let orderBy = desc(sales.createdAt)
     if (query.sort) {
       const descending = query.sort.startsWith('-')
       const field = descending ? query.sort.slice(1) : query.sort
-      filtered.sort((a, b) => {
-        const aVal = a[field as keyof Sale]
-        const bVal = b[field as keyof Sale]
-        if (aVal < bVal) return descending ? 1 : -1
-        if (aVal > bVal) return descending ? -1 : 1
-        return 0
-      })
+      const col = colMap[field]
+      if (col) {
+        orderBy = descending ? desc(col) : asc(col)
+      }
     }
 
-    // Paginate using helper from common/dto
-    return paginate(filtered, query)
+    // Data query
+    const data = await this.drizzle.db
+      .select()
+      .from(sales)
+      .where(where)
+      .orderBy(orderBy)
+      .limit(limit)
+      .offset(offset)
+
+    const totalPages = Math.ceil(total / limit)
+
+    return new PaginatedResponseDto(data, { total, page, limit, totalPages })
   }
 
-  findOne(id: number): Sale | null {
-    return this.sales.find(s => s.id === id) || null
+  async findOne(id: number) {
+    const saleRows = await this.drizzle.db.select().from(sales).where(eq(sales.id, id))
+
+    if (!saleRows[0]) {
+      return null
+    }
+
+    const items = await this.drizzle.db.select().from(saleItems).where(eq(saleItems.saleId, id))
+
+    return { ...saleRows[0], items }
   }
 
-  getStats() {
-    const totalSales = this.sales.length
-    const totalRevenue = this.sales.reduce((sum, s) => sum + s.total, 0)
+  async getStats() {
+    // 1. Total count + total revenue
+    const [aggregate] = await this.drizzle.db
+      .select({
+        totalSales: count(),
+        totalRevenue: sql<number>`cast(coalesce(sum(${sales.total}), 0) as double precision)`,
+      })
+      .from(sales)
+
+    const totalSales = aggregate.totalSales
+    const totalRevenue = aggregate.totalRevenue
     const averageOrderValue = totalSales > 0 ? totalRevenue / totalSales : 0
 
-    const byPaymentMethod = {
-      cash: this.sales.filter(s => s.paymentMethod === 'cash').length,
-      card: this.sales.filter(s => s.paymentMethod === 'card').length,
-      transfer: this.sales.filter(s => s.paymentMethod === 'transfer').length,
-      credit: this.sales.filter(s => s.paymentMethod === 'credit').length,
+    // 2. By payment method
+    const paymentMethodRows = await this.drizzle.db
+      .select({
+        paymentMethod: sales.paymentMethod,
+        count: count(),
+      })
+      .from(sales)
+      .groupBy(sales.paymentMethod)
+
+    const byPaymentMethod: Record<string, number> = {
+      cash: 0,
+      card: 0,
+      transfer: 0,
+      credit: 0,
+    }
+    for (const row of paymentMethodRows) {
+      byPaymentMethod[row.paymentMethod] = row.count
     }
 
-    const byStatus = {
-      completed: this.sales.filter(s => s.status === 'completed').length,
-      refunded: this.sales.filter(s => s.status === 'refunded').length,
-      partial_refund: this.sales.filter(s => s.status === 'partial_refund').length,
+    // 3. By status
+    const statusRows = await this.drizzle.db
+      .select({
+        status: sales.status,
+        count: count(),
+      })
+      .from(sales)
+      .groupBy(sales.status)
+
+    const byStatus: Record<string, number> = {
+      completed: 0,
+      refunded: 0,
+      partial_refund: 0,
+    }
+    for (const row of statusRows) {
+      byStatus[row.status] = row.count
     }
 
-    // Date calculations
-    const now = new Date()
-    const today = now.toISOString().split('T')[0]
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    // 4. Today's sales
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
 
-    const todaySales = this.sales.filter(s => s.createdAt.startsWith(today))
-    const thisWeekSales = this.sales.filter(s => s.createdAt >= weekAgo)
+    const [todayAggregate] = await this.drizzle.db
+      .select({
+        count: count(),
+        revenue: sql<number>`cast(coalesce(sum(${sales.total}), 0) as double precision)`,
+      })
+      .from(sales)
+      .where(gte(sales.createdAt, todayStart))
+
+    // 5. This week's sales
+    const weekStart = new Date()
+    weekStart.setDate(weekStart.getDate() - 7)
+    weekStart.setHours(0, 0, 0, 0)
+
+    const [weekAggregate] = await this.drizzle.db
+      .select({
+        count: count(),
+        revenue: sql<number>`cast(coalesce(sum(${sales.total}), 0) as double precision)`,
+      })
+      .from(sales)
+      .where(gte(sales.createdAt, weekStart))
 
     return {
       totalSales,
       totalRevenue,
       averageOrderValue,
-      byPaymentMethod,
-      byStatus,
-      todaySales: todaySales.length,
-      todayRevenue: todaySales.reduce((sum, s) => sum + s.total, 0),
-      thisWeekSales: thisWeekSales.length,
-      thisWeekRevenue: thisWeekSales.reduce((sum, s) => sum + s.total, 0),
+      byPaymentMethod: {
+        cash: byPaymentMethod['cash'] ?? 0,
+        card: byPaymentMethod['card'] ?? 0,
+        transfer: byPaymentMethod['transfer'] ?? 0,
+        credit: byPaymentMethod['credit'] ?? 0,
+      },
+      byStatus: {
+        completed: byStatus['completed'] ?? 0,
+        refunded: byStatus['refunded'] ?? 0,
+        partial_refund: byStatus['partial_refund'] ?? 0,
+      },
+      todaySales: todayAggregate.count,
+      todayRevenue: todayAggregate.revenue,
+      thisWeekSales: weekAggregate.count,
+      thisWeekRevenue: weekAggregate.revenue,
     }
+  }
+
+  async create(dto: Record<string, unknown>) {
+    const { items, ...saleData } = dto as {
+      items?: Record<string, unknown>[]
+      [key: string]: unknown
+    }
+
+    return await this.drizzle.db.transaction(async tx => {
+      const [sale] = await tx
+        .insert(sales)
+        .values(saleData as typeof sales.$inferInsert)
+        .returning()
+
+      const insertedItems =
+        items && items.length > 0
+          ? await tx
+              .insert(saleItems)
+              .values(
+                items.map(item => ({ ...(item as typeof saleItems.$inferInsert), saleId: sale.id }))
+              )
+              .returning()
+          : []
+
+      return { ...sale, items: insertedItems }
+    })
+  }
+
+  async update(id: number, dto: Record<string, unknown>) {
+    const rows = await this.drizzle.db
+      .update(sales)
+      .set({ ...(dto as Partial<typeof sales.$inferInsert>), updatedAt: new Date() })
+      .where(eq(sales.id, id))
+      .returning()
+
+    if (!rows[0]) {
+      throw new NotFoundException(`Sale with ID ${id} not found`)
+    }
+
+    return rows[0]
+  }
+
+  async remove(id: number) {
+    const rows = await this.drizzle.db.delete(sales).where(eq(sales.id, id)).returning()
+
+    if (!rows[0]) {
+      throw new NotFoundException(`Sale with ID ${id} not found`)
+    }
+
+    return rows[0]
   }
 }

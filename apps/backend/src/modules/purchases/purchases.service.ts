@@ -1,99 +1,216 @@
-import { Injectable } from '@nestjs/common'
-import { Purchase } from '../../data/types'
-import { seedAll } from '../../data/seed'
-import { PaginatedResponseDto, paginate } from '../../common/dto/paginated-response.dto'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { eq, ilike, or, and, gte, lte, desc, asc, count, sql, Column } from 'drizzle-orm'
+import { DrizzleService } from '../../db/index'
+import { purchases, purchaseItems } from '../../db/schema'
+import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
 import { PurchaseQueryDto } from './dto/purchase-query.dto'
 
 @Injectable()
 export class PurchasesService {
-  private purchases: Purchase[]
+  constructor(private readonly drizzle: DrizzleService) {}
 
-  constructor() {
-    // Initialize once at startup
-    const { purchases } = seedAll()
-    this.purchases = purchases
-  }
+  async findAll(
+    query: PurchaseQueryDto
+  ): Promise<PaginatedResponseDto<typeof purchases.$inferSelect>> {
+    const page = query.page ?? 1
+    const limit = query.limit ?? 20
+    const offset = (page - 1) * limit
 
-  findAll(query: PurchaseQueryDto): PaginatedResponseDto<Purchase> {
-    let filtered = [...this.purchases]
+    const conditions = []
 
-    // Text search (purchaseNumber, supplierName)
     if (query.search) {
-      const search = query.search.toLowerCase()
-      filtered = filtered.filter(
-        p =>
-          p.purchaseNumber.toLowerCase().includes(search) ||
-          p.supplierName.toLowerCase().includes(search)
+      const pattern = `%${query.search}%`
+      conditions.push(
+        or(ilike(purchases.purchaseNumber, pattern), ilike(purchases.supplierName, pattern))
       )
     }
 
-    // Filter by status
     if (query.status) {
-      filtered = filtered.filter(p => p.status === query.status)
+      conditions.push(eq(purchases.status, query.status))
     }
 
-    // Filter by supplierId
     if (query.supplierId !== undefined) {
-      filtered = filtered.filter(p => p.supplierId === query.supplierId)
+      conditions.push(eq(purchases.supplierId, query.supplierId))
     }
 
-    // Filter by total range
     if (query.minTotal !== undefined) {
-      filtered = filtered.filter(p => p.total >= query.minTotal!)
+      conditions.push(gte(purchases.total, query.minTotal))
     }
+
     if (query.maxTotal !== undefined) {
-      filtered = filtered.filter(p => p.total <= query.maxTotal!)
+      conditions.push(lte(purchases.total, query.maxTotal))
     }
 
-    // Filter by date range
     if (query.startDate) {
-      filtered = filtered.filter(p => p.createdAt >= query.startDate!)
-    }
-    if (query.endDate) {
-      filtered = filtered.filter(p => p.createdAt <= query.endDate!)
+      conditions.push(gte(purchases.createdAt, new Date(query.startDate)))
     }
 
-    // Sorting
+    if (query.endDate) {
+      conditions.push(lte(purchases.createdAt, new Date(query.endDate)))
+    }
+
+    const where = conditions.length > 0 ? and(...conditions) : undefined
+
+    // Count query
+    const [{ total }] = await this.drizzle.db
+      .select({ total: count() })
+      .from(purchases)
+      .where(where)
+
+    // Build order by
+    const colMap: Record<string, Column> = {
+      id: purchases.id,
+      purchaseNumber: purchases.purchaseNumber,
+      supplierName: purchases.supplierName,
+      subtotal: purchases.subtotal,
+      tax: purchases.tax,
+      total: purchases.total,
+      status: purchases.status,
+      expectedDelivery: purchases.expectedDelivery,
+      createdAt: purchases.createdAt,
+      updatedAt: purchases.updatedAt,
+    }
+
+    let orderBy = desc(purchases.createdAt)
     if (query.sort) {
       const descending = query.sort.startsWith('-')
       const field = descending ? query.sort.slice(1) : query.sort
-      filtered.sort((a, b) => {
-        const aVal = a[field as keyof Purchase]
-        const bVal = b[field as keyof Purchase]
-        if (aVal < bVal) return descending ? 1 : -1
-        if (aVal > bVal) return descending ? -1 : 1
-        return 0
-      })
+      const col = colMap[field]
+      if (col) {
+        orderBy = descending ? desc(col) : asc(col)
+      }
     }
 
-    // Paginate using helper from common/dto
-    return paginate(filtered, query)
+    // Data query
+    const data = await this.drizzle.db
+      .select()
+      .from(purchases)
+      .where(where)
+      .orderBy(orderBy)
+      .limit(limit)
+      .offset(offset)
+
+    const totalPages = Math.ceil(total / limit)
+
+    return new PaginatedResponseDto(data, { total, page, limit, totalPages })
   }
 
-  findOne(id: number): Purchase | null {
-    return this.purchases.find(p => p.id === id) || null
+  async findOne(id: number) {
+    const purchaseRows = await this.drizzle.db.select().from(purchases).where(eq(purchases.id, id))
+
+    if (!purchaseRows[0]) {
+      return null
+    }
+
+    const items = await this.drizzle.db
+      .select()
+      .from(purchaseItems)
+      .where(eq(purchaseItems.purchaseId, id))
+
+    return { ...purchaseRows[0], items }
   }
 
-  getStats() {
-    const totalPurchases = this.purchases.length
-    const totalSpent = this.purchases.reduce((sum, p) => sum + p.total, 0)
+  async getStats() {
+    // 1. Total count + total spent
+    const [aggregate] = await this.drizzle.db
+      .select({
+        totalPurchases: count(),
+        totalSpent: sql<number>`cast(coalesce(sum(${purchases.total}), 0) as double precision)`,
+      })
+      .from(purchases)
 
-    const pendingOrders = this.purchases.filter(p => p.status === 'ordered')
-    const pendingValue = pendingOrders.reduce((sum, p) => sum + p.total, 0)
+    // 2. Pending orders (status = 'ordered')
+    const [pendingAggregate] = await this.drizzle.db
+      .select({
+        pendingOrders: count(),
+        pendingValue: sql<number>`cast(coalesce(sum(${purchases.total}), 0) as double precision)`,
+      })
+      .from(purchases)
+      .where(eq(purchases.status, 'ordered'))
 
-    const byStatus = {
-      draft: this.purchases.filter(p => p.status === 'draft').length,
-      ordered: this.purchases.filter(p => p.status === 'ordered').length,
-      received: this.purchases.filter(p => p.status === 'received').length,
-      cancelled: this.purchases.filter(p => p.status === 'cancelled').length,
+    // 3. By status
+    const statusRows = await this.drizzle.db
+      .select({
+        status: purchases.status,
+        count: count(),
+      })
+      .from(purchases)
+      .groupBy(purchases.status)
+
+    const byStatus: Record<string, number> = {
+      draft: 0,
+      ordered: 0,
+      received: 0,
+      cancelled: 0,
+    }
+    for (const row of statusRows) {
+      byStatus[row.status] = row.count
     }
 
     return {
-      totalPurchases,
-      totalSpent,
-      pendingOrders: pendingOrders.length,
-      pendingValue,
-      byStatus,
+      totalPurchases: aggregate.totalPurchases,
+      totalSpent: aggregate.totalSpent,
+      pendingOrders: pendingAggregate.pendingOrders,
+      pendingValue: pendingAggregate.pendingValue,
+      byStatus: {
+        draft: byStatus['draft'] ?? 0,
+        ordered: byStatus['ordered'] ?? 0,
+        received: byStatus['received'] ?? 0,
+        cancelled: byStatus['cancelled'] ?? 0,
+      },
     }
+  }
+
+  async create(dto: Record<string, unknown>) {
+    const { items, ...purchaseData } = dto as {
+      items?: Record<string, unknown>[]
+      [key: string]: unknown
+    }
+
+    return await this.drizzle.db.transaction(async tx => {
+      const [purchase] = await tx
+        .insert(purchases)
+        .values(purchaseData as typeof purchases.$inferInsert)
+        .returning()
+
+      const insertedItems =
+        items && items.length > 0
+          ? await tx
+              .insert(purchaseItems)
+              .values(
+                items.map(item => ({
+                  ...(item as typeof purchaseItems.$inferInsert),
+                  purchaseId: purchase.id,
+                }))
+              )
+              .returning()
+          : []
+
+      return { ...purchase, items: insertedItems }
+    })
+  }
+
+  async update(id: number, dto: Record<string, unknown>) {
+    const rows = await this.drizzle.db
+      .update(purchases)
+      .set({ ...(dto as Partial<typeof purchases.$inferInsert>), updatedAt: new Date() })
+      .where(eq(purchases.id, id))
+      .returning()
+
+    if (!rows[0]) {
+      throw new NotFoundException(`Purchase with ID ${id} not found`)
+    }
+
+    return rows[0]
+  }
+
+  async remove(id: number) {
+    const rows = await this.drizzle.db.delete(purchases).where(eq(purchases.id, id)).returning()
+
+    if (!rows[0]) {
+      throw new NotFoundException(`Purchase with ID ${id} not found`)
+    }
+
+    return rows[0]
   }
 }
