@@ -37,7 +37,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 ### Dashboard
 
 - [ ] **DASH-01**: Dashboard displays key metrics (sales, inventory, orders)
-- [ ] **DASH-02**: Dashboard shows realistic operational data from backend
+- [x] **DASH-02**: Dashboard shows realistic operational data from backend
 - [ ] **DASH-03**: Dashboard demonstrates layout density (not empty states)
 
 ### Backend & API
@@ -162,7 +162,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-04       | Phase 3, Phase 4, Phase 8 | Pending  |
 | UI-05       | Phase 1                   | Complete |
 | DASH-01     | Phase 3, Phase 7, Phase 8 | Pending  |
-| DASH-02     | Phase 3, Phase 7, Phase 8 | Pending  |
+| DASH-02     | Phase 3, Phase 7, Phase 8 | Complete |
 | DASH-03     | Phase 3, Phase 8          | Pending  |
 | API-01      | Phase 2                   | Complete |
 | API-02      | Phase 2                   | Complete |

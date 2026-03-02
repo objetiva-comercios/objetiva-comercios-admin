@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: '2026-03-02T15:16:50.685Z'
+status: in_progress
+last_updated: '2026-03-02T16:35:00.000Z'
 progress:
-  total_phases: 6
+  total_phases: 8
   completed_phases: 6
-  total_plans: 28
-  completed_plans: 28
+  total_plans: 31
+  completed_plans: 29
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 6: Polish Production — In Progress
+**Current focus:** Phase 7: Fix Integration Bugs — In Progress
 
 ## Current Position
 
-Phase: 6 of 6 (Polish Production)
-Plan: 4 of 4
-Status: Complete
-Last activity: 2026-03-02 — Completed 06-04 (Mobile Touch Targets)
+Phase: 7 of 8 (Fix Integration Bugs)
+Plan: 1 of 1 complete
+Status: In Progress
+Last activity: 2026-03-02 — Completed 07-01 (Backend Data Layer Fix)
 
-Progress: [██████████] 100% (28/28 total plans)
+Progress: [█████████░] 94% (29/31 total plans)
 
 ## Performance Metrics
 
@@ -232,6 +232,9 @@ Recent decisions affecting current work:
 - [Phase 06-polish-production]: zod as runtime dep in @objetiva/types — schemas are runtime artifacts, not just types
 - [Phase 06-polish-production]: Mobile validation uses emailSchema.safeParse() manually — preserves mobile plain controlled input pattern
 - [Phase 06-polish-production]: Business settings as Server Component — loads user_metadata at render time without client flicker
+- [Phase 07-01]: inArray with empty-array guard (length > 0) prevents invalid SQL when findAll returns zero rows on a page
+- [Phase 07-01]: status extracted to variable in purchase generator so receivedAt can conditionally reference it before return statement
+- [Phase 07-01]: reorderPoint = minStock — same business concept, avoids redundant faker call
 
 ### Pending Todos
 
@@ -253,10 +256,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 6 Plan 04 executed)
-Stopped at: Completed 06-04-PLAN.md (Mobile Touch Targets)
+Last session: 2026-03-02 (Phase 7 Plan 01 executed)
+Stopped at: Completed 07-01-PLAN.md (Backend Data Layer Fix)
 Resume file: None
-Next up: All plans complete — Phase 6 and project milestone v1.0 complete
+Next up: Phase 7 complete — proceed to Phase 8 if planned, or verify frontend integration
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -277,6 +280,8 @@ Next up: All plans complete — Phase 6 and project milestone v1.0 complete
 **Phase 6 Plan 01 Achievement:** Backend RBAC implemented — AppRole type ('admin'|'viewer') in shared types package, @Roles() decorator + RolesGuard, fixed critical JWT extraction bug (app_metadata.role not payload.role), all 13 write endpoints (POST/PATCH/DELETE) across 5 controllers now require admin role; AUTH-06 requirement satisfied
 
 **Phase 6 Plan 02 Achievement:** Error resilience complete — 7 web error.tsx files (Next.js App Router per-section error boundaries), react-error-boundary wrapping all 8 mobile page routes with SectionErrorFallback, @capacitor/network offline detection with useNetworkStatus hook, thin yellow OfflineBanner auto-dismissing on reconnect, TanStack Query exponential backoff retry (1s, 2s, 4s... max 30s)
+
+**Phase 7 Plan 01 Achievement:** Backend data layer fixed — 8 phantom columns added to orders/purchases/inventory tables via Drizzle migration (0001_brief_reaper.sql), all 3 generators updated with new fields, seed script maps new fields to inserts, both findAll services now batch-load items via inArray query so OrderSheet/PurchaseSheet stop crashing
 
 **Phase 6 Plan 04 Achievement (PHASE 6 COMPLETE):** All 5 mobile navigation and UI components audited and fixed — BottomTabs min-h-[44px] (was py-2 ~36px), AppHeader menu button min-h-[44px] min-w-[44px] (was p-1 ~32px), DrawerNav items + logout min-h-[44px] (were borderline py-3), FilterChips buttons min-h-[44px] flex items-center (was py-1.5 ~30px), tappable Card min-h-[44px]; all other interactive elements in pages already compliant; Phase 6 success criterion #4 satisfied
 
