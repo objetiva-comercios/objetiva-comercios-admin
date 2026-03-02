@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core'
 import { jwtVerify, createRemoteJWKSet } from 'jose'
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator'
 import { AuthenticatedRequest, AuthenticatedUser } from '../../auth/auth.types'
+import { AppRole } from '@objetiva/types'
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -61,7 +62,7 @@ export class JwtAuthGuard implements CanActivate {
     return {
       userId: payload.sub ?? '',
       email: (payload.email as string) ?? '',
-      role: (payload.role as string) ?? 'authenticated',
+      role: (payload.app_metadata?.role as AppRole) ?? 'viewer',
     }
   }
 }

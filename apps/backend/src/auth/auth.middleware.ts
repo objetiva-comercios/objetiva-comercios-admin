@@ -2,6 +2,7 @@ import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/commo
 import { Response, NextFunction } from 'express'
 import { jwtVerify, createRemoteJWKSet, JWTPayload } from 'jose'
 import { AuthenticatedRequest, AuthenticatedUser } from './auth.types'
+import { AppRole } from '@objetiva/types'
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -46,7 +47,7 @@ export class AuthMiddleware implements NestMiddleware {
     return {
       userId: payload.sub ?? '',
       email: (payload.email as string) ?? '',
-      role: (payload.role as string) ?? 'authenticated',
+      role: ((payload as any).app_metadata?.role as AppRole) ?? 'viewer',
     }
   }
 }
