@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { AppHeader } from './AppHeader'
 import { BottomTabs } from './BottomTabs'
 import { DrawerNav } from './DrawerNav'
+import { OfflineBanner } from '../OfflineBanner'
 
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -10,6 +11,7 @@ export function AppShell() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader onMenuOpen={() => setDrawerOpen(true)} />
+      <OfflineBanner />
       <main className="flex-1 overflow-y-auto pb-20">
         <Outlet />
       </main>
