@@ -141,9 +141,9 @@ Plans:
 
 Plans:
 
-- [ ] 05-01-PLAN.md — Drizzle setup, schema definition (8 tables), migration generation, and seed script
-- [ ] 05-02-PLAN.md — Migrate all 5 domain services to Drizzle DB queries and add CRUD endpoints
-- [ ] 05-03-PLAN.md — Dashboard async migration, mock data cleanup, and build verification
+- [x] 05-01-PLAN.md — Drizzle setup, schema definition (8 tables), migration generation, and seed script
+- [x] 05-02-PLAN.md — Migrate all 5 domain services to Drizzle DB queries and add CRUD endpoints
+- [x] 05-03-PLAN.md — Dashboard async migration, mock data cleanup, and build verification
 
 ### Phase 6: Polish & Production
 
@@ -159,14 +159,13 @@ Plans:
 5. Web app loads under 3 seconds on 3G connection
 6. All forms validate input and show helpful error messages
 7. Application handles offline scenarios gracefully on mobile
-   **Plans**: 4 plans in 3 waves
+   **Plans**: 3 plans in 2 waves
 
 Plans:
 
-- [x] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
-- [x] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
-- [x] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
-- [x] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
+- [ ] 06-01-PLAN.md — RBAC backend infrastructure (JWT fix, @Roles decorator, RolesGuard, controller enforcement)
+- [ ] 06-02-PLAN.md — Error boundaries (web error.tsx, mobile react-error-boundary) and mobile offline detection
+- [ ] 06-03-PLAN.md — Form validation (shared schemas, password strength), business settings form, and bundle analysis
 
 ## Progress
 
@@ -180,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Web Application            | 0/8            | In Progress | -          |
 | 4. Mobile Application         | 4/4            | Complete    | 2026-03-02 |
 | 5. Database Integration       | 3/3            | Complete    | 2026-03-02 |
-| 6. Polish & Production        | 0/?            | Not started | -          |
+| 6. Polish & Production        | 0/3            | Not started | -          |
 
 ---
 
