@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-02T14:57:29.384Z'
+last_updated: '2026-03-02T15:11:13.526Z'
 progress:
   total_phases: 6
   completed_phases: 6
@@ -62,6 +62,7 @@ _Updated after each plan completion_
 | Phase 06-polish-production P01 | 4 | 2 tasks | 11 files |
 | Phase 06-polish-production P02 | 4 | 3 tasks | 13 files |
 | Phase 06-polish-production P04 | 6 | 2 tasks | 5 files |
+| Phase 06-polish-production P03 | 10 | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -228,6 +229,9 @@ Recent decisions affecting current work:
 - [Phase 06-polish-production]: Thin yellow OfflineBanner (not modal) for offline indicator — non-intrusive, auto-dismisses when isOnline returns true
 - [Phase 06-polish-production]: min-h-[44px] over py padding for touch targets: guarantees 44px minimum regardless of future content changes; padding-based sizing is fragile
 - [Phase 06-polish-production]: Non-tappable Cards excluded from min-h-[44px]: display-only cards are not interactive and need no touch target minimum
+- [Phase 06-polish-production]: zod as runtime dep in @objetiva/types — schemas are runtime artifacts, not just types
+- [Phase 06-polish-production]: Mobile validation uses emailSchema.safeParse() manually — preserves mobile plain controlled input pattern
+- [Phase 06-polish-production]: Business settings as Server Component — loads user_metadata at render time without client flicker
 
 ### Pending Todos
 
