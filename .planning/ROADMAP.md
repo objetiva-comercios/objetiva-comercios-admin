@@ -159,13 +159,14 @@ Plans:
 5. Web app loads under 3 seconds on 3G connection
 6. All forms validate input and show helpful error messages
 7. Application handles offline scenarios gracefully on mobile
-   **Plans**: 3 plans in 2 waves
+   **Plans**: 4 plans in 2 waves
 
 Plans:
 
 - [ ] 06-01-PLAN.md — RBAC backend infrastructure (JWT fix, @Roles decorator, RolesGuard, controller enforcement)
 - [ ] 06-02-PLAN.md — Error boundaries (web error.tsx, mobile react-error-boundary) and mobile offline detection
-- [ ] 06-03-PLAN.md — Form validation (shared schemas, password strength), business settings form, and bundle analysis
+- [ ] 06-03-PLAN.md — Form validation (shared schemas, password strength), business settings form, bundle analysis, and Lighthouse measurement
+- [ ] 06-04-PLAN.md — Mobile touch target audit and fixes (44x44px minimum on all interactive elements)
 
 ## Progress
 
@@ -179,7 +180,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Web Application            | 0/8            | In Progress | -          |
 | 4. Mobile Application         | 4/4            | Complete    | 2026-03-02 |
 | 5. Database Integration       | 3/3            | Complete    | 2026-03-02 |
-| 6. Polish & Production        | 0/3            | Not started | -          |
+| 6. Polish & Production        | 0/4            | Not started | -          |
 
 ---
 
