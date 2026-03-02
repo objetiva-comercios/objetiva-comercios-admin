@@ -40,17 +40,16 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/signup') ||
     pathname.startsWith('/auth/callback')
 
-  // Protected routes that require authentication
-  const isProtectedRoute = pathname.startsWith('/dashboard')
-
   // If user is authenticated and trying to access auth pages, redirect to dashboard
   if (user && isPublicRoute && !pathname.startsWith('/auth/callback')) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // If user is not authenticated and trying to access protected routes, redirect to login
-  if (!user && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // Unauthenticated user on ANY non-public route -> redirect to login with returnTo
+  if (!user && !isPublicRoute) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('returnTo', pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
   return supabaseResponse
