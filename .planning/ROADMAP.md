@@ -119,10 +119,10 @@ Plans:
 
 Plans:
 
-- [ ] 04-01-PLAN.md - Capacitor setup, auth infrastructure & app entry (HashRouter, Supabase client, Login/Signup, SplashGate)
-- [ ] 04-02-PLAN.md - Navigation shell & Dashboard (BottomTabs, AppHeader, DrawerNav, AppShell, Dashboard KPIs)
-- [ ] 04-03-PLAN.md - Shared UI components & primary section pages (Card, StatusBadge, FilterChips, BottomSheet, Articles, Orders, Inventory)
-- [ ] 04-04-PLAN.md - Secondary sections, settings & verification (Sales, Purchases, Profile, Settings, human checkpoint)
+- [x] 04-01-PLAN.md - Capacitor setup, auth infrastructure & app entry (HashRouter, Supabase client, Login/Signup, SplashGate)
+- [x] 04-02-PLAN.md - Navigation shell & Dashboard (BottomTabs, AppHeader, DrawerNav, AppShell, Dashboard KPIs)
+- [x] 04-03-PLAN.md - Shared UI components & primary section pages (Card, StatusBadge, FilterChips, BottomSheet, Articles, Orders, Inventory)
+- [x] 04-04-PLAN.md - Secondary sections, settings & verification (Sales, Purchases, Profile, Settings, human checkpoint)
 
 ### Phase 5: Database Integration
 
@@ -137,14 +137,13 @@ Plans:
 4. Database is seeded with 500+ realistic products and related data
 5. Frontend applications continue working without code changes
 6. CRUD operations persist data correctly across sessions
-   **Plans**: 4 plans in 3 waves
+   **Plans**: 3 plans in 3 waves
 
 Plans:
 
-- [x] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
-- [x] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
-- [x] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
-- [x] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
+- [ ] 05-01-PLAN.md — Drizzle setup, schema definition (8 tables), migration generation, and seed script
+- [ ] 05-02-PLAN.md — Migrate all 5 domain services to Drizzle DB queries and add CRUD endpoints
+- [ ] 05-03-PLAN.md — Dashboard async migration, mock data cleanup, and build verification
 
 ### Phase 6: Polish & Production
 
@@ -180,10 +179,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Backend API with Mock Data | 5/5            | Complete    | 2026-03-01 |
 | 3. Web Application            | 0/8            | In Progress | -          |
 | 4. Mobile Application         | 4/4            | Complete    | 2026-03-02 |
-| 5. Database Integration       | 0/?            | Not started | -          |
+| 5. Database Integration       | 0/3            | Not started | -          |
 | 6. Polish & Production        | 0/?            | Not started | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-01_
+_Last updated: 2026-03-02_
