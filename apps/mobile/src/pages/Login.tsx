@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { emailSchema } from '@objetiva/types'
+import { loginSchema } from '@objetiva/types'
 
 export function Login() {
   const [email, setEmail] = useState('')
@@ -14,10 +14,10 @@ export function Login() {
     setLoading(true)
     setError(null)
 
-    // Validate email format before submitting
-    const emailResult = emailSchema.safeParse(email)
-    if (!emailResult.success) {
-      setError(emailResult.error.errors[0]?.message ?? 'Please enter a valid email address')
+    // Validate email and password before submitting (works in Capacitor native mode)
+    const loginResult = loginSchema.safeParse({ email, password })
+    if (!loginResult.success) {
+      setError(loginResult.error.errors[0]?.message ?? 'Please check your credentials')
       setLoading(false)
       return
     }
