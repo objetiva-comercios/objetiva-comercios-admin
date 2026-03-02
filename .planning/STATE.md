@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-last_updated: '2026-03-02T16:35:00.000Z'
+status: unknown
+last_updated: '2026-03-02T16:44:44.801Z'
 progress:
   total_phases: 8
-  completed_phases: 6
-  total_plans: 31
-  completed_plans: 29
+  completed_phases: 7
+  total_plans: 30
+  completed_plans: 30
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 7: Fix Integration Bugs — In Progress
+**Current focus:** Phase 7: Fix Integration Bugs — Complete
 
 ## Current Position
 
 Phase: 7 of 8 (Fix Integration Bugs)
-Plan: 1 of 1 complete
-Status: In Progress
-Last activity: 2026-03-02 — Completed 07-01 (Backend Data Layer Fix)
+Plan: 2 of 2 complete
+Status: Phase 7 Complete
+Last activity: 2026-03-02 — Completed 07-02 (Frontend Type Alignment, Purchases KPI, Deny-by-Default Auth)
 
-Progress: [█████████░] 94% (29/31 total plans)
+Progress: [█████████░] 97% (31/32 total plans)
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ _Updated after each plan completion_
 | Phase 06-polish-production P02 | 4 | 3 tasks | 13 files |
 | Phase 06-polish-production P04 | 6 | 2 tasks | 5 files |
 | Phase 06-polish-production P03 | 10 | 3 tasks | 9 files |
+| Phase 07-fix-integration-bugs P02 | 6 | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -235,6 +236,8 @@ Recent decisions affecting current work:
 - [Phase 07-01]: inArray with empty-array guard (length > 0) prevents invalid SQL when findAll returns zero rows on a page
 - [Phase 07-01]: status extracted to variable in purchase generator so receivedAt can conditionally reference it before return statement
 - [Phase 07-01]: reorderPoint = minStock — same business concept, avoids redundant faker call
+- [Phase 07-02]: Suspense boundary wrapping LoginForm sub-component isolates useSearchParams for Next.js 14 static prerender compatibility
+- [Phase 07-02]: Deny-by-default middleware: maintain isPublicRoute whitelist (not isProtectedRoute list) so all new routes are protected automatically
 
 ### Pending Todos
 
@@ -256,10 +259,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 7 Plan 01 executed)
-Stopped at: Completed 07-01-PLAN.md (Backend Data Layer Fix)
+Last session: 2026-03-02 (Phase 7 Plan 02 executed)
+Stopped at: Completed 07-02-PLAN.md (Frontend Type Alignment, Purchases KPI, Deny-by-Default Auth)
 Resume file: None
-Next up: Phase 7 complete — proceed to Phase 8 if planned, or verify frontend integration
+Next up: Phase 7 complete — proceed to Phase 8 (final validation/deployment) or end of milestone
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -283,9 +286,11 @@ Next up: Phase 7 complete — proceed to Phase 8 if planned, or verify frontend 
 
 **Phase 7 Plan 01 Achievement:** Backend data layer fixed — 8 phantom columns added to orders/purchases/inventory tables via Drizzle migration (0001_brief_reaper.sql), all 3 generators updated with new fields, seed script maps new fields to inserts, both findAll services now batch-load items via inArray query so OrderSheet/PurchaseSheet stop crashing
 
+**Phase 7 Plan 02 Achievement (PHASE 7 COMPLETE):** Frontend types aligned with backend — DashboardResponse includes purchases field in web and mobile, Pending Purchases KPI card added to web (5th stat card, lg:grid-cols-5) and mobile dashboards, deny-by-default auth middleware replaces isProtectedRoute whitelist with !isPublicRoute (all routes protected except /login, /signup, /auth/callback), login page reads returnTo param and redirects there post-auth, DATABASE_URL documented in .env.example
+
 **Phase 6 Plan 04 Achievement (PHASE 6 COMPLETE):** All 5 mobile navigation and UI components audited and fixed — BottomTabs min-h-[44px] (was py-2 ~36px), AppHeader menu button min-h-[44px] min-w-[44px] (was p-1 ~32px), DrawerNav items + logout min-h-[44px] (were borderline py-3), FilterChips buttons min-h-[44px] flex items-center (was py-1.5 ~30px), tappable Card min-h-[44px]; all other interactive elements in pages already compliant; Phase 6 success criterion #4 satisfied
 
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-02 (05-03 complete — Phase 5 complete)_
+_Last updated: 2026-03-02 (07-02 complete — Phase 7 complete)_
