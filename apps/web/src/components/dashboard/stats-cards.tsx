@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DollarSign, ShoppingCart, Package, TrendingUp } from 'lucide-react'
+import { DollarSign, ShoppingCart, Package, TrendingUp, Truck } from 'lucide-react'
 import type { DashboardStats } from '@/types/dashboard'
 
 interface StatsCardsProps {
   stats: DashboardStats
+  purchases: { pendingOrders: number; pendingValue: number }
 }
 
-export function StatsCards({ stats }: StatsCardsProps) {
+export function StatsCards({ stats, purchases }: StatsCardsProps) {
   const cards = [
     {
       title: 'Total Revenue',
@@ -36,10 +37,17 @@ export function StatsCards({ stats }: StatsCardsProps) {
       description: `${stats.todaySales} today`,
       iconColor: 'text-orange-600',
     },
+    {
+      title: 'Pending Purchases',
+      value: formatNumber(purchases.pendingOrders),
+      icon: Truck,
+      description: `${formatCurrency(purchases.pendingValue)} pending value`,
+      iconColor: 'text-amber-600',
+    },
   ]
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       {cards.map(card => (
         <Card key={card.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

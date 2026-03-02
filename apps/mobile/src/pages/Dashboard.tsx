@@ -112,7 +112,7 @@ export function Dashboard() {
     )
   }
 
-  const { stats, lowStockItems, recentOrders } = data
+  const { stats, purchases, lowStockItems, recentOrders } = data
 
   return (
     <div className="p-4 space-y-6">
@@ -139,6 +139,20 @@ export function Dashboard() {
           <TrendingUp size={20} className="text-primary mb-2" />
           <p className="text-xs text-muted-foreground mb-1">Today&apos;s Sales</p>
           <p className="text-2xl font-bold text-foreground">{stats.todaySales}</p>
+        </div>
+      </div>
+
+      {/* Pending Purchases */}
+      <div className="bg-card rounded-lg p-4 border border-border flex items-center justify-between">
+        <div>
+          <p className="text-xs text-muted-foreground mb-1">Pending Purchases</p>
+          <p className="text-2xl font-bold text-foreground">{purchases.pendingOrders}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground mb-1">Pending Value</p>
+          <p className="text-lg font-semibold text-foreground">
+            {currency.format(purchases.pendingValue)}
+          </p>
         </div>
       </div>
 

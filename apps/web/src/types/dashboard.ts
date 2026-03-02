@@ -30,6 +30,10 @@ export interface RecentOrder {
 
 export interface DashboardResponse {
   stats: DashboardStats
+  purchases: {
+    pendingOrders: number
+    pendingValue: number
+  }
   lowStockItems: LowStockItem[]
   recentOrders: RecentOrder[]
 }
