@@ -14,7 +14,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **AUTH-03**: User session persists across browser/app refresh
 - [ ] **AUTH-04**: User can log out from any page
 - [ ] **AUTH-05**: Backend validates JWT tokens from Supabase on every request
-- [ ] **AUTH-06**: User roles and permissions system (RBAC) implemented
+- [x] **AUTH-06**: User roles and permissions system (RBAC) implemented
 
 ### Navigation & Layout
 
@@ -148,7 +148,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03     | Phase 3          | Pending  |
 | AUTH-04     | Phase 3          | Pending  |
 | AUTH-05     | Phase 1          | Complete |
-| AUTH-06     | Phase 6          | Pending  |
+| AUTH-06     | Phase 6          | Complete |
 | NAV-01      | Phase 4          | Complete |
 | NAV-02      | Phase 4          | Complete |
 | NAV-03      | Phase 3          | Pending  |

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-02T03:49:45.478Z'
+last_updated: '2026-03-02T14:45:15.955Z'
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 5
-  total_plans: 24
-  completed_plans: 24
+  total_plans: 28
+  completed_plans: 25
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 5: Database Integration — In Progress
+**Current focus:** Phase 6: Polish Production — In Progress
 
 ## Current Position
 
-Phase: 5 of 6 (Database Integration)
-Plan: 3 of 3
-Status: Complete
-Last activity: 2026-03-02 — Completed 05-03 (Dashboard Migration and Mock Data Removal)
+Phase: 6 of 6 (Polish Production)
+Plan: 1 of 4
+Status: In Progress
+Last activity: 2026-03-02 — Completed 06-01 (Backend RBAC Implementation)
 
-Progress: [█████████░] 89% (24/27 total plans)
+Progress: [█████████░] 89% (25/28 total plans)
 
 ## Performance Metrics
 
@@ -59,6 +59,7 @@ _Updated after each plan completion_
 | Phase 05-database-integration P01 | 4 | 3 tasks | 10 files |
 | Phase 05-database-integration P02 | 6 | 2 tasks | 11 files |
 | Phase 05-database-integration P03 | 5 | 2 tasks | 7 files |
+| Phase 06-polish-production P01 | 4 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -217,6 +218,9 @@ Recent decisions affecting current work:
 - [Phase 05-02]: Dashboard getKpis() converted to async with Promise.all: required fix after all services became async
 - [Phase 05-03]: Generator files relocated to src/db/generators/ (Option A): preserves existing faker logic, clean db tooling co-location
 - [Phase 05-03]: Local Generated\* interfaces in generator files (not schema $inferInsert): generators return ISO string dates, schema Insert types expect Date objects
+- [Phase 06-polish-production]: Per-endpoint guard pattern: @UseGuards(RolesGuard) applied only to write endpoints; GET endpoints unannotated and open to all authenticated users
+- [Phase 06-polish-production]: Default role 'viewer' for new signups (app_metadata.role not set): safe default prevents unauthorized writes
+- [Phase 06-polish-production]: AppRole type in shared @objetiva/types package: enables type-safe role checks across monorepo
 
 ### Pending Todos
 
@@ -238,10 +242,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 5 Plan 03 executed)
-Stopped at: Completed 05-03-PLAN.md (Dashboard Migration and Mock Data Removal)
+Last session: 2026-03-02 (Phase 6 Plan 01 executed)
+Stopped at: Completed 06-01-PLAN.md (Backend RBAC Implementation)
 Resume file: None
-Next up: Phase 6 (next phase)
+Next up: Phase 6 Plan 02
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -258,6 +262,8 @@ Next up: Phase 6 (next phase)
 **Phase 5 Plan 02 Achievement:** All 5 domain services migrated to Drizzle — products/orders/inventory/sales/purchases now query PostgreSQL via DrizzleService with two-query pagination, findOne returns nested items array for orders/sales/purchases, getStats() uses SQL aggregation (groupBy/count/sum/coalesce), CRUD endpoints (POST/PATCH/DELETE) added to all controllers, dashboard converted to async with Promise.all; backend compiles clean with zero TypeScript errors
 
 **Phase 5 Plan 03 Achievement (PHASE COMPLETE):** Async DashboardService confirmed with Promise.all parallelizing 6 service calls, controller made explicitly async, entire src/data/ mock directory deleted, generator files relocated to src/db/generators/ with self-contained Generated\* interfaces, seed script imports updated; zero mock code remains, backend compiles clean, all 8 modules initialize correctly
+
+**Phase 6 Plan 01 Achievement:** Backend RBAC implemented — AppRole type ('admin'|'viewer') in shared types package, @Roles() decorator + RolesGuard, fixed critical JWT extraction bug (app_metadata.role not payload.role), all 13 write endpoints (POST/PATCH/DELETE) across 5 controllers now require admin role; AUTH-06 requirement satisfied
 
 ---
 
