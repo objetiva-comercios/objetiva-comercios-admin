@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-last_updated: '2026-03-02T23:39:27Z'
+status: unknown
+last_updated: '2026-03-02T23:44:36.971Z'
 progress:
-  total_phases: 9
-  completed_phases: 8
-  total_plans: 34
-  completed_plans: 34
+  total_phases: 10
+  completed_phases: 9
+  total_plans: 35
+  completed_plans: 35
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 9 of 9 (Fix Mobile Purchase & Login Bugs)
-Plan: 1 of 1 complete
-Status: Phase 9 Complete — 09-01 mobile bug fixes complete
-Last activity: 2026-03-02 — Completed 09-01 (mobile purchase types/filter/StatusBadge + login validation)
+Plan: 2 of 2 complete
+Status: Phase 9 Complete — 09-02 web purchase bug fixes complete
+Last activity: 2026-03-02 — Completed 09-02 (web purchase types/columns/sheet — draft status + subtotal field)
 
-Progress: [██████████] 100% (34/34 total plans)
+Progress: [██████████] 100% (35/35 total plans)
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ _Updated after each plan completion_
 | Phase 08-verify-close-phases-3-4 P01 | 6 | 2 tasks | 1 files |
 | Phase 08-verify-close-phases-3-4 P02 | 2 | 2 tasks | 1 files |
 | Phase 08-verify-close-phases-3-4 P03 | 2 | 2 tasks | 1 files |
+| Phase 09-fix-mobile-purchase-login-bugs P02 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -250,6 +251,7 @@ Recent decisions affecting current work:
 - [Phase 09-01]: loginSchema (email+password) replaces emailSchema-only in mobile Login — validates both fields before Supabase call, works in Capacitor native where HTML5 required is unreliable
 - [Phase 09-01]: PurchaseItem.subtotal matches purchase_items.subtotal DB column; old 'total' field was never in DB, causing NaN render in detail sheet
 - [Phase 09-01]: Purchase.status 'draft' aligns with backend DTO @IsIn(['draft','ordered','received','cancelled']); 'pending' was never valid
+- [Phase 09-02]: Gray badge for draft status (bg-gray-100 text-gray-800) — initial/inactive state, consistent with mobile StatusBadge draft mapping
 
 ### Pending Todos
 
@@ -271,10 +273,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 9 Plan 01 executed — mobile bug fixes)
-Stopped at: Completed 09-01-PLAN.md (mobile purchase types/filter/StatusBadge + login validation)
+Last session: 2026-03-02 (Phase 9 Plan 02 executed — web purchase bug fixes)
+Stopped at: Completed 09-02-PLAN.md (web purchase types/columns/sheet — draft status + subtotal field)
 Resume file: None
-Next up: Nothing — Phase 9 complete. All 34 plans across 9 phases executed.
+Next up: Nothing — Phase 9 complete. All 35 plans across 9 phases executed.
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -310,7 +312,9 @@ Next up: Nothing — Phase 9 complete. All 34 plans across 9 phases executed.
 
 **Phase 8 Plan 03 Achievement (PHASE 8 COMPLETE — v1.0 MILESTONE ACHIEVED):** ROADMAP.md updated — Phase 3 header [x], all 8 Phase 3 plan checkboxes [x], Phase 3 progress 8/8 Complete 2026-01-26, Phase 8 progress 3/3 Complete 2026-03-02; REQUIREMENTS.md was already fully updated (all 26 Phase 8 scope requirements [x] with Complete traceability); all 33 plans across all 8 phases now complete
 
-**Phase 9 Plan 01 Achievement (PHASE 9 COMPLETE):** Three mobile bug fixes — Purchase.status changed from 'pending' to 'draft' aligning with backend DTO, PurchaseItem.total renamed to PurchaseItem.subtotal matching DB column, StatusBadge draft->gray mapping added, Login.tsx switched from emailSchema to loginSchema validating both email and password before Supabase call; mobile app compiles clean, Draft filter chip returns real results, item amounts show correct MXN currency, empty password blocked in Capacitor native mode
+**Phase 9 Plan 01 Achievement:** Three mobile bug fixes — Purchase.status changed from 'pending' to 'draft' aligning with backend DTO, PurchaseItem.total renamed to PurchaseItem.subtotal matching DB column, StatusBadge draft->gray mapping added, Login.tsx switched from emailSchema to loginSchema validating both email and password before Supabase call; mobile app compiles clean, Draft filter chip returns real results, item amounts show correct MXN currency, empty password blocked in Capacitor native mode
+
+**Phase 9 Plan 02 Achievement (PHASE 9 COMPLETE):** Web purchase bug fixes — PurchaseItem.subtotal field corrected from 'total' (NaN was rendered in PurchaseSheet detail), Purchase.status 'draft' replaces 'pending' in TypeScript union, columns.tsx and purchase-sheet.tsx statusVariants/statusColors maps updated to gray badge for draft; web build passes with zero TypeScript errors (17 pages compiled)
 
 ---
 

@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Polish & Production** - Error handling, responsive refinement, RBAC, performance optimization (completed 2026-03-02)
 - [x] **Phase 7: Fix Integration Bugs & Deployment Blockers** - Fix runtime crashes, type mismatches, middleware gaps, and deployment blockers (Gap Closure) (completed 2026-03-02)
 - [x] **Phase 8: Verify & Close Phases 3+4** - Create missing VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies (Gap Closure)
-- [ ] **Phase 9: Fix Mobile Purchase & Login Bugs** - Align purchase status enum, fix PurchaseItem field name, add mobile login password validation (Gap Closure)
+- [x] **Phase 9: Fix Mobile Purchase & Login Bugs** - Align purchase status enum, fix PurchaseItem field name, add mobile login password validation (Gap Closure) (completed 2026-03-02)
 - [ ] **Phase 10: Code Quality & Type Safety Cleanup** - Remove dead code, consolidate utils, import shared schemas, fix type mismatches (Gap Closure)
 
 ## Phase Details
@@ -262,7 +262,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Polish & Production                        | 4/4            | Complete | 2026-03-02 |
 | 7. Fix Integration Bugs & Deployment Blockers | 2/2            | Complete | 2026-03-02 |
 | 8. Verify & Close Phases 3+4                  | 3/3            | Complete | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs           | 1/2            | Active   | —          |
+| 9. Fix Mobile Purchase & Login Bugs           | 2/2            | Complete | 2026-03-02 |
 | 10. Code Quality & Type Safety Cleanup        | 0/0            | Pending  | —          |
 
 ---
