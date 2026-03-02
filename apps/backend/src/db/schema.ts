@@ -49,6 +49,7 @@ export const orders = pgTable(
     status: varchar('status', { length: 20 }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    shippingAddress: text('shipping_address'),
   },
   table => [
     index('orders_status_idx').on(table.status),
@@ -95,6 +96,9 @@ export const inventory = pgTable(
     location: varchar('location', { length: 20 }).notNull(),
     lastRestocked: timestamp('last_restocked').notNull().defaultNow(),
     status: varchar('status', { length: 20 }).notNull(),
+    reservedQuantity: integer('reserved_quantity').notNull().default(0),
+    availableQuantity: integer('available_quantity').notNull().default(0),
+    reorderPoint: integer('reorder_point').notNull().default(10),
   },
   table => [index('inventory_status_idx').on(table.status)]
 )
@@ -161,6 +165,10 @@ export const purchases = pgTable(
     expectedDelivery: timestamp('expected_delivery').notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    supplierContact: text('supplier_contact'),
+    shipping: doublePrecision('shipping').notNull().default(0),
+    notes: text('notes'),
+    receivedAt: timestamp('received_at'),
   },
   table => [
     index('purchases_status_idx').on(table.status),

@@ -8,6 +8,13 @@
       "when": 1772422128557,
       "tag": "0000_open_anita_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772469220121,
+      "tag": "0001_brief_reaper",
+      "breakpoints": true
     }
   ]
 }
