@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-02T03:31:09.073Z'
+last_updated: '2026-03-02T03:39:36.878Z'
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 24
-  completed_plans: 22
+  completed_plans: 23
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 5 of 6 (Database Integration)
-Plan: 1 of 3
+Plan: 2 of 3
 Status: In Progress
-Last activity: 2026-03-02 — Completed 05-01 (Drizzle ORM Infrastructure)
+Last activity: 2026-03-02 — Completed 05-02 (Service Migration to Drizzle)
 
-Progress: [████████░░] 81% (22/27 total plans)
+Progress: [████████░░] 85% (23/27 total plans)
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ _Updated after each plan completion_
 | Phase 04-mobile-application P03 | 3 | 2 tasks | 10 files |
 | Phase 04-mobile-application P04 | 65 | 2 tasks | 5 files |
 | Phase 05-database-integration P01 | 4 | 3 tasks | 10 files |
+| Phase 05-database-integration P02 | 6 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -210,6 +211,9 @@ Recent decisions affecting current work:
 - [Phase 05-01]: doublePrecision() over numeric() for monetary fields: returns JS numbers directly, preserving API contract compatibility
 - [Phase 05-01]: Global @Global() DbModule with DRIZZLE_CLIENT token: DrizzleService available to all feature modules without explicit imports
 - [Phase 05-01]: ID map (Map<generatorId, dbId>) for seed FK resolution: generator IDs may not match DB serial IDs after TRUNCATE RESTART IDENTITY
+- [Phase 05-02]: Column map pattern (Record<string, Column>) for dynamic sort: maps query.sort field name string to actual Drizzle column reference
+- [Phase 05-02]: Two-query findOne for parent+items (not JOIN): simpler code, avoids row-multiplication, adequate performance at this scale
+- [Phase 05-02]: Dashboard getKpis() converted to async with Promise.all: required fix after all services became async
 
 ### Pending Todos
 
@@ -231,10 +235,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 5 Plan 01 executed)
-Stopped at: Completed 05-01-PLAN.md (Drizzle ORM Infrastructure)
+Last session: 2026-03-02 (Phase 5 Plan 02 executed)
+Stopped at: Completed 05-02-PLAN.md (Service Migration to Drizzle)
 Resume file: None
-Next up: Phase 5 Plan 02 (service migration — replace mock data with DB queries)
+Next up: Phase 5 Plan 03 (dashboard KPI updates and verification)
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -247,6 +251,8 @@ Next up: Phase 5 Plan 02 (service migration — replace mock data with DB querie
 **Phase 4 Plan 04 Achievement:** Complete mobile application — Sales/Purchases with delivery tracking and payment badges, Profile with Supabase account info and avatar initials, Settings with live Light/Dark/System theme switching; all 7 sections wired with real page components (no placeholders); Playwright E2E verified 74/74 checks; Phase 4 complete
 
 **Phase 5 Plan 01 Achievement:** Drizzle ORM infrastructure established — drizzle-orm + postgres.js installed, 8-table pgTable schema (products, orders, order_items, inventory, sales, sale_items, purchases, purchase_items), @Global() DbModule with DrizzleService injectable, drizzle.config.ts, CLI seed script adapting all 5 faker generators with FK resolution via idMap, initial migration SQL generated; ready for service migration in Plan 02
+
+**Phase 5 Plan 02 Achievement:** All 5 domain services migrated to Drizzle — products/orders/inventory/sales/purchases now query PostgreSQL via DrizzleService with two-query pagination, findOne returns nested items array for orders/sales/purchases, getStats() uses SQL aggregation (groupBy/count/sum/coalesce), CRUD endpoints (POST/PATCH/DELETE) added to all controllers, dashboard converted to async with Promise.all; backend compiles clean with zero TypeScript errors
 
 ---
 
