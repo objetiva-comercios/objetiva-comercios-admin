@@ -184,6 +184,12 @@ Plans:
 4. Frontend types match DB schema (no phantom fields causing silent blanks)
 5. Auth middleware protects all authenticated routes, not just /dashboard
 6. DATABASE_URL documented in .env.example for deployment
+   **Plans**: 2 plans in 2 waves
+
+Plans:
+
+- [ ] 07-01-PLAN.md — Backend data layer fixes: DB schema migration (8 phantom columns), generator/seed updates, orders/purchases findAll batch items loading
+- [ ] 07-02-PLAN.md — Frontend type alignment, dashboard purchases KPI (web + mobile), deny-by-default auth middleware with returnTo, DATABASE_URL documentation
 
 ### Phase 8: Verify & Close Phases 3+4
 
@@ -201,7 +207,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 | Phase                                         | Plans Complete | Status      | Completed  |
 | --------------------------------------------- | -------------- | ----------- | ---------- |
@@ -211,7 +217,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Mobile Application                         | 4/4            | Complete    | 2026-03-02 |
 | 5. Database Integration                       | 3/3            | Complete    | 2026-03-02 |
 | 6. Polish & Production                        | 4/4            | Complete    | 2026-03-02 |
-| 7. Fix Integration Bugs & Deployment Blockers | 0/0            | Pending     | -          |
+| 7. Fix Integration Bugs & Deployment Blockers | 0/2            | Planned     | -          |
 | 8. Verify & Close Phases 3+4                  | 0/0            | Pending     | -          |
 
 ---
