@@ -4,7 +4,7 @@ export interface PurchaseItem {
   productName: string
   quantity: number
   unitCost: number
-  total: number
+  subtotal: number
 }
 
 export interface Purchase {
@@ -17,7 +17,7 @@ export interface Purchase {
   tax: number
   shipping: number
   total: number
-  status: 'pending' | 'ordered' | 'received' | 'cancelled'
+  status: 'draft' | 'ordered' | 'received' | 'cancelled'
   expectedDelivery: string
   receivedAt: string | null
   notes: string
