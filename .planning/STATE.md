@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: '2026-03-02T19:58:37.007Z'
+status: in_progress
+last_updated: '2026-03-02T23:39:27Z'
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 8
-  total_plans: 33
-  completed_plans: 33
+  total_plans: 34
+  completed_plans: 34
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 8: Verify & Close Phases 3+4 — COMPLETE
+**Current focus:** Phase 9: Fix Mobile Purchase & Login Bugs — COMPLETE
 
 ## Current Position
 
-Phase: 8 of 8 (Verify & Close Phases 3+4)
-Plan: 3 of 3 complete
-Status: Phase 8 Complete — All 8 phases complete — v1.0 milestone achieved
-Last activity: 2026-03-02 — Completed 08-03 (ROADMAP.md and REQUIREMENTS.md data reconciliation)
+Phase: 9 of 9 (Fix Mobile Purchase & Login Bugs)
+Plan: 1 of 1 complete
+Status: Phase 9 Complete — 09-01 mobile bug fixes complete
+Last activity: 2026-03-02 — Completed 09-01 (mobile purchase types/filter/StatusBadge + login validation)
 
-Progress: [██████████] 100% (33/33 total plans)
+Progress: [██████████] 100% (34/34 total plans)
 
 ## Performance Metrics
 
@@ -247,6 +247,9 @@ Recent decisions affecting current work:
 - [Phase 08-verify-close-phases-3-4]: MONO-06 evidence is capability-based (capacitor.config.ts + package presence), not a native build attempt — native build requires macOS/Android Studio
 - [Phase 08-verify-close-phases-3-4]: Cross-platform requirements (NAV-04/05/06/07, UI-04) scoped to 03-VERIFICATION.md — not duplicated in 04-VERIFICATION.md
 - [Phase 08-verify-close-phases-3-4]: REQUIREMENTS.md was already fully updated — all 26 Phase 8 scope checkboxes were [x] prior to plan execution; only ROADMAP.md required changes
+- [Phase 09-01]: loginSchema (email+password) replaces emailSchema-only in mobile Login — validates both fields before Supabase call, works in Capacitor native where HTML5 required is unreliable
+- [Phase 09-01]: PurchaseItem.subtotal matches purchase_items.subtotal DB column; old 'total' field was never in DB, causing NaN render in detail sheet
+- [Phase 09-01]: Purchase.status 'draft' aligns with backend DTO @IsIn(['draft','ordered','received','cancelled']); 'pending' was never valid
 
 ### Pending Todos
 
@@ -268,10 +271,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 8 Plan 03 executed — all phases complete)
-Stopped at: Completed 08-03-PLAN.md (ROADMAP.md and REQUIREMENTS.md data reconciliation — FINAL PLAN)
+Last session: 2026-03-02 (Phase 9 Plan 01 executed — mobile bug fixes)
+Stopped at: Completed 09-01-PLAN.md (mobile purchase types/filter/StatusBadge + login validation)
 Resume file: None
-Next up: Nothing — v1.0 milestone complete. All 33 plans across 8 phases executed.
+Next up: Nothing — Phase 9 complete. All 34 plans across 9 phases executed.
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -307,7 +310,9 @@ Next up: Nothing — v1.0 milestone complete. All 33 plans across 8 phases execu
 
 **Phase 8 Plan 03 Achievement (PHASE 8 COMPLETE — v1.0 MILESTONE ACHIEVED):** ROADMAP.md updated — Phase 3 header [x], all 8 Phase 3 plan checkboxes [x], Phase 3 progress 8/8 Complete 2026-01-26, Phase 8 progress 3/3 Complete 2026-03-02; REQUIREMENTS.md was already fully updated (all 26 Phase 8 scope requirements [x] with Complete traceability); all 33 plans across all 8 phases now complete
 
+**Phase 9 Plan 01 Achievement (PHASE 9 COMPLETE):** Three mobile bug fixes — Purchase.status changed from 'pending' to 'draft' aligning with backend DTO, PurchaseItem.total renamed to PurchaseItem.subtotal matching DB column, StatusBadge draft->gray mapping added, Login.tsx switched from emailSchema to loginSchema validating both email and password before Supabase call; mobile app compiles clean, Draft filter chip returns real results, item amounts show correct MXN currency, empty password blocked in Capacitor native mode
+
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-02 (08-03 complete — ROADMAP.md and REQUIREMENTS.md data reconciliation — ALL PHASES COMPLETE)_
+_Last updated: 2026-03-02 (09-01 complete — mobile purchase types/filter/StatusBadge + login validation)_

@@ -231,7 +231,7 @@ Plans:
 
 Plans:
 
-- [ ] 09-01-PLAN.md — Mobile purchase type/filter/badge fixes and login password validation
+- [x] 09-01-PLAN.md — Mobile purchase type/filter/badge fixes and login password validation
 - [ ] 09-02-PLAN.md — Web purchase type, columns badge map, and detail sheet field fixes
 
 ### Phase 10: Code Quality & Type Safety Cleanup
@@ -262,10 +262,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Polish & Production                        | 4/4            | Complete | 2026-03-02 |
 | 7. Fix Integration Bugs & Deployment Blockers | 2/2            | Complete | 2026-03-02 |
 | 8. Verify & Close Phases 3+4                  | 3/3            | Complete | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs           | 0/2            | Pending  | —          |
+| 9. Fix Mobile Purchase & Login Bugs           | 1/2            | Active   | —          |
 | 10. Code Quality & Type Safety Cleanup        | 0/0            | Pending  | —          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-02 (Phase 9 plans created)_
+_Last updated: 2026-03-02 (Phase 9 Plan 01 complete — mobile purchase + login fixes)_
