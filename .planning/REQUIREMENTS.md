@@ -9,10 +9,10 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can sign up with email and password via Supabase Auth
-- [ ] **AUTH-02**: User can log in with email and password
+- [x] **AUTH-01**: User can sign up with email and password via Supabase Auth
+- [x] **AUTH-02**: User can log in with email and password
 - [x] **AUTH-03**: User session persists across browser/app refresh
-- [ ] **AUTH-04**: User can log out from any page
+- [x] **AUTH-04**: User can log out from any page
 - [ ] **AUTH-05**: Backend validates JWT tokens from Supabase on every request
 - [x] **AUTH-06**: User roles and permissions system (RBAC) implemented
 
@@ -20,25 +20,25 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 - [ ] **NAV-01**: Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
 - [ ] **NAV-02**: Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
-- [ ] **NAV-03**: Web app displays sidebar navigation for all sections
-- [ ] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
-- [ ] **NAV-05**: Layout includes header with app name and user menu
-- [ ] **NAV-06**: Layout includes content area that adapts to navigation
-- [ ] **NAV-07**: All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
+- [x] **NAV-03**: Web app displays sidebar navigation for all sections
+- [x] **NAV-04**: Navigation is consistent and NOT context-dependent across platforms
+- [x] **NAV-05**: Layout includes header with app name and user menu
+- [x] **NAV-06**: Layout includes content area that adapts to navigation
+- [x] **NAV-07**: All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
 
 ### UI & Responsiveness
 
-- [ ] **UI-01**: UI follows shadcn aesthetic (modern, dense, admin-oriented)
-- [ ] **UI-02**: Dark theme implemented and works across platforms
-- [ ] **UI-03**: Layout is responsive and adapts to screen sizes
-- [ ] **UI-04**: Mobile and web feel cohesive despite platform-specific implementations
+- [x] **UI-01**: UI follows shadcn aesthetic (modern, dense, admin-oriented)
+- [x] **UI-02**: Dark theme implemented and works across platforms
+- [x] **UI-03**: Layout is responsive and adapts to screen sizes
+- [x] **UI-04**: Mobile and web feel cohesive despite platform-specific implementations
 - [ ] **UI-05**: Components live in packages/ui with shared design tokens
 
 ### Dashboard
 
 - [x] **DASH-01**: Dashboard displays key metrics (sales, inventory, orders)
 - [x] **DASH-02**: Dashboard shows realistic operational data from backend
-- [ ] **DASH-03**: Dashboard demonstrates layout density (not empty states)
+- [x] **DASH-03**: Dashboard demonstrates layout density (not empty states)
 
 ### Backend & API
 
@@ -60,22 +60,22 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **MONO-04**: packages/ui exports shared design tokens and types
 - [ ] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
 - [ ] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
-- [ ] **MONO-07**: Web app (apps/web) builds and runs
+- [x] **MONO-07**: Web app (apps/web) builds and runs
 - [x] **MONO-08**: Backend (apps/backend) builds and runs
 - [x] **MONO-09**: All apps can run concurrently in development mode
 
 ### Settings & Profile
 
-- [ ] **SET-01**: User can view their profile information
-- [ ] **SET-02**: User can update their profile
-- [ ] **SET-03**: User can access basic business settings
-- [ ] **SET-04**: Settings page is navigable from drawer/sidebar
+- [x] **SET-01**: User can view their profile information
+- [x] **SET-02**: User can update their profile
+- [x] **SET-03**: User can access basic business settings
+- [x] **SET-04**: Settings page is navigable from drawer/sidebar
 
 ### Documentation
 
 - [ ] **DOC-01**: README covers installation steps
 - [ ] **DOC-02**: README covers environment variable setup for all apps
-- [ ] **DOC-03**: README covers running all apps (mobile, web, backend)
+- [x] **DOC-03**: README covers running all apps (mobile, web, backend)
 - [ ] **DOC-04**: Environment variable examples provided (.env.example files)
 
 ## v2 Requirements
@@ -143,27 +143,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase                     | Status   |
 | ----------- | ------------------------- | -------- |
-| AUTH-01     | Phase 3, Phase 8          | Pending  |
-| AUTH-02     | Phase 3, Phase 8          | Pending  |
+| AUTH-01     | Phase 3, Phase 8          | Complete |
+| AUTH-02     | Phase 3, Phase 8          | Complete |
 | AUTH-03     | Phase 3, Phase 7, Phase 8 | Complete |
-| AUTH-04     | Phase 3, Phase 8          | Pending  |
+| AUTH-04     | Phase 3, Phase 8          | Complete |
 | AUTH-05     | Phase 1                   | Complete |
 | AUTH-06     | Phase 6                   | Complete |
 | NAV-01      | Phase 4, Phase 8          | Pending  |
 | NAV-02      | Phase 4, Phase 8          | Pending  |
-| NAV-03      | Phase 3, Phase 8          | Pending  |
-| NAV-04      | Phase 3, Phase 4, Phase 8 | Pending  |
-| NAV-05      | Phase 3, Phase 4, Phase 8 | Pending  |
-| NAV-06      | Phase 3, Phase 4, Phase 8 | Pending  |
-| NAV-07      | Phase 3, Phase 4, Phase 8 | Pending  |
-| UI-01       | Phase 3, Phase 8          | Pending  |
-| UI-02       | Phase 3, Phase 8          | Pending  |
-| UI-03       | Phase 3, Phase 8          | Pending  |
-| UI-04       | Phase 3, Phase 4, Phase 8 | Pending  |
+| NAV-03      | Phase 3, Phase 8          | Complete |
+| NAV-04      | Phase 3, Phase 4, Phase 8 | Complete |
+| NAV-05      | Phase 3, Phase 4, Phase 8 | Complete |
+| NAV-06      | Phase 3, Phase 4, Phase 8 | Complete |
+| NAV-07      | Phase 3, Phase 4, Phase 8 | Complete |
+| UI-01       | Phase 3, Phase 8          | Complete |
+| UI-02       | Phase 3, Phase 8          | Complete |
+| UI-03       | Phase 3, Phase 8          | Complete |
+| UI-04       | Phase 3, Phase 4, Phase 8 | Complete |
 | UI-05       | Phase 1                   | Complete |
 | DASH-01     | Phase 3, Phase 7, Phase 8 | Complete |
 | DASH-02     | Phase 3, Phase 7, Phase 8 | Complete |
-| DASH-03     | Phase 3, Phase 8          | Pending  |
+| DASH-03     | Phase 3, Phase 8          | Complete |
 | API-01      | Phase 2                   | Complete |
 | API-02      | Phase 2                   | Complete |
 | API-03      | Phase 2                   | Complete |
@@ -179,16 +179,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MONO-04     | Phase 1                   | Complete |
 | MONO-05     | Phase 4, Phase 8          | Pending  |
 | MONO-06     | Phase 4, Phase 8          | Pending  |
-| MONO-07     | Phase 3, Phase 8          | Pending  |
+| MONO-07     | Phase 3, Phase 8          | Complete |
 | MONO-08     | Phase 2                   | Complete |
 | MONO-09     | Phase 2                   | Complete |
-| SET-01      | Phase 3, Phase 8          | Pending  |
-| SET-02      | Phase 3, Phase 8          | Pending  |
-| SET-03      | Phase 3, Phase 8          | Pending  |
-| SET-04      | Phase 3, Phase 8          | Pending  |
+| SET-01      | Phase 3, Phase 8          | Complete |
+| SET-02      | Phase 3, Phase 8          | Complete |
+| SET-03      | Phase 3, Phase 8          | Complete |
+| SET-04      | Phase 3, Phase 8          | Complete |
 | DOC-01      | Phase 1                   | Complete |
 | DOC-02      | Phase 1                   | Complete |
-| DOC-03      | Phase 3, Phase 8          | Pending  |
+| DOC-03      | Phase 3, Phase 8          | Complete |
 | DOC-04      | Phase 1                   | Complete |
 
 **Coverage:**
