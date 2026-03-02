@@ -12,6 +12,9 @@ export interface GeneratedInventoryItem {
   location: string
   lastRestocked: string
   status: 'in_stock' | 'low_stock' | 'out_of_stock'
+  reservedQuantity: number
+  availableQuantity: number
+  reorderPoint: number
 }
 
 export function generateInventory(products: GeneratedProduct[]): GeneratedInventoryItem[] {
@@ -32,6 +35,10 @@ export function generateInventory(products: GeneratedProduct[]): GeneratedInvent
       status = 'in_stock'
     }
 
+    const reservedQuantity =
+      quantity > 0 ? faker.number.int({ min: 0, max: Math.floor(quantity * 0.3) }) : 0
+    const availableQuantity = quantity - reservedQuantity
+
     return {
       id: product.id,
       productId: product.id,
@@ -43,6 +50,9 @@ export function generateInventory(products: GeneratedProduct[]): GeneratedInvent
       location: `${faker.string.alpha({ length: 1, casing: 'upper' })}${faker.number.int({ min: 1, max: 99 })}-${faker.number.int({ min: 1, max: 50 })}`,
       lastRestocked: faker.date.recent({ days: 60 }).toISOString(),
       status,
+      reservedQuantity,
+      availableQuantity,
+      reorderPoint: minStock,
     }
   })
 }

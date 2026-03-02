@@ -65,6 +65,9 @@ async function seed() {
       location: inv.location,
       lastRestocked: new Date(inv.lastRestocked),
       status: inv.status,
+      reservedQuantity: inv.reservedQuantity,
+      availableQuantity: inv.availableQuantity,
+      reorderPoint: inv.reorderPoint,
     }))
   )
 
@@ -87,6 +90,7 @@ async function seed() {
         status: order.status,
         createdAt: new Date(order.createdAt),
         updatedAt: new Date(order.updatedAt),
+        shippingAddress: order.shippingAddress,
       })
       .returning()
 
@@ -162,6 +166,10 @@ async function seed() {
         expectedDelivery: new Date(purchase.expectedDelivery),
         createdAt: new Date(purchase.createdAt),
         updatedAt: new Date(purchase.updatedAt),
+        supplierContact: purchase.supplierContact,
+        shipping: purchase.shipping,
+        notes: purchase.notes,
+        receivedAt: purchase.receivedAt ? new Date(purchase.receivedAt) : null,
       })
       .returning()
 

@@ -30,6 +30,10 @@ export interface GeneratedPurchase {
   expectedDelivery: string
   createdAt: string
   updatedAt: string
+  supplierContact: string
+  shipping: number
+  notes: string
+  receivedAt: string | null
 }
 
 export function generatePurchase(id: number, products: GeneratedProduct[]): GeneratedPurchase {
@@ -58,6 +62,8 @@ export function generatePurchase(id: number, products: GeneratedProduct[]): Gene
   const subtotal = parseFloat(items.reduce((sum, item) => sum + item.subtotal, 0).toFixed(2))
   const tax = parseFloat((subtotal * 0.16).toFixed(2))
   const total = parseFloat((subtotal + tax).toFixed(2))
+  const status = faker.helpers.weightedArrayElement(PURCHASE_STATUSES)
+  const createdAt = faker.date.past({ years: 1 }).toISOString()
 
   return {
     id,
@@ -68,10 +74,17 @@ export function generatePurchase(id: number, products: GeneratedProduct[]): Gene
     subtotal,
     tax,
     total,
-    status: faker.helpers.weightedArrayElement(PURCHASE_STATUSES),
+    status,
     expectedDelivery: faker.date.future({ years: 0.25 }).toISOString(),
-    createdAt: faker.date.past({ years: 1 }).toISOString(),
+    createdAt,
     updatedAt: faker.date.recent({ days: 7 }).toISOString(),
+    supplierContact: faker.internet.email(),
+    shipping: parseFloat(faker.commerce.price({ min: 10, max: 200 })),
+    notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.6 }) ?? '',
+    receivedAt:
+      status === 'received'
+        ? faker.date.between({ from: new Date(createdAt), to: new Date() }).toISOString()
+        : null,
   }
 }
 

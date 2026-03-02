@@ -31,6 +31,7 @@ export interface GeneratedOrder {
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   createdAt: string
   updatedAt: string
+  shippingAddress: string
 }
 
 export function generateOrder(id: number, products: GeneratedProduct[]): GeneratedOrder {
@@ -73,6 +74,7 @@ export function generateOrder(id: number, products: GeneratedProduct[]): Generat
     status: faker.helpers.weightedArrayElement(ORDER_STATUSES),
     createdAt: faker.date.past({ years: 1 }).toISOString(),
     updatedAt: faker.date.recent({ days: 7 }).toISOString(),
+    shippingAddress: faker.location.streetAddress({ useFullAddress: true }),
   }
 }
 
