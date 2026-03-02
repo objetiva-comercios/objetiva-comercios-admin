@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { Order, OrderItem, Product } from '../types'
+import type { GeneratedProduct } from './product.generator'
 
 const ORDER_STATUSES = [
   { value: 'delivered' as const, weight: 50 },
@@ -9,12 +9,36 @@ const ORDER_STATUSES = [
   { value: 'cancelled' as const, weight: 5 },
 ]
 
-export function generateOrder(id: number, products: Product[]): Order {
+export interface GeneratedOrderItem {
+  productId: number
+  productName: string
+  sku: string
+  quantity: number
+  price: number
+  subtotal: number
+}
+
+export interface GeneratedOrder {
+  id: number
+  orderNumber: string
+  customerId: number
+  customerName: string
+  customerEmail: string
+  items: GeneratedOrderItem[]
+  subtotal: number
+  tax: number
+  total: number
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  createdAt: string
+  updatedAt: string
+}
+
+export function generateOrder(id: number, products: GeneratedProduct[]): GeneratedOrder {
   // Use deterministic seed for reproducibility
   faker.seed(id + 20000)
 
   const itemCount = faker.number.int({ min: 1, max: 5 })
-  const items: OrderItem[] = []
+  const items: GeneratedOrderItem[] = []
 
   for (let i = 0; i < itemCount; i++) {
     const product = faker.helpers.arrayElement(products)
@@ -52,6 +76,6 @@ export function generateOrder(id: number, products: Product[]): Order {
   }
 }
 
-export function generateOrders(count: number, products: Product[]): Order[] {
+export function generateOrders(count: number, products: GeneratedProduct[]): GeneratedOrder[] {
   return Array.from({ length: count }, (_, i) => generateOrder(i + 1, products))
 }

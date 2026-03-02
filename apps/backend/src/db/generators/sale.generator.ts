@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { Sale, SaleItem, Product } from '../types'
+import type { GeneratedProduct } from './product.generator'
 
 const SALE_STATUSES = [
   { value: 'completed' as const, weight: 90 },
@@ -9,12 +9,37 @@ const SALE_STATUSES = [
 
 const PAYMENT_METHODS = ['cash', 'card', 'transfer', 'credit'] as const
 
-export function generateSale(id: number, products: Product[]): Sale {
+export interface GeneratedSaleItem {
+  productId: number
+  productName: string
+  sku: string
+  quantity: number
+  price: number
+  subtotal: number
+}
+
+export interface GeneratedSale {
+  id: number
+  saleNumber: string
+  customerId: number
+  customerName: string
+  items: GeneratedSaleItem[]
+  subtotal: number
+  tax: number
+  discount: number
+  total: number
+  paymentMethod: 'cash' | 'card' | 'transfer' | 'credit'
+  status: 'completed' | 'refunded' | 'partial_refund'
+  createdAt: string
+  updatedAt: string
+}
+
+export function generateSale(id: number, products: GeneratedProduct[]): GeneratedSale {
   // Use deterministic seed for reproducibility
   faker.seed(id + 30000)
 
   const itemCount = faker.number.int({ min: 1, max: 5 })
-  const items: SaleItem[] = []
+  const items: GeneratedSaleItem[] = []
 
   for (let i = 0; i < itemCount; i++) {
     const product = faker.helpers.arrayElement(products)
@@ -56,6 +81,6 @@ export function generateSale(id: number, products: Product[]): Sale {
   }
 }
 
-export function generateSales(count: number, products: Product[]): Sale[] {
+export function generateSales(count: number, products: GeneratedProduct[]): GeneratedSale[] {
   return Array.from({ length: count }, (_, i) => generateSale(i + 1, products))
 }

@@ -3,11 +3,11 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { sql } from 'drizzle-orm'
 import * as schema from './schema'
-import { generateProducts } from '../data/generators/product.generator'
-import { generateOrders } from '../data/generators/order.generator'
-import { generateInventory } from '../data/generators/inventory.generator'
-import { generateSales } from '../data/generators/sale.generator'
-import { generatePurchases } from '../data/generators/purchase.generator'
+import { generateProducts } from './generators/product.generator'
+import { generateOrders } from './generators/order.generator'
+import { generateInventory } from './generators/inventory.generator'
+import { generateSales } from './generators/sale.generator'
+import { generatePurchases } from './generators/purchase.generator'
 
 const client = postgres(process.env.DATABASE_URL!)
 const db = drizzle(client, { schema })

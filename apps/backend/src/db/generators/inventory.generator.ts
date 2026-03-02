@@ -1,7 +1,20 @@
 import { faker } from '@faker-js/faker'
-import { Product, InventoryItem } from '../types'
+import type { GeneratedProduct } from './product.generator'
 
-export function generateInventory(products: Product[]): InventoryItem[] {
+export interface GeneratedInventoryItem {
+  id: number
+  productId: number
+  productName: string
+  sku: string
+  quantity: number
+  minStock: number
+  maxStock: number
+  location: string
+  lastRestocked: string
+  status: 'in_stock' | 'low_stock' | 'out_of_stock'
+}
+
+export function generateInventory(products: GeneratedProduct[]): GeneratedInventoryItem[] {
   return products.map(product => {
     // Use deterministic seed based on product ID
     faker.seed(product.id + 10000)

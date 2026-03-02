@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { Product } from '../types'
 
 const CATEGORIES = [
   'Electronics',
@@ -20,7 +19,22 @@ const STATUSES = [
   { value: 'discontinued' as const, weight: 5 },
 ]
 
-export function generateProduct(id: number): Product {
+export interface GeneratedProduct {
+  id: number
+  sku: string
+  name: string
+  description: string
+  price: number
+  cost: number
+  category: string
+  stock: number
+  imageUrl: string
+  status: 'active' | 'inactive' | 'discontinued'
+  createdAt: string
+  updatedAt: string
+}
+
+export function generateProduct(id: number): GeneratedProduct {
   // Use deterministic seed for reproducibility
   faker.seed(id)
 
@@ -47,6 +61,6 @@ export function generateProduct(id: number): Product {
   }
 }
 
-export function generateProducts(count: number = 500): Product[] {
+export function generateProducts(count: number = 500): GeneratedProduct[] {
   return Array.from({ length: count }, (_, i) => generateProduct(i + 1))
 }
