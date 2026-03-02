@@ -232,7 +232,7 @@ Plans:
 Plans:
 
 - [x] 09-01-PLAN.md — Mobile purchase type/filter/badge fixes and login password validation
-- [ ] 09-02-PLAN.md — Web purchase type, columns badge map, and detail sheet field fixes
+- [x] 09-02-PLAN.md — Web purchase type, columns badge map, and detail sheet field fixes
 
 ### Phase 10: Code Quality & Type Safety Cleanup
 
