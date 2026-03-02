@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { ErrorBoundary } from 'react-error-boundary'
 import { useAuth } from '../../hooks/useAuth'
 import { Login } from '../../pages/Login'
 import { Signup } from '../../pages/Signup'
@@ -11,6 +12,7 @@ import { Sales } from '../../pages/Sales'
 import { Purchases } from '../../pages/Purchases'
 import { Profile } from '../../pages/Profile'
 import { Settings } from '../../pages/Settings'
+import { SectionErrorFallback } from '../ui/SectionErrorFallback'
 
 export function SplashGate() {
   const { user, loading } = useAuth()
@@ -45,14 +47,70 @@ export function SplashGate() {
       <Route path="/login" element={<Navigate to="/dashboard" replace />} />
       <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
       <Route element={<AppShell />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/articles" element={<Articles />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/inventory" element={<Inventory />} />
-        <Route path="/sales" element={<Sales />} />
-        <Route path="/purchases" element={<Purchases />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Dashboard />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/articles"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Articles />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Orders />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Inventory />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/sales"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Sales />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/purchases"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Purchases />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Profile />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+              <Settings />
+            </ErrorBoundary>
+          }
+        />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
