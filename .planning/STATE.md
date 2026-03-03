@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-02T23:49:04.135Z'
+last_updated: '2026-03-03T00:41:49.405Z'
 progress:
   total_phases: 10
   completed_phases: 9
-  total_plans: 35
-  completed_plans: 35
+  total_plans: 38
+  completed_plans: 36
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 9: Fix Mobile Purchase & Login Bugs — COMPLETE
+**Current focus:** Phase 10: Code Quality & Type Safety Cleanup — In Progress
 
 ## Current Position
 
-Phase: 9 of 9 (Fix Mobile Purchase & Login Bugs)
-Plan: 2 of 2 complete
-Status: Phase 9 Complete — 09-02 web purchase bug fixes complete
-Last activity: 2026-03-02 — Completed 09-02 (web purchase types/columns/sheet — draft status + subtotal field)
+Phase: 10 of 10 (Code Quality & Type Safety Cleanup)
+Plan: 1 of 3 complete
+Status: Phase 10 In Progress — 10-01 formatters/signup schema/dead code cleanup complete
+Last activity: 2026-03-03 — Completed 10-01 (formatters es-MX/MXN defaults, Signup schema validation, AuthMiddleware deleted)
 
-Progress: [██████████] 100% (35/35 total plans)
+Progress: [██████████] 95% (36/38 total plans)
 
 ## Performance Metrics
 
@@ -68,6 +68,7 @@ _Updated after each plan completion_
 | Phase 08-verify-close-phases-3-4 P02 | 2 | 2 tasks | 1 files |
 | Phase 08-verify-close-phases-3-4 P03 | 2 | 2 tasks | 1 files |
 | Phase 09-fix-mobile-purchase-login-bugs P02 | 5 | 2 tasks | 3 files |
+| Phase 10-code-quality-type-safety-cleanup P01 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -252,6 +253,9 @@ Recent decisions affecting current work:
 - [Phase 09-01]: PurchaseItem.subtotal matches purchase_items.subtotal DB column; old 'total' field was never in DB, causing NaN render in detail sheet
 - [Phase 09-01]: Purchase.status 'draft' aligns with backend DTO @IsIn(['draft','ordered','received','cancelled']); 'pending' was never valid
 - [Phase 09-02]: Gray badge for draft status (bg-gray-100 text-gray-800) — initial/inactive state, consistent with mobile StatusBadge draft mapping
+- [Phase 10-code-quality-type-safety-cleanup]: formatCurrency locale param at position 3 for backward compatibility with existing call sites
+- [Phase 10-code-quality-type-safety-cleanup]: Mobile Signup: signupSchema.safeParse() replaces manual if-checks, consistent with Login.tsx pattern
+- [Phase 10-code-quality-type-safety-cleanup]: AuthMiddleware deleted: zero references in backend, dead code superseded by JwtAuthGuard since Phase 2
 
 ### Pending Todos
 
@@ -273,10 +277,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02 (Phase 9 Plan 02 executed — web purchase bug fixes)
-Stopped at: Completed 09-02-PLAN.md (web purchase types/columns/sheet — draft status + subtotal field)
+Last session: 2026-03-03 (Phase 10 Plan 01 executed — formatters/signup schema/dead code cleanup)
+Stopped at: Completed 10-01-PLAN.md (formatters es-MX/MXN defaults, Signup schema validation, AuthMiddleware deleted)
 Resume file: None
-Next up: Nothing — Phase 9 complete. All 35 plans across 9 phases executed.
+Next up: 10-02 (consuming apps use updated formatters), 10-03 (remaining type safety cleanup)
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -315,6 +319,8 @@ Next up: Nothing — Phase 9 complete. All 35 plans across 9 phases executed.
 **Phase 9 Plan 01 Achievement:** Three mobile bug fixes — Purchase.status changed from 'pending' to 'draft' aligning with backend DTO, PurchaseItem.total renamed to PurchaseItem.subtotal matching DB column, StatusBadge draft->gray mapping added, Login.tsx switched from emailSchema to loginSchema validating both email and password before Supabase call; mobile app compiles clean, Draft filter chip returns real results, item amounts show correct MXN currency, empty password blocked in Capacitor native mode
 
 **Phase 9 Plan 02 Achievement (PHASE 9 COMPLETE):** Web purchase bug fixes — PurchaseItem.subtotal field corrected from 'total' (NaN was rendered in PurchaseSheet detail), Purchase.status 'draft' replaces 'pending' in TypeScript union, columns.tsx and purchase-sheet.tsx statusVariants/statusColors maps updated to gray badge for draft; web build passes with zero TypeScript errors (17 pages compiled)
+
+**Phase 10 Plan 01 Achievement:** Code quality cleanup — formatCurrency defaults changed to MXN/es-MX (optional locale override param added at position 3 for backward compat), formatDate defaults to es-MX locale, @objetiva/utils rebuilt clean; mobile Signup.tsx replaced 4 manual if-checks with signupSchema.safeParse() matching Login.tsx pattern; auth.middleware.ts deleted (zero references, superseded by JwtAuthGuard since Phase 2)
 
 ---
 
