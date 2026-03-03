@@ -1,15 +1,38 @@
+'use client'
+
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { formatCurrency } from '@objetiva/utils'
 import type { RecentOrder } from '@/types/dashboard'
+import { OrderSheet } from '@/components/tables/orders/order-sheet'
+import { fetchOrderById } from '@/lib/api'
+import type { Order } from '@/types/order'
 
 interface RecentOrdersProps {
   orders: RecentOrder[]
 }
 
 export function RecentOrders({ orders }: RecentOrdersProps) {
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleRowClick = async (orderId: number) => {
+    if (isLoading) return
+    setIsLoading(true)
+    try {
+      const order = await fetchOrderById(orderId)
+      setSelectedOrder(order)
+      setSheetOpen(true)
+    } catch (error) {
+      console.error('Failed to load order:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   if (orders.length === 0) {
     return (
       <Card>
@@ -27,35 +50,40 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Orders</CardTitle>
-        <CardDescription>Latest order activity</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {orders.map(order => (
-            <Link
-              key={order.id}
-              href={`/orders/${order.id}`}
-              className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
-            >
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">{order.orderNumber}</p>
-                <p className="text-xs text-muted-foreground">{order.customerName}</p>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Orders</CardTitle>
+          <CardDescription>Latest order activity</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {orders.map(order => (
+              <div
+                key={order.id}
+                onClick={() => handleRowClick(order.id)}
+                className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50 cursor-pointer"
+              >
+                <div className="space-y-1">
+                  <p className="text-sm font-medium leading-none">{order.orderNumber}</p>
+                  <p className="text-xs text-muted-foreground">{order.customerName}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <p className="text-sm font-medium">{formatCurrency(order.total)}</p>
+                  <Badge variant={getStatusVariant(order.status)}>
+                    {formatStatus(order.status)}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-4">
-                <p className="text-sm font-medium">{formatCurrency(order.total)}</p>
-                <Badge variant={getStatusVariant(order.status)}>{formatStatus(order.status)}</Badge>
-                <p className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      <OrderSheet order={selectedOrder} open={sheetOpen} onOpenChange={setSheetOpen} />
+    </>
   )
 }
 
