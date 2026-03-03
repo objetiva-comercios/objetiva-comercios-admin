@@ -17,7 +17,7 @@ export function Login() {
     // Validate email and password before submitting (works in Capacitor native mode)
     const loginResult = loginSchema.safeParse({ email, password })
     if (!loginResult.success) {
-      setError(loginResult.error.errors[0]?.message ?? 'Please check your credentials')
+      setError(loginResult.error.issues[0]?.message ?? 'Please check your credentials')
       setLoading(false)
       return
     }

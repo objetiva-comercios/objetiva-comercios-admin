@@ -19,7 +19,7 @@ export function Signup() {
 
     const result = signupSchema.safeParse({ email, password, confirmPassword })
     if (!result.success) {
-      setError(result.error.errors[0]?.message ?? 'Please check your inputs')
+      setError(result.error.issues[0]?.message ?? 'Please check your inputs')
       return
     }
 
