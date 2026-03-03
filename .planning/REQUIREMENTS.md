@@ -57,7 +57,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [ ] **MONO-01**: Monorepo structure with pnpm workspaces functional
 - [ ] **MONO-02**: Turborepo configured for builds and caching
 - [ ] **MONO-03**: TypeScript workspace resolution works across packages
-- [ ] **MONO-04**: packages/ui exports shared design tokens and types
+- [x] **MONO-04**: packages/ui exports shared design tokens and types
 - [x] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
 - [x] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
 - [x] **MONO-07**: Web app (apps/web) builds and runs

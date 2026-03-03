@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-03T00:41:49.405Z'
+last_updated: '2026-03-03T00:48:06.351Z'
 progress:
   total_phases: 10
   completed_phases: 9
   total_plans: 38
-  completed_plans: 36
+  completed_plans: 37
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 10 of 10 (Code Quality & Type Safety Cleanup)
-Plan: 1 of 3 complete
-Status: Phase 10 In Progress — 10-01 formatters/signup schema/dead code cleanup complete
-Last activity: 2026-03-03 — Completed 10-01 (formatters es-MX/MXN defaults, Signup schema validation, AuthMiddleware deleted)
+Plan: 2 of 3 complete
+Status: Phase 10 In Progress — 10-02 mobile formatter imports + id type alignment complete
+Last activity: 2026-03-03 — Completed 10-02 (mobile pages use @objetiva/utils formatters, entity id fields changed from string to number)
 
-Progress: [██████████] 95% (36/38 total plans)
+Progress: [██████████] 97% (37/38 total plans)
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ _Updated after each plan completion_
 | Phase 08-verify-close-phases-3-4 P03 | 2 | 2 tasks | 1 files |
 | Phase 09-fix-mobile-purchase-login-bugs P02 | 5 | 2 tasks | 3 files |
 | Phase 10-code-quality-type-safety-cleanup P01 | 2 | 2 tasks | 3 files |
+| Phase 10 P02 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -256,6 +257,8 @@ Recent decisions affecting current work:
 - [Phase 10-code-quality-type-safety-cleanup]: formatCurrency locale param at position 3 for backward compatibility with existing call sites
 - [Phase 10-code-quality-type-safety-cleanup]: Mobile Signup: signupSchema.safeParse() replaces manual if-checks, consistent with Login.tsx pattern
 - [Phase 10-code-quality-type-safety-cleanup]: AuthMiddleware deleted: zero references in backend, dead code superseded by JwtAuthGuard since Phase 2
+- [Phase 10]: Null guard for Purchase.receivedAt preserved at call site (not in shared formatDate) — shared formatter takes Date|string, caller decides the null fallback label
+- [Phase 10]: Mobile entity types now use id: number for Product, Order, OrderItem, Sale, SaleItem, Purchase, PurchaseItem, Inventory — aligned with backend Drizzle serial() columns
 
 ### Pending Todos
 
@@ -277,10 +280,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-03 (Phase 10 Plan 01 executed — formatters/signup schema/dead code cleanup)
-Stopped at: Completed 10-01-PLAN.md (formatters es-MX/MXN defaults, Signup schema validation, AuthMiddleware deleted)
+Last session: 2026-03-03 (Phase 10 Plan 02 executed — mobile formatter imports + id type alignment)
+Stopped at: Completed 10-02-PLAN.md (mobile pages import from @objetiva/utils, entity id/productId fields changed from string to number)
 Resume file: None
-Next up: 10-02 (consuming apps use updated formatters), 10-03 (remaining type safety cleanup)
+Next up: 10-03 (remaining type safety cleanup)
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -322,7 +325,9 @@ Next up: 10-02 (consuming apps use updated formatters), 10-03 (remaining type sa
 
 **Phase 10 Plan 01 Achievement:** Code quality cleanup — formatCurrency defaults changed to MXN/es-MX (optional locale override param added at position 3 for backward compat), formatDate defaults to es-MX locale, @objetiva/utils rebuilt clean; mobile Signup.tsx replaced 4 manual if-checks with signupSchema.safeParse() matching Login.tsx pattern; auth.middleware.ts deleted (zero references, superseded by JwtAuthGuard since Phase 2)
 
+**Phase 10 Plan 02 Achievement:** Mobile formatter consolidation and type alignment — 10 local formatCurrency/formatDate definitions removed from 6 mobile pages, all now import from @objetiva/utils; 14 entity id/productId fields changed from string to number (Product, Order, OrderItem, Sale, SaleItem, Purchase, PurchaseItem, Inventory) matching backend Drizzle serial() columns; null/undefined call-site guards preserved for Purchase.receivedAt and Profile.created_at
+
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-02 (09-01 complete — mobile purchase types/filter/StatusBadge + login validation)_
+_Last updated: 2026-03-03 (10-02 complete — mobile formatter imports + id type alignment)_
