@@ -247,25 +247,34 @@ Plans:
 3. Mobile Signup imports signupSchema from @objetiva/types instead of duplicating rules
 4. Mobile Order/Purchase id typed as number matching backend response
 
+**Plans**: 4 plans in 1 wave (+1 gap closure)
+
+Plans:
+
+- [x] 10-01-PLAN.md — Shared formatter defaults (es-MX/MXN), mobile Signup schema refactor, dead AuthMiddleware deletion
+- [x] 10-02-PLAN.md — Mobile formatter imports consolidation and entity id type alignment (string to number)
+- [x] 10-03-PLAN.md — Web currency formatter consolidation (10 components import from @objetiva/utils)
+- [ ] 10-04-PLAN.md — Gap closure: fix Zod v4 .errors to .issues in Login.tsx and Signup.tsx
+
 ## Progress
 
 **Execution Order:**
 Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
-| Phase                                         | Plans Complete | Status   | Completed  |
-| --------------------------------------------- | -------------- | -------- | ---------- |
-| 1. Foundation & Monorepo                      | 4/4            | Complete | 2026-01-24 |
-| 2. Backend API with Mock Data                 | 5/5            | Complete | 2026-03-01 |
-| 3. Web Application                            | 8/8            | Complete | 2026-01-26 |
-| 4. Mobile Application                         | 4/4            | Complete | 2026-03-02 |
-| 5. Database Integration                       | 3/3            | Complete | 2026-03-02 |
-| 6. Polish & Production                        | 4/4            | Complete | 2026-03-02 |
-| 7. Fix Integration Bugs & Deployment Blockers | 2/2            | Complete | 2026-03-02 |
-| 8. Verify & Close Phases 3+4                  | 3/3            | Complete | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs           | 2/2            | Complete | 2026-03-02 |
-| 10. Code Quality & Type Safety Cleanup        | 3/3            | Complete | 2026-03-03 |
+| Phase                                         | Plans Complete | Status      | Completed  |
+| --------------------------------------------- | -------------- | ----------- | ---------- |
+| 1. Foundation & Monorepo                      | 4/4            | Complete    | 2026-01-24 |
+| 2. Backend API with Mock Data                 | 5/5            | Complete    | 2026-03-01 |
+| 3. Web Application                            | 8/8            | Complete    | 2026-01-26 |
+| 4. Mobile Application                         | 4/4            | Complete    | 2026-03-02 |
+| 5. Database Integration                       | 3/3            | Complete    | 2026-03-02 |
+| 6. Polish & Production                        | 4/4            | Complete    | 2026-03-02 |
+| 7. Fix Integration Bugs & Deployment Blockers | 2/2            | Complete    | 2026-03-02 |
+| 8. Verify & Close Phases 3+4                  | 3/3            | Complete    | 2026-03-02 |
+| 9. Fix Mobile Purchase & Login Bugs           | 2/2            | Complete    | 2026-03-02 |
+| 10. Code Quality & Type Safety Cleanup        | 3/4            | In Progress | 2026-03-03 |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-02 (Phase 9 Plan 01 complete — mobile purchase + login fixes)_
+_Last updated: 2026-03-03 (Phase 10 gap closure plan 04 added — Zod v4 .errors/.issues fix)_
