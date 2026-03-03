@@ -25,6 +25,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 10: Code Quality & Type Safety Cleanup** - Remove dead code, consolidate utils, import shared schemas, fix type mismatches (Gap Closure) (completed 2026-03-03)
 - [x] **Phase 11: Fix Sales Detail View Crash** - Add saleItems batch-loading in sales.findAll(), align field names in web/mobile sale detail views (Gap Closure) (completed 2026-03-03)
 - [x] **Phase 12: Fix Dashboard Links, Web Types & Doc Sync** - Remove dashboard dead links, align web entity ID types, fix mobile currency formatter, sync doc checkboxes (Gap Closure)
+- [ ] **Phase 13: Tech Debt Cleanup** - Fix mobile TS compilation, remove dead code/links, fix formatting consistency (Tech Debt Closure)
 
 ## Phase Details
 
@@ -293,10 +294,24 @@ Plans:
 
 - [x] 12-01-PLAN.md — Dashboard links fix, web type alignment, mobile formatter, doc checkbox sync
 
+### Phase 13: Tech Debt Cleanup
+
+**Goal**: Close all actionable tech debt items identified by the v1.0 milestone audit — fix mobile TS compilation, remove dead code and dead links, fix formatting inconsistency
+**Depends on**: Phase 12
+**Requirements**: None (tech debt — all requirements already satisfied)
+**Tech Debt Closure:** Closes 5 of 6 tech debt items from audit (1 info item skipped as intentional)
+**Success Criteria** (what must be TRUE):
+
+1. `tsc --noEmit` passes for mobile app (SplashGate.tsx error type fixed)
+2. `/forgot-password` link removed or disabled on web login page
+3. `fetchLowStock()` export deleted from `apps/web/src/lib/api.ts`
+4. `stats-cards.tsx` subtitle uses `formatCurrency` instead of manual `$` formatting
+5. Unused `colors` token removed from `packages/ui/src/tokens/`
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13
 
 | Phase                                         | Plans Complete | Status   | Completed  |
 | --------------------------------------------- | -------------- | -------- | ---------- |
@@ -312,8 +327,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 10. Code Quality & Type Safety Cleanup        | 4/4            | Complete | 2026-03-03 |
 | 11. Fix Sales Detail View Crash               | 1/1            | Complete | 2026-03-03 |
 | 12. Fix Dashboard Links, Web Types & Doc Sync | 1/1            | Complete | 2026-03-03 |
+| 13. Tech Debt Cleanup                         | 0/?            | Pending  | —          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-03 (Phase 12 complete — dashboard sheets, web id:number, mobile MXN currency, doc sync; all 41 plans done; v1.0 milestone fully achieved)_
+_Last updated: 2026-03-03 (Phase 13 added — tech debt cleanup from v1.0 audit)_
