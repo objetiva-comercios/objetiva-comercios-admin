@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-03T00:53:00.000Z'
+last_updated: '2026-03-03T01:37:55.592Z'
 progress:
   total_phases: 10
   completed_phases: 10
-  total_plans: 38
-  completed_plans: 38
+  total_plans: 39
+  completed_plans: 39
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 Phase: 10 of 10 (Code Quality & Type Safety Cleanup)
 Plan: 3 of 3 complete
-Status: Phase 10 COMPLETE — All 38 plans across all 10 phases complete; v1.0 milestone achieved
-Last activity: 2026-03-03 — Completed 10-03 (10 web components import formatCurrency from @objetiva/utils, zero local definitions remain)
+Status: Phase 10 COMPLETE — All 39 plans across all 10 phases complete (including gap closure 10-04); v1.0 milestone achieved
+Last activity: 2026-03-03 — Completed 10-04 (Zod v4 .errors -> .issues fix in Login.tsx and Signup.tsx; 10-VERIFICATION gap closed)
 
-Progress: [██████████] 100% (38/38 total plans)
+Progress: [██████████] 100% (39/39 total plans)
 
 ## Performance Metrics
 
@@ -71,6 +71,7 @@ _Updated after each plan completion_
 | Phase 10-code-quality-type-safety-cleanup P01 | 2 | 2 tasks | 3 files |
 | Phase 10 P02 | 3 | 2 tasks | 7 files |
 | Phase 10 P03 | 3 | 2 tasks | 10 files |
+| Phase 10-code-quality-type-safety-cleanup P04 | 1 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -260,6 +261,7 @@ Recent decisions affecting current work:
 - [Phase 10-code-quality-type-safety-cleanup]: AuthMiddleware deleted: zero references in backend, dead code superseded by JwtAuthGuard since Phase 2
 - [Phase 10]: Null guard for Purchase.receivedAt preserved at call site (not in shared formatDate) — shared formatter takes Date|string, caller decides the null fallback label
 - [Phase 10]: Mobile entity types now use id: number for Product, Order, OrderItem, Sale, SaleItem, Purchase, PurchaseItem, Inventory — aligned with backend Drizzle serial() columns
+- [Phase 10-code-quality-type-safety-cleanup]: Zod v4 ZodError.issues is the correct property; .errors does not exist in Zod v4 — both Login.tsx and Signup.tsx now access .issues[0]?.message for correct error message display
 
 ### Pending Todos
 
@@ -281,10 +283,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-03 (Phase 10 Plan 03 executed — web currency formatter consolidation; Phase 10 complete)
-Stopped at: Completed 10-03-PLAN.md (10 web components import formatCurrency from @objetiva/utils, all local definitions removed)
+Last session: 2026-03-03 (Phase 10 Plan 04 executed — Zod v4 .errors -> .issues fix; all 39 plans complete)
+Stopped at: Completed 10-04-PLAN.md (Zod v4 .errors -> .issues in Login.tsx and Signup.tsx; 10-VERIFICATION 15/15 truths verified)
 Resume file: None
-Next up: v1.0 milestone complete — all 38 plans across all 10 phases executed
+Next up: v1.0 milestone complete — all 39 plans across all 10 phases executed (including gap closure 10-04)
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -330,7 +332,9 @@ Next up: v1.0 milestone complete — all 38 plans across all 10 phases executed
 
 **Phase 10 Plan 03 Achievement (PHASE 10 COMPLETE — v1.0 MILESTONE FULLY ACHIEVED):** Web component currency formatter consolidation — 10 web components now import formatCurrency from @objetiva/utils; zero local formatCurrency definitions remain in web codebase; zero inline Intl.NumberFormat currency patterns remain; currency displays MXN/es-MX format across all web dashboard and table pages; web build passes clean with zero TypeScript errors (17 pages compiled); date-fns date formatting untouched per CONTEXT.md decision; all 38 plans across all 10 phases complete
 
+**Phase 10 Plan 04 Achievement (GAP CLOSURE — 10-VERIFICATION FULLY SATISFIED):** Zod v4 API mismatch fixed — Login.tsx line 20 and Signup.tsx line 22 now access `.issues[0]?.message` (not `.errors[0]?.message`); Zod v4.3.6 exposes validation issues under `.issues`, not `.errors`; accessing `.errors` returned undefined causing all schema-specific validation messages to fall through to generic fallback; fix ensures "Invalid email" and "Passwords don't match" display correctly; 10-VERIFICATION score now 15/15; all 39 plans across all 10 phases complete
+
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-03 (10-03 complete — web formatter consolidation; Phase 10 and v1.0 milestone DONE)_
+_Last updated: 2026-03-03 (10-04 complete — Zod v4 .errors -> .issues fix; Phase 10 gap closure complete; 39/39 plans done)_
