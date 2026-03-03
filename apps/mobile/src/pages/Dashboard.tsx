@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Package, ClipboardList, DollarSign, TrendingUp, AlertTriangle, Clock } from 'lucide-react'
 import { fetchWithAuth } from '../lib/api'
 import type { DashboardResponse } from '../types'
-
-const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+import { formatCurrency } from '@objetiva/utils'
 
 function formatRelativeTime(dateStr: string): string {
   const now = Date.now()
@@ -131,9 +130,7 @@ export function Dashboard() {
         <div className="bg-card rounded-lg p-4 border border-border">
           <DollarSign size={20} className="text-primary mb-2" />
           <p className="text-xs text-muted-foreground mb-1">Today&apos;s Revenue</p>
-          <p className="text-2xl font-bold text-foreground">
-            {currency.format(stats.todayRevenue)}
-          </p>
+          <p className="text-2xl font-bold text-foreground">{formatCurrency(stats.todayRevenue)}</p>
         </div>
         <div className="bg-card rounded-lg p-4 border border-border">
           <TrendingUp size={20} className="text-primary mb-2" />
@@ -151,7 +148,7 @@ export function Dashboard() {
         <div className="text-right">
           <p className="text-xs text-muted-foreground mb-1">Pending Value</p>
           <p className="text-lg font-semibold text-foreground">
-            {currency.format(purchases.pendingValue)}
+            {formatCurrency(purchases.pendingValue)}
           </p>
         </div>
       </div>
@@ -165,9 +162,7 @@ export function Dashboard() {
             <p className="text-xs text-muted-foreground leading-tight">Week Sales</p>
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">
-              {currency.format(stats.weekRevenue)}
-            </p>
+            <p className="text-sm font-bold text-foreground">{formatCurrency(stats.weekRevenue)}</p>
             <p className="text-xs text-muted-foreground leading-tight">Week Rev.</p>
           </div>
           <div>
@@ -243,7 +238,7 @@ export function Dashboard() {
                     {order.customerName}
                   </span>
                   <span className="text-xs text-muted-foreground flex-shrink-0">
-                    {currency.format(order.total)}
+                    {formatCurrency(order.total)}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">

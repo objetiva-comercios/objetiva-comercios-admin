@@ -169,10 +169,10 @@ Plans:
 
 Plans:
 
-- [ ] 06-01-PLAN.md — RBAC backend infrastructure (JWT fix, @Roles decorator, RolesGuard, controller enforcement)
-- [ ] 06-02-PLAN.md — Error boundaries (web error.tsx, mobile react-error-boundary) and mobile offline detection
-- [ ] 06-03-PLAN.md — Form validation (shared schemas, password strength), business settings form, bundle analysis, and Lighthouse measurement
-- [ ] 06-04-PLAN.md — Mobile touch target audit and fixes (44x44px minimum on all interactive elements)
+- [x] 06-01-PLAN.md — RBAC backend infrastructure (JWT fix, @Roles decorator, RolesGuard, controller enforcement)
+- [x] 06-02-PLAN.md — Error boundaries (web error.tsx, mobile react-error-boundary) and mobile offline detection
+- [x] 06-03-PLAN.md — Form validation (shared schemas, password strength), business settings form, bundle analysis, and Lighthouse measurement
+- [x] 06-04-PLAN.md — Mobile touch target audit and fixes (44x44px minimum on all interactive elements)
 
 ### Phase 7: Fix Integration Bugs & Deployment Blockers
 
@@ -192,8 +192,8 @@ Plans:
 
 Plans:
 
-- [ ] 07-01-PLAN.md — Backend data layer fixes: DB schema migration (8 phantom columns), generator/seed updates, orders/purchases findAll batch items loading
-- [ ] 07-02-PLAN.md — Frontend type alignment, dashboard purchases KPI (web + mobile), deny-by-default auth middleware with returnTo, DATABASE_URL documentation
+- [x] 07-01-PLAN.md — Backend data layer fixes: DB schema migration (8 phantom columns), generator/seed updates, orders/purchases findAll batch items loading
+- [x] 07-02-PLAN.md — Frontend type alignment, dashboard purchases KPI (web + mobile), deny-by-default auth middleware with returnTo, DATABASE_URL documentation
 
 ### Phase 8: Verify & Close Phases 3+4
 
@@ -256,7 +256,7 @@ Plans:
 - [x] 10-01-PLAN.md — Shared formatter defaults (es-MX/MXN), mobile Signup schema refactor, dead AuthMiddleware deletion
 - [x] 10-02-PLAN.md — Mobile formatter imports consolidation and entity id type alignment (string to number)
 - [x] 10-03-PLAN.md — Web currency formatter consolidation (10 components import from @objetiva/utils)
-- [ ] 10-04-PLAN.md — Gap closure: fix Zod v4 .errors to .issues in Login.tsx and Signup.tsx
+- [x] 10-04-PLAN.md — Gap closure: fix Zod v4 .errors to .issues in Login.tsx and Signup.tsx
 
 ### Phase 11: Fix Sales Detail View Crash
 
@@ -273,7 +273,7 @@ Plans:
 
 Plans:
 
-- [ ] 11-01-PLAN.md — Backend saleItems batch-loading and frontend field name alignment
+- [x] 11-01-PLAN.md — Backend saleItems batch-loading and frontend field name alignment
 
 ### Phase 12: Fix Dashboard Links, Web Types & Doc Sync
 

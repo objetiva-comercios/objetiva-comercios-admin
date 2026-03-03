@@ -54,9 +54,9 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Monorepo & Tooling
 
-- [ ] **MONO-01**: Monorepo structure with pnpm workspaces functional
-- [ ] **MONO-02**: Turborepo configured for builds and caching
-- [ ] **MONO-03**: TypeScript workspace resolution works across packages
+- [x] **MONO-01**: Monorepo structure with pnpm workspaces functional
+- [x] **MONO-02**: Turborepo configured for builds and caching
+- [x] **MONO-03**: TypeScript workspace resolution works across packages
 - [x] **MONO-04**: packages/ui exports shared design tokens and types
 - [x] **MONO-05**: Mobile app (apps/mobile) builds and runs in browser
 - [x] **MONO-06**: Mobile app can be built for iOS/Android via Capacitor
@@ -73,10 +73,10 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 
 ### Documentation
 
-- [ ] **DOC-01**: README covers installation steps
-- [ ] **DOC-02**: README covers environment variable setup for all apps
+- [x] **DOC-01**: README covers installation steps
+- [x] **DOC-02**: README covers environment variable setup for all apps
 - [x] **DOC-03**: README covers running all apps (mobile, web, backend)
-- [ ] **DOC-04**: Environment variable examples provided (.env.example files)
+- [x] **DOC-04**: Environment variable examples provided (.env.example files)
 
 ## v2 Requirements
 
