@@ -23,7 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Verify & Close Phases 3+4** - Create missing VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies (Gap Closure)
 - [x] **Phase 9: Fix Mobile Purchase & Login Bugs** - Align purchase status enum, fix PurchaseItem field name, add mobile login password validation (Gap Closure) (completed 2026-03-02)
 - [x] **Phase 10: Code Quality & Type Safety Cleanup** - Remove dead code, consolidate utils, import shared schemas, fix type mismatches (Gap Closure) (completed 2026-03-03)
-- [ ] **Phase 11: Fix Sales Detail View Crash** - Add saleItems batch-loading in sales.findAll(), align field names in web/mobile sale detail views (Gap Closure)
+- [x] **Phase 11: Fix Sales Detail View Crash** - Add saleItems batch-loading in sales.findAll(), align field names in web/mobile sale detail views (Gap Closure) (completed 2026-03-03)
 - [ ] **Phase 12: Fix Dashboard Links, Web Types & Doc Sync** - Remove dashboard dead links, align web entity ID types, fix mobile currency formatter, sync doc checkboxes (Gap Closure)
 
 ## Phase Details
@@ -310,7 +310,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Verify & Close Phases 3+4                  | 3/3            | Complete | 2026-03-02 |
 | 9. Fix Mobile Purchase & Login Bugs           | 2/2            | Complete | 2026-03-02 |
 | 10. Code Quality & Type Safety Cleanup        | 4/4            | Complete | 2026-03-03 |
-| 11. Fix Sales Detail View Crash               | 0/1            | Pending  | —          |
+| 11. Fix Sales Detail View Crash               | 1/1            | Complete | 2026-03-03 |
 | 12. Fix Dashboard Links, Web Types & Doc Sync | 0/1            | Pending  | —          |
 
 ---
