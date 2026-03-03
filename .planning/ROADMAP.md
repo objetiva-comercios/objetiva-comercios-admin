@@ -23,6 +23,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Verify & Close Phases 3+4** - Create missing VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies (Gap Closure)
 - [x] **Phase 9: Fix Mobile Purchase & Login Bugs** - Align purchase status enum, fix PurchaseItem field name, add mobile login password validation (Gap Closure) (completed 2026-03-02)
 - [x] **Phase 10: Code Quality & Type Safety Cleanup** - Remove dead code, consolidate utils, import shared schemas, fix type mismatches (Gap Closure) (completed 2026-03-03)
+- [ ] **Phase 11: Fix Sales Detail View Crash** - Add saleItems batch-loading in sales.findAll(), align field names in web/mobile sale detail views (Gap Closure)
+- [ ] **Phase 12: Fix Dashboard Links, Web Types & Doc Sync** - Remove dashboard dead links, align web entity ID types, fix mobile currency formatter, sync doc checkboxes (Gap Closure)
 
 ## Phase Details
 
@@ -256,10 +258,45 @@ Plans:
 - [x] 10-03-PLAN.md — Web currency formatter consolidation (10 components import from @objetiva/utils)
 - [ ] 10-04-PLAN.md — Gap closure: fix Zod v4 .errors to .issues in Login.tsx and Signup.tsx
 
+### Phase 11: Fix Sales Detail View Crash
+
+**Goal**: Fix critical runtime crash in sales detail views caused by missing saleItems batch-loading and misaligned field names
+**Depends on**: Phase 10
+**Requirements**: API-05
+**Gap Closure:** Closes INT-01 (critical), flows "Web Sales detail" and "Mobile Sales detail" from audit
+**Success Criteria** (what must be TRUE):
+
+1. `sales.findAll()` batch-loads `saleItems` matching orders/purchases pattern
+2. Web SaleSheet opens without crashing — items render correctly
+3. Mobile Sales BottomSheet opens without crashing — items render correctly
+4. Field names aligned: `item.price` (not `unitPrice`), no `sale.customerEmail` references
+
+Plans:
+
+- [ ] 11-01-PLAN.md — Backend saleItems batch-loading and frontend field name alignment
+
+### Phase 12: Fix Dashboard Links, Web Types & Doc Sync
+
+**Goal**: Fix dashboard dead links, align web entity ID types with backend, fix mobile currency formatter, and sync documentation checkboxes
+**Depends on**: Phase 11
+**Requirements**: DASH-01, NAV-07, MONO-03, UI-04
+**Gap Closure:** Closes INT-02 (high), INT-03 (medium), flows "Dashboard deep-linking" and "Mobile currency consistency" from audit
+**Success Criteria** (what must be TRUE):
+
+1. Dashboard card links either navigate to real pages or are non-navigable (no 404)
+2. Web entity type `id` fields are `number` matching backend Drizzle serial type
+3. Mobile Dashboard uses shared `formatCurrency` from `@objetiva/utils` (es-MX/MXN)
+4. REQUIREMENTS.md checkboxes synced for MONO-01/02/03, DOC-01/02/04
+5. ROADMAP.md plan checkboxes synced for Phases 6, 7, 10
+
+Plans:
+
+- [ ] 12-01-PLAN.md — Dashboard links fix, web type alignment, mobile formatter, doc checkbox sync
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 
 | Phase                                         | Plans Complete | Status   | Completed  |
 | --------------------------------------------- | -------------- | -------- | ---------- |
@@ -273,8 +310,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Verify & Close Phases 3+4                  | 3/3            | Complete | 2026-03-02 |
 | 9. Fix Mobile Purchase & Login Bugs           | 2/2            | Complete | 2026-03-02 |
 | 10. Code Quality & Type Safety Cleanup        | 4/4            | Complete | 2026-03-03 |
+| 11. Fix Sales Detail View Crash               | 0/1            | Pending  | —          |
+| 12. Fix Dashboard Links, Web Types & Doc Sync | 0/1            | Pending  | —          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-03 (Phase 10 gap closure plan 04 added — Zod v4 .errors/.issues fix)_
+_Last updated: 2026-03-03 (Gap closure phases 11-12 added from milestone audit)_
