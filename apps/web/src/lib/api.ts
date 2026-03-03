@@ -143,10 +143,6 @@ export async function fetchInventory(params?: {
   return fetchWithAuth<PaginatedResponse<Inventory>>(endpoint)
 }
 
-export async function fetchLowStock(): Promise<Inventory[]> {
-  return fetchWithAuth<Inventory[]>('/inventory/low-stock')
-}
-
 // --- Client-side fetch helpers (for use in 'use client' components) ---
 import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
 

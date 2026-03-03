@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 interface SectionErrorFallbackProps {
-  error: Error
+  error: unknown
   resetErrorBoundary: () => void
 }
 

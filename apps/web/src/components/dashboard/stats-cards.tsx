@@ -14,7 +14,7 @@ export function StatsCards({ stats, purchases }: StatsCardsProps) {
       title: 'Total Revenue',
       value: formatCurrency(stats.totalRevenue),
       icon: DollarSign,
-      description: `$${formatNumber(stats.todayRevenue)} today`,
+      description: `${formatCurrency(stats.todayRevenue)} today`,
       iconColor: 'text-green-600',
     },
     {
