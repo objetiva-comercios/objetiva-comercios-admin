@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-03T10:57:11.861Z'
+last_updated: '2026-03-03T11:28:00Z'
 progress:
   total_phases: 12
-  completed_phases: 11
-  total_plans: 40
-  completed_plans: 40
+  completed_phases: 12
+  total_plans: 41
+  completed_plans: 41
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 11: Fix Sales Detail Crash — Plan 1 Complete
+**Current focus:** Phase 12: Fix Dashboard Links, Web Types & Doc Sync — Plan 1 Complete — v1.0 MILESTONE FULLY ACHIEVED
 
 ## Current Position
 
-Phase: 11 of 12 (Fix Sales Detail Crash)
+Phase: 12 of 12 (Fix Dashboard Links, Web Types & Doc Sync)
 Plan: 1 of 1 complete
-Status: Phase 11 Plan 01 COMPLETE — Sales detail crash fixed; backend batch-loads sale_items; frontend types aligned with DB schema
-Last activity: 2026-03-03 — Completed 11-01 (inArray batch-load in sales.findAll(); Sale/SaleItem types corrected in web and mobile)
+Status: Phase 12 Plan 01 COMPLETE — Dashboard dead links fixed (OrderSheet/ProductSheet), web entity IDs migrated to number, mobile currency MXN/es-MX, doc checkboxes synced
+Last activity: 2026-03-03 — Completed 12-01 (dashboard sheet panels, web id:number migration, mobile formatCurrency, REQUIREMENTS.md/ROADMAP.md checkbox sync)
 
-Progress: [██████████] 100% (40/40 total plans)
+Progress: [██████████] 100% (41/41 total plans)
 
 ## Performance Metrics
 
@@ -264,6 +264,10 @@ Recent decisions affecting current work:
 - [Phase 10]: Mobile entity types now use id: number for Product, Order, OrderItem, Sale, SaleItem, Purchase, PurchaseItem, Inventory — aligned with backend Drizzle serial() columns
 - [Phase 10-code-quality-type-safety-cleanup]: Zod v4 ZodError.issues is the correct property; .errors does not exist in Zod v4 — both Login.tsx and Signup.tsx now access .issues[0]?.message for correct error message display
 - [Phase 11-fix-sales-detail-crash]: sales.findAll() inArray batch-load matches orders/purchases pattern; notes/customerEmail removed from Sale type (no DB columns)
+- [Phase 12-fix-dashboard-links-web-types-doc-sync]: Dashboard components converted Server->Client to support onClick sheet panels; Next.js 14 App Router allows Server Component parent to import Client Components
+- [Phase 12-fix-dashboard-links-web-types-doc-sync]: fetchOrderById/fetchProductById use browser Supabase client with createBrowserSupabaseClient alias to avoid collision with server createClient in api.ts
+- [Phase 12-fix-dashboard-links-web-types-doc-sync]: LowStockAlerts uses item.productId (not item.id) for product fetch — item.id is the inventory row ID, item.productId is the actual product ID
+- [Phase 12-fix-dashboard-links-web-types-doc-sync]: Web entity id fields migrated from string to number in 5 type files — aligns with backend Drizzle serial() columns returning JS numbers
 
 ### Pending Todos
 
@@ -285,10 +289,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-03 (Phase 11 Plan 01 executed — sales detail crash fix; inArray batch-load + Sale type corrections)
-Stopped at: Completed 11-01-PLAN.md (sales.findAll() batch-loads sale_items; Sale/SaleItem types corrected in web and mobile)
+Last session: 2026-03-03 (Phase 12 Plan 01 executed — dashboard sheet panels + web id:number migration + mobile MXN currency + doc checkbox sync)
+Stopped at: Completed 12-01-PLAN.md (all Phase 12 items complete; v1.0 milestone fully achieved)
 Resume file: None
-Next up: Phase 12 — Fix Sales Type IDs (SaleItem.id and SaleItem.productId string->number in web, if planned)
+Next up: None — all 41 plans across all 12 phases complete; v1.0 milestone achieved
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -338,7 +342,9 @@ Next up: Phase 12 — Fix Sales Type IDs (SaleItem.id and SaleItem.productId str
 
 **Phase 11 Plan 01 Achievement:** Sales detail crash fixed — backend `sales.findAll()` now batch-loads `sale_items` via inArray+Map pattern matching orders/purchases services; web and mobile `SaleItem` types corrected (unitPrice->price, total->subtotal); `Sale` type cleaned (customerEmail and notes removed — no DB columns); sale-sheet.tsx and Sales.tsx BottomSheet updated to use correct field names with empty-items guards; backend, web compile clean; all 40 plans complete
 
+**Phase 12 Plan 01 Achievement (PHASE 12 COMPLETE — v1.0 MILESTONE FULLY ACHIEVED):** All gap closure items resolved — dashboard `recent-orders.tsx` and `low-stock-alerts.tsx` converted to Client Components with OrderSheet/ProductSheet side panels (no more 404 navigation); web entity id fields migrated from string to number in 5 type files (order, product, sale, purchase, inventory) matching backend Drizzle serial() columns; mobile Dashboard currency fixed from USD/en-US to MXN/es-MX via `formatCurrency` from `@objetiva/utils` (4 occurrences); REQUIREMENTS.md: MONO-01/02/03, DOC-01/02/04 checkboxes synced to [x]; ROADMAP.md: 06-01/02/03/04, 07-01/02, 10-04, 11-01 plan checkboxes synced to [x]; pnpm exec tsc --noEmit passes with zero errors; all 41 plans across all 12 phases complete
+
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-03 (10-04 complete — Zod v4 .errors -> .issues fix; Phase 10 gap closure complete; 39/39 plans done)_
+_Last updated: 2026-03-03 (12-01 complete — dashboard sheets, web id:number, mobile MXN currency, doc sync; all 41 plans done; v1.0 milestone fully achieved)_

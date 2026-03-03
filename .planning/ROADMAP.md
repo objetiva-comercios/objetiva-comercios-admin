@@ -24,7 +24,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 9: Fix Mobile Purchase & Login Bugs** - Align purchase status enum, fix PurchaseItem field name, add mobile login password validation (Gap Closure) (completed 2026-03-02)
 - [x] **Phase 10: Code Quality & Type Safety Cleanup** - Remove dead code, consolidate utils, import shared schemas, fix type mismatches (Gap Closure) (completed 2026-03-03)
 - [x] **Phase 11: Fix Sales Detail View Crash** - Add saleItems batch-loading in sales.findAll(), align field names in web/mobile sale detail views (Gap Closure) (completed 2026-03-03)
-- [ ] **Phase 12: Fix Dashboard Links, Web Types & Doc Sync** - Remove dashboard dead links, align web entity ID types, fix mobile currency formatter, sync doc checkboxes (Gap Closure)
+- [x] **Phase 12: Fix Dashboard Links, Web Types & Doc Sync** - Remove dashboard dead links, align web entity ID types, fix mobile currency formatter, sync doc checkboxes (Gap Closure)
 
 ## Phase Details
 
@@ -291,7 +291,7 @@ Plans:
 
 Plans:
 
-- [ ] 12-01-PLAN.md — Dashboard links fix, web type alignment, mobile formatter, doc checkbox sync
+- [x] 12-01-PLAN.md — Dashboard links fix, web type alignment, mobile formatter, doc checkbox sync
 
 ## Progress
 
@@ -311,9 +311,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 9. Fix Mobile Purchase & Login Bugs           | 2/2            | Complete | 2026-03-02 |
 | 10. Code Quality & Type Safety Cleanup        | 4/4            | Complete | 2026-03-03 |
 | 11. Fix Sales Detail View Crash               | 1/1            | Complete | 2026-03-03 |
-| 12. Fix Dashboard Links, Web Types & Doc Sync | 0/1            | Pending  | —          |
+| 12. Fix Dashboard Links, Web Types & Doc Sync | 1/1            | Complete | 2026-03-03 |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-03 (Gap closure phases 11-12 added from milestone audit)_
+_Last updated: 2026-03-03 (Phase 12 complete — dashboard sheets, web id:number, mobile MXN currency, doc sync; all 41 plans done; v1.0 milestone fully achieved)_

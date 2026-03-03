@@ -206,4 +206,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 
 _Requirements defined: 2026-01-22_
-_Last updated: 2026-03-03 after gap closure phases 11-12 added from milestone audit_
+_Last updated: 2026-03-03 (Phase 12 complete — all 47 v1 requirements now [x]; v1.0 milestone fully achieved)_
