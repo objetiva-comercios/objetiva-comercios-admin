@@ -32,7 +32,7 @@ Requirements for initial release (Phase 1 foundation). Each maps to roadmap phas
 - [x] **UI-02**: Dark theme implemented and works across platforms
 - [x] **UI-03**: Layout is responsive and adapts to screen sizes
 - [x] **UI-04**: Mobile and web feel cohesive despite platform-specific implementations
-- [ ] **UI-05**: Components live in packages/ui with shared design tokens
+- [x] **UI-05**: Components live in packages/ui with shared design tokens
 
 ### Dashboard
 
