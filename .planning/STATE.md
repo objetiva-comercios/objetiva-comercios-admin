@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: '2026-03-03T11:34:04.610Z'
+last_updated: '2026-03-03T12:49:54.058Z'
 progress:
-  total_phases: 12
-  completed_phases: 12
-  total_plans: 41
-  completed_plans: 41
+  total_phases: 13
+  completed_phases: 13
+  total_plans: 42
+  completed_plans: 42
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 12: Fix Dashboard Links, Web Types & Doc Sync — Plan 1 Complete — v1.0 MILESTONE FULLY ACHIEVED
+**Current focus:** Phase 13: Tech Debt Cleanup — Plan 1 Complete — v1.0 MILESTONE FULLY ACHIEVED
 
 ## Current Position
 
-Phase: 12 of 12 (Fix Dashboard Links, Web Types & Doc Sync)
+Phase: 13 of 13 (Tech Debt Cleanup)
 Plan: 1 of 1 complete
-Status: Phase 12 Plan 01 COMPLETE — Dashboard dead links fixed (OrderSheet/ProductSheet), web entity IDs migrated to number, mobile currency MXN/es-MX, doc checkboxes synced
-Last activity: 2026-03-03 — Completed 12-01 (dashboard sheet panels, web id:number migration, mobile formatCurrency, REQUIREMENTS.md/ROADMAP.md checkbox sync)
+Status: Phase 13 Plan 01 COMPLETE — Mobile TS2322 error type fixed, dead forgot-password link removed, fetchLowStock deleted, todayRevenue uses formatCurrency MXN, colors.ts token deleted
+Last activity: 2026-03-03 — Completed 13-01 (SectionErrorFallback error:unknown, login dead link, fetchLowStock dead export, stats-cards MXN format, colors.ts deletion)
 
-Progress: [██████████] 100% (41/41 total plans)
+Progress: [██████████] 100% (42/42 total plans)
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ _Updated after each plan completion_
 | Phase 10 P03 | 3 | 2 tasks | 10 files |
 | Phase 10-code-quality-type-safety-cleanup P04 | 1 | 1 tasks | 2 files |
 | Phase 11-fix-sales-detail-crash P01 | 4 | 2 tasks | 5 files |
+| Phase 13-tech-debt-cleanup P01 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -268,6 +269,8 @@ Recent decisions affecting current work:
 - [Phase 12-fix-dashboard-links-web-types-doc-sync]: fetchOrderById/fetchProductById use browser Supabase client with createBrowserSupabaseClient alias to avoid collision with server createClient in api.ts
 - [Phase 12-fix-dashboard-links-web-types-doc-sync]: LowStockAlerts uses item.productId (not item.id) for product fetch — item.id is the inventory row ID, item.productId is the actual product ID
 - [Phase 12-fix-dashboard-links-web-types-doc-sync]: Web entity id fields migrated from string to number in 5 type files — aligns with backend Drizzle serial() columns returning JS numbers
+- [Phase 13-tech-debt-cleanup]: error: unknown over error: Error in SectionErrorFallback — react-error-boundary v6 FallbackProps uses unknown, runtime usage is console.error so unknown is safe
+- [Phase 13-tech-debt-cleanup]: colors.ts deletion confirmed safe — tailwind configs import only spacing+typography from @objetiva/ui/tokens, zero consumers of colors or Colors type
 
 ### Pending Todos
 
@@ -289,10 +292,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-03 (Phase 12 Plan 01 executed — dashboard sheet panels + web id:number migration + mobile MXN currency + doc checkbox sync)
-Stopped at: Completed 12-01-PLAN.md (all Phase 12 items complete; v1.0 milestone fully achieved)
+Last session: 2026-03-03 (Phase 13 Plan 01 executed — SectionErrorFallback error:unknown fix, dead forgot-password link removed, fetchLowStock deleted, stats-cards MXN currency, colors.ts token deleted)
+Stopped at: Completed 13-01-PLAN.md (all Phase 13 items complete; all 42 plans across all 13 phases done)
 Resume file: None
-Next up: None — all 41 plans across all 12 phases complete; v1.0 milestone achieved
+Next up: None — all 42 plans across all 13 phases complete; v1.0 milestone + tech debt cleanup achieved
 
 **Phase 3 Achievement:** Complete web dashboard with 7 functional sections, authentication, responsive design, dark theme, and data tables. Human verification passed
 
@@ -344,7 +347,9 @@ Next up: None — all 41 plans across all 12 phases complete; v1.0 milestone ach
 
 **Phase 12 Plan 01 Achievement (PHASE 12 COMPLETE — v1.0 MILESTONE FULLY ACHIEVED):** All gap closure items resolved — dashboard `recent-orders.tsx` and `low-stock-alerts.tsx` converted to Client Components with OrderSheet/ProductSheet side panels (no more 404 navigation); web entity id fields migrated from string to number in 5 type files (order, product, sale, purchase, inventory) matching backend Drizzle serial() columns; mobile Dashboard currency fixed from USD/en-US to MXN/es-MX via `formatCurrency` from `@objetiva/utils` (4 occurrences); REQUIREMENTS.md: MONO-01/02/03, DOC-01/02/04 checkboxes synced to [x]; ROADMAP.md: 06-01/02/03/04, 07-01/02, 10-04, 11-01 plan checkboxes synced to [x]; pnpm exec tsc --noEmit passes with zero errors; all 41 plans across all 12 phases complete
 
+**Phase 13 Plan 01 Achievement (PHASE 13 COMPLETE — TECH DEBT CLEARED):** Five surgical v1.0 audit fixes — SectionErrorFallback `error: Error` changed to `error: unknown` resolving 8 mobile TS2322 errors; dead `/forgot-password` link and wrapper div removed from login/page.tsx; `fetchLowStock()` export deleted from api.ts (no consumers); `stats-cards.tsx` todayRevenue subtitle switched from `$${formatNumber(...)}` to `${formatCurrency(...)}` for MXN consistency; `packages/ui/src/tokens/colors.ts` deleted and barrel index.ts cleaned (no consumers in any app); mobile and web TypeScript both exit 0; all 42 plans across all 13 phases complete
+
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-03 (12-01 complete — dashboard sheets, web id:number, mobile MXN currency, doc sync; all 41 plans done; v1.0 milestone fully achieved)_
+_Last updated: 2026-03-03 (13-01 complete — SectionErrorFallback type fix, dead link/code removal, MXN format, colors token cleanup; all 42 plans done; v1.0 tech debt cleared)_
