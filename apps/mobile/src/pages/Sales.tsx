@@ -115,29 +115,29 @@ export function Sales() {
                 <p className="text-xs text-muted-foreground">Customer</p>
                 <p className="text-sm font-medium text-foreground">{selectedSale.customerName}</p>
               </div>
-              <div className="col-span-2">
-                <p className="text-xs text-muted-foreground">Email</p>
-                <p className="text-sm text-foreground">{selectedSale.customerEmail}</p>
-              </div>
             </div>
 
             {/* Items */}
             <div>
               <p className="text-xs text-muted-foreground mb-2">Items</p>
               <div className="flex flex-col gap-2">
-                {selectedSale.items.map(item => (
-                  <div key={item.id} className="flex items-center justify-between text-sm">
-                    <div className="flex-1 mr-2">
-                      <span className="text-foreground">{item.productName}</span>
-                      <span className="text-muted-foreground ml-2">
-                        {item.quantity} x {formatCurrency(item.unitPrice)}
+                {selectedSale.items.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No items</p>
+                ) : (
+                  selectedSale.items.map(item => (
+                    <div key={item.id} className="flex items-center justify-between text-sm">
+                      <div className="flex-1 mr-2">
+                        <span className="text-foreground">{item.productName}</span>
+                        <span className="text-muted-foreground ml-2">
+                          {item.quantity} x {formatCurrency(item.price)}
+                        </span>
+                      </div>
+                      <span className="text-foreground font-medium">
+                        {formatCurrency(item.subtotal)}
                       </span>
                     </div>
-                    <span className="text-foreground font-medium">
-                      {formatCurrency(item.total)}
-                    </span>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
@@ -162,13 +162,6 @@ export function Sales() {
                 <span className="text-foreground">{formatCurrency(selectedSale.total)}</span>
               </div>
             </div>
-
-            {selectedSale.notes && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Notes</p>
-                <p className="text-sm text-foreground">{selectedSale.notes}</p>
-              </div>
-            )}
 
             {/* Date */}
             <div className="border-t border-border pt-3">

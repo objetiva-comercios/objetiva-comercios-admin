@@ -3,15 +3,14 @@ export interface SaleItem {
   productId: string
   productName: string
   quantity: number
-  unitPrice: number
-  total: number
+  price: number
+  subtotal: number
 }
 
 export interface Sale {
   id: string
   saleNumber: string
   customerName: string
-  customerEmail: string
   items: SaleItem[]
   subtotal: number
   tax: number
@@ -19,6 +18,5 @@ export interface Sale {
   total: number
   paymentMethod: 'cash' | 'card' | 'transfer' | 'credit'
   status: 'completed' | 'refunded' | 'partial_refund'
-  notes: string
   createdAt: string
 }

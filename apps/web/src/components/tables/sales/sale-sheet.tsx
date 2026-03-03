@@ -56,7 +56,6 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
             <h3 className="text-sm font-medium mb-2">Customer</h3>
             <div className="space-y-1">
               <p className="text-sm font-medium">{sale.customerName}</p>
-              <p className="text-sm text-muted-foreground">{sale.customerEmail}</p>
             </div>
           </div>
 
@@ -66,17 +65,21 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
           <div>
             <h3 className="text-sm font-medium mb-3">Items</h3>
             <div className="space-y-3">
-              {sale.items.map(item => (
-                <div key={item.id} className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{item.productName}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.quantity} x {formatCurrency(item.unitPrice)}
-                    </p>
+              {sale.items.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No items</p>
+              ) : (
+                sale.items.map(item => (
+                  <div key={item.id} className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{item.productName}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.quantity} x {formatCurrency(item.price)}
+                      </p>
+                    </div>
+                    <p className="text-sm font-medium">{formatCurrency(item.subtotal)}</p>
                   </div>
-                  <p className="text-sm font-medium">{formatCurrency(item.total)}</p>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -116,17 +119,6 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
             <h3 className="text-sm font-medium mb-2">Payment Method</h3>
             <p className="text-sm">{paymentMethodLabels[sale.paymentMethod]}</p>
           </div>
-
-          {/* Notes */}
-          {sale.notes && (
-            <>
-              <Separator />
-              <div>
-                <h3 className="text-sm font-medium mb-2">Notes</h3>
-                <p className="text-sm text-muted-foreground">{sale.notes}</p>
-              </div>
-            </>
-          )}
 
           <Separator />
 
