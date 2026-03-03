@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { getPasswordStrength } from '@objetiva/types'
+import { getPasswordStrength, signupSchema } from '@objetiva/types'
 
 export function Signup() {
   const [email, setEmail] = useState('')
@@ -17,22 +17,9 @@ export function Signup() {
     e.preventDefault()
     setError(null)
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-
-    // Validate password strength requirements
-    if (!/[A-Z]/.test(password)) {
-      setError('Password must contain at least one uppercase letter')
-      return
-    }
-    if (!/[0-9]/.test(password)) {
-      setError('Password must contain at least one number')
-      return
-    }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+    const result = signupSchema.safeParse({ email, password, confirmPassword })
+    if (!result.success) {
+      setError(result.error.errors[0]?.message ?? 'Please check your inputs')
       return
     }
 
