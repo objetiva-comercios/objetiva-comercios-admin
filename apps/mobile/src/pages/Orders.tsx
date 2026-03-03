@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { formatCurrency, formatDate } from '@objetiva/utils'
 import { Card } from '../components/ui/Card'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { FilterChips } from '../components/ui/FilterChips'
@@ -16,10 +17,6 @@ const STATUS_FILTERS = [
   { label: 'Cancelled', value: 'cancelled' },
 ]
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
-}
-
 function formatRelativeTime(iso: string) {
   const diff = Date.now() - new Date(iso).getTime()
   const minutes = Math.floor(diff / 60000)
@@ -29,14 +26,6 @@ function formatRelativeTime(iso: string) {
   if (hours > 0) return `${hours}h ago`
   if (minutes > 0) return `${minutes}m ago`
   return 'Just now'
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-MX', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 
 export function Orders() {

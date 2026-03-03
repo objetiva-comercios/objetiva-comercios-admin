@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { formatCurrency, formatDate } from '@objetiva/utils'
 import { Card } from '../components/ui/Card'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { FilterChips } from '../components/ui/FilterChips'
@@ -14,19 +15,6 @@ const STATUS_FILTERS = [
   { label: 'Received', value: 'received' },
   { label: 'Cancelled', value: 'cancelled' },
 ]
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
-}
-
-function formatDate(iso: string | null) {
-  if (!iso) return 'Not received'
-  return new Date(iso).toLocaleDateString('es-MX', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
 
 function deliveryIndicator(purchase: Purchase): { label: string; className: string } {
   if (purchase.receivedAt) {

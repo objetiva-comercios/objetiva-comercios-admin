@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { formatDate } from '@objetiva/utils'
 import { cn } from '@objetiva/ui'
 import { Card } from '../components/ui/Card'
 import { StatusBadge } from '../components/ui/StatusBadge'
@@ -19,14 +20,6 @@ const QUANTITY_COLOR: Record<string, string> = {
   in_stock: 'text-green-600 dark:text-green-400',
   low_stock: 'text-yellow-600 dark:text-yellow-400',
   out_of_stock: 'text-red-600 dark:text-red-400',
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-MX', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 
 export function Inventory() {

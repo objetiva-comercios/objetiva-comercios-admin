@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { formatCurrency, formatDate } from '@objetiva/utils'
 import { Card } from '../components/ui/Card'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { FilterChips } from '../components/ui/FilterChips'
@@ -19,18 +20,6 @@ const PAYMENT_METHOD_LABEL: Record<Sale['paymentMethod'], string> = {
   card: 'Card',
   transfer: 'Transfer',
   credit: 'Credit',
-}
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-MX', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 
 export function Sales() {

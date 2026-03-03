@@ -1,15 +1,7 @@
 import { useNavigate } from 'react-router-dom'
+import { formatDate } from '@objetiva/utils'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-
-function formatDate(iso: string | undefined) {
-  if (!iso) return 'Unknown'
-  return new Date(iso).toLocaleDateString('es-MX', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
 
 function formatRelativeTime(iso: string | undefined) {
   if (!iso) return 'Unknown'
@@ -80,7 +72,9 @@ export function Profile() {
           </div>
           <div className="flex flex-col px-4 py-3">
             <p className="text-xs text-muted-foreground mb-0.5">Account Created</p>
-            <p className="text-sm text-foreground">{formatDate(user.created_at)}</p>
+            <p className="text-sm text-foreground">
+              {user.created_at ? formatDate(user.created_at) : 'Unknown'}
+            </p>
           </div>
           <div className="flex flex-col px-4 py-3">
             <p className="text-xs text-muted-foreground mb-0.5">Last Sign In</p>
