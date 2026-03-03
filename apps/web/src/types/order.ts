@@ -1,13 +1,13 @@
 export interface OrderItem {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   quantity: number
   price: number
 }
 
 export interface Order {
-  id: string
+  id: number
   orderNumber: string
   customerName: string
   customerEmail: string

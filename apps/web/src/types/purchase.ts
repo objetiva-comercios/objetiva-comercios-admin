@@ -1,6 +1,6 @@
 export interface PurchaseItem {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   quantity: number
   unitCost: number
@@ -8,7 +8,7 @@ export interface PurchaseItem {
 }
 
 export interface Purchase {
-  id: string
+  id: number
   purchaseNumber: string
   supplierName: string
   supplierContact: string

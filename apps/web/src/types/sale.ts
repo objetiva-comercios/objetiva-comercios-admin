@@ -1,6 +1,6 @@
 export interface SaleItem {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   quantity: number
   price: number
@@ -8,7 +8,7 @@ export interface SaleItem {
 }
 
 export interface Sale {
-  id: string
+  id: number
   saleNumber: string
   customerName: string
   items: SaleItem[]

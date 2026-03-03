@@ -1,6 +1,6 @@
 export interface Inventory {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   sku: string
   quantity: number
