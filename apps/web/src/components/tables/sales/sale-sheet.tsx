@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@objetiva/utils'
 import type { Sale } from '@/types/sale'
 
 interface SaleSheetProps {
@@ -33,13 +34,6 @@ const paymentMethodLabels = {
 
 export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
   if (!sale) return null
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value)
-  }
 
   const statusLabel =
     sale.status === 'partial_refund'

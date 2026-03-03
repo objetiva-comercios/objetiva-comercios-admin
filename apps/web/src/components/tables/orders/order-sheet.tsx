@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@objetiva/utils'
 import type { Order } from '@/types/order'
 
 interface OrderSheetProps {
@@ -36,13 +37,6 @@ const statusColors = {
 
 export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
   if (!order) return null
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value)
-  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

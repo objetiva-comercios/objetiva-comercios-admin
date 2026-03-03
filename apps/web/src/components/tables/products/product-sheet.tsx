@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@objetiva/utils'
 import type { Product } from '@/types/product'
 
 interface ProductSheetProps {
@@ -26,13 +27,6 @@ const statusVariants = {
 
 export function ProductSheet({ product, open, onOpenChange }: ProductSheetProps) {
   if (!product) return null
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value)
-  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

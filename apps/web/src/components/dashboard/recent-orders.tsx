@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
+import { formatCurrency } from '@objetiva/utils'
 import type { RecentOrder } from '@/types/dashboard'
 
 interface RecentOrdersProps {
@@ -56,13 +57,6 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
       </CardContent>
     </Card>
   )
-}
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
 }
 
 function formatStatus(status: string): string {

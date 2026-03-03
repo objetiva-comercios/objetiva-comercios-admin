@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, ShoppingCart, Package, TrendingUp, Truck } from 'lucide-react'
+import { formatCurrency } from '@objetiva/utils'
 import type { DashboardStats } from '@/types/dashboard'
 
 interface StatsCardsProps {
@@ -62,13 +63,6 @@ export function StatsCards({ stats, purchases }: StatsCardsProps) {
       ))}
     </div>
   )
-}
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
 }
 
 function formatNumber(num: number): string {

@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@objetiva/utils'
 import type { Purchase } from '@/types/purchase'
 
 interface PurchaseSheetProps {
@@ -34,13 +35,6 @@ const statusColors = {
 
 export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetProps) {
   if (!purchase) return null
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value)
-  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
