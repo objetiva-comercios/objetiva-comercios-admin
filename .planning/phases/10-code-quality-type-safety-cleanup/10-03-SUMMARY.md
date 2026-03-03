@@ -116,6 +116,15 @@ None - no external service configuration required.
 - Web and mobile apps both use shared formatCurrency/formatDate from @objetiva/utils with es-MX/MXN defaults
 - No blockers for v1.0 milestone close
 
+## Self-Check: PASSED
+
+- FOUND: apps/web/src/components/dashboard/stats-cards.tsx
+- FOUND: apps/web/src/components/dashboard/recent-orders.tsx
+- FOUND: apps/web/src/components/tables/products/columns.tsx
+- FOUND: .planning/phases/10-code-quality-type-safety-cleanup/10-03-SUMMARY.md
+- FOUND: 8f36577 (Task 1 commit)
+- FOUND: f668b68 (Task 2 commit)
+
 ---
 
 _Phase: 10-code-quality-type-safety-cleanup_

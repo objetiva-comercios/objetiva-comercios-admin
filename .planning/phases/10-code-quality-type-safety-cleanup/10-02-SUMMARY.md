@@ -73,7 +73,7 @@ Each task was committed atomically:
 1. **Task 1: Replace local formatCurrency/formatDate in mobile pages** - `7f4c361` (feat)
 2. **Task 2: Fix mobile entity id types from string to number** - `4a3fe5f` (feat)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `cda2eec` (docs: complete plan)
 
 ## Files Created/Modified
 
@@ -108,6 +108,20 @@ None - no external service configuration required.
 - Mobile formatter consolidation complete — zero duplicate formatter definitions in mobile pages
 - Entity types aligned with backend schema — TypeScript will now catch id type mismatches at compile time
 - Pre-existing TS errors in SplashGate/Login/Signup deferred to 10-03 or dedicated cleanup plan
+
+## Self-Check: PASSED
+
+- FOUND: `apps/mobile/src/types/index.ts` — id fields changed, verified 0 string ids remain
+- FOUND: `apps/mobile/src/pages/Articles.tsx` — @objetiva/utils import present
+- FOUND: `apps/mobile/src/pages/Sales.tsx` — @objetiva/utils import present
+- FOUND: `apps/mobile/src/pages/Orders.tsx` — @objetiva/utils import present
+- FOUND: `apps/mobile/src/pages/Purchases.tsx` — @objetiva/utils import present, null guard at call site
+- FOUND: `apps/mobile/src/pages/Inventory.tsx` — @objetiva/utils import present
+- FOUND: `apps/mobile/src/pages/Profile.tsx` — @objetiva/utils import present, undefined guard at call site
+- FOUND: `10-02-SUMMARY.md` — this file
+- FOUND: `7f4c361` — Task 1 commit (mobile formatter imports)
+- FOUND: `4a3fe5f` — Task 2 commit (entity id types)
+- FOUND: `cda2eec` — metadata commit
 
 ---
 

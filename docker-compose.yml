@@ -1,0 +1,23 @@
+services:
+  erp-web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    container_name: erp-web
+    restart: unless-stopped
+    networks:
+      - sanchez_docker_network
+
+  erp-backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: erp-backend
+    restart: unless-stopped
+    env_file: ./apps/backend/.env.production
+    networks:
+      - sanchez_docker_network
+
+networks:
+  sanchez_docker_network:
+    external: true

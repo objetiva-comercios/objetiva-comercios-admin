@@ -1,353 +1,353 @@
 # Objetiva Comercios Admin
 
-A reusable admin foundation for commercial applications with authentication, navigation, and operational sections. Built as a monorepo with web and mobile apps sharing authentication and design tokens.
+Sistema de administracion reutilizable para aplicaciones comerciales. Provee una base solida con autenticacion, navegacion y secciones operativas (dashboard, productos, ordenes, inventario, ventas, compras) para comercios pequenos y medianos. Funciona como monorepo con una app web (Next.js), una app movil (Capacitor + React), y un backend (NestJS) que comparten autenticacion via Supabase y datos de negocio en PostgreSQL separado.
 
-## Tech Stack
+## Tecnologias
 
-- **Monorepo**: pnpm workspaces + Turborepo
-- **Web**: Next.js 14 (App Router), React, TypeScript, Tailwind CSS
-- **Mobile**: Vite + React (Capacitor for iOS/Android in Phase 4)
-- **Backend**: NestJS, TypeScript
-- **Auth**: Supabase Auth (JWT validation)
-- **UI**: shadcn/ui components, shared design tokens
+| Categoria      | Tecnologia                                          |
+| -------------- | --------------------------------------------------- |
+| Monorepo       | pnpm 9, Turborepo 2                                 |
+| Frontend Web   | Next.js 14 (App Router), React 18, Tailwind CSS 3.4 |
+| Frontend Movil | Vite 5, React 18, Capacitor 8, React Router 7       |
+| Backend        | NestJS 10, TypeScript 5.3                           |
+| Base de datos  | PostgreSQL (Drizzle ORM 0.45)                       |
+| Autenticacion  | Supabase Auth (JWT via JWKS)                        |
+| UI             | shadcn/ui, Radix UI, Lucide Icons, Recharts         |
+| Tablas         | TanStack Table 8, TanStack Query 5 (movil)          |
+| Validacion     | Zod 4, class-validator                              |
+| Calidad        | ESLint, Prettier, Husky, lint-staged                |
 
-## Prerequisites
+## Requisitos previos
 
-- Node.js 20+ ([download](https://nodejs.org/))
-- pnpm 9+ (`corepack enable pnpm`)
-- Git
+- Node.js >= 20
+- pnpm >= 9 (`corepack enable pnpm`)
+- PostgreSQL (local o remoto)
+- Proyecto de Supabase (solo para autenticacion)
 
-## Quick Start
+## Instalacion
+
+1. Clonar el repositorio e instalar dependencias:
 
 ```bash
-# Clone the repository
 git clone <repository-url>
 cd objetiva-comercios-admin
-
-# Install dependencies (all workspaces)
 pnpm install
+```
 
-# Build shared packages (required before dev)
+2. Compilar los paquetes compartidos (necesario antes de `dev`):
+
+```bash
 pnpm build
+```
 
-# Start all apps in development mode
+3. Configurar las variables de entorno (ver seccion siguiente).
+
+4. Crear la base de datos PostgreSQL y ejecutar migraciones:
+
+```bash
+createdb nombre_de_tu_base
+cd apps/backend
+pnpm db:migrate
+pnpm db:seed
+```
+
+5. Iniciar todos los servicios en modo desarrollo:
+
+```bash
 pnpm dev
 ```
 
-Apps run on:
+## Configuracion
 
-- **Web**: http://localhost:3000
-- **Mobile**: http://localhost:5173
-- **Backend**: http://localhost:3001
+El proyecto usa **dos bases de datos separadas**:
 
-## Project Structure
+- **Supabase**: Exclusivamente para autenticacion (login, signup, JWT). No almacena datos de negocio.
+- **PostgreSQL local** (Drizzle ORM): Todos los datos de negocio (productos, ordenes, inventario, ventas, compras).
+
+El backend no se conecta a la base de Supabase. Solo valida los JWT que Supabase genera, usando el endpoint JWKS publico.
+
+### `apps/backend/.env`
+
+```env
+DATABASE_URL=postgresql://usuario:password@localhost:5432/nombre_de_tu_base
+SUPABASE_PROJECT_ID=tu-project-id
+PORT=3001
+NODE_ENV=development
+```
+
+| Variable              | Default       | Descripcion                                             |
+| --------------------- | ------------- | ------------------------------------------------------- |
+| `DATABASE_URL`        | -             | Connection string de PostgreSQL para datos de negocio   |
+| `SUPABASE_PROJECT_ID` | -             | Reference ID del proyecto Supabase (Settings > General) |
+| `PORT`                | `3001`        | Puerto del servidor backend                             |
+| `NODE_ENV`            | `development` | Entorno de ejecucion                                    |
+
+### `apps/web/.env`
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://tu-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+| Variable                        | Default                 | Descripcion                                |
+| ------------------------------- | ----------------------- | ------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | -                       | URL del proyecto Supabase                  |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | -                       | Clave publica (anon) del proyecto Supabase |
+| `NEXT_PUBLIC_API_URL`           | `http://localhost:3001` | URL del backend                            |
+
+### `apps/mobile/.env`
+
+```env
+VITE_SUPABASE_URL=https://tu-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=tu-anon-key
+VITE_API_URL=http://localhost:3001
+```
+
+| Variable                 | Default                 | Descripcion                                |
+| ------------------------ | ----------------------- | ------------------------------------------ |
+| `VITE_SUPABASE_URL`      | -                       | URL del proyecto Supabase                  |
+| `VITE_SUPABASE_ANON_KEY` | -                       | Clave publica (anon) del proyecto Supabase |
+| `VITE_API_URL`           | `http://localhost:3001` | URL del backend                            |
+
+## Uso
+
+| Comando             | Descripcion                                |
+| ------------------- | ------------------------------------------ |
+| `pnpm dev`          | Inicia todas las apps en modo desarrollo   |
+| `pnpm build`        | Compila todos los paquetes y apps          |
+| `pnpm type-check`   | Verificacion de tipos TypeScript           |
+| `pnpm lint`         | Ejecuta ESLint en todo el monorepo         |
+| `pnpm lint:fix`     | Corrige errores de linting automaticamente |
+| `pnpm format`       | Formatea con Prettier                      |
+| `pnpm format:check` | Verifica formato sin modificar             |
+
+### Desarrollo
+
+```bash
+# Todas las apps en paralelo
+pnpm dev
+
+# App individual
+pnpm dev --filter=@objetiva/web
+pnpm dev --filter=@objetiva/mobile
+pnpm dev --filter=@objetiva/backend
+```
+
+Puertos:
+
+- Web: http://localhost:3000
+- Mobile: http://localhost:5173
+- Backend: http://localhost:3001
+
+### Produccion (Docker)
+
+```bash
+docker compose up -d --build
+```
+
+Los servicios `erp-web` y `erp-backend` se conectan a la red externa `sanchez_docker_network`. El backend carga variables desde `apps/backend/.env.production`.
+
+## Arquitectura del proyecto
 
 ```
 objetiva-comercios-admin/
 ├── apps/
-│   ├── web/                 # Next.js admin web app
-│   ├── mobile/              # Vite + React mobile app
-│   └── backend/             # NestJS API server
+│   ├── backend/             # NestJS API + Drizzle ORM
+│   │   ├── src/
+│   │   │   ├── auth/        # Modulo de autenticacion (controller, types)
+│   │   │   ├── common/      # Guards (JWT), decoradores, DTOs base, filtros de excepcion
+│   │   │   ├── db/          # DrizzleService, schema, seed, generators
+│   │   │   └── modules/     # dashboard, products, orders, inventory, sales, purchases
+│   │   └── drizzle/         # Migraciones SQL generadas
+│   ├── web/                 # Next.js 14 App Router
+│   │   └── src/
+│   │       ├── app/         # Rutas: dashboard, articles, orders, inventory, sales, purchases, settings
+│   │       ├── components/  # dashboard/, layout/, providers/, settings/, tables/, ui/ (shadcn)
+│   │       └── lib/         # Supabase clients, API fetch, utilidades
+│   └── mobile/              # Vite + React + Capacitor
+│       └── src/
+│           ├── components/  # auth/, layout/ (AppShell, BottomTabs, DrawerNav), ui/, OfflineBanner
+│           ├── pages/       # Dashboard, Articles, Orders, Inventory, Sales, Purchases, Login, Signup, Profile, Settings
+│           └── lib/         # Supabase client, API fetch
 ├── packages/
-│   ├── ui/                  # Shared design tokens & components
-│   ├── types/               # Shared TypeScript types
-│   └── utils/               # Shared utilities
-├── pnpm-workspace.yaml      # Workspace definition
-├── turbo.json               # Build pipeline configuration
-└── package.json             # Root package with scripts
+│   ├── types/               # Tipos compartidos: User, AppRole, ApiResponse, schemas Zod
+│   ├── ui/                  # Design tokens (spacing, typography), utilidad cn()
+│   └── utils/               # formatCurrency (MXN), formatDate (es-MX)
+├── docker/
+│   ├── web.Dockerfile       # Build multi-stage Next.js standalone
+│   └── backend.Dockerfile   # Build multi-stage NestJS
+├── docker-compose.yml       # Servicios erp-web + erp-backend
+├── turbo.json               # Pipeline de build con cache
+└── pnpm-workspace.yaml      # apps/* + packages/*
 ```
 
-## Environment Setup
-
-### 1. Supabase Project
-
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project (or use existing)
-3. Navigate to **Project Settings > General** to get your **Reference ID** (project ID)
-4. Navigate to **Project Settings > API** to get your **anon public** key
-
-### 2. Configure Environment Variables
-
-Copy the example env file for each app:
-
-```bash
-# Backend
-cp apps/backend/.env.example apps/backend/.env
-# Edit apps/backend/.env with your Supabase project ID
-
-# Web (optional for Phase 1)
-cp apps/web/.env.example apps/web/.env
-
-# Mobile (optional for Phase 1)
-cp apps/mobile/.env.example apps/mobile/.env
-```
-
-**Required for backend** (`apps/backend/.env`):
+Flujo de autenticacion:
 
 ```
-SUPABASE_PROJECT_ID=your-project-reference-id
-PORT=3001
+Usuario → [Web/Mobile] → Supabase Auth → JWT
+                                           │
+                                           ▼
+                          [Backend] ← valida JWT via JWKS
+                              │
+                              ▼
+                        PostgreSQL (datos de negocio)
 ```
 
-## Apps
+## API / Endpoints
 
-### Web Application
+Todos los endpoints requieren JWT valido en header `Authorization: Bearer <token>`, excepto `/health`.
 
-The Next.js admin web app provides a complete interface for managing your business operations.
+Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_metadata.role`.
 
-**Running the web app:**
+### General
 
-```bash
-# Start web app only
-pnpm dev --filter=@objetiva/web
+| Metodo | Ruta               | Descripcion                                |
+| ------ | ------------------ | ------------------------------------------ |
+| GET    | `/health`          | Health check (publico)                     |
+| GET    | `/api/auth/verify` | Verifica token y retorna datos del usuario |
 
-# Start web + backend together
-pnpm dev --filter=@objetiva/web --filter=@objetiva/backend
-```
+### Dashboard
 
-Available at: http://localhost:3000
+| Metodo | Ruta             | Descripcion                                          |
+| ------ | ---------------- | ---------------------------------------------------- |
+| GET    | `/api/dashboard` | KPIs agregados: ventas, ordenes, inventario, compras |
 
-**Environment variables** (`apps/web/.env`):
+### Productos
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-NEXT_PUBLIC_API_URL=http://localhost:3001
-```
+| Metodo | Ruta                       | Descripcion                                           |
+| ------ | -------------------------- | ----------------------------------------------------- |
+| GET    | `/api/products`            | Lista paginada con filtros (search, status, category) |
+| GET    | `/api/products/categories` | Lista de categorias                                   |
+| GET    | `/api/products/stats`      | Conteo por estado                                     |
+| GET    | `/api/products/:id`        | Detalle de producto                                   |
+| POST   | `/api/products`            | Crear producto (admin)                                |
+| PATCH  | `/api/products/:id`        | Actualizar producto (admin)                           |
+| DELETE | `/api/products/:id`        | Eliminar producto (admin)                             |
 
-**Available routes:**
+### Ordenes
 
-- `/login` - User authentication
-- `/signup` - User registration
-- `/dashboard` - Main dashboard with KPIs and charts
-- `/articles` - Products/inventory management
-- `/orders` - Order tracking and management
-- `/inventory` - Stock levels and alerts
-- `/sales` - Sales transactions
-- `/purchases` - Purchase orders
-- `/settings` - User profile and business settings
+| Metodo | Ruta                | Descripcion                |
+| ------ | ------------------- | -------------------------- |
+| GET    | `/api/orders`       | Lista paginada con filtros |
+| GET    | `/api/orders/stats` | Conteo por estado          |
+| GET    | `/api/orders/:id`   | Detalle con items          |
+| POST   | `/api/orders`       | Crear orden (admin)        |
+| PATCH  | `/api/orders/:id`   | Actualizar orden (admin)   |
+| DELETE | `/api/orders/:id`   | Eliminar orden (admin)     |
 
-**Features:**
+### Inventario
 
-- JWT authentication with Supabase
-- Responsive design (desktop, tablet, mobile)
-- Dark/light theme toggle
-- Data tables with sorting, filtering, and pagination
-- Real-time backend API integration
-- Profile management
+| Metodo | Ruta                       | Descripcion                   |
+| ------ | -------------------------- | ----------------------------- |
+| GET    | `/api/inventory`           | Lista paginada con filtros    |
+| GET    | `/api/inventory/stats`     | Conteo por estado             |
+| GET    | `/api/inventory/low-stock` | Items con stock bajo          |
+| GET    | `/api/inventory/:id`       | Detalle de item               |
+| PATCH  | `/api/inventory/:id`       | Actualizar inventario (admin) |
 
-## Development Commands
+### Ventas
 
-```bash
-# Development (all apps)
-pnpm dev
+| Metodo | Ruta               | Descripcion                |
+| ------ | ------------------ | -------------------------- |
+| GET    | `/api/sales`       | Lista paginada con filtros |
+| GET    | `/api/sales/stats` | Conteo por estado          |
+| GET    | `/api/sales/:id`   | Detalle con items          |
+| POST   | `/api/sales`       | Registrar venta (admin)    |
+| PATCH  | `/api/sales/:id`   | Actualizar venta (admin)   |
+| DELETE | `/api/sales/:id`   | Eliminar venta (admin)     |
 
-# Development (single app)
-pnpm dev --filter=@objetiva/web
-pnpm dev --filter=@objetiva/mobile
-pnpm dev --filter=@objetiva/backend
+### Compras
 
-# Build all
-pnpm build
+| Metodo | Ruta                   | Descripcion                |
+| ------ | ---------------------- | -------------------------- |
+| GET    | `/api/purchases`       | Lista paginada con filtros |
+| GET    | `/api/purchases/stats` | Conteo por estado          |
+| GET    | `/api/purchases/:id`   | Detalle con items          |
+| POST   | `/api/purchases`       | Registrar compra (admin)   |
+| PATCH  | `/api/purchases/:id`   | Actualizar compra (admin)  |
+| DELETE | `/api/purchases/:id`   | Eliminar compra (admin)    |
 
-# Build single package/app
-pnpm build --filter=@objetiva/ui
-pnpm build --filter=@objetiva/web
+## Scripts y automatizacion
 
-# Type checking
-pnpm type-check
+### Base de datos (desde `apps/backend/`)
 
-# Linting
-pnpm lint
-pnpm lint:fix
+| Comando            | Descripcion                                                                            |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `pnpm db:generate` | Genera migraciones a partir del schema Drizzle                                         |
+| `pnpm db:migrate`  | Aplica migraciones pendientes                                                          |
+| `pnpm db:push`     | Empuja el schema directamente (sin migracion)                                          |
+| `pnpm db:seed`     | Llena la base con datos de prueba (500 productos, 200 ordenes, 150 ventas, 50 compras) |
+| `pnpm db:studio`   | Abre Drizzle Studio (editor visual de base de datos)                                   |
 
-# Formatting
-pnpm format
-pnpm format:check
-```
+### Pre-commit (automatico)
 
-## Testing Authentication (AUTH-05)
+Husky + lint-staged ejecutan ESLint y Prettier automaticamente en cada commit sobre los archivos modificados.
 
-The backend validates Supabase JWT tokens on protected endpoints (AUTH-05 requirement).
+## Testing de autenticacion
 
-### Quick Test (No Token Required)
-
-Run the automated test script:
+### Test rapido (sin token)
 
 ```bash
 ./scripts/test-auth.sh
 ```
 
-This tests:
+Verifica: health check, rechazo sin token, rechazo con token invalido.
 
-- ✓ Health check endpoint
-- ✓ Protected endpoint returns 401 without token
-- ✓ Protected endpoint returns 401 with invalid token
-
-### Full Test (With Valid Token)
-
-To test with a real Supabase JWT:
-
-**Method 1: Supabase Dashboard (Easiest)**
-
-1. Go to Supabase Dashboard > SQL Editor
-2. Run: `SELECT auth.uid(), auth.email()`
-3. Go to Authentication > Users > Create New User
-4. Use Supabase client library to sign in and get access_token
-
-**Method 2: Supabase CLI**
+### Test manual
 
 ```bash
-# Install Supabase CLI
-npm install -g supabase
-
-# Login
-supabase login
-
-# Get test token (requires user creation first)
-supabase projects list
-```
-
-**Method 3: Manual Testing**
-
-```bash
-# Health check (no auth)
+# Health check (publico)
 curl http://localhost:3001/health
 
-# Protected endpoint (401 expected)
+# Endpoint protegido (espera 401)
 curl http://localhost:3001/api/auth/verify
 
-# With invalid token (401 expected)
-curl -H "Authorization: Bearer invalid" \
-  http://localhost:3001/api/auth/verify
-
-# With valid token (200 expected, returns user info)
-curl -H "Authorization: Bearer YOUR_SUPABASE_JWT" \
+# Con token valido (espera 200)
+curl -H "Authorization: Bearer TU_JWT_DE_SUPABASE" \
   http://localhost:3001/api/auth/verify
 ```
 
-### Troubleshooting Auth
+### Crear usuario admin en Supabase
 
-**"Missing authorization header"**: Add `-H "Authorization: Bearer <token>"`
+1. Ir a Supabase Dashboard > Authentication > Users > Add user
+2. Para asignar rol admin, ir a SQL Editor y ejecutar:
 
-**"Invalid or expired token"**:
-
-- Check SUPABASE_PROJECT_ID in apps/backend/.env matches your project
-- Verify token is from the same Supabase project
-- Token may be expired (Supabase JWTs expire after 1 hour by default)
-
-## Shared Packages
-
-### @objetiva/ui
-
-Design tokens and UI utilities:
-
-```typescript
-import { colors, spacing, typography, cn } from '@objetiva/ui'
-
-// Use cn() for conditional class names
-<div className={cn('base-class', condition && 'conditional-class')} />
-
-// Access design tokens
-console.log(colors.primary.DEFAULT) // #3b82f6
+```sql
+UPDATE auth.users
+SET raw_app_meta_data = raw_app_meta_data || '{"role": "admin"}'::jsonb
+WHERE email = 'tu@email.com';
 ```
 
-### @objetiva/types
-
-Shared TypeScript types:
-
-```typescript
-import { User, ApiResponse } from '@objetiva/types'
-
-const user: User = {
-  id: '123',
-  email: 'user@example.com',
-  role: 'admin',
-}
-```
-
-### @objetiva/utils
-
-Common utilities:
-
-```typescript
-import { formatCurrency, formatDate } from '@objetiva/utils'
-
-formatCurrency(1234.56) // "$1,234.56"
-formatDate(new Date()) // "Jan 23, 2026"
-```
-
-## Adding Dependencies
-
-```bash
-# Add to root (dev dependencies only)
-pnpm add -w -D <package>
-
-# Add to specific workspace
-pnpm add <package> --filter=@objetiva/web
-pnpm add <package> --filter=@objetiva/backend
-```
-
-## Turborepo Caching
-
-Turborepo caches build outputs for faster subsequent builds:
-
-```bash
-# First build - full execution
-pnpm build
-
-# Second build - uses cache (FULL TURBO)
-pnpm build
-```
-
-To clear cache:
-
-```bash
-rm -rf .turbo node_modules/.cache
-```
-
-## Git Hooks
-
-Pre-commit hooks run automatically via Husky + lint-staged:
-
-- ESLint fixes for TypeScript files
-- Prettier formatting for all supported files
-
-To skip hooks (not recommended):
-
-```bash
-git commit --no-verify -m "message"
-```
+Sin esta asignacion, el usuario tendra rol `viewer` por defecto (solo lectura).
 
 ## Troubleshooting
 
 ### "Cannot find module @objetiva/ui"
 
-Run `pnpm build` before `pnpm dev` to compile shared packages.
+Ejecutar `pnpm build` antes de `pnpm dev` para compilar los paquetes compartidos.
 
-### TypeScript errors in IDE
+### Errores de TypeScript en el IDE
 
-1. Restart TypeScript server: Cmd/Ctrl + Shift + P > "TypeScript: Restart TS Server"
-2. Rebuild packages: `pnpm build`
+1. Reiniciar el servidor de TypeScript: Cmd/Ctrl + Shift + P > "TypeScript: Restart TS Server"
+2. Recompilar paquetes: `pnpm build`
 
-### Port already in use
+### Puerto en uso
 
 ```bash
-# Find process using port
-lsof -i :3000  # macOS/Linux
-netstat -ano | findstr :3000  # Windows
-
-# Kill the process or change port in .env
+lsof -i :3000   # Encontrar el proceso
+kill -9 <PID>   # O cambiar el puerto en .env
 ```
 
-### pnpm install fails
+### pnpm install falla
 
 ```bash
-# Clear cache and reinstall
 rm -rf node_modules pnpm-lock.yaml
 pnpm install
 ```
 
-## License
+## Estado del proyecto
 
-Private - All rights reserved
+Milestone v1.0 completado. 13 fases ejecutadas, 42 planes completados (100%).
+
+Ultimo avance: 2026-03-03 (limpieza de deuda tecnica).

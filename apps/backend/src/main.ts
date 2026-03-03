@@ -28,8 +28,12 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter())
 
   // Enable CORS for frontend apps
+  const allowedOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',')
+    : ['http://localhost:3000', 'http://localhost:5173']
+
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: allowedOrigins,
     credentials: true,
   })
 
