@@ -308,6 +308,10 @@ Plans:
 4. `stats-cards.tsx` subtitle uses `formatCurrency` instead of manual `$` formatting
 5. Unused `colors` token removed from `packages/ui/src/tokens/`
 
+Plans:
+
+- [ ] 13-01-PLAN.md — All 5 tech debt fixes: mobile TS error, web dead link/code removal, currency format fix, unused token deletion
+
 ## Progress
 
 **Execution Order:**
