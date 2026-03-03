@@ -41,7 +41,7 @@ export interface DashboardResponse {
 
 // Product types
 export interface Product {
-  id: string
+  id: number
   sku: string
   name: string
   description: string
@@ -55,15 +55,15 @@ export interface Product {
 
 // Order types
 export interface OrderItem {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   quantity: number
   price: number
 }
 
 export interface Order {
-  id: string
+  id: number
   orderNumber: string
   customerName: string
   customerEmail: string
@@ -79,8 +79,8 @@ export interface Order {
 
 // Sale types
 export interface SaleItem {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   quantity: number
   unitPrice: number
@@ -88,7 +88,7 @@ export interface SaleItem {
 }
 
 export interface Sale {
-  id: string
+  id: number
   saleNumber: string
   customerName: string
   customerEmail: string
@@ -105,8 +105,8 @@ export interface Sale {
 
 // Purchase types
 export interface PurchaseItem {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   quantity: number
   unitCost: number
@@ -114,7 +114,7 @@ export interface PurchaseItem {
 }
 
 export interface Purchase {
-  id: string
+  id: number
   purchaseNumber: string
   supplierName: string
   supplierContact: string
@@ -132,8 +132,8 @@ export interface Purchase {
 
 // Inventory types
 export interface Inventory {
-  id: string
-  productId: string
+  id: number
+  productId: number
   productName: string
   sku: string
   quantity: number
