@@ -6,6 +6,7 @@ import { format } from 'date-fns'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { formatCurrency } from '@objetiva/utils'
 import type { Product } from '@/types/product'
 
 const statusVariants = {
@@ -74,11 +75,7 @@ export const columns: ColumnDef<Product>[] = [
     },
     cell: ({ row }) => {
       const price = parseFloat(row.getValue('price'))
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(price)
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-right font-medium">{formatCurrency(price)}</div>
     },
   },
   {
