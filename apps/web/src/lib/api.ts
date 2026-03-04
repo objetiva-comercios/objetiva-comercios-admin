@@ -6,7 +6,8 @@ import type { Purchase } from '@/types/purchase'
 import type { Inventory } from '@/types/inventory'
 import { createClient } from '@/lib/supabase/server'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_BASE_URL =
+  process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 interface PaginatedResponse<T> {
   data: T[]
@@ -141,37 +142,4 @@ export async function fetchInventory(params?: {
   const endpoint = `/inventory${queryString ? `?${queryString}` : ''}`
 
   return fetchWithAuth<PaginatedResponse<Inventory>>(endpoint)
-}
-
-// --- Client-side fetch helpers (for use in 'use client' components) ---
-import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
-
-export async function fetchOrderById(id: number): Promise<Order> {
-  const supabase = createBrowserSupabaseClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const response = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
-    },
-  })
-  if (!response.ok) throw new Error(`API error: ${response.status}`)
-  return response.json()
-}
-
-export async function fetchProductById(id: number): Promise<Product> {
-  const supabase = createBrowserSupabaseClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
-    },
-  })
-  if (!response.ok) throw new Error(`API error: ${response.status}`)
-  return response.json()
 }

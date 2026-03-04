@@ -6,7 +6,7 @@ export class AuthController {
   @Get('verify')
   verify(@Req() req: AuthenticatedRequest) {
     return {
-      message: 'Authentication successful',
+      message: 'Autenticación exitosa',
       user: req.user,
       timestamp: new Date().toISOString(),
     }

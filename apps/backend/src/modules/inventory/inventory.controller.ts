@@ -37,7 +37,7 @@ export class InventoryController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const inventoryItem = await this.inventoryService.findOne(id)
     if (!inventoryItem) {
-      throw new NotFoundException(`Inventory item with ID ${id} not found`)
+      throw new NotFoundException(`Ítem de inventario con ID ${id} no encontrado`)
     }
     return inventoryItem
   }

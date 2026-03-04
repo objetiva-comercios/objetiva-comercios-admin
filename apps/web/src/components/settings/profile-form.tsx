@@ -23,8 +23,8 @@ import { Loader2 } from 'lucide-react'
 const profileFormSchema = z.object({
   display_name: z
     .string()
-    .min(2, 'Display name must be at least 2 characters')
-    .max(50, 'Display name must not exceed 50 characters'),
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(50, 'El nombre no debe superar los 50 caracteres'),
   email: z.string().email(),
 })
 
@@ -68,8 +68,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
       }
 
       toast({
-        title: 'Profile updated',
-        description: 'Your profile has been updated successfully.',
+        title: 'Perfil actualizado',
+        description: 'Tu perfil se actualizó correctamente.',
       })
 
       router.refresh()
@@ -77,7 +77,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       console.error('Error updating profile:', error)
       toast({
         title: 'Error',
-        description: 'Failed to update profile. Please try again.',
+        description: 'No se pudo actualizar el perfil. Por favor, intentá de nuevo.',
         variant: 'destructive',
       })
     } finally {
@@ -93,12 +93,12 @@ export function ProfileForm({ user }: ProfileFormProps) {
           name="display_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Display Name</FormLabel>
+              <FormLabel>Nombre</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="Juan Perez" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name. It will be shown to other users.
+                Este es tu nombre público. Se mostrará a otros usuarios.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -115,7 +115,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
                 <Input {...field} disabled />
               </FormControl>
               <FormDescription>
-                Your email address cannot be changed. Contact support if you need to update it.
+                Tu dirección de email no se puede cambiar. Contactá a soporte si necesitás
+                actualizarlo.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -125,7 +126,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
         <div className="flex justify-end">
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save changes
+            Guardar cambios
           </Button>
         </div>
       </form>

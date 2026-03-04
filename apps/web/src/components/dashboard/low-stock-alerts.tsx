@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { AlertTriangle } from 'lucide-react'
 import type { LowStockItem } from '@/types/dashboard'
 import { ProductSheet } from '@/components/tables/products/product-sheet'
-import { fetchProductById } from '@/lib/api'
+import { fetchProductById } from '@/lib/api.client'
 import type { Product } from '@/types/product'
 
 interface LowStockAlertsProps {
@@ -36,13 +36,15 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Low Stock Alerts</CardTitle>
-          <CardDescription>Items needing attention</CardDescription>
+          <CardTitle>Alertas de stock bajo</CardTitle>
+          <CardDescription>Productos que requieren atención</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="text-sm text-muted-foreground">No low stock items</p>
-            <p className="text-xs text-muted-foreground">All inventory levels are healthy</p>
+            <p className="text-sm text-muted-foreground">Sin productos con stock bajo</p>
+            <p className="text-xs text-muted-foreground">
+              Todos los niveles de inventario están bien
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -53,8 +55,8 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Low Stock Alerts</CardTitle>
-          <CardDescription>Items needing attention</CardDescription>
+          <CardTitle>Alertas de stock bajo</CardTitle>
+          <CardDescription>Productos que requieren atención</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -68,11 +70,11 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
                   <AlertTriangle className="h-4 w-4 text-orange-500" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">{item.productName}</p>
-                    <p className="text-xs text-muted-foreground">Quantity: {item.quantity}</p>
+                    <p className="text-xs text-muted-foreground">Cantidad: {item.quantity}</p>
                   </div>
                 </div>
                 <Badge variant={item.status === 'out_of_stock' ? 'destructive' : 'secondary'}>
-                  {item.status === 'out_of_stock' ? 'Out of Stock' : 'Low Stock'}
+                  {item.status === 'out_of_stock' ? 'Sin stock' : 'Stock bajo'}
                 </Badge>
               </div>
             ))}

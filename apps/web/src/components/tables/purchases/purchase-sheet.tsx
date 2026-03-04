@@ -40,13 +40,18 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[400px] sm:max-w-md overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Purchase {purchase.purchaseNumber}</SheetTitle>
+          <SheetTitle>Compra {purchase.purchaseNumber}</SheetTitle>
           <SheetDescription>
             <Badge
               variant={statusVariants[purchase.status]}
               className={statusColors[purchase.status]}
             >
-              {purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1)}
+              {{
+                draft: 'Borrador',
+                ordered: 'Pedida',
+                received: 'Recibida',
+                cancelled: 'Cancelada',
+              }[purchase.status] ?? purchase.status}
             </Badge>
           </SheetDescription>
         </SheetHeader>
@@ -54,7 +59,7 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
         <div className="mt-6 space-y-6">
           {/* Supplier Information */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Supplier</h3>
+            <h3 className="text-sm font-medium mb-2">Proveedor</h3>
             <div className="space-y-1">
               <p className="text-sm font-medium">{purchase.supplierName}</p>
               <p className="text-sm text-muted-foreground">{purchase.supplierContact}</p>
@@ -65,7 +70,7 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
 
           {/* Items */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Items</h3>
+            <h3 className="text-sm font-medium mb-3">Artículos</h3>
             <div className="space-y-3">
               {purchase.items.map(item => (
                 <div key={item.id} className="flex justify-between items-start">
@@ -85,19 +90,19 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
 
           {/* Totals */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Totals</h3>
+            <h3 className="text-sm font-medium mb-3">Totales</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Subtotal</span>
                 <span className="text-sm font-medium">{formatCurrency(purchase.subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Tax</span>
+                <span className="text-sm text-muted-foreground">Impuestos</span>
                 <span className="text-sm font-medium">{formatCurrency(purchase.tax)}</span>
               </div>
               {purchase.shipping > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Shipping</span>
+                  <span className="text-sm text-muted-foreground">Envío</span>
                   <span className="text-sm font-medium">{formatCurrency(purchase.shipping)}</span>
                 </div>
               )}
@@ -112,17 +117,17 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
 
           {/* Delivery Information */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Delivery</h3>
+            <h3 className="text-sm font-medium mb-3">Entrega</h3>
             <div className="space-y-2">
               <div>
-                <span className="text-sm text-muted-foreground block">Expected Delivery</span>
+                <span className="text-sm text-muted-foreground block">Entrega estimada</span>
                 <span className="text-sm">
                   {format(new Date(purchase.expectedDelivery), 'MMM d, yyyy')}
                 </span>
               </div>
               {purchase.receivedAt && (
                 <div>
-                  <span className="text-sm text-muted-foreground block">Received</span>
+                  <span className="text-sm text-muted-foreground block">Recibido</span>
                   <span className="text-sm">
                     {format(new Date(purchase.receivedAt), "MMM d, yyyy 'at' h:mm a")}
                   </span>
@@ -136,7 +141,7 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
             <>
               <Separator />
               <div>
-                <h3 className="text-sm font-medium mb-2">Notes</h3>
+                <h3 className="text-sm font-medium mb-2">Notas</h3>
                 <p className="text-sm text-muted-foreground">{purchase.notes}</p>
               </div>
             </>
@@ -146,7 +151,7 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
 
           {/* Timestamp */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Created</h3>
+            <h3 className="text-sm font-medium mb-2">Fecha de creación</h3>
             <p className="text-sm">
               {format(new Date(purchase.createdAt), "MMM d, yyyy 'at' h:mm a")}
             </p>

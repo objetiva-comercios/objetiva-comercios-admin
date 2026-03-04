@@ -34,7 +34,7 @@ export class OrdersController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const order = await this.ordersService.findOne(id)
     if (!order) {
-      throw new NotFoundException(`Order with ID ${id} not found`)
+      throw new NotFoundException(`Pedido con ID ${id} no encontrado`)
     }
     return order
   }

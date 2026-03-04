@@ -38,7 +38,7 @@ export const columns: ColumnDef<Inventory>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Product Name
+          Producto
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -53,7 +53,7 @@ export const columns: ColumnDef<Inventory>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Quantity
+          Cantidad
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -68,7 +68,7 @@ export const columns: ColumnDef<Inventory>[] = [
   },
   {
     accessorKey: 'reservedQuantity',
-    header: 'Reserved',
+    header: 'Reservado',
     cell: ({ row }) => {
       const reserved = row.getValue('reservedQuantity') as number
       return <div className="text-right text-muted-foreground">{reserved}</div>
@@ -76,7 +76,7 @@ export const columns: ColumnDef<Inventory>[] = [
   },
   {
     accessorKey: 'availableQuantity',
-    header: 'Available',
+    header: 'Disponible',
     cell: ({ row }) => {
       const available = row.getValue('availableQuantity') as number
       return <div className="text-right font-medium">{available}</div>
@@ -84,7 +84,7 @@ export const columns: ColumnDef<Inventory>[] = [
   },
   {
     accessorKey: 'reorderPoint',
-    header: 'Reorder Point',
+    header: 'Punto de reorden',
     cell: ({ row }) => {
       const reorderPoint = row.getValue('reorderPoint') as number
       return <div className="text-right text-sm text-muted-foreground">{reorderPoint}</div>
@@ -92,19 +92,21 @@ export const columns: ColumnDef<Inventory>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Estado',
     cell: ({ row }) => {
       const status = row.getValue('status') as keyof typeof statusColors
-      const label = status
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
+      const statusLabels: Record<string, string> = {
+        in_stock: 'En stock',
+        low_stock: 'Stock bajo',
+        out_of_stock: 'Sin stock',
+      }
+      const label = statusLabels[status] ?? status
       return <Badge className={statusColors[status]}>{label}</Badge>
     },
   },
   {
     accessorKey: 'lastRestocked',
-    header: 'Last Restocked',
+    header: 'Último restock',
     cell: ({ row }) => {
       const date = new Date(row.getValue('lastRestocked'))
       return <div className="text-sm text-muted-foreground">{format(date, 'MMM d, yyyy')}</div>

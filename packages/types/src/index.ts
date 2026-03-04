@@ -17,13 +17,13 @@ export interface ApiResponse<T> {
 }
 
 // Shared validation schemas
-export const emailSchema = z.string().email('Please enter a valid email address').toLowerCase()
+export const emailSchema = z.string().email('Ingresá un email válido').toLowerCase()
 
 export const passwordSchema = z
   .string()
-  .min(8, 'Password must be at least 8 characters')
-  .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
-  .regex(/[0-9]/, 'Must contain at least one number')
+  .min(8, 'La contraseña debe tener al menos 8 caracteres')
+  .regex(/[A-Z]/, 'Debe contener al menos una letra mayúscula')
+  .regex(/[0-9]/, 'Debe contener al menos un número')
 
 export const signupSchema = z
   .object({
@@ -32,13 +32,13 @@ export const signupSchema = z
     confirmPassword: z.string(),
   })
   .refine(data => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: 'Las contraseñas no coinciden',
     path: ['confirmPassword'],
   })
 
 export const loginSchema = z.object({
   email: emailSchema,
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, 'La contraseña es obligatoria'),
 })
 
 // Password strength utility

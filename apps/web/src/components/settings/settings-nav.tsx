@@ -7,22 +7,22 @@ import { User, Building2, Palette } from 'lucide-react'
 
 const settingsNavItems = [
   {
-    title: 'Profile',
+    title: 'Perfil',
     href: '/settings/profile',
     icon: User,
-    description: 'Manage your personal information',
+    description: 'Administrá tu información personal',
   },
   {
-    title: 'Business',
+    title: 'Negocio',
     href: '/settings/business',
     icon: Building2,
-    description: 'Configure business settings',
+    description: 'Configurá los datos del negocio',
   },
   {
-    title: 'Appearance',
+    title: 'Apariencia',
     href: '/settings/appearance',
     icon: Palette,
-    description: 'Customize theme and display',
+    description: 'Personalizá el tema y la visualización',
   },
 ]
 

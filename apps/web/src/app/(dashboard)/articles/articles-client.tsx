@@ -26,7 +26,7 @@ export function ArticlesClient({ products }: ArticlesClientProps) {
         data={products}
         onRowClick={handleRowClick}
         filterColumn="name"
-        filterPlaceholder="Filter by name..."
+        filterPlaceholder="Filtrar por nombre..."
       />
       <ProductSheet product={selectedProduct} open={sheetOpen} onOpenChange={setSheetOpen} />
     </>

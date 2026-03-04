@@ -39,7 +39,7 @@ export class ProductsController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const product = await this.productsService.findOne(id)
     if (!product) {
-      throw new NotFoundException(`Product with ID ${id} not found`)
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`)
     }
     return product
   }

@@ -16,9 +16,9 @@ export default async function BusinessPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Business Settings</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Configuración del negocio</h2>
         <p className="text-muted-foreground">
-          Configure your business information and preferences.
+          Configurá la información y preferencias de tu negocio.
         </p>
       </div>
 

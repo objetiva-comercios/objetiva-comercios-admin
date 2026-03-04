@@ -14,7 +14,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const message =
       typeof exceptionResponse === 'string'
         ? exceptionResponse
-        : (exceptionResponse as any).message || 'An error occurred'
+        : (exceptionResponse as any).message || 'Ocurrió un error'
 
     // Return consistent error format
     response.status(status).json({

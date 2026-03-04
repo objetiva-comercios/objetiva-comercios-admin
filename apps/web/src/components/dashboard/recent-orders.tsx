@@ -7,7 +7,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { formatCurrency } from '@objetiva/utils'
 import type { RecentOrder } from '@/types/dashboard'
 import { OrderSheet } from '@/components/tables/orders/order-sheet'
-import { fetchOrderById } from '@/lib/api'
+import { fetchOrderById } from '@/lib/api.client'
 import type { Order } from '@/types/order'
 
 interface RecentOrdersProps {
@@ -37,12 +37,12 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
-          <CardDescription>Latest order activity</CardDescription>
+          <CardTitle>Pedidos recientes</CardTitle>
+          <CardDescription>Actividad de pedidos reciente</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="text-sm text-muted-foreground">No recent orders</p>
+            <p className="text-sm text-muted-foreground">Sin pedidos recientes</p>
           </div>
         </CardContent>
       </Card>
@@ -53,8 +53,8 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
-          <CardDescription>Latest order activity</CardDescription>
+          <CardTitle>Pedidos recientes</CardTitle>
+          <CardDescription>Actividad de pedidos reciente</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -87,8 +87,16 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
   )
 }
 
+const statusLabels: Record<string, string> = {
+  pending: 'Pendiente',
+  processing: 'En proceso',
+  shipped: 'Enviado',
+  delivered: 'Entregado',
+  cancelled: 'Cancelado',
+}
+
 function formatStatus(status: string): string {
-  return status.charAt(0).toUpperCase() + status.slice(1)
+  return statusLabels[status] || status
 }
 
 function getStatusVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {

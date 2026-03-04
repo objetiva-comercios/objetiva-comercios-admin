@@ -26,7 +26,7 @@ export function OrdersClient({ orders }: OrdersClientProps) {
         data={orders}
         onRowClick={handleRowClick}
         filterColumn="customerName"
-        filterPlaceholder="Filter by customer..."
+        filterPlaceholder="Filtrar por cliente..."
       />
       <OrderSheet order={selectedOrder} open={sheetOpen} onOpenChange={setSheetOpen} />
     </>

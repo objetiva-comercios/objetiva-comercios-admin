@@ -11,38 +11,38 @@ interface StatsCardsProps {
 export function StatsCards({ stats, purchases }: StatsCardsProps) {
   const cards = [
     {
-      title: 'Total Revenue',
+      title: 'Ingresos totales',
       value: formatCurrency(stats.totalRevenue),
       icon: DollarSign,
-      description: `${formatCurrency(stats.todayRevenue)} today`,
+      description: `${formatCurrency(stats.todayRevenue)} hoy`,
       iconColor: 'text-green-600',
     },
     {
-      title: 'Total Orders',
+      title: 'Total de pedidos',
       value: formatNumber(stats.totalOrders),
       icon: ShoppingCart,
-      description: `${stats.pendingOrders} pending`,
+      description: `${stats.pendingOrders} pendientes`,
       iconColor: 'text-blue-600',
     },
     {
-      title: 'Total Products',
+      title: 'Total de productos',
       value: formatNumber(stats.totalProducts),
       icon: Package,
-      description: `${stats.lowStockCount} low stock`,
+      description: `${stats.lowStockCount} con stock bajo`,
       iconColor: 'text-purple-600',
     },
     {
-      title: 'Total Sales',
+      title: 'Total de ventas',
       value: formatNumber(stats.totalSales),
       icon: TrendingUp,
-      description: `${stats.todaySales} today`,
+      description: `${stats.todaySales} hoy`,
       iconColor: 'text-orange-600',
     },
     {
-      title: 'Pending Purchases',
+      title: 'Compras pendientes',
       value: formatNumber(purchases.pendingOrders),
       icon: Truck,
-      description: `${formatCurrency(purchases.pendingValue)} pending value`,
+      description: `${formatCurrency(purchases.pendingValue)} valor pendiente`,
       iconColor: 'text-amber-600',
     },
   ]
@@ -66,5 +66,5 @@ export function StatsCards({ stats, purchases }: StatsCardsProps) {
 }
 
 function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num)
+  return new Intl.NumberFormat('es-AR').format(num)
 }

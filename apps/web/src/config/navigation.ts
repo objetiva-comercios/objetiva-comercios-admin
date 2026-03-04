@@ -17,37 +17,37 @@ export type NavRoute = {
 
 export const routes: NavRoute[] = [
   {
-    label: 'Dashboard',
+    label: 'Panel',
     icon: LayoutDashboard,
     href: '/dashboard',
   },
   {
-    label: 'Articles',
+    label: 'Artículos',
     icon: Package,
     href: '/articles',
   },
   {
-    label: 'Purchases',
+    label: 'Compras',
     icon: ShoppingCart,
     href: '/purchases',
   },
   {
-    label: 'Sales',
+    label: 'Ventas',
     icon: ShoppingBag,
     href: '/sales',
   },
   {
-    label: 'Orders',
+    label: 'Pedidos',
     icon: ClipboardList,
     href: '/orders',
   },
   {
-    label: 'Inventory',
+    label: 'Inventario',
     icon: Warehouse,
     href: '/inventory',
   },
   {
-    label: 'Settings',
+    label: 'Configuración',
     icon: Settings,
     href: '/settings',
   },

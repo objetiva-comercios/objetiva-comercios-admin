@@ -39,7 +39,7 @@ export const columns: ColumnDef<Product>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Name
+          Nombre
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -54,7 +54,7 @@ export const columns: ColumnDef<Product>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Category
+          Categoría
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -68,7 +68,7 @@ export const columns: ColumnDef<Product>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Price
+          Precio
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -80,19 +80,20 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Estado',
     cell: ({ row }) => {
       const status = row.getValue('status') as keyof typeof statusVariants
-      return (
-        <Badge variant={statusVariants[status]}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </Badge>
-      )
+      const statusLabels: Record<string, string> = {
+        active: 'Activo',
+        inactive: 'Inactivo',
+        discontinued: 'Descontinuado',
+      }
+      return <Badge variant={statusVariants[status]}>{statusLabels[status] ?? status}</Badge>
     },
   },
   {
     accessorKey: 'createdAt',
-    header: 'Created',
+    header: 'Creado',
     cell: ({ row }) => {
       const date = new Date(row.getValue('createdAt'))
       return <div className="text-sm text-muted-foreground">{format(date, 'MMM d, yyyy')}</div>

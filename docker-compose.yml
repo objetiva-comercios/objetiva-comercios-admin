@@ -5,6 +5,8 @@ services:
       dockerfile: docker/web.Dockerfile
     container_name: erp-web
     restart: unless-stopped
+    environment:
+      - API_URL=http://erp-backend:3001
     networks:
       - sanchez_docker_network
 

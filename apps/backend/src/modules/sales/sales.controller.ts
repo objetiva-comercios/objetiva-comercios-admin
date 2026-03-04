@@ -34,7 +34,7 @@ export class SalesController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const sale = await this.salesService.findOne(id)
     if (!sale) {
-      throw new NotFoundException(`Sale with ID ${id} not found`)
+      throw new NotFoundException(`Venta con ID ${id} no encontrada`)
     }
     return sale
   }

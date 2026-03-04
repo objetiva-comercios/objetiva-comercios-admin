@@ -22,8 +22,8 @@ export function SalesChart({ stats }: SalesChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sales Overview</CardTitle>
-        <CardDescription>Sales trend over the last 7 days</CardDescription>
+        <CardTitle>Resumen de ventas</CardTitle>
+        <CardDescription>Tendencia de ventas en los últimos 7 días</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={350}>
@@ -43,8 +43,8 @@ export function SalesChart({ stats }: SalesChartProps) {
               }}
               labelStyle={{ color: 'hsl(var(--foreground))' }}
               formatter={(value: number | undefined) => {
-                if (value === undefined) return ['$0.00', 'Revenue']
-                return [`$${value.toFixed(2)}`, 'Revenue']
+                if (value === undefined) return ['$0,00', 'Ingresos']
+                return [`$${value.toFixed(2)}`, 'Ingresos']
               }}
             />
             <Line
@@ -62,7 +62,7 @@ export function SalesChart({ stats }: SalesChartProps) {
 }
 
 function generateSampleData(stats: DashboardStats) {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
   const avgDailyRevenue = stats.weekRevenue / 7
 
   return days.map(day => ({

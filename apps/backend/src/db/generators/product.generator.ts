@@ -1,16 +1,16 @@
 import { faker } from '@faker-js/faker'
 
 const CATEGORIES = [
-  'Electronics',
-  'Clothing',
-  'Home & Garden',
-  'Sports',
-  'Books',
-  'Toys',
-  'Food & Beverage',
-  'Health & Beauty',
-  'Automotive',
-  'Office Supplies',
+  'Electrónica',
+  'Indumentaria',
+  'Hogar y Jardín',
+  'Deportes',
+  'Libros',
+  'Juguetes',
+  'Alimentos y Bebidas',
+  'Salud y Belleza',
+  'Automotriz',
+  'Artículos de Oficina',
 ]
 
 const STATUSES = [

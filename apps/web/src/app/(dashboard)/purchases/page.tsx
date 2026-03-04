@@ -8,8 +8,8 @@ export default async function PurchasesPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Purchases</h1>
-        <p className="text-muted-foreground">View and manage purchase orders from suppliers.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Compras</h1>
+        <p className="text-muted-foreground">Gestión de compras y órdenes a proveedores.</p>
       </div>
       <PurchasesClient purchases={response.data} />
     </div>

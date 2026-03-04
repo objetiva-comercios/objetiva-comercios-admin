@@ -1,6 +1,19 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+function getBaseUrl(request: NextRequest): string {
+  const forwardedHost = request.headers.get('x-forwarded-host')
+  const forwardedProto = request.headers.get('x-forwarded-proto') || 'http'
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`
+  }
+  const host = request.headers.get('host')
+  if (host) {
+    return `${request.nextUrl.protocol}//${host}`
+  }
+  return request.nextUrl.origin
+}
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -33,6 +46,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
+  const baseUrl = getBaseUrl(request)
 
   // Public routes that don't require authentication
   const isPublicRoute =
@@ -42,12 +56,12 @@ export async function middleware(request: NextRequest) {
 
   // If user is authenticated and trying to access auth pages, redirect to dashboard
   if (user && isPublicRoute && !pathname.startsWith('/auth/callback')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/dashboard', baseUrl))
   }
 
   // Unauthenticated user on ANY non-public route -> redirect to login with returnTo
   if (!user && !isPublicRoute) {
-    const loginUrl = new URL('/login', request.url)
+    const loginUrl = new URL('/login', baseUrl)
     loginUrl.searchParams.set('returnTo', pathname)
     return NextResponse.redirect(loginUrl)
   }

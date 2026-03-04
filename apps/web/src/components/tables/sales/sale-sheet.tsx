@@ -26,25 +26,27 @@ const statusVariants = {
 } as const
 
 const paymentMethodLabels = {
-  cash: 'Cash',
-  card: 'Card',
-  transfer: 'Transfer',
-  credit: 'Credit',
+  cash: 'Efectivo',
+  card: 'Tarjeta',
+  transfer: 'Transferencia',
+  credit: 'Crédito',
 } as const
 
 export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
   if (!sale) return null
 
-  const statusLabel =
-    sale.status === 'partial_refund'
-      ? 'Partial Refund'
-      : sale.status.charAt(0).toUpperCase() + sale.status.slice(1)
+  const statusLabels: Record<string, string> = {
+    completed: 'Completada',
+    refunded: 'Reembolsada',
+    partial_refund: 'Reembolso parcial',
+  }
+  const statusLabel = statusLabels[sale.status] ?? sale.status
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[400px] sm:max-w-md overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Sale {sale.saleNumber}</SheetTitle>
+          <SheetTitle>Venta {sale.saleNumber}</SheetTitle>
           <SheetDescription>
             <Badge variant={statusVariants[sale.status]}>{statusLabel}</Badge>
           </SheetDescription>
@@ -53,7 +55,7 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
         <div className="mt-6 space-y-6">
           {/* Customer Information */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Customer</h3>
+            <h3 className="text-sm font-medium mb-2">Cliente</h3>
             <div className="space-y-1">
               <p className="text-sm font-medium">{sale.customerName}</p>
             </div>
@@ -63,10 +65,10 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
 
           {/* Items */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Items</h3>
+            <h3 className="text-sm font-medium mb-3">Artículos</h3>
             <div className="space-y-3">
               {sale.items.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No items</p>
+                <p className="text-sm text-muted-foreground">Sin artículos</p>
               ) : (
                 sale.items.map(item => (
                   <div key={item.id} className="flex justify-between items-start">
@@ -87,19 +89,19 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
 
           {/* Totals */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Totals</h3>
+            <h3 className="text-sm font-medium mb-3">Totales</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Subtotal</span>
                 <span className="text-sm font-medium">{formatCurrency(sale.subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Tax</span>
+                <span className="text-sm text-muted-foreground">Impuestos</span>
                 <span className="text-sm font-medium">{formatCurrency(sale.tax)}</span>
               </div>
               {sale.discount > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Discount</span>
+                  <span className="text-sm text-muted-foreground">Descuento</span>
                   <span className="text-sm font-medium text-green-600">
                     -{formatCurrency(sale.discount)}
                   </span>
@@ -116,7 +118,7 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
 
           {/* Payment Method */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Payment Method</h3>
+            <h3 className="text-sm font-medium mb-2">Método de pago</h3>
             <p className="text-sm">{paymentMethodLabels[sale.paymentMethod]}</p>
           </div>
 
@@ -124,7 +126,7 @@ export function SaleSheet({ sale, open, onOpenChange }: SaleSheetProps) {
 
           {/* Timestamp */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Created</h3>
+            <h3 className="text-sm font-medium mb-2">Fecha de creación</h3>
             <p className="text-sm">{format(new Date(sale.createdAt), "MMM d, yyyy 'at' h:mm a")}</p>
           </div>
         </div>

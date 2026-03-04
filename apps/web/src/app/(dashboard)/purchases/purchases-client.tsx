@@ -26,7 +26,7 @@ export function PurchasesClient({ purchases }: PurchasesClientProps) {
         data={purchases}
         onRowClick={handleRowClick}
         filterColumn="supplierName"
-        filterPlaceholder="Filter by supplier..."
+        filterPlaceholder="Filtrar por proveedor..."
       />
       <PurchaseSheet purchase={selectedPurchase} open={sheetOpen} onOpenChange={setSheetOpen} />
     </>

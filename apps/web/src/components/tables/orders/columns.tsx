@@ -3,6 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { ArrowUpDown } from 'lucide-react'
 import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +26,14 @@ const statusColors = {
   cancelled: 'bg-red-100 text-red-800 hover:bg-red-100',
 } as const
 
+const statusLabels: Record<string, string> = {
+  pending: 'Pendiente',
+  processing: 'En proceso',
+  shipped: 'Enviado',
+  delivered: 'Entregado',
+  cancelled: 'Cancelado',
+}
+
 export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: 'orderNumber',
@@ -34,7 +43,7 @@ export const columns: ColumnDef<Order>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Order Number
+          N.° de pedido
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -53,7 +62,7 @@ export const columns: ColumnDef<Order>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Customer
+          Cliente
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -62,10 +71,10 @@ export const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: 'items',
-    header: 'Items',
+    header: 'Artículos',
     cell: ({ row }) => {
       const items = row.getValue('items') as Order['items']
-      return <div className="text-sm text-muted-foreground">{items.length} items</div>
+      return <div className="text-sm text-muted-foreground">{items.length} artículos</div>
     },
   },
   {
@@ -88,12 +97,12 @@ export const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Estado',
     cell: ({ row }) => {
       const status = row.getValue('status') as keyof typeof statusVariants
       return (
         <Badge variant={statusVariants[status]} className={statusColors[status]}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+          {statusLabels[status] ?? status}
         </Badge>
       )
     },
@@ -106,14 +115,18 @@ export const columns: ColumnDef<Order>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Date
+          Fecha
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
       const date = new Date(row.getValue('createdAt'))
-      return <div className="text-sm text-muted-foreground">{format(date, 'MMM d, yyyy')}</div>
+      return (
+        <div className="text-sm text-muted-foreground">
+          {format(date, "d 'de' MMM yyyy", { locale: es })}
+        </div>
+      )
     },
   },
 ]

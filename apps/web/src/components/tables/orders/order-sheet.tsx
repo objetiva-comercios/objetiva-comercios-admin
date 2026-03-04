@@ -1,6 +1,7 @@
 'use client'
 
 import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 import {
   Sheet,
   SheetContent,
@@ -35,6 +36,14 @@ const statusColors = {
   cancelled: 'bg-red-100 text-red-800 hover:bg-red-100',
 } as const
 
+const statusLabels: Record<string, string> = {
+  pending: 'Pendiente',
+  processing: 'En proceso',
+  shipped: 'Enviado',
+  delivered: 'Entregado',
+  cancelled: 'Cancelado',
+}
+
 export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
   if (!order) return null
 
@@ -42,10 +51,10 @@ export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[400px] sm:max-w-md overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Order {order.orderNumber}</SheetTitle>
+          <SheetTitle>Pedido {order.orderNumber}</SheetTitle>
           <SheetDescription>
             <Badge variant={statusVariants[order.status]} className={statusColors[order.status]}>
-              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              {statusLabels[order.status] ?? order.status}
             </Badge>
           </SheetDescription>
         </SheetHeader>
@@ -53,7 +62,7 @@ export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
         <div className="mt-6 space-y-6">
           {/* Customer Information */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Customer</h3>
+            <h3 className="text-sm font-medium mb-2">Cliente</h3>
             <div className="space-y-1">
               <p className="text-sm font-medium">{order.customerName}</p>
               <p className="text-sm text-muted-foreground">{order.customerEmail}</p>
@@ -64,20 +73,20 @@ export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
 
           {/* Order Items */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Items</h3>
+            <h3 className="text-sm font-medium mb-3">Artículos</h3>
             <div className="space-y-3">
               {order.items.map(item => (
                 <div key={item.id} className="flex justify-between items-start">
                   <div className="flex-1">
                     <p className="text-sm font-medium">{item.productName}</p>
-                    <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                    <p className="text-xs text-muted-foreground">Cant.: {item.quantity}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium">
                       {formatCurrency(item.price * item.quantity)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {formatCurrency(item.price)} each
+                      {formatCurrency(item.price)} c/u
                     </p>
                   </div>
                 </div>
@@ -89,14 +98,14 @@ export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
 
           {/* Order Total */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Order Total</h3>
+            <h3 className="text-sm font-medium mb-3">Total del pedido</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Subtotal</span>
                 <span className="text-sm font-medium">{formatCurrency(order.subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Tax</span>
+                <span className="text-sm text-muted-foreground">Impuestos</span>
                 <span className="text-sm font-medium">{formatCurrency(order.tax)}</span>
               </div>
               <div className="flex justify-between pt-2 border-t">
@@ -110,7 +119,7 @@ export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
 
           {/* Shipping Address */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Shipping Address</h3>
+            <h3 className="text-sm font-medium mb-2">Dirección de envío</h3>
             <p className="text-sm text-muted-foreground whitespace-pre-line">
               {order.shippingAddress}
             </p>
@@ -120,18 +129,18 @@ export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
 
           {/* Metadata */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Order Details</h3>
+            <h3 className="text-sm font-medium mb-3">Detalle del pedido</h3>
             <div className="space-y-2">
               <div>
-                <span className="text-sm text-muted-foreground block">Created</span>
+                <span className="text-sm text-muted-foreground block">Creado</span>
                 <span className="text-sm">
-                  {format(new Date(order.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                  {format(new Date(order.createdAt), "d 'de' MMM yyyy, HH:mm", { locale: es })}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-muted-foreground block">Last Updated</span>
+                <span className="text-sm text-muted-foreground block">Última actualización</span>
                 <span className="text-sm">
-                  {format(new Date(order.updatedAt), "MMM d, yyyy 'at' h:mm a")}
+                  {format(new Date(order.updatedAt), "d 'de' MMM yyyy, HH:mm", { locale: es })}
                 </span>
               </div>
             </div>

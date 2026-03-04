@@ -350,4 +350,4 @@ pnpm install
 
 Milestone v1.0 completado. 13 fases ejecutadas, 42 planes completados (100%).
 
-Ultimo avance: 2026-03-03 (limpieza de deuda tecnica).
+Ultimo avance: 2026-03-04 (traduccion completa a espanol, fix JWT ES256/JWKS, fix redirects Docker).

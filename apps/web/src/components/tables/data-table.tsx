@@ -43,7 +43,7 @@ export function DataTable<TData, TValue>({
   showToolbar = true,
   showPagination = true,
   filterColumn,
-  filterPlaceholder = 'Filter...',
+  filterPlaceholder = 'Filtrar...',
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -118,7 +118,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results found.
+                  No se encontraron resultados.
                 </TableCell>
               </TableRow>
             )}

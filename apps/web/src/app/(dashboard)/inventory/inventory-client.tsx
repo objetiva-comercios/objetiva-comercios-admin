@@ -26,7 +26,7 @@ export function InventoryClient({ inventory }: InventoryClientProps) {
         data={inventory}
         onRowClick={handleRowClick}
         filterColumn="productName"
-        filterPlaceholder="Filter by product name..."
+        filterPlaceholder="Filtrar por nombre de producto..."
       />
       <InventorySheet inventory={selectedInventory} open={sheetOpen} onOpenChange={setSheetOpen} />
     </>

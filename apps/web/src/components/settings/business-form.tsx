@@ -23,14 +23,18 @@ import { Loader2 } from 'lucide-react'
 const businessFormSchema = z.object({
   company_name: z
     .string()
-    .min(2, 'Company name must be at least 2 characters')
-    .max(100, 'Company name must not exceed 100 characters'),
+    .min(2, 'El nombre de la empresa debe tener al menos 2 caracteres')
+    .max(100, 'El nombre de la empresa no debe superar los 100 caracteres'),
   address: z
     .string()
-    .max(200, 'Address must not exceed 200 characters')
+    .max(200, 'La dirección no debe superar los 200 caracteres')
     .optional()
     .or(z.literal('')),
-  tax_id: z.string().max(30, 'Tax ID must not exceed 30 characters').optional().or(z.literal('')),
+  tax_id: z
+    .string()
+    .max(30, 'El CUIT no debe superar los 30 caracteres')
+    .optional()
+    .or(z.literal('')),
 })
 
 type BusinessFormValues = z.infer<typeof businessFormSchema>
@@ -74,16 +78,16 @@ export function BusinessForm({ initialValues }: BusinessFormProps) {
       }
 
       toast({
-        title: 'Business settings updated',
-        description: 'Your business information has been saved successfully.',
+        title: 'Configuración del negocio actualizada',
+        description: 'La información del negocio se guardó correctamente.',
       })
 
       router.refresh()
     } catch (error) {
       console.error('Error updating business settings:', error)
       toast({
-        title: 'Failed to save settings',
-        description: 'An error occurred while saving your business information.',
+        title: 'Error al guardar la configuración',
+        description: 'Ocurrió un error al guardar la información del negocio.',
         variant: 'destructive',
       })
     } finally {
@@ -99,11 +103,11 @@ export function BusinessForm({ initialValues }: BusinessFormProps) {
           name="company_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Company Name</FormLabel>
+              <FormLabel>Nombre de la empresa</FormLabel>
               <FormControl>
-                <Input placeholder="Acme Corp" {...field} />
+                <Input placeholder="Mi Empresa S.R.L." {...field} />
               </FormControl>
-              <FormDescription>The legal name of your business or organization.</FormDescription>
+              <FormDescription>La razón social de tu negocio u organización.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -114,12 +118,12 @@ export function BusinessForm({ initialValues }: BusinessFormProps) {
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>Dirección</FormLabel>
               <FormControl>
-                <Input placeholder="123 Main St, City, State" {...field} />
+                <Input placeholder="Av. Corrientes 1234, CABA" {...field} />
               </FormControl>
               <FormDescription>
-                Your business address for invoices and correspondence.
+                La dirección de tu negocio para facturas y correspondencia.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -131,11 +135,11 @@ export function BusinessForm({ initialValues }: BusinessFormProps) {
           name="tax_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tax ID</FormLabel>
+              <FormLabel>CUIT</FormLabel>
               <FormControl>
-                <Input placeholder="XX-XXXXXXX" {...field} />
+                <Input placeholder="XX-XXXXXXXX-X" {...field} />
               </FormControl>
-              <FormDescription>Your business tax identification number (optional).</FormDescription>
+              <FormDescription>El número de CUIT de tu negocio (opcional).</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -144,7 +148,7 @@ export function BusinessForm({ initialValues }: BusinessFormProps) {
         <div className="flex justify-end">
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save changes
+            Guardar cambios
           </Button>
         </div>
       </form>

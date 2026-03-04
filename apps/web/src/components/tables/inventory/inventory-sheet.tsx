@@ -27,10 +27,12 @@ const statusColors = {
 export function InventorySheet({ inventory, open, onOpenChange }: InventorySheetProps) {
   if (!inventory) return null
 
-  const statusLabel = inventory.status
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
+  const statusLabels: Record<string, string> = {
+    in_stock: 'En stock',
+    low_stock: 'Stock bajo',
+    out_of_stock: 'Sin stock',
+  }
+  const statusLabel = statusLabels[inventory.status] ?? inventory.status
 
   const isLowStock = inventory.availableQuantity <= inventory.reorderPoint
 
@@ -45,7 +47,7 @@ export function InventorySheet({ inventory, open, onOpenChange }: InventorySheet
         <div className="mt-6 space-y-6">
           {/* Status */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Status</h3>
+            <h3 className="text-sm font-medium mb-2">Estado</h3>
             <Badge className={statusColors[inventory.status]}>{statusLabel}</Badge>
           </div>
 
@@ -53,18 +55,18 @@ export function InventorySheet({ inventory, open, onOpenChange }: InventorySheet
 
           {/* Quantity Breakdown */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Inventory Levels</h3>
+            <h3 className="text-sm font-medium mb-3">Niveles de inventario</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Total Quantity</span>
+                <span className="text-sm text-muted-foreground">Cantidad total</span>
                 <span className="text-sm font-medium">{inventory.quantity}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Reserved</span>
+                <span className="text-sm text-muted-foreground">Reservado</span>
                 <span className="text-sm font-medium">{inventory.reservedQuantity}</span>
               </div>
               <div className="flex justify-between pt-2 border-t">
-                <span className="text-sm font-semibold">Available</span>
+                <span className="text-sm font-semibold">Disponible</span>
                 <span className="text-sm font-semibold">{inventory.availableQuantity}</span>
               </div>
             </div>
@@ -74,14 +76,14 @@ export function InventorySheet({ inventory, open, onOpenChange }: InventorySheet
 
           {/* Reorder Point */}
           <div>
-            <h3 className="text-sm font-medium mb-3">Reorder Point</h3>
+            <h3 className="text-sm font-medium mb-3">Punto de reorden</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Reorder Level</span>
+                <span className="text-sm text-muted-foreground">Nivel de reorden</span>
                 <span className="text-sm font-medium">{inventory.reorderPoint}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Current Available</span>
+                <span className="text-sm text-muted-foreground">Disponible actual</span>
                 <span
                   className={
                     'text-sm font-medium ' + (isLowStock ? 'text-yellow-600' : 'text-green-600')
@@ -92,7 +94,7 @@ export function InventorySheet({ inventory, open, onOpenChange }: InventorySheet
               </div>
               {isLowStock && (
                 <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
-                  Stock is at or below reorder point. Consider restocking.
+                  El stock está en o por debajo del punto de reorden. Considerá reabastecer.
                 </div>
               )}
             </div>
@@ -102,14 +104,14 @@ export function InventorySheet({ inventory, open, onOpenChange }: InventorySheet
 
           {/* Timestamps */}
           <div>
-            <h3 className="text-sm font-medium mb-3">History</h3>
+            <h3 className="text-sm font-medium mb-3">Historial</h3>
             <div className="space-y-2">
               <div>
-                <span className="text-sm text-muted-foreground block">Last Restocked</span>
+                <span className="text-sm text-muted-foreground block">Último restock</span>
                 <span className="text-sm">
                   {inventory.lastRestocked
                     ? format(new Date(inventory.lastRestocked), "MMM d, yyyy 'at' h:mm a")
-                    : 'N/A'}
+                    : 'Sin datos'}
                 </span>
               </div>
             </div>
@@ -119,9 +121,9 @@ export function InventorySheet({ inventory, open, onOpenChange }: InventorySheet
 
           {/* Product Link */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Related</h3>
+            <h3 className="text-sm font-medium mb-2">Relacionado</h3>
             <p className="text-sm text-muted-foreground">
-              Product ID: <span className="font-mono text-xs">{inventory.productId}</span>
+              ID de producto: <span className="font-mono text-xs">{inventory.productId}</span>
             </p>
           </div>
         </div>

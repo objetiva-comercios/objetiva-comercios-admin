@@ -8,9 +8,9 @@ export default async function OrdersPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Pedidos</h1>
         <p className="text-muted-foreground">
-          Manage customer orders and track their fulfillment status.
+          Gestioná los pedidos de clientes y seguí el estado de entrega.
         </p>
       </div>
       <OrdersClient orders={response.data} />

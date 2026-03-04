@@ -32,7 +32,7 @@ export const columns: ColumnDef<Purchase>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Purchase Number
+          N.° de compra
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -47,7 +47,7 @@ export const columns: ColumnDef<Purchase>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Supplier
+          Proveedor
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -56,10 +56,10 @@ export const columns: ColumnDef<Purchase>[] = [
   },
   {
     accessorKey: 'items',
-    header: 'Items',
+    header: 'Artículos',
     cell: ({ row }) => {
       const items = row.getValue('items') as Purchase['items']
-      return <div className="text-sm text-muted-foreground">{items.length} items</div>
+      return <div className="text-sm text-muted-foreground">{items.length} artículos</div>
     },
   },
   {
@@ -82,19 +82,26 @@ export const columns: ColumnDef<Purchase>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Estado',
     cell: ({ row }) => {
       const status = row.getValue('status') as keyof typeof statusVariants
+      const statusLabels: Record<string, string> = {
+        draft: 'Borrador',
+        ordered: 'Pedida',
+        received: 'Recibida',
+        cancelled: 'Cancelada',
+      }
+      const label = statusLabels[status] ?? status
       return (
         <Badge variant={statusVariants[status]} className={statusColors[status]}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+          {label}
         </Badge>
       )
     },
   },
   {
     accessorKey: 'expectedDelivery',
-    header: 'Expected Delivery',
+    header: 'Entrega estimada',
     cell: ({ row }) => {
       const date = new Date(row.getValue('expectedDelivery'))
       return <div className="text-sm text-muted-foreground">{format(date, 'MMM d, yyyy')}</div>
@@ -108,7 +115,7 @@ export const columns: ColumnDef<Purchase>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Date
+          Fecha
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )

@@ -68,7 +68,7 @@ export default function SignupPage() {
       if (error) {
         toast({
           variant: 'destructive',
-          title: 'Signup failed',
+          title: 'Error en el registro',
           description: error.message,
         })
         return
@@ -77,16 +77,16 @@ export default function SignupPage() {
       // Check if email confirmation is required
       if (data.user && !data.user.confirmed_at) {
         toast({
-          title: 'Check your email',
+          title: 'Revisá tu email',
           description:
-            'We sent you a confirmation link. Please check your email to verify your account.',
+            'Te enviamos un enlace de confirmación. Revisá tu email para verificar tu cuenta.',
         })
+        router.push('/login')
       } else if (data.user) {
         toast({
-          title: 'Account created',
-          description: 'Your account has been created successfully.',
+          title: 'Cuenta creada',
+          description: 'Tu cuenta fue creada exitosamente.',
         })
-        // If no email confirmation required, redirect to dashboard
         router.push('/dashboard')
         router.refresh()
       }
@@ -94,7 +94,7 @@ export default function SignupPage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'An unexpected error occurred. Please try again.',
+        description: 'Ocurrió un error inesperado. Por favor, intentá de nuevo.',
       })
     } finally {
       setIsLoading(false)
@@ -104,8 +104,8 @@ export default function SignupPage() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-        <CardDescription>Enter your information to create your account</CardDescription>
+        <CardTitle className="text-2xl font-bold">Crear cuenta</CardTitle>
+        <CardDescription>Ingresá tus datos para crear tu cuenta</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -119,7 +119,7 @@ export default function SignupPage() {
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="name@example.com"
+                      placeholder="nombre@ejemplo.com"
                       autoComplete="email"
                       disabled={isLoading}
                       {...field}
@@ -134,11 +134,11 @@ export default function SignupPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Contraseña</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Create a password (min. 8 characters)"
+                      placeholder="Creá una contraseña (mín. 8 caracteres)"
                       autoComplete="new-password"
                       disabled={isLoading}
                       {...field}
@@ -169,10 +169,10 @@ export default function SignupPage() {
                         ].join(' ')}
                       >
                         {passwordStrength === 'weak'
-                          ? 'Weak'
+                          ? 'Débil'
                           : passwordStrength === 'fair'
-                            ? 'Fair'
-                            : 'Strong'}
+                            ? 'Regular'
+                            : 'Fuerte'}
                       </p>
                     </div>
                   )}
@@ -185,11 +185,11 @@ export default function SignupPage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>Confirmar contraseña</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Confirm your password"
+                      placeholder="Confirmá tu contraseña"
                       autoComplete="new-password"
                       disabled={isLoading}
                       {...field}
@@ -200,16 +200,16 @@ export default function SignupPage() {
               )}
             />
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Creating account...' : 'Create account'}
+              {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground text-center w-full">
-          Already have an account?{' '}
+          ¿Ya tenés cuenta?{' '}
           <Link href="/login" className="text-primary hover:underline font-medium">
-            Log in
+            Iniciar sesión
           </Link>
         </p>
       </CardFooter>

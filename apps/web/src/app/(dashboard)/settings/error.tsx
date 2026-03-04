@@ -18,10 +18,10 @@ export default function SettingsError({
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
       <AlertCircle className="h-10 w-10 text-destructive" />
-      <h3 className="text-lg font-semibold">Unable to load settings</h3>
-      <p className="text-muted-foreground text-sm">Something went wrong. Please try again.</p>
+      <h3 className="text-lg font-semibold">No se pudo cargar la configuración</h3>
+      <p className="text-muted-foreground text-sm">Algo salió mal. Por favor, intentá de nuevo.</p>
       <Button variant="outline" onClick={reset}>
-        Try again
+        Intentar de nuevo
       </Button>
     </div>
   )

@@ -34,7 +34,7 @@ export class PurchasesController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const purchase = await this.purchasesService.findOne(id)
     if (!purchase) {
-      throw new NotFoundException(`Purchase with ID ${id} not found`)
+      throw new NotFoundException(`Compra con ID ${id} no encontrada`)
     }
     return purchase
   }

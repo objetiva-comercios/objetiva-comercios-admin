@@ -16,10 +16,10 @@ const statusVariants = {
 } as const
 
 const paymentMethodLabels = {
-  cash: 'Cash',
-  card: 'Card',
-  transfer: 'Transfer',
-  credit: 'Credit',
+  cash: 'Efectivo',
+  card: 'Tarjeta',
+  transfer: 'Transferencia',
+  credit: 'Crédito',
 } as const
 
 export const columns: ColumnDef<Sale>[] = [
@@ -31,7 +31,7 @@ export const columns: ColumnDef<Sale>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Sale Number
+          N.° de venta
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -46,7 +46,7 @@ export const columns: ColumnDef<Sale>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Customer
+          Cliente
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -55,10 +55,10 @@ export const columns: ColumnDef<Sale>[] = [
   },
   {
     accessorKey: 'items',
-    header: 'Items',
+    header: 'Artículos',
     cell: ({ row }) => {
       const items = row.getValue('items') as Sale['items']
-      return <div className="text-sm text-muted-foreground">{items.length} items</div>
+      return <div className="text-sm text-muted-foreground">{items.length} artículos</div>
     },
   },
   {
@@ -81,7 +81,7 @@ export const columns: ColumnDef<Sale>[] = [
   },
   {
     accessorKey: 'paymentMethod',
-    header: 'Payment',
+    header: 'Pago',
     cell: ({ row }) => {
       const method = row.getValue('paymentMethod') as keyof typeof paymentMethodLabels
       return <div className="text-sm">{paymentMethodLabels[method]}</div>
@@ -89,13 +89,15 @@ export const columns: ColumnDef<Sale>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Estado',
     cell: ({ row }) => {
       const status = row.getValue('status') as keyof typeof statusVariants
-      const label =
-        status === 'partial_refund'
-          ? 'Partial Refund'
-          : status.charAt(0).toUpperCase() + status.slice(1)
+      const statusLabels: Record<string, string> = {
+        completed: 'Completada',
+        refunded: 'Reembolsada',
+        partial_refund: 'Reembolso parcial',
+      }
+      const label = statusLabels[status] ?? status
       return <Badge variant={statusVariants[status]}>{label}</Badge>
     },
   },
@@ -107,7 +109,7 @@ export const columns: ColumnDef<Sale>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Date
+          Fecha
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )

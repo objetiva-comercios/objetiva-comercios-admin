@@ -12,9 +12,9 @@ export default async function DashboardPage() {
     <div className="space-y-4">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Panel</h1>
         <p className="text-muted-foreground">
-          Overview of your business metrics and key performance indicators
+          Resumen de las métricas de tu negocio e indicadores clave de rendimiento
         </p>
       </div>
 

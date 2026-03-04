@@ -37,7 +37,7 @@ export class JwtAuthGuard implements CanActivate {
 
     // Validate authorization header
     if (!authHeader?.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Missing or invalid authorization header')
+      throw new UnauthorizedException('Encabezado de autorización faltante o inválido')
     }
 
     const token = authHeader.substring(7)
@@ -54,7 +54,7 @@ export class JwtAuthGuard implements CanActivate {
       return true
     } catch (error) {
       console.error('JWT verification failed:', error instanceof Error ? error.message : error)
-      throw new UnauthorizedException('Invalid or expired token')
+      throw new UnauthorizedException('Token inválido o expirado')
     }
   }
 

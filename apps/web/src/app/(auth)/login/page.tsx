@@ -57,7 +57,7 @@ function LoginForm() {
       if (error) {
         toast({
           variant: 'destructive',
-          title: 'Authentication failed',
+          title: 'Error de autenticación',
           description: error.message,
         })
         return
@@ -71,7 +71,7 @@ function LoginForm() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'An unexpected error occurred. Please try again.',
+        description: 'Ocurrió un error inesperado. Por favor, intentá de nuevo.',
       })
     } finally {
       setIsLoading(false)
@@ -81,8 +81,8 @@ function LoginForm() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-        <CardDescription>Enter your email and password to access your account</CardDescription>
+        <CardTitle className="text-2xl font-bold">Iniciar sesión</CardTitle>
+        <CardDescription>Ingresá tu email y contraseña para acceder a tu cuenta</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -96,7 +96,7 @@ function LoginForm() {
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="name@example.com"
+                      placeholder="nombre@ejemplo.com"
                       autoComplete="email"
                       disabled={isLoading}
                       {...field}
@@ -111,11 +111,11 @@ function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Contraseña</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Enter your password"
+                      placeholder="Ingresá tu contraseña"
                       autoComplete="current-password"
                       disabled={isLoading}
                       {...field}
@@ -126,16 +126,16 @@ function LoginForm() {
               )}
             />
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground text-center w-full">
-          Don&apos;t have an account?{' '}
+          ¿No tenés cuenta?{' '}
           <Link href="/signup" className="text-primary hover:underline font-medium">
-            Sign up
+            Registrate
           </Link>
         </p>
       </CardFooter>
