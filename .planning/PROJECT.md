@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A reusable admin base for commercial applications, providing a solid foundation with authentication, navigation structure, and operational sections. Serves small to mid-sized commercial operations (store owners, internal staff) with mobile apps (iOS/Android), web app, and backend all sharing authentication. Displays realistic operational data across core business workflows: dashboard KPIs, product management, purchase/sale tracking, orders, and inventory.
+A reusable admin platform for commercial applications with full-stack authentication, operational dashboards, and cross-platform apps. Serves small to mid-sized commercial operations (store owners, internal staff) with mobile apps (iOS/Android), web app, and NestJS backend — all sharing Supabase authentication with a separate PostgreSQL database for business data. Covers core business workflows: dashboard KPIs, product management, purchase/sale tracking, orders, inventory, and business settings.
 
 ## Core Value
 
@@ -12,78 +12,82 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ User can sign up and log in with email/password on mobile and web via Supabase Auth — v1.0
+- ✓ User session persists across browser/app refresh on both platforms — v1.0
+- ✓ Mobile app displays bottom tabs (Dashboard, Articles, Orders, Inventory) + drawer navigation — v1.0
+- ✓ Web app displays sidebar navigation for all sections — v1.0
+- ✓ Layout is consistent and stable across platforms (header, navigation, content area) — v1.0
+- ✓ All 7 sections navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings) — v1.0
+- ✓ Each section displays operational data from PostgreSQL via backend API — v1.0
+- ✓ Backend exposes 15+ authenticated REST endpoints with RBAC — v1.0
+- ✓ Backend validates JWT tokens from Supabase Auth — v1.0
+- ✓ UI follows shadcn aesthetic with dark theme across platforms — v1.0
+- ✓ Monorepo structure with pnpm workspaces + Turborepo functional — v1.0
+- ✓ Shared packages (types, ui, utils) with design tokens — v1.0
+- ✓ Documentation covers installation, environment setup, and running all apps — v1.0
+- ✓ RBAC system (admin/viewer roles) enforced on write endpoints — v1.0
 
 ### Active
 
-- [ ] User can log in with email/password on mobile and web via Supabase Auth
-- [ ] User session persists and works correctly across both platforms
-- [ ] Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
-- [ ] Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
-- [ ] Web app displays sidebar navigation for all sections
-- [ ] Main layout is consistent and stable across platforms (header, navigation, content area)
-- [ ] All sections (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings) are navigable
-- [ ] Each section displays realistic operational data from backend endpoints
-- [ ] Backend exposes mock endpoints (/api/dashboard, /api/products, /api/orders, etc.) with realistic dummy data
-- [ ] Backend validates JWT tokens from Supabase Auth
-- [ ] UI feels cohesive, dense, and admin-oriented following shadcn aesthetic
-- [ ] Monorepo structure with pnpm workspaces + Turborepo is functional
-- [ ] packages/ui defines shared design tokens and component APIs
-- [ ] Documentation covers installation, environment setup, and running all apps
+(Fresh for next milestone — define with `/gsd:new-milestone`)
 
 ### Out of Scope
 
-- Real business logic implementation — Phase 1 is structure and navigation only
-- Analytics or BI features — This is operations-first, not analytics-heavy
+- Analytics or BI features — operations-first, not analytics-heavy
 - Supabase database for business data — PostgreSQL is separate, Supabase is auth-only
 - Ionic, Material UI, Chakra, or other UI frameworks — shadcn aesthetic is non-negotiable
-- Empty states — Show realistic dummy data to demonstrate layout density
 - Nx monorepo tooling — Using pnpm workspaces + Turborepo only
-- Supabase infrastructure management — Project already exists, just consume auth
+- Advanced inventory forecasting (ML) — simple stock alerts sufficient
+- Mobile POS app — admin focus, not cashier UX
+- Multi-currency/multi-language — single locale (es-MX/MXN) initially
 
 ## Context
 
-**Target users:** Store owners and internal staff managing daily commercial operations. Core workflows include checking dashboard metrics, managing inventory and products, registering purchases and sales, tracking orders, and configuring business settings.
+**Current state:** Shipped v1.0 with 12,650 LOC TypeScript across 377 files.
 
-**Technical environment:** Greenfield project built from scratch. No existing code, no refactoring, no legacy constraints. This is a base template that will be reused across multiple commercial applications.
+**Tech stack:**
 
-**Platform requirements:**
-- Mobile must work on iOS and Android via Capacitor
-- Web and mobile share Supabase authentication
-- Backend validates JWT from Supabase but uses separate PostgreSQL for business data
-- All platforms must feel cohesive and follow the same design language
+- Web: Next.js 14 (App Router), shadcn/ui, Tailwind CSS, TanStack Table
+- Mobile: React + Vite + Capacitor (iOS/Android), TanStack Query
+- Backend: NestJS, Drizzle ORM, PostgreSQL, jose (JWT validation)
+- Shared: pnpm workspaces, Turborepo, @objetiva/{types,ui,utils}
+- Auth: Supabase (auth only — JWT validation via JWKS)
+- DB: PostgreSQL with Drizzle ORM (8 tables, 500+ seed products)
 
-**UI philosophy:** Modern, dense, admin-oriented interface clearly inspired by shadcn. Components are copy/paste style (not abstracted UI kits). Visual consistency across platforms through shared design tokens and patterns, but platform-specific implementations (not forcing cross-platform abstractions that hurt DX/UX).
+**Target users:** Store owners and internal staff managing daily commercial operations.
 
-**Navigation patterns:**
-- Mobile: Bottom tabs for high-frequency sections, drawer from header for secondary navigation
-- Web: Sidebar navigation
-- Pattern is consistent and NOT context-dependent
+**Known tech debt from v1.0:**
 
-**Data approach:** Backend serves realistic dummy data via REST endpoints. Frontend consumes these endpoints (not local mock data). This validates the frontend ↔ backend contract early and ensures auth, headers, and data flow are production-like.
+- Settings RBAC gap (high) — PATCH/POST/DELETE /api/settings missing @Roles('admin')
+- Web type drift (medium) — 3 type interfaces missing fields from DB schema
+- Mobile labels not localized to Spanish (low)
+- Unused shared package exports (low)
 
 ## Constraints
 
-- **Tech Stack — Mobile**: React + TypeScript, Capacitor (iOS/Android), Vite, shadcn-style UI (copy/paste components), Tailwind/native-friendly styling
+- **Tech Stack — Mobile**: React + TypeScript, Capacitor (iOS/Android), Vite, shadcn-style UI, Tailwind
 - **Tech Stack — Web**: Next.js (App Router), React + TypeScript, shadcn/ui, Tailwind CSS
-- **Tech Stack — Backend**: NestJS, TypeScript, PostgreSQL (separate from Supabase), Supabase Auth (JWT validation only)
+- **Tech Stack — Backend**: NestJS, TypeScript, PostgreSQL + Drizzle ORM, Supabase Auth (JWT validation only)
 - **Monorepo**: pnpm workspaces + Turborepo (not Nx)
 - **Authentication**: Supabase Auth only — shared across mobile, web, and backend
 - **Design System**: shadcn aesthetic required — NO Ionic, Material UI, Chakra, Ant, Mantine, NativeBase
-- **UI Components**: Must live in packages/ui with shared design tokens and component APIs
-- **Database**: Supabase PostgreSQL is NOT used for business data — separate PostgreSQL instance required
-- **Phase 1 Scope**: Navigation structure, authentication, layout, and mock sections only — no real business logic yet
+- **Database**: Supabase PostgreSQL is NOT used for business data — separate PostgreSQL instance
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Supabase for auth only, separate PostgreSQL for data | Clean separation of concerns — auth is a commodity, business data has specific requirements and scaling needs | — Pending |
-| pnpm + Turborepo over Nx | Simpler mental model, less abstraction, easier to understand and maintain for monorepo structure | — Pending |
-| Platform-specific UI implementations with shared design language | Avoid cross-platform abstractions that hurt DX/UX — visual consistency through design tokens, not code reuse | — Pending |
-| Backend serves mock data vs frontend local mocks | Validates contract early, ensures auth/headers/data flow work correctly from day one | — Pending |
-| Bottom tabs + drawer pattern for mobile | Tabs for high-frequency operational workflows, drawer for secondary admin actions — clear mental model | — Pending |
-| Realistic dummy data over empty states | Demonstrates layout density, spacing, hierarchy — empty states not a priority in Phase 1 | — Pending |
+| Decision                                             | Rationale                                                                                   | Outcome                                                               |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Supabase for auth only, separate PostgreSQL for data | Clean separation of concerns — auth is a commodity, business data has specific requirements | ✓ Good — clean auth/data boundary, easy to swap either side           |
+| pnpm + Turborepo over Nx                             | Simpler mental model, less abstraction                                                      | ✓ Good — fast builds, minimal config overhead                         |
+| Platform-specific UI with shared design language     | Avoid cross-platform abstractions that hurt DX/UX                                           | ✓ Good — each platform feels native while staying cohesive            |
+| Backend serves mock data → replaced by real DB       | Validates contract early, then seamless DB migration                                        | ✓ Good — frontend required zero changes when DB replaced mocks        |
+| Bottom tabs + drawer pattern for mobile              | Tabs for high-frequency sections, drawer for secondary admin                                | ✓ Good — clear navigation mental model                                |
+| HashRouter for Capacitor mobile                      | Capacitor native uses file:// protocol where BrowserRouter fails                            | ✓ Good — works on iOS/Android native without config                   |
+| Drizzle ORM over TypeORM/Prisma                      | Lightweight, SQL-like query builder, good TypeScript inference                              | ✓ Good — clean migrations, fast queries, small bundle                 |
+| jose for JWT validation                              | Async JWKS validation, no Supabase SDK dependency on backend                                | ✓ Good — lightweight, secure, handles key rotation                    |
+| Global JWT guard with @Public() opt-out              | Deny-by-default — all new routes auto-protected                                             | ✓ Good — prevented auth gaps as features were added                   |
+| doublePrecision for monetary fields                  | Returns JS numbers directly, no string parsing needed                                       | ⚠️ Revisit — may need numeric() for precision in financial operations |
 
 ---
-*Last updated: 2026-01-22 after initialization*
+
+_Last updated: 2026-03-04 after v1.0 milestone_

@@ -14,16 +14,18 @@ Establish working monorepo with shared packages, TypeScript configuration, and a
 ## Implementation Decisions
 
 ### Workspace Structure & Package Organization
+
 - **Top-level organization:** Claude's discretion (standard apps/ and packages/ structure)
 - **Initial packages:** Start with packages/ui only. Add packages/types and packages/utils when needed (not premature).
   - **Correction:** Actually create packages/ui, packages/types, and packages/utils from the start
   - packages/ui: Design tokens, shadcn/ui components
   - packages/types: Shared TypeScript types (API contracts, domain models)
   - packages/utils: Common helpers (formatters, validators)
-- **Package naming:** Claude's discretion (scoped @objetiva/* or simple names)
+- **Package naming:** Claude's discretion (scoped @objetiva/\* or simple names)
 - **App naming:** Claude's discretion (descriptive vs generic)
 
 ### Shared UI Package Scope
+
 - **packages/ui contents:**
   - Design tokens (colors, spacing, typography)
   - Shared React components (buttons, inputs, cards) using shadcn/ui as base
@@ -32,12 +34,14 @@ Establish working monorepo with shared packages, TypeScript configuration, and a
 - **Platform differences:** Claude's discretion on how to handle web vs mobile component variations (single component with detection, separate exports, or composition)
 
 ### TypeScript & Tooling Configuration
+
 - **TypeScript strict mode:** Full strict mode enabled (strict: true)
 - **tsconfig structure:** Base tsconfig in root, apps/packages extend it
 - **Linting/formatting:** ESLint with TypeScript support + Prettier
 - **Git hooks:** Yes, use husky + lint-staged for pre-commit checks
 
 ### Authentication Foundation Setup
+
 - **Auth package structure:** Claude's discretion (packages/auth, in-app, or packages/utils)
 - **JWT test endpoint:** Comprehensive validation
   - Validate JWT signature and expiration
@@ -51,6 +55,7 @@ Establish working monorepo with shared packages, TypeScript configuration, and a
   - Running apps in dev mode (commands, ports)
 
 ### Claude's Discretion
+
 - Exact monorepo directory structure (apps/ vs apps/backend separation)
 - Package naming convention (scoped vs simple)
 - App naming convention (descriptive vs generic)
@@ -79,5 +84,5 @@ None — discussion stayed within phase scope.
 
 ---
 
-*Phase: 01-foundation-monorepo*
-*Context gathered: 2026-01-23*
+_Phase: 01-foundation-monorepo_
+_Context gathered: 2026-01-23_

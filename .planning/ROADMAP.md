@@ -1,339 +1,49 @@
 # Roadmap: Objetiva Comercios Admin
 
-## Overview
+## Milestones
 
-This roadmap delivers a reusable commercial admin foundation from zero to production-ready. We start with monorepo structure and authentication, build backend mock endpoints to validate API contracts early, then implement web and mobile frontends that consume those endpoints. Finally, we replace mock data with real PostgreSQL and polish for production. Each phase delivers a complete, verifiable capability that unblocks the next.
+- ✅ **v1.0 MVP** — Phases 1-13 (shipped 2026-03-04) — [Full details](milestones/v1.0-ROADMAP.md)
 
 ## Phases
 
-**Phase Numbering:**
-
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
-
-Decimal phases appear between their surrounding integers in numeric order.
-
-- [x] **Phase 1: Foundation & Monorepo** - Establish monorepo structure with authentication and shared packages
-- [x] **Phase 2: Backend API with Mock Data** - Build NestJS backend serving realistic dummy data through authenticated endpoints
-- [x] **Phase 3: Web Application** - Create Next.js web app with authentication, navigation, and all operational sections
-- [x] **Phase 4: Mobile Application** - Build Capacitor mobile app with platform-specific UI and navigation patterns (completed 2026-03-02)
-- [x] **Phase 5: Database Integration** - Replace mock data with PostgreSQL and Drizzle ORM for real persistence (completed 2026-03-02)
-- [x] **Phase 6: Polish & Production** - Error handling, responsive refinement, RBAC, performance optimization (completed 2026-03-02)
-- [x] **Phase 7: Fix Integration Bugs & Deployment Blockers** - Fix runtime crashes, type mismatches, middleware gaps, and deployment blockers (Gap Closure) (completed 2026-03-02)
-- [x] **Phase 8: Verify & Close Phases 3+4** - Create missing VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies (Gap Closure)
-- [x] **Phase 9: Fix Mobile Purchase & Login Bugs** - Align purchase status enum, fix PurchaseItem field name, add mobile login password validation (Gap Closure) (completed 2026-03-02)
-- [x] **Phase 10: Code Quality & Type Safety Cleanup** - Remove dead code, consolidate utils, import shared schemas, fix type mismatches (Gap Closure) (completed 2026-03-03)
-- [x] **Phase 11: Fix Sales Detail View Crash** - Add saleItems batch-loading in sales.findAll(), align field names in web/mobile sale detail views (Gap Closure) (completed 2026-03-03)
-- [x] **Phase 12: Fix Dashboard Links, Web Types & Doc Sync** - Remove dashboard dead links, align web entity ID types, fix mobile currency formatter, sync doc checkboxes (Gap Closure)
-- [x] **Phase 13: Tech Debt Cleanup** - Fix mobile TS compilation, remove dead code/links, fix formatting consistency (Tech Debt Closure) (completed 2026-03-03)
-
-## Phase Details
-
-### Phase 1: Foundation & Monorepo
-
-**Goal**: Establish working monorepo with shared packages, TypeScript configuration, and authentication foundation that all apps can build upon
-**Depends on**: Nothing (first phase)
-**Requirements**: MONO-01, MONO-02, MONO-03, MONO-04, UI-05, AUTH-05, DOC-01, DOC-02, DOC-04
-**Success Criteria** (what must be TRUE):
-
-1. Developer can install all dependencies with single pnpm install command
-2. TypeScript resolves workspace package imports correctly across all apps
-3. Turborepo builds run with caching working for incremental builds
-4. packages/ui exports shared design tokens (colors, spacing, typography) and types
-5. Supabase Auth project exists and credentials are configured in all apps
-6. Backend validates JWT tokens from Supabase successfully in test endpoint
-7. README guides developer through environment setup and running all apps
-   **Plans**: 4 plans in 3 waves
-
-Plans:
-
-- [x] 01-01-PLAN.md - Monorepo foundation with shared packages (ui, types, utils)
-- [x] 01-02-PLAN.md - NestJS backend with JWT authentication
-- [x] 01-03-PLAN.md - Web and mobile app skeletons with design tokens
-- [x] 01-04-PLAN.md - Developer experience (ESLint, Prettier, Husky) and README
-
-### Phase 2: Backend API with Mock Data
-
-**Goal**: Build complete backend API with realistic mock data endpoints, validating the frontend-backend contract before real database work
-**Depends on**: Phase 1
-**Requirements**: API-01, API-02, API-03, API-04, API-05, API-06, API-07, API-08, API-09, MONO-08, MONO-09
-**Success Criteria** (what must be TRUE):
-
-1. Backend runs on localhost with health check endpoint responding
-2. All API endpoints require valid JWT token and reject invalid tokens
-3. Dashboard endpoint returns realistic KPI data (sales, inventory, orders metrics)
-4. Products endpoint returns 500+ realistic products with categories, pricing, and attributes
-5. Orders endpoint returns realistic order data with various statuses
-6. Inventory endpoint returns stock levels matching products
-7. Sales and purchases endpoints return realistic transaction history
-8. Developer can run backend concurrently with other apps in dev mode
-   **Plans**: 5 plans in 3 waves (+1 gap closure)
-
-Plans:
-
-- [x] 02-01-PLAN.md - Common infrastructure (ValidationPipe, global auth guard, exception filter, DTOs)
-- [x] 02-02-PLAN.md - Mock data generators with @faker-js/faker (500+ products, orders, inventory, sales, purchases)
-- [x] 02-03-PLAN.md - Products, Orders, and Inventory modules with filtering and pagination
-- [x] 02-04-PLAN.md - Sales, Purchases, and Dashboard modules completing the API
-- [x] 02-05-PLAN.md - Gap closure: enforce JWT auth on all endpoints, add purchases KPI to dashboard
-
-### Phase 3: Web Application
-
-**Goal**: Deliver complete web admin interface with authentication, navigation, and all operational sections displaying backend data
-**Depends on**: Phase 2
-**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, NAV-03, NAV-04, NAV-05, NAV-06, NAV-07, UI-01, UI-02, UI-03, UI-04, DASH-01, DASH-02, DASH-03, SET-01, SET-02, SET-03, SET-04, MONO-07, DOC-03
-**Success Criteria** (what must be TRUE):
-
-1. User can sign up with email/password and receives confirmation
-2. User can log in and session persists across browser refresh
-3. User can log out from any page and is redirected to login
-4. Web app displays sidebar navigation with all sections always visible
-5. All sections are navigable (Dashboard, Articles, Purchases, Sales, Orders, Inventory, Settings)
-6. Dashboard displays key metrics from backend endpoint in dense, admin-oriented layout
-7. Each section displays realistic operational data fetched from backend API
-8. UI follows shadcn aesthetic with dark theme working correctly
-9. User can view and update their profile from Settings
-10. Layout is responsive and adapts to desktop, tablet, and mobile screen sizes
-    **Plans**: 8 plans in 4 waves
-
-Plans:
-
-- [x] 03-01-PLAN.md - Auth foundation (Supabase clients, middleware, ThemeProvider, shadcn/ui setup)
-- [x] 03-02-PLAN.md - Auth pages (Login, Signup, callback, redirects)
-- [x] 03-03-PLAN.md - Dashboard layout (Responsive sidebar, header, user menu, navigation)
-- [x] 03-04-PLAN.md - Dashboard page (KPI cards, charts, alerts, recent orders)
-- [x] 03-05-PLAN.md - Articles section (Products table with TanStack Table, filtering, side panel)
-- [x] 03-06-PLAN.md - Orders and Inventory sections (Data tables with status badges)
-- [x] 03-07-PLAN.md - Sales and Purchases sections (Transaction tables)
-- [x] 03-08-PLAN.md - Settings section and final verification (Profile, business settings, checkpoint)
-
-### Phase 4: Mobile Application
-
-**Goal**: Deliver iOS/Android mobile app with platform-specific navigation (bottom tabs + drawer) consuming same backend as web
-**Depends on**: Phase 3
-**Requirements**: NAV-01, NAV-02, NAV-04, NAV-05, NAV-06, NAV-07, UI-04, MONO-05, MONO-06
-**Success Criteria** (what must be TRUE):
-
-1. User can log in with email/password on mobile and session persists across app restarts
-2. Mobile app displays bottom tabs for primary sections (Dashboard, Articles, Orders, Inventory)
-3. Mobile app displays drawer navigation from header for secondary actions (Profile, Settings, Logout)
-4. Navigation is consistent and NOT context-dependent (tabs/drawer always visible)
-5. All sections display same operational data as web but with mobile-optimized UI
-6. Mobile app builds and runs in browser for development
-7. Mobile app can be built for iOS and Android via Capacitor
-8. App feels cohesive with web despite platform-specific UI implementations
-   **Plans**: 4 plans in 3 waves
-
-Plans:
-
-- [x] 04-01-PLAN.md - Capacitor setup, auth infrastructure & app entry (HashRouter, Supabase client, Login/Signup, SplashGate)
-- [x] 04-02-PLAN.md - Navigation shell & Dashboard (BottomTabs, AppHeader, DrawerNav, AppShell, Dashboard KPIs)
-- [x] 04-03-PLAN.md - Shared UI components & primary section pages (Card, StatusBadge, FilterChips, BottomSheet, Articles, Orders, Inventory)
-- [x] 04-04-PLAN.md - Secondary sections, settings & verification (Sales, Purchases, Profile, Settings, human checkpoint)
-
-### Phase 5: Database Integration
-
-**Goal**: Replace mock data services with real PostgreSQL database using Drizzle ORM, maintaining API contract so frontends work unchanged
-**Depends on**: Phase 4
-**Requirements**: None (internal backend change)
-**Success Criteria** (what must be TRUE):
-
-1. PostgreSQL database is running and connected to backend
-2. Database schema is created via Drizzle migrations
-3. All API endpoints return data from database instead of mocks
-4. Database is seeded with 500+ realistic products and related data
-5. Frontend applications continue working without code changes
-6. CRUD operations persist data correctly across sessions
-   **Plans**: 3 plans in 3 waves
-
-Plans:
-
-- [x] 05-01-PLAN.md — Drizzle setup, schema definition (8 tables), migration generation, and seed script
-- [x] 05-02-PLAN.md — Migrate all 5 domain services to Drizzle DB queries and add CRUD endpoints
-- [x] 05-03-PLAN.md — Dashboard async migration, mock data cleanup, and build verification
-
-### Phase 6: Polish & Production
-
-**Goal**: Harden application for production with error handling, loading states, RBAC, responsive refinements, and performance optimization
-**Depends on**: Phase 5
-**Requirements**: AUTH-06
-**Success Criteria** (what must be TRUE):
-
-1. Error boundaries catch and display friendly error messages throughout apps
-2. All data fetching shows loading states with skeleton components
-3. User roles and permissions system (RBAC) is implemented and enforced
-4. Mobile app touch targets meet platform guidelines (44x44px minimum)
-5. Web app loads under 3 seconds on 3G connection
-6. All forms validate input and show helpful error messages
-7. Application handles offline scenarios gracefully on mobile
-   **Plans**: 4 plans in 2 waves
-
-Plans:
-
-- [x] 06-01-PLAN.md — RBAC backend infrastructure (JWT fix, @Roles decorator, RolesGuard, controller enforcement)
-- [x] 06-02-PLAN.md — Error boundaries (web error.tsx, mobile react-error-boundary) and mobile offline detection
-- [x] 06-03-PLAN.md — Form validation (shared schemas, password strength), business settings form, bundle analysis, and Lighthouse measurement
-- [x] 06-04-PLAN.md — Mobile touch target audit and fixes (44x44px minimum on all interactive elements)
-
-### Phase 7: Fix Integration Bugs & Deployment Blockers
-
-**Goal**: Fix runtime crashes, type mismatches, middleware gaps, and deployment blockers identified by milestone audit
-**Depends on**: Phase 6
-**Requirements**: DASH-01, DASH-02, AUTH-03
-**Gap Closure:** Closes gaps from audit
-**Success Criteria** (what must be TRUE):
-
-1. Web OrderSheet opens without crashing (items loaded from list endpoint)
-2. Web PurchaseSheet opens without crashing (items loaded from list endpoint)
-3. Dashboard displays purchases KPI (DashboardResponse type includes purchases)
-4. Frontend types match DB schema (no phantom fields causing silent blanks)
-5. Auth middleware protects all authenticated routes, not just /dashboard
-6. DATABASE_URL documented in .env.example for deployment
-   **Plans**: 2 plans in 2 waves
-
-Plans:
-
-- [x] 07-01-PLAN.md — Backend data layer fixes: DB schema migration (8 phantom columns), generator/seed updates, orders/purchases findAll batch items loading
-- [x] 07-02-PLAN.md — Frontend type alignment, dashboard purchases KPI (web + mobile), deny-by-default auth middleware with returnTo, DATABASE_URL documentation
-
-### Phase 8: Verify & Close Phases 3+4
-
-**Goal**: Create formal VERIFICATION.md for Phase 3 and Phase 4, fix roadmap data inconsistencies, and close all 26 unverified requirements
-**Depends on**: Phase 7
-**Requirements**: AUTH-01, AUTH-02, AUTH-04, NAV-03, UI-01, UI-02, UI-03, DASH-03, SET-01, SET-02, SET-03, SET-04, MONO-07, DOC-03, NAV-04, NAV-05, NAV-06, NAV-07, UI-04, NAV-01, NAV-02, MONO-05, MONO-06
-**Gap Closure:** Closes gaps from audit
-**Success Criteria** (what must be TRUE):
-
-1. Phase 3 VERIFICATION.md exists and confirms all 17 requirements satisfied
-2. Phase 4 VERIFICATION.md exists and confirms all 9 requirements satisfied
-3. ROADMAP.md Phase 3 checkboxes reflect actual completion status
-4. REQUIREMENTS.md traceability marks all verified requirements as Complete
-
-**Plans**: 3 plans in 2 waves
-
-Plans:
-
-- [x] 08-01-PLAN.md — Phase 3 web application verification report
-- [x] 08-02-PLAN.md — Phase 4 mobile application verification report
-- [x] 08-03-PLAN.md — ROADMAP.md and REQUIREMENTS.md data reconciliation
-
-### Phase 9: Fix Mobile Purchase & Login Bugs
-
-**Goal**: Fix broken mobile flows: purchase status filter returning zero results, purchase detail showing NaN amounts, and login password validation bypass in native mode
-**Depends on**: Phase 8
-**Requirements**: API-06, NAV-07, AUTH-02
-**Gap Closure:** Closes integration gaps #1, #2 and flow gaps #1, #2, #3 from audit
-**Success Criteria** (what must be TRUE):
-
-1. Mobile "Pending" filter returns correct purchase results (status enum aligned)
-2. Mobile purchase detail displays correct MXN amounts (field name aligned)
-3. Mobile Login validates password before submission in Capacitor native mode
-4. Web purchase badge renders correctly for all statuses
-
-**Plans**: 2 plans in 1 wave
-
-Plans:
-
-- [x] 09-01-PLAN.md — Mobile purchase type/filter/badge fixes and login password validation
-- [x] 09-02-PLAN.md — Web purchase type, columns badge map, and detail sheet field fixes
-
-### Phase 10: Code Quality & Type Safety Cleanup
-
-**Goal**: Remove dead code, consolidate duplicated utilities, import shared validation schemas, and fix type mismatches between frontend and backend
-**Depends on**: Phase 9
-**Requirements**: AUTH-01, AUTH-05, UI-05, MONO-04
-**Gap Closure:** Closes integration gaps #3, #4 and medium-priority tech debt from audit
-**Success Criteria** (what must be TRUE):
-
-1. AuthMiddleware class removed (dead code — JwtAuthGuard covers all routes)
-2. @objetiva/utils formatCurrency/formatDate imported by apps instead of local duplicates
-3. Mobile Signup imports signupSchema from @objetiva/types instead of duplicating rules
-4. Mobile Order/Purchase id typed as number matching backend response
-
-**Plans**: 4 plans in 1 wave (+1 gap closure)
-
-Plans:
-
-- [x] 10-01-PLAN.md — Shared formatter defaults (es-MX/MXN), mobile Signup schema refactor, dead AuthMiddleware deletion
-- [x] 10-02-PLAN.md — Mobile formatter imports consolidation and entity id type alignment (string to number)
-- [x] 10-03-PLAN.md — Web currency formatter consolidation (10 components import from @objetiva/utils)
-- [x] 10-04-PLAN.md — Gap closure: fix Zod v4 .errors to .issues in Login.tsx and Signup.tsx
-
-### Phase 11: Fix Sales Detail View Crash
-
-**Goal**: Fix critical runtime crash in sales detail views caused by missing saleItems batch-loading and misaligned field names
-**Depends on**: Phase 10
-**Requirements**: API-05
-**Gap Closure:** Closes INT-01 (critical), flows "Web Sales detail" and "Mobile Sales detail" from audit
-**Success Criteria** (what must be TRUE):
-
-1. `sales.findAll()` batch-loads `saleItems` matching orders/purchases pattern
-2. Web SaleSheet opens without crashing — items render correctly
-3. Mobile Sales BottomSheet opens without crashing — items render correctly
-4. Field names aligned: `item.price` (not `unitPrice`), no `sale.customerEmail` references
-
-Plans:
-
-- [x] 11-01-PLAN.md — Backend saleItems batch-loading and frontend field name alignment
-
-### Phase 12: Fix Dashboard Links, Web Types & Doc Sync
-
-**Goal**: Fix dashboard dead links, align web entity ID types with backend, fix mobile currency formatter, and sync documentation checkboxes
-**Depends on**: Phase 11
-**Requirements**: DASH-01, NAV-07, MONO-03, UI-04
-**Gap Closure:** Closes INT-02 (high), INT-03 (medium), flows "Dashboard deep-linking" and "Mobile currency consistency" from audit
-**Success Criteria** (what must be TRUE):
-
-1. Dashboard card links either navigate to real pages or are non-navigable (no 404)
-2. Web entity type `id` fields are `number` matching backend Drizzle serial type
-3. Mobile Dashboard uses shared `formatCurrency` from `@objetiva/utils` (es-MX/MXN)
-4. REQUIREMENTS.md checkboxes synced for MONO-01/02/03, DOC-01/02/04
-5. ROADMAP.md plan checkboxes synced for Phases 6, 7, 10
-
-Plans:
-
-- [x] 12-01-PLAN.md — Dashboard links fix, web type alignment, mobile formatter, doc checkbox sync
-
-### Phase 13: Tech Debt Cleanup
-
-**Goal**: Close all actionable tech debt items identified by the v1.0 milestone audit — fix mobile TS compilation, remove dead code and dead links, fix formatting inconsistency
-**Depends on**: Phase 12
-**Requirements**: None (tech debt — all requirements already satisfied)
-**Tech Debt Closure:** Closes 5 of 6 tech debt items from audit (1 info item skipped as intentional)
-**Success Criteria** (what must be TRUE):
-
-1. `tsc --noEmit` passes for mobile app (SplashGate.tsx error type fixed)
-2. `/forgot-password` link removed or disabled on web login page
-3. `fetchLowStock()` export deleted from `apps/web/src/lib/api.ts`
-4. `stats-cards.tsx` subtitle uses `formatCurrency` instead of manual `$` formatting
-5. Unused `colors` token removed from `packages/ui/src/tokens/`
-
-Plans:
-
-- [ ] 13-01-PLAN.md — All 5 tech debt fixes: mobile TS error, web dead link/code removal, currency format fix, unused token deletion
+<details>
+<summary>✅ v1.0 MVP (Phases 1-13) — SHIPPED 2026-03-04</summary>
+
+- [x] Phase 1: Foundation & Monorepo (4/4 plans) — completed 2026-01-24
+- [x] Phase 2: Backend API with Mock Data (5/5 plans) — completed 2026-03-01
+- [x] Phase 3: Web Application (8/8 plans) — completed 2026-01-26
+- [x] Phase 4: Mobile Application (4/4 plans) — completed 2026-03-02
+- [x] Phase 5: Database Integration (3/3 plans) — completed 2026-03-02
+- [x] Phase 6: Polish & Production (4/4 plans) — completed 2026-03-02
+- [x] Phase 7: Fix Integration Bugs (2/2 plans) — completed 2026-03-02
+- [x] Phase 8: Verify & Close Phases 3+4 (3/3 plans) — completed 2026-03-02
+- [x] Phase 9: Fix Mobile Purchase & Login Bugs (2/2 plans) — completed 2026-03-02
+- [x] Phase 10: Code Quality & Type Safety Cleanup (4/4 plans) — completed 2026-03-03
+- [x] Phase 11: Fix Sales Detail View Crash (1/1 plans) — completed 2026-03-03
+- [x] Phase 12: Fix Dashboard Links & Doc Sync (1/1 plans) — completed 2026-03-03
+- [x] Phase 13: Tech Debt Cleanup (1/1 plans) — completed 2026-03-03
+
+</details>
 
 ## Progress
 
-**Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13
-
-| Phase                                         | Plans Complete | Status   | Completed  |
-| --------------------------------------------- | -------------- | -------- | ---------- |
-| 1. Foundation & Monorepo                      | 4/4            | Complete | 2026-01-24 |
-| 2. Backend API with Mock Data                 | 5/5            | Complete | 2026-03-01 |
-| 3. Web Application                            | 8/8            | Complete | 2026-01-26 |
-| 4. Mobile Application                         | 4/4            | Complete | 2026-03-02 |
-| 5. Database Integration                       | 3/3            | Complete | 2026-03-02 |
-| 6. Polish & Production                        | 4/4            | Complete | 2026-03-02 |
-| 7. Fix Integration Bugs & Deployment Blockers | 2/2            | Complete | 2026-03-02 |
-| 8. Verify & Close Phases 3+4                  | 3/3            | Complete | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs           | 2/2            | Complete | 2026-03-02 |
-| 10. Code Quality & Type Safety Cleanup        | 4/4            | Complete | 2026-03-03 |
-| 11. Fix Sales Detail View Crash               | 1/1            | Complete | 2026-03-03 |
-| 12. Fix Dashboard Links, Web Types & Doc Sync | 1/1            | Complete | 2026-03-03 |
-| 13. Tech Debt Cleanup                         | 1/1            | Complete | 2026-03-03 |
+| Phase                                  | Milestone | Plans Complete | Status   | Completed  |
+| -------------------------------------- | --------- | -------------- | -------- | ---------- |
+| 1. Foundation & Monorepo               | v1.0      | 4/4            | Complete | 2026-01-24 |
+| 2. Backend API with Mock Data          | v1.0      | 5/5            | Complete | 2026-03-01 |
+| 3. Web Application                     | v1.0      | 8/8            | Complete | 2026-01-26 |
+| 4. Mobile Application                  | v1.0      | 4/4            | Complete | 2026-03-02 |
+| 5. Database Integration                | v1.0      | 3/3            | Complete | 2026-03-02 |
+| 6. Polish & Production                 | v1.0      | 4/4            | Complete | 2026-03-02 |
+| 7. Fix Integration Bugs                | v1.0      | 2/2            | Complete | 2026-03-02 |
+| 8. Verify & Close Phases 3+4           | v1.0      | 3/3            | Complete | 2026-03-02 |
+| 9. Fix Mobile Purchase & Login Bugs    | v1.0      | 2/2            | Complete | 2026-03-02 |
+| 10. Code Quality & Type Safety Cleanup | v1.0      | 4/4            | Complete | 2026-03-03 |
+| 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete | 2026-03-03 |
+| 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete | 2026-03-03 |
+| 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete | 2026-03-03 |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-03 (Phase 13 added — tech debt cleanup from v1.0 audit)_
+_Last updated: 2026-03-04 (v1.0 milestone archived)_
