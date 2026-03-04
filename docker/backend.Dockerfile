@@ -37,6 +37,8 @@ ENV NODE_ENV=production
 COPY --from=builder /app/pruned/dist ./dist
 COPY --from=builder /app/pruned/node_modules ./node_modules
 
+RUN mkdir -p /app/uploads
+
 EXPOSE 3001
 ENV PORT=3001
 

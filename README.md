@@ -14,6 +14,7 @@ Sistema de administracion reutilizable para aplicaciones comerciales. Provee una
 | Autenticacion  | Supabase Auth (JWT via JWKS)                        |
 | UI             | shadcn/ui, Radix UI, Lucide Icons, Recharts         |
 | Tablas         | TanStack Table 8, TanStack Query 5 (movil)          |
+| Formularios    | React Hook Form 7, Zod 4                            |
 | Validacion     | Zod 4, class-validator                              |
 | Calidad        | ESLint, Prettier, Husky, lint-staged                |
 
@@ -158,7 +159,7 @@ objetiva-comercios-admin/
 │   │   │   ├── auth/        # Modulo de autenticacion (controller, types)
 │   │   │   ├── common/      # Guards (JWT), decoradores, DTOs base, filtros de excepcion
 │   │   │   ├── db/          # DrizzleService, schema, seed, generators
-│   │   │   └── modules/     # dashboard, products, orders, inventory, sales, purchases
+│   │   │   └── modules/     # dashboard, products, orders, inventory, sales, purchases, settings
 │   │   └── drizzle/         # Migraciones SQL generadas
 │   ├── web/                 # Next.js 14 App Router
 │   │   └── src/
@@ -268,6 +269,15 @@ Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_m
 | PATCH  | `/api/purchases/:id`   | Actualizar compra (admin)  |
 | DELETE | `/api/purchases/:id`   | Eliminar compra (admin)    |
 
+### Configuracion del negocio
+
+| Metodo | Ruta                       | Descripcion                                          |
+| ------ | -------------------------- | ---------------------------------------------------- |
+| GET    | `/api/settings`            | Obtener configuracion del negocio (publico)          |
+| PATCH  | `/api/settings`            | Actualizar configuracion                             |
+| POST   | `/api/settings/logo/:type` | Subir logo (type: `square` o `rectangular`, max 2MB) |
+| DELETE | `/api/settings/logo/:type` | Eliminar logo (type: `square` o `rectangular`)       |
+
 ## Scripts y automatizacion
 
 ### Base de datos (desde `apps/backend/`)
@@ -348,6 +358,6 @@ pnpm install
 
 ## Estado del proyecto
 
-Milestone v1.0 completado. 13 fases ejecutadas, 42 planes completados (100%).
+Milestone v1.0 completado -- 13 fases ejecutadas, 42 planes completados (100%).
 
 Ultimo avance: 2026-03-04 (traduccion completa a espanol, fix JWT ES256/JWKS, fix redirects Docker).

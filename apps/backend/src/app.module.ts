@@ -9,6 +9,7 @@ import { InventoryModule } from './modules/inventory/inventory.module'
 import { SalesModule } from './modules/sales/sales.module'
 import { PurchasesModule } from './modules/purchases/purchases.module'
 import { DashboardModule } from './modules/dashboard/dashboard.module'
+import { SettingsModule } from './modules/settings/settings.module'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module'
     SalesModule,
     PurchasesModule,
     DashboardModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

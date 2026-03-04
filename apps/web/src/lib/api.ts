@@ -1,3 +1,4 @@
+import type { BusinessSettings } from '@/types/settings'
 import type { DashboardResponse } from '@/types/dashboard'
 import type { Product } from '@/types/product'
 import type { Order } from '@/types/order'
@@ -46,6 +47,15 @@ async function fetchWithAuth<T>(endpoint: string): Promise<T> {
     throw new Error(`API error: ${response.status} ${response.statusText}`)
   }
 
+  return response.json()
+}
+
+export async function fetchSettings(): Promise<BusinessSettings> {
+  const url = `${API_BASE_URL}/api/settings`
+  const response = await fetch(url, { cache: 'no-store' })
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status} ${response.statusText}`)
+  }
   return response.json()
 }
 

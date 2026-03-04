@@ -1,17 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { fetchSettings } from '@/lib/api'
 import { BusinessForm } from '@/components/settings/business-form'
 
 export default async function BusinessPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const business = user?.user_metadata?.business ?? {
-    company_name: '',
-    address: '',
-    tax_id: '',
-  }
+  const settings = await fetchSettings()
 
   return (
     <div className="space-y-6">
@@ -23,7 +14,7 @@ export default async function BusinessPage() {
       </div>
 
       <div className="rounded-lg border p-6">
-        <BusinessForm initialValues={business} />
+        <BusinessForm initialValues={settings} />
       </div>
     </div>
   )

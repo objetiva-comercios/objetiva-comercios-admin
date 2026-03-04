@@ -17,8 +17,13 @@ services:
     container_name: erp-backend
     restart: unless-stopped
     env_file: ./apps/backend/.env.production
+    volumes:
+      - erp-uploads:/app/uploads
     networks:
       - sanchez_docker_network
+
+volumes:
+  erp-uploads:
 
 networks:
   sanchez_docker_network:

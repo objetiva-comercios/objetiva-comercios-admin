@@ -1,13 +1,21 @@
 import 'dotenv/config'
+import { join } from 'path'
+import { mkdirSync } from 'fs'
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
+import type { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard'
 import { HttpExceptionFilter } from './common/filters/http-exception.filter'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
+
+  // Ensure uploads directory exists and serve statically
+  const uploadsDir = join(process.cwd(), 'uploads')
+  mkdirSync(uploadsDir, { recursive: true })
+  app.useStaticAssets(uploadsDir, { prefix: '/api/uploads/' })
 
   // Set global prefix for all routes
   app.setGlobalPrefix('api')

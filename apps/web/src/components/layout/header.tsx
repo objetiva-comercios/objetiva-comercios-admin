@@ -8,13 +8,14 @@ interface HeaderProps {
     name?: string
     avatar_url?: string
   }
+  branding?: { companyName: string; logoSquare: string | null }
 }
 
-export function Header({ user }: HeaderProps) {
+export function Header({ user, branding }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
       {/* Mobile Navigation Trigger */}
-      <MobileNav />
+      <MobileNav branding={branding} />
 
       {/* Breadcrumb/Title Area (placeholder for now) */}
       <div className="flex-1" />

@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Objetiva Comercios Admin',
+  title: 'Comercio Ejemplo - Admin',
   description: 'Aplicación de administración comercial',
 }
 

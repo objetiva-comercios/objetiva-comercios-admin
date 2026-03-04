@@ -197,6 +197,19 @@ export const purchaseItems = pgTable(
   table => [index('purchase_items_purchase_id_idx').on(table.purchaseId)]
 )
 
+// ─── Business Settings ───────────────────────────────────────────────────────
+
+export const businessSettings = pgTable('business_settings', {
+  id: serial('id').primaryKey(),
+  companyName: varchar('company_name', { length: 100 }).notNull().default('Comercio Ejemplo'),
+  address: varchar('address', { length: 200 }),
+  taxId: varchar('tax_id', { length: 30 }),
+  logoSquare: text('logo_square'),
+  logoRectangular: text('logo_rectangular'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
+
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 
 export type Product = typeof products.$inferSelect
@@ -222,3 +235,6 @@ export type NewPurchase = typeof purchases.$inferInsert
 
 export type PurchaseItem = typeof purchaseItems.$inferSelect
 export type NewPurchaseItem = typeof purchaseItems.$inferInsert
+
+export type BusinessSetting = typeof businessSettings.$inferSelect
+export type NewBusinessSetting = typeof businessSettings.$inferInsert

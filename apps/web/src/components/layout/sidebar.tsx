@@ -6,22 +6,34 @@ import { cn } from '@objetiva/ui/lib/utils'
 import { routes } from '@/config/navigation'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
 interface SidebarProps {
   className?: string
+  branding?: { companyName: string; logoSquare: string | null }
 }
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, branding }: SidebarProps) {
   const pathname = usePathname()
+  const companyName = branding?.companyName ?? 'Comercio Ejemplo'
 
   return (
     <div className={cn('flex h-screen w-64 flex-col border-r bg-background', className)}>
       {/* Logo/Brand Area */}
       <div className="flex h-14 items-center border-b px-4">
         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            O
-          </div>
-          <span className="text-lg">Objetiva</span>
+          {branding?.logoSquare ? (
+            <img
+              src={`${API_BASE_URL}/api/uploads/${branding.logoSquare}`}
+              alt={companyName}
+              className="h-8 w-8 rounded-lg object-contain"
+            />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              {companyName.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="text-lg">{companyName}</span>
         </Link>
       </div>
 
@@ -53,7 +65,7 @@ export function Sidebar({ className }: SidebarProps) {
 
       {/* Footer */}
       <div className="border-t p-4">
-        <p className="text-xs text-muted-foreground">Objetiva Comercios Admin</p>
+        <p className="text-xs text-muted-foreground">{companyName} Admin</p>
       </div>
     </div>
   )

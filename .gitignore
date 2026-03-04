@@ -38,6 +38,10 @@ coverage/
 .DS_Store
 Thumbs.db
 
+# Uploads (keep directory, ignore files)
+apps/backend/uploads/*
+!apps/backend/uploads/.gitkeep
+
 # Misc
 *.tsbuildinfo
 .cache/
