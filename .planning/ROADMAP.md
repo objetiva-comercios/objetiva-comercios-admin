@@ -3,6 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-13 (shipped 2026-03-04) — [Full details](milestones/v1.0-ROADMAP.md)
+- 🚧 **v1.1 Modelo Articulos + Inventario** — Phases 14-17 (in progress)
 
 ## Phases
 
@@ -25,25 +26,97 @@
 
 </details>
 
+### 🚧 v1.1 Modelo Articulos + Inventario (In Progress)
+
+**Milestone Goal:** Replace products/inventory models with articulos/existencias/inventarios to align with the real business data model. Multi-deposito stock, physical inventory counts, and downstream FK migration.
+
+- [ ] **Phase 14: Schema Foundation + Articulos + Depositos** — New Drizzle schema, articulos full CRUD with text PK, depositos CRUD, seed rewrite
+- [ ] **Phase 15: Existencias** — Stock per articulo per deposito with low-stock alerts and dual view modes
+- [ ] **Phase 16: Downstream Migration + Dashboard + Navigation** — FK updates across orders/sales/purchases, dashboard KPIs on new model, nav restructure
+- [ ] **Phase 17: Inventarios** — Physical inventory count events with sectors, dispositivos, discrepancy view, status workflow
+
+## Phase Details
+
+### Phase 14: Schema Foundation + Articulos + Depositos
+
+**Goal**: Users can manage articulos and depositos through complete CRUD with the real business data model replacing the old products table
+**Depends on**: Nothing (first phase of v1.1)
+**Requirements**: ART-01, ART-02, ART-03, ART-04, ART-05, ART-06, ART-07, ART-08, ART-09, ART-10, ART-11, ART-12, DEP-01, DEP-02, DEP-03, DEP-04, MIG-01, MIG-04, MIG-06, MIG-07, DEBT-01, DEBT-04
+**Success Criteria** (what must be TRUE):
+
+1. User can view a paginated, searchable list of articulos and search by any code (codigo, SKU, barcode, ERP code) or name from a single input
+2. User can create, edit, view detail, and toggle active/inactive on articulos with all field groups (codes, properties, prices, images, ERP sync, origin tracking)
+3. User can create, edit, view, and deactivate depositos (warehouses) with stock summary visible in the list
+4. Running `pnpm db:push && pnpm db:seed` from apps/backend produces a working database with articulos, depositos, and all v1.0 tables updated to use the new schema
+5. Settings write endpoints are protected with @Roles('admin') and unused shared package exports are removed
+   **Plans**: TBD
+
+### Phase 15: Existencias
+
+**Goal**: Users can view and manage stock quantities per articulo per deposito with low-stock visibility
+**Depends on**: Phase 14
+**Requirements**: EXI-01, EXI-02, EXI-03, EXI-04, EXI-05, EXI-06, EXI-07, MIG-02, DEBT-02
+**Success Criteria** (what must be TRUE):
+
+1. User can view stock per articulo per deposito in a table with low-stock status badges when quantity falls below stock_minimo
+2. User can filter existencias by deposito (warehouse manager view) and view stock for a specific articulo across all depositos (product manager view)
+3. User can inline-edit stock quantities with adjustment reason and see total stock aggregation across depositos for each articulo
+4. Web type interfaces are aligned with the new DB schema (no type drift between backend Drizzle inference and web/mobile types)
+   **Plans**: TBD
+
+### Phase 16: Downstream Migration + Dashboard + Navigation
+
+**Goal**: All existing modules (orders, sales, purchases, dashboard) work correctly with the new articulos model and navigation reflects the new section structure
+**Depends on**: Phase 15
+**Requirements**: MIG-03, DASH-01, DASH-02, DASH-03, NAV-01, NAV-02, NAV-03, DEBT-03
+**Success Criteria** (what must be TRUE):
+
+1. Order items, sale items, and purchase items reference articuloCodigo (text FK) and display articulo names correctly in their respective tables and detail views
+2. Dashboard KPI cards show articulo counts (total, active) and low stock alerts query existencias aggregated across depositos
+3. Web sidebar shows "Articulos", "Existencias", "Inventarios" replacing "Products" and "Inventory"; depositos accessible from settings or standalone nav item
+4. Mobile navigation updated with new section names, routes, and all labels localized to Spanish
+   **Plans**: TBD
+
+### Phase 17: Inventarios
+
+**Goal**: Users can create and manage physical inventory count events with sector-based counting, device assignment, and discrepancy review
+**Depends on**: Phase 16
+**Requirements**: MIG-05, INV-01, INV-02, INV-03, INV-04, INV-05, INV-06, INV-07, INV-08, INV-09
+**Success Criteria** (what must be TRUE):
+
+1. User can create an inventory count event linked to a deposito, define sectors/zones, and assign dispositivos moviles to count records
+2. User can record per-articulo unit counts within an event and view discrepancies between counted quantities and system stock (existencias)
+3. User can finalize/close an inventory event (locking counts as read-only) following the status workflow: pendiente -> en_curso -> finalizado (or cancelado)
+4. User can view inventory event history filtered by date or status, and manage dispositivos moviles (CRUD)
+5. Inventarios schema tables (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles) exist in Drizzle with seed data
+   **Plans**: TBD
+
 ## Progress
 
-| Phase                                  | Milestone | Plans Complete | Status   | Completed  |
-| -------------------------------------- | --------- | -------------- | -------- | ---------- |
-| 1. Foundation & Monorepo               | v1.0      | 4/4            | Complete | 2026-01-24 |
-| 2. Backend API with Mock Data          | v1.0      | 5/5            | Complete | 2026-03-01 |
-| 3. Web Application                     | v1.0      | 8/8            | Complete | 2026-01-26 |
-| 4. Mobile Application                  | v1.0      | 4/4            | Complete | 2026-03-02 |
-| 5. Database Integration                | v1.0      | 3/3            | Complete | 2026-03-02 |
-| 6. Polish & Production                 | v1.0      | 4/4            | Complete | 2026-03-02 |
-| 7. Fix Integration Bugs                | v1.0      | 2/2            | Complete | 2026-03-02 |
-| 8. Verify & Close Phases 3+4           | v1.0      | 3/3            | Complete | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs    | v1.0      | 2/2            | Complete | 2026-03-02 |
-| 10. Code Quality & Type Safety Cleanup | v1.0      | 4/4            | Complete | 2026-03-03 |
-| 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete | 2026-03-03 |
-| 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete | 2026-03-03 |
-| 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete | 2026-03-03 |
+**Execution Order:**
+Phases execute in numeric order: 14 -> 15 -> 16 -> 17
+
+| Phase                                  | Milestone | Plans Complete | Status      | Completed  |
+| -------------------------------------- | --------- | -------------- | ----------- | ---------- |
+| 1. Foundation & Monorepo               | v1.0      | 4/4            | Complete    | 2026-01-24 |
+| 2. Backend API with Mock Data          | v1.0      | 5/5            | Complete    | 2026-03-01 |
+| 3. Web Application                     | v1.0      | 8/8            | Complete    | 2026-01-26 |
+| 4. Mobile Application                  | v1.0      | 4/4            | Complete    | 2026-03-02 |
+| 5. Database Integration                | v1.0      | 3/3            | Complete    | 2026-03-02 |
+| 6. Polish & Production                 | v1.0      | 4/4            | Complete    | 2026-03-02 |
+| 7. Fix Integration Bugs                | v1.0      | 2/2            | Complete    | 2026-03-02 |
+| 8. Verify & Close Phases 3+4           | v1.0      | 3/3            | Complete    | 2026-03-02 |
+| 9. Fix Mobile Purchase & Login Bugs    | v1.0      | 2/2            | Complete    | 2026-03-02 |
+| 10. Code Quality & Type Safety Cleanup | v1.0      | 4/4            | Complete    | 2026-03-03 |
+| 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete    | 2026-03-03 |
+| 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete    | 2026-03-03 |
+| 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
+| 14. Schema + Articulos + Depositos     | v1.1      | 0/?            | Not started | -          |
+| 15. Existencias                        | v1.1      | 0/?            | Not started | -          |
+| 16. Downstream + Dashboard + Nav       | v1.1      | 0/?            | Not started | -          |
+| 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-04 (v1.0 milestone archived)_
+_Last updated: 2026-03-05 (v1.1 roadmap added)_

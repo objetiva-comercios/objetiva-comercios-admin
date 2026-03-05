@@ -121,19 +121,65 @@ Deferred to future releases. Tracked but not in current roadmap.
 
 ## Traceability
 
-Updated during roadmap creation.
-
-| Requirement               | Phase | Status |
-| ------------------------- | ----- | ------ |
-| (populated by roadmapper) |       |        |
+| Requirement | Phase    | Status  |
+| ----------- | -------- | ------- |
+| ART-01      | Phase 14 | Pending |
+| ART-02      | Phase 14 | Pending |
+| ART-03      | Phase 14 | Pending |
+| ART-04      | Phase 14 | Pending |
+| ART-05      | Phase 14 | Pending |
+| ART-06      | Phase 14 | Pending |
+| ART-07      | Phase 14 | Pending |
+| ART-08      | Phase 14 | Pending |
+| ART-09      | Phase 14 | Pending |
+| ART-10      | Phase 14 | Pending |
+| ART-11      | Phase 14 | Pending |
+| ART-12      | Phase 14 | Pending |
+| DEP-01      | Phase 14 | Pending |
+| DEP-02      | Phase 14 | Pending |
+| DEP-03      | Phase 14 | Pending |
+| DEP-04      | Phase 14 | Pending |
+| EXI-01      | Phase 15 | Pending |
+| EXI-02      | Phase 15 | Pending |
+| EXI-03      | Phase 15 | Pending |
+| EXI-04      | Phase 15 | Pending |
+| EXI-05      | Phase 15 | Pending |
+| EXI-06      | Phase 15 | Pending |
+| EXI-07      | Phase 15 | Pending |
+| INV-01      | Phase 17 | Pending |
+| INV-02      | Phase 17 | Pending |
+| INV-03      | Phase 17 | Pending |
+| INV-04      | Phase 17 | Pending |
+| INV-05      | Phase 17 | Pending |
+| INV-06      | Phase 17 | Pending |
+| INV-07      | Phase 17 | Pending |
+| INV-08      | Phase 17 | Pending |
+| INV-09      | Phase 17 | Pending |
+| MIG-01      | Phase 14 | Pending |
+| MIG-02      | Phase 15 | Pending |
+| MIG-03      | Phase 16 | Pending |
+| MIG-04      | Phase 14 | Pending |
+| MIG-05      | Phase 17 | Pending |
+| MIG-06      | Phase 14 | Pending |
+| MIG-07      | Phase 14 | Pending |
+| NAV-01      | Phase 16 | Pending |
+| NAV-02      | Phase 16 | Pending |
+| NAV-03      | Phase 16 | Pending |
+| DASH-01     | Phase 16 | Pending |
+| DASH-02     | Phase 16 | Pending |
+| DASH-03     | Phase 16 | Pending |
+| DEBT-01     | Phase 14 | Pending |
+| DEBT-02     | Phase 15 | Pending |
+| DEBT-03     | Phase 16 | Pending |
+| DEBT-04     | Phase 14 | Pending |
 
 **Coverage:**
 
-- v1.1 requirements: 42 total
-- Mapped to phases: 0
-- Unmapped: 42
+- v1.1 requirements: 49 total
+- Mapped to phases: 49
+- Unmapped: 0
 
 ---
 
 _Requirements defined: 2026-03-05_
-_Last updated: 2026-03-05 after initial definition_
+_Last updated: 2026-03-05 (traceability updated with phase mappings)_

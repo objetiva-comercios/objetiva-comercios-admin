@@ -5,7 +5,7 @@ milestone_name: Modelo Articulos + Inventario
 status: in_progress
 last_updated: '2026-03-05'
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,14 +18,32 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-05)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** v1.1 — Replace products/inventory with articulos/existencias/inventarios
+**Current focus:** Phase 14 — Schema Foundation + Articulos + Depositos
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-05 — Milestone v1.1 started
+Phase: 14 of 17 (Schema Foundation + Articulos + Depositos)
+Plan: — (not yet planned)
+Status: Ready to plan
+Last activity: 2026-03-05 — Roadmap created for v1.1
+
+Progress: [░░░░░░░░░░] 0%
+
+## Performance Metrics
+
+**Velocity:**
+
+- Total plans completed: 42 (v1.0)
+- Average duration: — (v1.1 not started)
+- Total execution time: — (v1.1 not started)
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+| ----- | ----- | ----- | -------- |
+| -     | -     | -     | -        |
+
+_Updated after each plan completion_
 
 ## Accumulated Context
 
@@ -34,9 +52,9 @@ Last activity: 2026-03-05 — Milestone v1.1 started
 - PK for articulos is `codigo` (text), not numeric ID — matches real ERP model
 - Existencias table separate from articulos for multi-deposito support
 - Inventarios = periodic physical count events (distinct from stock/existencias)
-- Orders/sales/purchases FKs updated to articulos.codigo in this milestone
-- Depositos table designed from scratch in this milestone
-- Articulos has full CRUD from admin (not read-only import)
+- Clean-cut migration (db:push + re-seed) — no production data to preserve
+- Keep doublePrecision for monetary fields in v1.1 (numeric migration deferred)
+- Tech debt items addressed in the phase where related code is modified
 
 ### Pending Todos
 
@@ -44,15 +62,16 @@ None.
 
 ### Blockers/Concerns
 
-- v1.0 tech debt: Settings RBAC gap (high), web type drift (medium) — address during migration
+None — research complete, roadmap defined.
 
 ## Session Continuity
 
 Last session: 2026-03-05
-Stopped at: Defining requirements for v1.1
+Stopped at: Roadmap created for v1.1 milestone
 Resume file: None
+Next action: `/gsd:plan-phase 14`
 
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-05 (v1.1 milestone started)_
+_Last updated: 2026-03-05 (v1.1 roadmap created)_
