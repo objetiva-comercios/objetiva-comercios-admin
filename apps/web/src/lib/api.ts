@@ -1,12 +1,10 @@
 import type { BusinessSettings } from '@/types/settings'
 import type { DashboardResponse } from '@/types/dashboard'
-import type { Product } from '@/types/product'
 import type { Articulo } from '@/types/articulo'
 import type { Deposito } from '@/types/deposito'
 import type { Order } from '@/types/order'
 import type { Sale } from '@/types/sale'
 import type { Purchase } from '@/types/purchase'
-import type { Inventory } from '@/types/inventory'
 import type { Existencia, ExistenciasKpi } from '@/types/existencia'
 import { createClient } from '@/lib/supabase/server'
 
@@ -64,27 +62,6 @@ export async function fetchSettings(): Promise<BusinessSettings> {
 
 export async function fetchDashboard(): Promise<DashboardResponse> {
   return fetchWithAuth<DashboardResponse>('/dashboard')
-}
-
-export async function fetchProducts(params?: {
-  page?: number
-  limit?: number
-  search?: string
-  category?: string
-  status?: string
-}): Promise<PaginatedResponse<Product>> {
-  const searchParams = new URLSearchParams()
-
-  if (params?.page) searchParams.set('page', params.page.toString())
-  if (params?.limit) searchParams.set('limit', params.limit.toString())
-  if (params?.search) searchParams.set('search', params.search)
-  if (params?.category) searchParams.set('category', params.category)
-  if (params?.status) searchParams.set('status', params.status)
-
-  const queryString = searchParams.toString()
-  const endpoint = `/products${queryString ? `?${queryString}` : ''}`
-
-  return fetchWithAuth<PaginatedResponse<Product>>(endpoint)
 }
 
 export async function fetchArticulos(params?: {
@@ -187,21 +164,4 @@ export async function fetchExistencias(params?: {
 
 export async function fetchExistenciasKpi(): Promise<ExistenciasKpi> {
   return fetchWithAuth<ExistenciasKpi>('/existencias/kpi')
-}
-
-export async function fetchInventory(params?: {
-  page?: number
-  limit?: number
-  status?: string
-}): Promise<PaginatedResponse<Inventory>> {
-  const searchParams = new URLSearchParams()
-
-  if (params?.page) searchParams.set('page', params.page.toString())
-  if (params?.limit) searchParams.set('limit', params.limit.toString())
-  if (params?.status) searchParams.set('status', params.status)
-
-  const queryString = searchParams.toString()
-  const endpoint = `/inventory${queryString ? `?${queryString}` : ''}`
-
-  return fetchWithAuth<PaginatedResponse<Inventory>>(endpoint)
 }

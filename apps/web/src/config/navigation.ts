@@ -4,7 +4,6 @@ import {
   ShoppingCart,
   ShoppingBag,
   ClipboardList,
-  Warehouse,
   Settings,
   type LucideIcon,
 } from 'lucide-react'
@@ -40,11 +39,6 @@ export const routes: NavRoute[] = [
     label: 'Pedidos',
     icon: ClipboardList,
     href: '/orders',
-  },
-  {
-    label: 'Inventario',
-    icon: Warehouse,
-    href: '/inventory',
   },
   {
     label: 'Configuración',
