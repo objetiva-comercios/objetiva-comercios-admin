@@ -92,7 +92,7 @@ Plans:
 3. Web sidebar shows "Articulos", "Existencias", "Inventarios" replacing "Products" and "Inventory"; depositos accessible from settings or standalone nav item
 4. Mobile navigation updated with new section names, routes, and all labels localized to Spanish
 
-**Plans:** 4 plans (3 complete, 1 gap closure)
+**Plans:** 4/4 plans complete
 
 Plans:
 
@@ -137,7 +137,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
 | 15. Existencias                        | 3/3       | Complete       | 2026-03-05  | -          |
-| 16. Downstream + Dashboard + Nav       | v1.1      | 3/4            | Gap closure | -          |
+| 16. Downstream + Dashboard + Nav       | 4/4       | Complete       | 2026-03-05  | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
 
 ---

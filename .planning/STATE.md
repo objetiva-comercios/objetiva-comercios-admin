@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
-status: executing
-stopped_at: Completed 16-03-PLAN.md
-last_updated: '2026-03-05T20:10:08.000Z'
-last_activity: 2026-03-05 — Completed 16-03 navigation cleanup
+status: completed
+stopped_at: Completed 16-04-PLAN.md
+last_updated: '2026-03-05T20:35:20.000Z'
+last_activity: 2026-03-05 — Completed 16-04 mobile types gap closure
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 12
+  completed_plans: 12
   percent: 100
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 16 of 17 (Downstream Migration)
-Plan: 3 of 3 (16-03 navigation cleanup complete)
+Plan: 4 of 4 (16-04 mobile types gap closure complete)
 Status: Phase 16 complete
-Last activity: 2026-03-05 — Completed 16-03 navigation cleanup
+Last activity: 2026-03-05 — Completed 16-04 mobile types gap closure
 
 Progress: [██████████] 100%
 
@@ -57,6 +57,7 @@ _Updated after each plan completion_
 | Phase 16 P01 | 9min | 2 tasks | 17 files |
 | Phase 16 P02 | 4min | 2 tasks | 7 files |
 | Phase 16 P03 | 4min | 2 tasks | 23 files |
+| Phase 16 P04 | 3min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ _Updated after each plan completion_
 - [Phase 16]: Low stock aggregation uses GROUP BY articuloCodigo with HAVING for cross-deposito accuracy
 - [Phase 16]: Removed orphan fetchProducts/fetchInventory from web api.ts during nav cleanup
 - [Phase 16]: Mobile Spanish route paths: /articulos, /pedidos, /ventas, /compras
+- [Phase 16]: Mobile Articulo type mirrors web Articulo interface for API consistency
+- [Phase 16]: Mobile Articulos page uses activo boolean filter instead of status enum
 
 ### Pending Todos
 
@@ -104,10 +107,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T20:10:08.000Z
-Stopped at: Completed 16-03-PLAN.md
-Resume file: .planning/phases/16-downstream-migration-dashboard-navigation/16-03-SUMMARY.md
-Next action: Phase 16 complete. Proceed to Phase 17 or milestone completion.
+Last session: 2026-03-05T20:35:20.000Z
+Stopped at: Completed 16-04-PLAN.md
+Resume file: .planning/phases/16-downstream-migration-dashboard-navigation/16-04-SUMMARY.md
+Next action: Phase 16 complete (all gap closures done). Proceed to Phase 17 or milestone completion.
 
 ---
 
