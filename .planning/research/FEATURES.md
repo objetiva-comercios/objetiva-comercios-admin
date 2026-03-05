@@ -1,286 +1,206 @@
-# Feature Research
+# Feature Landscape
 
-**Domain:** Commercial/Retail Admin Systems for Small-to-Mid Operations
-**Researched:** 2026-01-22
-**Confidence:** HIGH
+**Domain:** Commercial admin system -- articulos management, multi-warehouse stock (existencias), periodic physical inventory counting (inventarios)
+**Researched:** 2026-03-05
+**Scope:** v1.1 milestone features only (articulos, existencias, inventarios, depositos)
 
-## Feature Landscape
+---
 
-### Table Stakes (Users Expect These)
+## Table Stakes
 
-Features users assume exist. Missing these = product feels incomplete.
+Features users expect. Missing = product feels incomplete.
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Dashboard with Key Metrics | Standard first screen in all admin systems; users expect immediate visibility into sales, inventory, orders | MEDIUM | Should be dense but scannable; focus on operations (not analytics). Include: today's sales, low stock alerts, pending orders, recent transactions |
-| Inventory Management | Core to retail operations; can't run a store without knowing what's in stock | HIGH | Real-time updates, stock levels, product variants, SKU management, stock alerts. Must handle bulk operations efficiently |
-| Point of Sale (POS) Integration | Users expect sales to flow into the system automatically; manual entry is unacceptable | HIGH | Real-time sync, offline capability critical, multiple payment methods, receipt generation. Performance is critical - slow POS = lost sales |
-| Sales Transaction Recording | Need to track what sold, when, to whom, for how much | MEDIUM | Transaction history, search/filter, refunds/returns, payment status. Must handle high volume efficiently |
-| Product/Catalog Management | Can't sell without products; need CRUD operations on catalog | MEDIUM | Add/edit/delete products, categories, pricing, images, descriptions. Bulk import/export essential for mid-sized operations |
-| Order Management | Tracking orders from creation to fulfillment is fundamental | MEDIUM | Order status workflow, fulfillment tracking, cancellations, customer info. Clear status indicators required |
-| User Roles & Permissions | Store owners need staff access without giving away the keys | MEDIUM | Role-based access control (RBAC), granular permissions, audit logs. Security is non-negotiable |
-| Reporting & Analytics | Business decisions require data; basic reports are expected | MEDIUM | Sales reports, inventory reports, product performance. Must be filterable by date range and exportable |
-| Customer Management | Need to track who's buying, contact info for orders/returns | LOW-MEDIUM | Customer records, purchase history, contact details. CRM-lite, not full CRM |
-| Multi-location Support | Even small operations often have warehouse + storefront | MEDIUM | Location-specific inventory, sales by location, inter-location transfers. Can start simple, grows complex |
-| Search & Filtering | With hundreds/thousands of SKUs, finding things quickly is critical | MEDIUM | Fast search across products, orders, customers. Filter by multiple criteria. Performance matters |
-| Data Export | Users need their data (Excel, CSV) for accounting, analysis | LOW | Export key entities to CSV/Excel. Import is bonus but export is mandatory |
+### Articulos (Product Master Data)
 
-### Differentiators (Competitive Advantage)
+| Feature                                                            | Why Expected                                                                                          | Complexity | Notes                                                                                                             |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| Full CRUD (create, read, update, soft-delete via `activo` flag)    | Basic data management -- every admin system needs this                                                | Low        | Replaces current products CRUD. PK is `codigo` (text), not numeric ID                                             |
+| Multiple code identifiers (sku, codigo, codigo_barras, erp_codigo) | ERP-aligned businesses always have multiple product codes                                             | Low        | Each must be independently searchable. `codigo` is PK, others are secondary lookups                               |
+| Search/filter by any code or name                                  | Users look up articles by whichever code they have in hand (barcode label, ERP printout, SKU sticker) | Med        | Multi-column search across codigo, sku, codigo_barras, erp_codigo, descripcion. Current v1.0 filters by name only |
+| Active/inactive toggle                                             | Products are retired, not deleted -- historical references (orders, sales) must remain valid          | Low        | `activo` boolean flag. Default list view shows active only, with toggle to show all                               |
+| Server-side pagination and filtering                               | Article catalogs grow to thousands; client-side filtering breaks down                                 | Med        | Current v1.0 fetches all products client-side. Must move to server-side for articulos                             |
+| Category/classification display                                    | Users need to group and browse by category                                                            | Low        | Existing `category` field maps to new model                                                                       |
+| Price and cost display                                             | Core commercial data -- margin visibility at a glance                                                 | Low        | `precio_venta`, `precio_costo` fields. Current v1.0 already shows price/cost                                      |
+| Detail view (sheet or drawer)                                      | Users need to see all fields for a single article without leaving the list                            | Low        | Current v1.0 uses side sheet (ProductSheet). Keep this pattern for consistency                                    |
 
-Features that set the product apart. Not required, but valuable.
+### Existencias (Stock per Deposito)
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| Smart Stock Alerts | Predictive low-stock warnings based on sales velocity, not just static thresholds | MEDIUM-HIGH | Goes beyond "quantity < 10" to "you'll run out in 3 days at current rate". Requires sales trend analysis |
-| Bulk Operations UX | Excel-like bulk editing for products, pricing, inventory adjustments | MEDIUM | Power users love this. Spreadsheet import/edit/apply workflows. Competitors often force one-by-one editing |
-| Dense Data Display | Information-rich interface showing more data per screen than competitors | MEDIUM | Professional users prefer density over whitespace. Think Bloomberg terminal vs consumer app. Requires strong hierarchy/visual design |
-| Keyboard Shortcuts | Power users can navigate/operate without mouse | LOW-MEDIUM | Alt+N for new order, Ctrl+K for search, etc. Discoverable shortcuts = happy power users |
-| Offline-First Architecture | Continue working during internet outages, sync when back online | HIGH | Critical for brick-and-mortar. Competitors often fail hard without connection. Complex to implement correctly |
-| Mobile-Responsive Admin | Manage store from phone/tablet, not just desktop | MEDIUM | Check stock levels, process orders on the go. Not full feature parity, but core workflows mobile-friendly |
-| Intelligent Search | Fuzzy matching, SKU fragments, product attributes, typo tolerance | MEDIUM | Find "red nike shoe" across title, description, tags. Better than exact-match-only competitors |
-| Activity Feed/Timeline | Unified stream of "what happened" - sales, inventory changes, low stock, etc. | LOW-MEDIUM | Single place to see recent activity. Better than hunting through separate modules |
-| Custom Fields/Metadata | Let users add custom product/order attributes without custom dev | MEDIUM | "Brand", "Season", "Supplier" - whatever they need. Export/filter/group by custom fields |
-| Realistic Demo Data | Seed database shows interface density and complexity with realistic data | LOW | Most demos use 5 products and "lorem ipsum". Show the system under realistic load |
-| Barcode Scanning | Quick product lookup/add via phone camera or USB scanner | MEDIUM | Speed up receiving, stocktaking, sales. Requires device integration or camera access |
-| Batch Import/Export | Bulk operations via CSV/Excel for onboarding and ongoing updates | MEDIUM | Migrate from spreadsheets or other systems. Validate on upload, show errors clearly |
+| Feature                                  | Why Expected                                                                             | Complexity | Notes                                                                                        |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------- |
+| Stock quantity per article per deposito  | Core multi-warehouse concept -- "how many of X do I have in warehouse Y?"                | Med        | Replaces flat `inventory` table. Composite key: articulo_codigo + deposito_id                |
+| Total stock aggregation across depositos | Users need "total stock for article X across all locations"                              | Low        | Computed in API response or SQL aggregation                                                  |
+| Low stock alerts                         | Current v1.0 dashboard already has low stock alerts; removing them would be a regression | Med        | Must be recalculated per deposito against min_stock threshold, then aggregated for dashboard |
+| Stock list view filtered by deposito     | Warehouse managers work with one location at a time                                      | Med        | Dropdown or tab filter by deposito at top of existencias table                               |
+| Stock list view filtered by article      | "Show me where article X lives across all depositos" -- the inverse view                 | Low        | Both views (by deposito and by article) are essential for multi-warehouse                    |
+| Last restock date tracking               | Audit trail for when stock was last replenished                                          | Low        | `ultima_reposicion` timestamp field                                                          |
+| Min/max stock thresholds per existencia  | Define alerting thresholds per article-deposito combination                              | Low        | `stock_minimo`, `stock_maximo` fields. Current v1.0 already has min/max stock                |
 
-### Anti-Features (Commonly Requested, Often Problematic)
+### Depositos (Warehouses/Locations)
 
-Features that seem good but create problems.
+| Feature                           | Why Expected                                                                                 | Complexity | Notes                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------- |
+| CRUD for depositos                | Must be able to add/edit/deactivate warehouse locations                                      | Low        | Simple entity: nombre, direccion, activo. Few records (typically 2-10 locations) |
+| List depositos with stock summary | Quick view of total items and total distinct articles per warehouse                          | Low        | Aggregate count from existencias                                                 |
+| Prevent deletion when referenced  | Referential integrity -- can't remove a warehouse that has stock records or inventory events | Low        | Soft-delete via `activo` flag, or FK constraint with restrict                    |
 
-| Feature | Why Requested | Why Problematic | Alternative |
-|---------|---------------|-----------------|-------------|
-| Advanced Analytics/BI Dashboards | "We want insights!" Lots of charts and graphs | Creates bloat. Small businesses don't have data scientists. Complex analytics require clean data, training, and slow down the UI | Provide basic reports (sales over time, top products, inventory value) with export to Excel. Let them analyze in tools they know |
-| Full CRM Suite | "Track customer relationships!" Marketing campaigns, email sequences, lead scoring | Scope explosion. CRM is its own product category. Poor integration creates "CRM-lite that does nothing well" | Basic customer records with purchase history. Integrate with actual CRM tools (API/webhooks) for those who need it |
-| Advanced Inventory Forecasting | "Predict what we'll need!" Machine learning demand forecasting | Requires significant historical data, complex algorithms, frequent retraining. Small businesses don't have data. Overpromise, underdeliver | Smart stock alerts based on recent velocity (last 30 days). Simple, understandable, useful immediately |
-| Mobile POS App | "We want POS on our phones/tablets!" | Becomes a second product to maintain. Device compatibility hell. Security concerns with BYOD. Payment processing compliance issues | Web-responsive POS that works on tablet browsers. Or integrate with established mobile POS providers via API |
-| Real-Time Notifications | "Notify me of everything!" Every sale, stock change, order | Notification fatigue. Users disable all notifications. Server load for websockets/push | Digest emails (daily summary), activity feed in-app they check when needed, alerts only for critical issues (payment failure, critical low stock) |
-| Multi-Currency/Multi-Language | "We might expand internationally!" | Massive complexity. Currency conversion, exchange rates, legal compliance varies by country. Translation maintenance | Start single-market. Add internationalization only when actual international business exists, one country at a time |
-| Automated Reordering | "Automatically purchase from suppliers when low!" | Liability nightmare. Wrong orders, supplier changes, pricing changes, over-ordering. Requires supplier integrations | Purchase order suggestions/recommendations that require human approval before sending |
-| Everything Customizable | "Let users configure everything!" | Decision paralysis, complexity explosion, testing nightmare, support hell. "Can you help me configure...?" for every user | Opinionated defaults that work for 80% of users. Customization only where it provides real value (custom fields, not custom everything) |
-| Blockchain/Web3 Integration | "Seems trendy, investors like it" | Solution looking for problem. Adds complexity, cost, learning curve with minimal operational benefit for retail | Traditional database + audit logs provide necessary traceability without buzzword overhead |
-| AI Chatbot Support | "Users can ask questions instead of learning the UI!" | Masks poor UX. If users need chatbot to navigate, interface is wrong. Chatbots frustrate when they fail | Clear navigation, contextual help, good documentation, in-app guidance for complex flows |
+### Inventarios (Physical Count Events)
+
+| Feature                                      | Why Expected                                                                                   | Complexity | Notes                                                                                                                                                                                     |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Create inventory count event                 | "We're doing a physical count on March 15 for Deposito Central"                                | Med        | Event entity with fecha, deposito_id, estado (pendiente / en_curso / finalizado / cancelado)                                                                                              |
+| Assign sectors/zones to a count event        | Physical counts are organized by warehouse zones, aisles, or shelving sections                 | Med        | Sectors subdivide a deposito for a specific count event. Each sector gets its own counting scope                                                                                          |
+| Record per-article counts within a sector    | The actual counting -- "I counted 47 units of article ABC in sector A3"                        | Med        | Detail table: inventario_id + articulo_codigo + sector + cantidad_contada                                                                                                                 |
+| View discrepancies (counted vs system stock) | The whole point of physical inventory -- finding mismatches between real and system quantities | High       | Compare inventario_detalle.cantidad_contada against existencias.cantidad for same articulo+deposito. Must handle articles found but not in system, and articles in system but not counted |
+| Finalize/close a count event                 | Lock the count so no more edits happen after the counting period ends                          | Med        | State transition: en_curso -> finalizado. After finalization, counts become read-only                                                                                                     |
+| Inventory event history                      | "Show me all past counts for Deposito Central"                                                 | Low        | Simple filtered list by deposito and/or date range                                                                                                                                        |
+| Status-based workflow                        | Clear visual progression: pendiente -> en_curso -> finalizado (or cancelado)                   | Low        | Status badges, prevent out-of-order transitions                                                                                                                                           |
+
+---
+
+## Differentiators
+
+Features that set product apart. Not expected but valued.
+
+| Feature                                                         | Value Proposition                                                                                                            | Complexity | Notes                                                                                                                                                                           |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product images (foto_producto + foto_etiqueta arrays)           | Visual identification saves time -- warehouse staff recognize products by sight, label photos help with OCR and verification | Med        | Multiple images per article. Store as URL arrays (jsonb column). Image upload with preview in detail view. Depends on file storage strategy (local or S3-compatible)            |
+| Rich product properties (marca, modelo, talle, color, material) | Variant-aware catalog without a full variant/SKU matrix -- filter by brand, size, color in list view                         | Low        | Flat fields on articulos, not a separate variants table. Each filterable in the list. Avoids combinatorial variant explosion                                                    |
+| OCR data storage (datos_ocr jsonb)                              | Future-proofing for automated label scanning on mobile -- store raw OCR output alongside the article                         | Low        | JSON column, read-only display in article detail view. Input comes from mobile app or external process. No OCR processing in admin                                              |
+| Barcode scanner input on mobile (inventarios counting)          | Physical counts with barcode scanning are dramatically faster than manual code entry                                         | High       | Capacitor barcode plugin integration. Critical for inventarios UX on mobile. Can defer to later in v1.1 or to v1.2 without blocking core flow                                   |
+| Apply discrepancies to stock automatically                      | After physical count finalization, auto-adjust existencias quantities to match counted values                                | High       | "Apply adjustments" action on finalized inventory. Creates stock adjustment audit records. Dangerous operation requiring confirmation dialog, reason field, and audit log entry |
+| Mobile device assignment per inventario                         | Track which phones/tablets are assigned to which sectors during a count                                                      | Low        | `dispositivos_moviles` field on inventario entity. Informational/organizational, not enforced                                                                                   |
+| Bulk article import via CSV                                     | Catalogs with 500+ articles need bulk import during ERP migration, not one-by-one CRUD                                       | Med        | Parse CSV, validate code uniqueness, upsert. Common request when migrating from spreadsheets or ERP export                                                                      |
+| Print/export inventory count sheets                             | Generate PDF or printable view of articles to count per sector, for hybrid digital+paper counting teams                      | Med        | Useful for teams not fully mobile. Secondary to digital counting flow                                                                                                           |
+
+---
+
+## Anti-Features
+
+Features to explicitly NOT build in v1.1.
+
+| Anti-Feature                                          | Why Avoid                                                                                                                                                                                 | What to Do Instead                                                                                                                               |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Full variant/SKU matrix (size x color = N child SKUs) | Massive complexity for a commercial admin. Combinatorial explosion of variants. The flat properties approach (talle, color, material as fields on each articulo) covers the real use case | Keep properties as flat fields on articulos. Each unique combination is its own articulo with its own codigo. Simple and ERP-aligned             |
+| Automatic reorder/purchase generation from low stock  | Scope creep into procurement automation. v1.1 is about the data model migration, not workflow automation                                                                                  | Show low-stock alerts on dashboard. Manual purchase creation stays in the purchases module                                                       |
+| Real-time stock sync with external ERP                | Integration layer is out of scope. The `erp_codigo` field is for human reference, not live bidirectional sync                                                                             | Store erp_codigo for lookup. Bulk CSV import/export if migration needed                                                                          |
+| Lot/batch/serial number tracking                      | Adds significant per-unit tracking complexity. Not needed for general commercial operations at this scale                                                                                 | Track aggregate quantity per article per deposito, not individual units                                                                          |
+| Expiration date management                            | Only relevant for perishable goods. General commercial admin doesn't need this                                                                                                            | Omit entirely unless user explicitly requests later                                                                                              |
+| FIFO/LIFO/weighted average costing methods            | Accounting-level inventory valuation is a separate domain. The admin tracks operational quantities, not accounting valuations                                                             | Single cost price per article (precio_costo). Accounting valuation handled in external tools                                                     |
+| Barcode generation/printing                           | Generating and printing barcodes is a specialized tool. The admin reads/stores barcode values, it doesn't create them                                                                     | Store codigo_barras as text field. External label printing tools handle barcode generation                                                       |
+| Multi-currency pricing                                | Explicitly out of scope per PROJECT.md (single locale es-MX, single currency MXN)                                                                                                         | All prices in MXN. Period                                                                                                                        |
+| Stock transfer between depositos                      | Natural next step for multi-deposito but not in v1.1 explicit scope. Adds transfer workflow, audit trail, and partial-transfer edge cases                                                 | Defer to v1.2. For v1.1, stock adjustments are per-deposito only (manual increase/decrease)                                                      |
+| Inventory count on web (desktop counting)             | Physical counts happen on the warehouse floor with mobile devices, not at a desk                                                                                                          | Web admin creates/manages/reviews inventory events. Actual article-by-article counting is a mobile activity. Web shows results and discrepancies |
+
+---
 
 ## Feature Dependencies
 
 ```
-[Dashboard]
-    └──requires──> [Sales Data]
-    └──requires──> [Inventory Data]
-    └──requires──> [Order Data]
+Depositos CRUD ──> Existencias (existencias.deposito_id references depositos)
+Articulos CRUD ──> Existencias (existencias.articulo_codigo references articulos)
+Articulos CRUD ──> Inventario detalle (counts reference articulo_codigo)
+Depositos CRUD ──> Inventarios (each count event targets a deposito)
+Existencias data ──> Inventario discrepancies (comparison needs current stock)
+Articulos CRUD ──> FK migration (orders/sales/purchases must reference articulos.codigo)
 
-[Inventory Management]
-    └──requires──> [Product Catalog]
-    └──enhanced by──> [Barcode Scanning]
-    └──enhanced by──> [Multi-location Support]
-
-[Order Management]
-    └──requires──> [Product Catalog]
-    └──requires──> [Customer Management]
-    └──requires──> [Inventory Management] (stock deduction)
-
-[Reporting]
-    └──requires──> [Sales Data]
-    └──requires──> [Inventory Data]
-    └──requires──> [Data Export]
-
-[POS Integration]
-    └──requires──> [Product Catalog]
-    └──requires──> [Inventory Management] (real-time updates)
-    └──requires──> [Sales Transaction Recording]
-
-[Multi-location Support]
-    └──enhances──> [Inventory Management]
-    └──enhances──> [Reporting]
-    └──conflicts with──> [Offline-First Architecture] (sync complexity)
-
-[User Roles & Permissions]
-    └──applies to──> [All Features] (access control layer)
-
-[Smart Stock Alerts]
-    └──requires──> [Sales Transaction Recording]
-    └──requires──> [Inventory Management]
-
-[Bulk Operations]
-    └──enhances──> [Product Catalog]
-    └──enhances──> [Inventory Management]
-
-[Offline-First Architecture]
-    └──conflicts with──> [Real-Time Notifications] (connectivity assumption)
-    └──conflicts with──> [Multi-location Support] (sync complexity)
+Recommended build order:
+  1. Depositos CRUD (no dependencies, simplest entity, unblocks existencias + inventarios)
+  2. Articulos CRUD (no dependencies on new tables, core entity, unblocks everything)
+  3. Existencias (depends on depositos + articulos being in place)
+  4. FK migration (orders/sales/purchases point to articulos.codigo instead of products.id)
+  5. Inventarios (depends on depositos + articulos + existencias for discrepancy calc)
+  6. Dashboard KPI updates (depends on new data model being fully in place)
+  7. Seed data rewrite (depends on all new tables existing)
 ```
 
-### Dependency Notes
+---
 
-- **Dashboard requires transactional data:** Dashboard is a view, not a data source. Must build sales, inventory, orders first
-- **Order Management requires Inventory:** Orders must check stock availability and deduct stock on fulfillment
-- **POS Integration requires Inventory real-time sync:** Sales must immediately update stock levels or overselling occurs
-- **Multi-location conflicts with Offline-First:** Each location having offline copy creates complex conflict resolution when syncing
-- **Reporting enhances with Export:** Reports are more valuable when users can export and analyze in Excel/tools they know
-- **User Roles applies globally:** RBAC is a cross-cutting concern affecting all features' access patterns
-- **Bulk Operations enhance efficiency:** Power users manage hundreds of products; one-by-one editing doesn't scale
-- **Smart Stock Alerts require historical sales:** Can't predict "running out" without knowing consumption velocity
+## MVP Recommendation
 
-## MVP Definition
+### Build in v1.1 (required):
 
-### Launch With (v1)
+1. **Depositos CRUD** -- simplest entity, unblocks existencias and inventarios. 2-3 API endpoints + simple list/form UI. Half a day of work.
+2. **Articulos CRUD with all code identifiers** -- core entity replacing products. Multi-code search is table stakes. Rich properties (marca, modelo, talle, color, material) included from day one since they're just columns.
+3. **Existencias per deposito** -- replaces flat inventory table. Two view modes: by deposito (warehouse manager view) and by article (product manager view). Low stock alerts feed the dashboard.
+4. **FK migration** -- orders/sales/purchases updated to reference articulos.codigo. Data migration script for existing seed data. Critical for referential integrity.
+5. **Inventarios with sector-based counting and discrepancy view** -- the genuinely new capability that didn't exist in v1.0. Web admin creates events, views results and discrepancies. Mobile counting input is a stretch goal.
+6. **Dashboard updates** -- low stock alerts and KPI stats cards updated to query new model (existencias instead of inventory, articulos instead of products).
 
-Minimum viable product — what's needed to validate the concept.
+### Defer to v1.2+:
 
-- [ ] **Product Catalog Management** — Can't demo retail admin without products. CRUD operations, categories, basic attributes
-- [ ] **Inventory Management** — Core value prop. Current stock levels, stock adjustments, basic low-stock alerts
-- [ ] **Sales Transaction Recording** — Show transactions list, basic details. Can be manual entry (no POS integration yet)
-- [ ] **Dashboard** — Single-page overview with today's sales, low stock items, recent transactions. Proves "dense, operational interface"
-- [ ] **Search & Filtering** — Users must find products/orders quickly with realistic data volume
-- [ ] **User Authentication** — Basic login. Permissions can be v1.x
-- [ ] **Order Management** — Basic order workflow (pending → fulfilled → completed)
-- [ ] **Realistic Demo Data** — CRITICAL for this project. Seed 500+ products, varied transactions showing interface density
-- [ ] **Responsive Layout** — Desktop-first but must work on tablet. Mobile can be v1.x
-- [ ] **Data Export** — Export products and transactions to CSV. Proves data ownership
+- **Mobile barcode scanning for inventarios**: High complexity Capacitor plugin work. The counting flow works with manual code entry first.
+- **Apply discrepancies to stock**: Dangerous auto-adjustment operation. v1.1 shows discrepancies; humans adjust manually via existencias CRUD.
+- **Bulk CSV import**: Useful for real data migration but not blocking. Manual CRUD + seed data sufficient for v1.1 validation.
+- **Stock transfers between depositos**: Natural feature but explicitly out of v1.1 scope.
+- **Print/export count sheets**: Nice-to-have, not blocking core inventory flow.
+- **Image upload for articulos**: Can store URL fields from day one but defer actual upload UI/storage to later.
 
-**Why this MVP:** Demonstrates the core value proposition (dense, operational interface for small/mid commercial operations) with enough realistic data to show layout hierarchy and usability under load. Enough functionality to validate whether target users find the approach useful.
+---
 
-### Add After Validation (v1.x)
+## Existing Feature Impact
 
-Features to add once core is working.
+v1.1 migration touches these existing v1.0 features:
 
-- [ ] **User Roles & Permissions** — Add when multiple users exist (store owner + staff scenario). Trigger: user asks "can I limit what staff sees?"
-- [ ] **Multi-location Support** — Add when users request warehouse vs storefront inventory separation. Trigger: "I need to track inventory in two places"
-- [ ] **Reporting Module** — Add when users want historical analysis beyond dashboard. Trigger: "show me last month's sales by category"
-- [ ] **Bulk Operations** — Add when users complain about tedious one-by-one editing. Trigger: "I need to update prices for 50 products"
-- [ ] **Customer Management** — Add when order tracking needs customer details. Trigger: "I need to see what John Smith ordered last time"
-- [ ] **Barcode Scanning** — Add for efficiency boost. Trigger: "typing SKUs is slow"
-- [ ] **Keyboard Shortcuts** — Add for power users after core workflows stabilize. Trigger: user feedback about repetitive clicking
-- [ ] **Mobile Optimization** — Enhance mobile experience once desktop is solid. Trigger: "I want to check stock from my phone"
+| Existing Feature                       | Impact                | Action Needed                                                                                                          |
+| -------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Products list + detail (articles page) | **Replaced entirely** | Remove products table/endpoints/UI. Replace with articulos. Same route `/articles`                                     |
+| Inventory list (inventory page)        | **Replaced entirely** | Remove inventory table/endpoints/UI. Replace with existencias. Route changes to `/existencias` or stays `/inventory`   |
+| Dashboard low stock alerts             | **Modified**          | Query existencias instead of inventory. Aggregate across depositos for total low-stock view                            |
+| Dashboard stats cards                  | **Modified**          | "Total Products" becomes "Total Articulos". Stock value from existencias. Revenue metrics unchanged                    |
+| Orders + order items                   | **Modified**          | FK `product_id` (int) changes to `articulo_codigo` (text). Migration script needed                                     |
+| Sales + sale items                     | **Modified**          | FK `product_id` (int) changes to `articulo_codigo` (text). Migration script needed                                     |
+| Purchases + purchase items             | **Modified**          | FK `product_id` (int) changes to `articulo_codigo` (text). Migration script needed                                     |
+| Web type definitions                   | **Rewritten**         | New TypeScript interfaces for Articulo, Existencia, Inventario, Deposito replacing Product, Inventory                  |
+| Seed data                              | **Rewritten**         | New seed for articulos (with all code fields + properties), depositos, existencias, inventarios with sample counts     |
+| Backend modules (NestJS)               | **Replaced + new**    | Products module and inventory module replaced. New: articulos, existencias, depositos, inventarios modules             |
+| Navigation sidebar                     | **Modified**          | New nav items: Articulos, Existencias, Inventarios, Depositos (in settings or standalone). Remove: Products, Inventory |
 
-### Future Consideration (v2+)
+---
 
-Features to defer until product-market fit is established.
+## UX Patterns by Domain
 
-- [ ] **POS Integration** — Defer until v1 proves concept. Real integration is complex; MVP can use manual sales entry
-- [ ] **Smart Stock Alerts** — Defer until enough sales history exists for velocity calculation
-- [ ] **Offline-First Architecture** — Significant technical complexity. Defer until users report connectivity as pain point
-- [ ] **Advanced Search (fuzzy, semantic)** — Nice to have but basic search works. Defer until users struggle with search
-- [ ] **Activity Feed** — Useful but not critical. Defer until users say "I want to see recent changes"
-- [ ] **Custom Fields** — Defer until users request specific metadata not in default schema
-- [ ] **Batch Import** — Defer until users have existing data to migrate
-- [ ] **API/Webhooks** — Defer until integration requests come in
-- [ ] **Supplier Management** — Whole module. Defer until purchase workflow validated
+### Articulos UX
 
-## Feature Prioritization Matrix
+- **List view**: Dense table with columns for codigo, descripcion, marca, precio_venta, activo status badge. Row click opens detail sheet (current pattern).
+- **Multi-code search**: Single search input that queries across all code fields (codigo, sku, codigo_barras, erp_codigo, descripcion). Placeholder text: "Buscar por codigo, SKU, codigo de barras, nombre..."
+- **Detail sheet**: Tabs or sections grouping: Identificacion (all codes), Propiedades (marca/modelo/talle/color/material), Precios (venta/costo/margen), Imagenes (if available), Estado (activo toggle + timestamps).
+- **Active filter**: Toggle or chip filter defaulting to "Solo activos". Common pattern in ERP-style admin.
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| Product Catalog Management | HIGH | MEDIUM | P1 |
-| Inventory Management | HIGH | HIGH | P1 |
-| Dashboard | HIGH | MEDIUM | P1 |
-| Sales Transaction Recording | HIGH | MEDIUM | P1 |
-| Order Management | HIGH | MEDIUM | P1 |
-| Search & Filtering | HIGH | MEDIUM | P1 |
-| Realistic Demo Data | HIGH | LOW | P1 |
-| Data Export | MEDIUM | LOW | P1 |
-| User Authentication | HIGH | LOW | P1 |
-| Responsive Layout | MEDIUM | MEDIUM | P1 |
-| User Roles & Permissions | HIGH | MEDIUM | P2 |
-| Reporting Module | MEDIUM | MEDIUM | P2 |
-| Customer Management | MEDIUM | LOW | P2 |
-| Bulk Operations | HIGH | MEDIUM | P2 |
-| Multi-location Support | MEDIUM | HIGH | P2 |
-| Barcode Scanning | MEDIUM | MEDIUM | P2 |
-| Keyboard Shortcuts | LOW | LOW | P2 |
-| Mobile Optimization | MEDIUM | MEDIUM | P2 |
-| POS Integration | HIGH | HIGH | P3 |
-| Smart Stock Alerts | MEDIUM | HIGH | P3 |
-| Offline-First Architecture | MEDIUM | HIGH | P3 |
-| Activity Feed | LOW | LOW | P3 |
-| Advanced Search | MEDIUM | MEDIUM | P3 |
-| Custom Fields | MEDIUM | MEDIUM | P3 |
-| Batch Import/Export | MEDIUM | MEDIUM | P3 |
-| API/Webhooks | LOW | HIGH | P3 |
+### Existencias UX
 
-**Priority key:**
-- P1: Must have for launch — validates core value proposition
-- P2: Should have, add when possible — enhances usability and addresses common requests
-- P3: Nice to have, future consideration — deferred until product-market fit established
+- **Primary view**: Table showing articulo_codigo, descripcion, deposito, cantidad, stock_minimo, estado badge (en_stock / bajo_stock / sin_stock). Filterable by deposito dropdown at top.
+- **Secondary view**: Article-centric -- select an article, see stock across all depositos as a small sub-table or card grid.
+- **Stock status badges**: Green (en_stock), yellow/amber (bajo_stock when cantidad <= stock_minimo), red (sin_stock when cantidad = 0).
+- **Inline edit**: Quantity adjustments should be quick -- either inline edit or a small modal with current quantity, adjustment (+/-), and reason field.
 
-**Prioritization Logic:**
-- P1 features enable the core demo: operations-focused admin with realistic data density
-- P2 features address usability and real-world workflows after core validation
-- P3 features add sophistication or handle edge cases discovered through usage
+### Inventarios UX
 
-## Competitor Feature Analysis
+- **Event list**: Table of inventory events with fecha, deposito name, estado badge, total articles counted, discrepancy count. Click to open detail.
+- **Event detail**: Header with event metadata + status controls. Below: tabs for "Sectores" (list of sectors with progress) and "Resultados" (full article-by-article comparison table).
+- **Discrepancy table**: Three columns that matter: articulo, cantidad_sistema, cantidad_contada, diferencia. Color-code diferencia (red for negative = missing stock, blue for positive = surplus). Sort by absolute difference descending.
+- **Status workflow**: Visual stepper or badge progression: Pendiente -> En Curso -> Finalizado. Cancel available from Pendiente or En Curso states only.
+- **Create event wizard**: Step 1 = select deposito + fecha. Step 2 = define sectors (names/descriptions for zones). Step 3 = confirm and create.
 
-| Feature | Square/Shopify POS | Lightspeed Retail | Our Approach |
-|---------|-------------------|-------------------|--------------|
-| Dashboard | Sales-focused, clean but sparse | Analytics-heavy, complex | Operations-focused, dense but hierarchical. More data per screen |
-| Inventory | Real-time sync with POS, multi-location | Advanced inventory with purchasing | Start simpler, real-time sync v1.x. Multi-location v1.x after validation |
-| Product Management | Visual, image-focused, e-commerce oriented | Variants, suppliers, detailed attributes | Admin-first (less visual), dense forms, bulk operations prioritized |
-| Reporting | Beautiful charts, mobile-friendly | Advanced analytics, custom reports | Basic operational reports + export. Let users analyze in Excel |
-| User Interface | Consumer-friendly, lots of whitespace | Professional but cluttered | Deliberately dense for power users. Bloomberg terminal aesthetic |
-| Mobile Experience | Mobile-first design | Responsive but desktop-optimized | Desktop-first, tablet-friendly, mobile v1.x |
-| Integration | Extensive payment/e-commerce integrations | ERP/accounting integrations | Minimal integrations initially, API for future |
-| Demo Data | 5-10 sample products, clean | Training/sandbox mode with limited data | 500+ products, realistic volume showing density |
-| Pricing Model | Transaction fees or subscription | Subscription tiers by features | TBD (focus: reusable admin base, not SaaS) |
-| Target User | Small retailers, e-commerce sellers | Mid-sized retail chains | Small-to-mid operations, internal staff, operations-focused |
-| Setup Complexity | Quick setup, guided onboarding | Complex, requires training | Opinionated defaults, but realistic data from start |
-
-**Key Differentiators:**
-1. **Dense UI Philosophy:** Competitors optimize for consumer-friendliness. We optimize for professional efficiency (more info per screen)
-2. **Realistic Demo Data:** Competitors show toy examples. We show realistic operational density immediately
-3. **Operations Over Analytics:** Competitors sell insights and charts. We sell operational efficiency and data entry speed
-4. **Bulk Operations UX:** Power user workflows (Excel-like bulk editing) vs one-by-one forms
-5. **Opinionated Simplicity:** Fewer features done better vs feature parity race
-
-**Competitive Risks:**
-- Dense UI may alienate users expecting modern minimalism
-- Lack of integrations limits "switch from competitors" appeal
-- No mobile POS limits point-of-sale use case
-- Single-market focus limits international appeal
-
-**Competitive Advantages:**
-- Faster for experienced users (keyboard shortcuts, density, bulk ops)
-- Lower cognitive load for operations staff (less hunting through tabs)
-- Better showcase of capabilities (realistic data vs toy demo)
-- Opinionated design eliminates decision fatigue
+---
 
 ## Sources
 
-Research based on analysis of:
-
-### Industry Standards & Best Practices
-- [Best Retail Management Systems Software 2026 | Capterra](https://www.capterra.com/retail-management-systems-software/)
-- [Retail Business Management: Complete Guide for SMEs in 2026 - Synergix Technologies](https://www.synergixtech.com/news-event/business-blog/retail-business-management-for-smes/)
-- [The 25 Best Retail Management Software, Ranked & Reviewed for 2026 | The Retail Exec](https://theretailexec.com/tools/best-retail-management-software/)
-- [5 Essential Retail Management Software Features | Priority](https://www.priority-software.com/resources/best-retail-management-software-features/)
-- [What Is Retail Software? Types and Top Solutions (2025) - Shopify](https://www.shopify.com/retail/retail-software)
-- [Best Retail Management Software - 2025 Reviews & Pricing](https://www.softwareadvice.com/retail/retail-management-comparison/)
-
-### POS & Admin Panel Requirements
-- [Restaurant POS Admin Panel | InfyOm Docs](https://infyom.com/docs/restaurant-pos/admin-panel.html)
-- [10 Essential Features Every Admin Panel Needs - DronaHQ](https://www.dronahq.com/admin-panel-features/)
-- [12 Top POS Features You Need for Better Checkouts in 2025 | The Retail Exec](https://theretailexec.com/payment-processing/pos-features/)
-- [10 Essential Features to Look for in a Modern POS System](https://www.xstak.com/blog/essential-features-of-modern-pos-system)
-
-### Retail Technology Trends & Differentiators
-- [Retail Technology Trends & Innovations 2026: What's New?](https://mobidev.biz/blog/7-technology-trends-to-change-retail-industry)
-- [Three retail tech trends to watch in 2026 | Chain Store Age](https://chainstoreage.com/three-retail-tech-trends-watch-2026)
-- [NRF | 10 trends and predictions for retail in 2026](https://nrf.com/blog/10-trends-and-predictions-for-retail-in-2026)
-- [Key Trends Shaping Retail in 2026 - 360 Retail Management](https://360retailmanagement.com/key-trends-shaping-retail-in-2026/)
-
-### Usability & Anti-Patterns
-- [Optimizing POS Usability for the Ever-Evolving Retail Landscape | Manhattan](https://www.manh.com/our-insights/resources/blog/optimizing-pos-usability-for-the-ever-evolving-retail-landscape)
-- [Enterprise Software: How To Improve Usability - Usability Geek](https://usabilitygeek.com/enterprise-software-how-to-improve-usability/)
-- [Feature Bloat: How It Happens and How to Avoid It](https://kodekx-solutions.medium.com/feature-bloat-how-it-happens-and-how-to-avoid-it-32279981027c)
-- [What Is Feature Bloat And How To Avoid It](https://userpilot.com/blog/feature-bloat/)
-
-### Competitor Analysis
-- Square POS (market leader, consumer-friendly)
-- Shopify POS (e-commerce integration strength)
-- Lightspeed Retail (mid-market professional)
-- Toast POS (hospitality-focused)
-- Vend/Lightspeed (acquired, legacy player)
+- [NetSuite: What Is Item Master Data?](https://www.netsuite.com/portal/resource/articles/inventory-management/item-master-data.shtml)
+- [Verdantis: In-depth Guide to Item Master Data Management](https://www.verdantis.com/item-data-management/)
+- [Finale Inventory: Multi-Warehouse Inventory Management](https://www.finaleinventory.com/multi-warehouse-inventory-management)
+- [Kardex: Centralized Inventory Management for Multi-Warehouse Operations](https://www.kardex.com/en-us/blog/centralized-inventory-management)
+- [ScienceSoft: Custom Inventory Counting Software Features](https://www.scnsoft.com/scm/inventory-counting-software)
+- [Bitergo: Inventory Counting App](https://bitergo.com/wms-inventory)
+- [Count-Inventory: Physical Inventory Count Software](https://www.count-inventory.com/)
+- [POSNation: Cycle Counts Best Practices 2026](https://www.posnation.com/blog/cycle-counts-best-practices)
+- [SelectHub: What Is A Cycle Count?](https://www.selecthub.com/inventory-management/cycle-count/)
+- [Actualog: Product Identification Codes in ERP](https://blog.actualog.com/product-identification-codes-in-erp-pim-and-b2b-marketplaces/)
+- [Linnworks: SKU Numbers Best Practices](https://www.linnworks.com/blog/how-to-create-sku-numbers-for-your-inventory/)
+- [Dynamic Inventory: Warehouse & Multi Location Management](https://www.dynamicinventory.net/warehouse-location-management/)
+- [Veeqo: Multi-Warehouse Management Guide](https://www.veeqo.com/blog/multi-warehouse-management-guide)
 
 ---
-*Feature research for: Commercial Admin Systems (Small-to-Mid Retail Operations)*
-*Researched: 2026-01-22*
-*Research confidence: HIGH (based on industry standards, competitor analysis, current market trends)*
+
+_Feature research for v1.1 milestone: Articulos + Existencias + Inventarios_
+_Researched: 2026-03-05_
+_Research confidence: HIGH (based on industry patterns, competitor analysis, current codebase analysis)_

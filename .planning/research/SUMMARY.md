@@ -1,396 +1,179 @@
 # Project Research Summary
 
-**Project:** objetiva-comercios-admin
-**Domain:** Cross-Platform Commercial/Retail Admin System
-**Researched:** 2026-01-22
+**Project:** Objetiva Comercios Admin v1.1 — Modelo Articulos + Inventario
+**Domain:** Core data model migration (products/inventory -> articulos/existencias/inventarios) in NestJS + Drizzle + Next.js monorepo
+**Researched:** 2026-03-05
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This project is a commercial/retail admin system for small-to-mid operations, delivered as a cross-platform solution (mobile iOS/Android + web) with a unified backend. Research shows that successful admin systems in this domain prioritize operational efficiency over aesthetic minimalism - professionals prefer dense, information-rich interfaces that minimize clicks and navigation. The recommended approach uses a monorepo architecture with React-based frontends (Next.js for web, Capacitor for mobile) sharing design tokens and types while implementing platform-specific UIs, backed by a NestJS API with PostgreSQL.
+v1.1 is a structural migration, not a greenfield build. The existing monorepo (NestJS backend, Next.js web, Capacitor mobile) replaces the v1.0 `products` + `inventory` tables with a richer domain model: `articulos` (text PK using ERP business codes), `depositos` (multi-warehouse locations), `existencias` (stock per article per warehouse), and `inventarios` (periodic physical count events). No new libraries are required -- Drizzle ORM v0.45.x already supports every column type needed (text PKs, numeric precision, JSONB, arrays). The migration is entirely at the schema and application layer.
 
-The critical success factors are: (1) establishing proper monorepo TypeScript configuration from day one to avoid resolution hell, (2) building backend mock data endpoints early to validate auth and API contracts before real data, and (3) accepting platform-specific UI implementations rather than forcing component sharing between React DOM and Capacitor. The stack is modern and production-ready (React 19, Next.js 15.5+, Tailwind v4, Capacitor 7.4, NestJS 11) with strong community support and active maintenance.
+The recommended approach is a clean-cut migration: drop old tables, create new ones, re-seed. This is safe because v1.0 has no production data -- only seed data that will be regenerated. Attempting incremental ALTER TABLE migrations adds complexity for zero benefit in development. The build order follows strict dependency chains: schema foundation and articulos/depositos first, then existencias (depends on both), then downstream module updates (orders/sales/purchases/dashboard), and finally inventarios (the only genuinely new domain capability, depends on everything else).
 
-Key risks center on cross-platform complexity: iOS navigation requires special handling with Capacitor, Supabase auth client must use request scope in backend to avoid session leakage, and Next.js SSR features must be avoided for mobile builds. Starting with opinionated simplicity and deferring advanced patterns (offline-first, real-time, microservices) until proven necessary will prevent the over-engineering trap that commonly derails greenfield projects.
+The primary risks are around the FK type change (integer `productId` to text `articuloCodigo`) and type system drift across three apps. The FK change affects order_items, sale_items, and purchase_items -- all must be rewritten simultaneously. Three independent type definitions (backend Drizzle inference, web types, mobile types) will diverge during migration if not updated together. A critical secondary risk is scope creep: the `numeric(10,2)` monetary migration should be explicitly deferred to avoid compounding the schema change with arithmetic-breaking type changes across the entire codebase.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The stack prioritizes modern, production-ready technologies with strong TypeScript support and active maintenance. Core decisions: React 19 with Next.js 15.5+ for web (App Router, Server Components), Vite 6 + Capacitor 7.4 for mobile, NestJS 11 for backend, PostgreSQL 15+ with Drizzle ORM (performance over Prisma's DX), Supabase Auth for JWT-based authentication, and Turborepo + pnpm for monorepo management.
+No new dependencies. Drizzle ORM v0.45.x handles text primary keys, numeric precision columns, JSONB, and array columns natively. The only import changes are adding `numeric`, `jsonb`, and `sql` from existing packages. See [STACK.md](STACK.md) for detailed column type patterns.
 
-**Core technologies:**
-- **React 19.2.x + TypeScript 5.5+**: UI framework for mobile and web - latest stable version with Server Components, improved hooks, refs as props
-- **Next.js 15.5+**: Web framework with App Router - critical security patches required (CVE-2025-55184)
-- **Capacitor 7.4.x**: Mobile runtime for iOS/Android - supports latest OS versions, requires Node 20+ and Java JDK 21
-- **Vite 6.x**: Mobile bundler - 5x faster builds, Environment API for dev/prod parity
-- **NestJS 11.x**: Backend API framework - modular architecture, first-class TypeScript, strong conventions
-- **PostgreSQL 15+ + Drizzle ORM**: Database and ORM - fastest ORM (2025), type-safe, edge-compatible, ~7.4kb
-- **Supabase Auth**: Managed authentication - JWT issuance, OAuth providers, session management
-- **Turborepo 2.x + pnpm 10.x**: Monorepo tooling - intelligent caching, parallel builds, workspace management
-- **Tailwind CSS v4**: Styling - 5x faster builds, 100x faster incremental builds, auto-content detection
-- **shadcn/ui**: Component library - copy-paste accessible components on Radix UI, official monorepo support
+**Core technologies (unchanged):**
 
-**Critical version notes:**
-- Next.js 15.5+ required for security patches (older versions have critical CVEs)
-- TypeScript 5.5+ required for Zod v4 compatibility
-- Tailwind v4 released Jan 22, 2025 - production ready, migration guide available
-- React 19 stable since Dec 2024 - fully supported by Next.js 15 and Vite 6
+- **Drizzle ORM v0.45.x**: Schema definition, migrations, query builder -- all new column types (`text().primaryKey()`, `numeric()`, `jsonb()`, `.array()`) supported out of the box
+- **drizzle-kit v0.31.x**: Custom migration generation via `generate --custom` for data migration SQL when needed
+- **No new libraries needed**: decimal.js, uuid, nanoid, and additional migration tools explicitly evaluated and rejected
+
+**Critical stack decision:** Keep `doublePrecision` for monetary fields in v1.1. Switching to `numeric(10,2)` returns strings in JS without `mode: 'number'`, breaking all arithmetic across the codebase. This is a separate refactor for a future milestone.
 
 ### Expected Features
 
-Research reveals a clear feature hierarchy: table stakes users assume exist, differentiators that provide competitive advantage, and anti-features that seem good but create problems.
+See [FEATURES.md](FEATURES.md) for full feature landscape, anti-features list, and UX patterns by domain.
 
 **Must have (table stakes):**
-- **Dashboard with Key Metrics** - Operations-focused (today's sales, low stock alerts, pending orders, recent transactions), not analytics-heavy
-- **Inventory Management** - Real-time stock levels, product variants, SKU management, stock alerts, bulk operations
-- **Sales Transaction Recording** - Transaction history with search/filter, refunds/returns, payment status tracking
-- **Product/Catalog Management** - CRUD operations, categories, pricing, images, bulk import/export essential
-- **Order Management** - Order status workflow, fulfillment tracking, clear status indicators
-- **User Roles & Permissions** - RBAC with granular permissions and audit logs (security non-negotiable)
-- **Search & Filtering** - Fast search across products/orders/customers, multiple filter criteria
-- **Data Export** - Export to CSV/Excel for accounting and analysis (mandatory, import is bonus)
 
-**Should have (competitive):**
-- **Dense Data Display** - Information-rich interface showing more per screen than competitors (Bloomberg terminal aesthetic)
-- **Bulk Operations UX** - Excel-like bulk editing for products, pricing, inventory (power users love this)
-- **Smart Stock Alerts** - Predictive low-stock based on sales velocity, not just static thresholds
-- **Keyboard Shortcuts** - Alt+N for new order, Ctrl+K for search, etc. (discoverable shortcuts)
-- **Intelligent Search** - Fuzzy matching, SKU fragments, product attributes, typo tolerance
-- **Realistic Demo Data** - Seed database shows 500+ products with realistic density (not 5 products with lorem ipsum)
-- **Mobile-Responsive Admin** - Core workflows mobile-friendly (not full feature parity, but check stock/process orders on the go)
+- Articulos full CRUD with text PK (`codigo`), multiple code identifiers (SKU, barcode, ERP code), multi-column search
+- Active/inactive toggle with soft-delete semantics (historical references in orders/sales remain valid)
+- Server-side pagination and filtering (v1.0 fetches all products client-side -- breaks at scale)
+- Depositos CRUD (simple warehouse/location entity, typically 2-10 records)
+- Existencias per articulo per deposito with low-stock alerts, min/max thresholds
+- Dual view modes for stock: by warehouse (warehouse manager) and by article (product manager)
+- Inventarios lifecycle: create count event, assign sectors, record counts, view discrepancies, finalize
+- Dashboard KPI updates to query new data model
 
-**Defer (v2+):**
-- **POS Integration** - Complex real integration; MVP can use manual sales entry
-- **Offline-First Architecture** - Significant technical complexity; defer until users report connectivity pain
-- **Multi-location Support** - Add when users request warehouse vs storefront separation
-- **Advanced Analytics/BI** - Small businesses don't have data scientists; provide basic reports + Excel export instead
+**Should have (differentiators for v1.1):**
 
-**Anti-features (commonly requested, often problematic):**
-- **Advanced Analytics Dashboards** - Creates bloat, slows UI, requires clean data and training
-- **Full CRM Suite** - Scope explosion; integrate with actual CRM tools via API instead
-- **Mobile POS App** - Becomes second product to maintain; web-responsive POS works on tablets
-- **Everything Customizable** - Decision paralysis, testing nightmare, support hell
-- **AI Chatbot Support** - Masks poor UX; if users need chatbot to navigate, interface is wrong
+- Rich product properties (marca, modelo, talle, color, material) as flat fields on articulos
+- Image URL fields on articulos (store URLs; defer upload UI)
+- OCR data storage (JSONB column for future mobile scanning)
+
+**Defer to v1.2+:**
+
+- Mobile barcode scanning for inventarios (high complexity Capacitor plugin work)
+- Auto-apply discrepancies to stock (dangerous operation; show discrepancies only in v1.1)
+- Bulk CSV import (useful but not blocking)
+- Stock transfers between depositos (natural next step, explicitly out of scope)
+- `numeric(10,2)` monetary migration (separate refactor to avoid arithmetic breakage)
 
 ### Architecture Approach
 
-The architecture follows a monorepo pattern with separated concerns: platform-specific UIs consuming shared design tokens and types, unified backend serving both clients, managed authentication, and separate business database. This avoids the common pitfall of trying to share component code between React DOM (web) and Capacitor (mobile).
+The migration replaces 2 tables and modifies 3 FK columns across the entire stack (schema, 6+ backend modules, web types/pages/API layer, mobile pages). The new model introduces 4 new tables (`articulos`, `depositos`, `existencias`, `inventarios`) plus 3 sub-tables for inventarios (`inventarios_articulos`, `inventario_sectores`, `dispositivos_moviles`). Backend modules follow NestJS standard patterns with exported services for cross-module injection. The text PK (`codigo`) simplifies route handling (no ParseIntPipe needed) but requires updating every downstream FK reference from integer to text. See [ARCHITECTURE.md](ARCHITECTURE.md) for full schema design, data flow, and integration impact analysis.
 
 **Major components:**
-1. **Mobile App (React + Capacitor + Vite)** - iOS/Android native experience with bottom tab navigation + drawer, platform-specific UI components using shared design tokens
-2. **Web App (Next.js 15 App Router)** - Desktop-optimized with sidebar navigation, SSR/CSR mix, shadcn/ui components, must use `output: 'export'` for Capacitor compatibility
-3. **Shared UI Package** - Design tokens (colors, spacing, typography), TypeScript types (data models, API contracts), utilities - NOT component implementations
-4. **Backend API (NestJS)** - Modular feature architecture (Products, Orders, Inventory modules), JWT validation with passport-jwt, mock data services initially
-5. **Supabase Auth** - Managed authentication service for JWT issuance, session management - clients use @supabase/supabase-js, backend validates tokens
-6. **PostgreSQL (Business Data)** - Separate from Supabase PostgreSQL, accessed via Drizzle ORM with type-safe queries and migrations
 
-**Key patterns:**
-- **Shared tokens, not components**: Extract design tokens into shared package, each platform implements own components using these tokens
-- **Backend serves mock data**: Backend exposes REST endpoints with realistic dummy data instead of frontend mocks - validates auth and contract early
-- **Request-scoped auth**: Supabase client in NestJS uses `Scope.REQUEST` to prevent session leakage between users
-- **Turborepo build pipeline**: Define task dependencies so shared packages build before apps, enable caching for speed
+1. **ArticulosModule** -- replaces ProductsModule. CRUD with text PK routes, multi-code search
+2. **DepositosModule** -- new, simple CRUD for warehouse locations
+3. **ExistenciasModule** -- replaces InventoryModule. Deposito-aware stock queries with joins
+4. **InventariosModule** -- entirely new. Physical count event lifecycle management
+5. **Modified modules** -- OrdersModule, SalesModule, PurchasesModule (FK change), DashboardModule (service swap)
 
 ### Critical Pitfalls
 
-Research identified 10 critical pitfalls, with the top 5 posing the highest risk to project success:
+See [PITFALLS.md](PITFALLS.md) for all 14 pitfalls with detection and prevention strategies.
 
-1. **TypeScript Workspace Resolution Hell** - TypeScript fails to resolve internal dependencies despite successful builds; must configure project references and paths in tsconfig.json from Phase 1
-2. **Turborepo Caching Misconfiguration** - Cache hits when outputs should rebuild or constant misses; explicitly declare all inputs including env files and config files outside package directories
-3. **Next.js SSR Assumptions with Capacitor** - SSR features stop working in mobile builds; configure `output: 'export'` and `unoptimized: true` for images from day one
-4. **iOS Navigation Routing Breaks** - Navigation works on web/Android but completely breaks on iOS due to Capacitor's custom scheme (`capacitor://localhost`); requires patching Next.js router or using Capacitor App plugin
-5. **Supabase Auth Client Scope Leakage** - Singleton-scoped client causes auth context to leak between users; use `@Injectable({ scope: Scope.REQUEST })` and `persistSession: false`
-
-**Additional critical pitfalls:**
-- **Platform Abstraction Forced Too Early** - Attempting unified components leads to poor UX on both platforms; accept platform-specific implementations
-- **Dark Mode Works on Web, Breaks in Mobile** - Theme propagation issues with portaled components (dialogs, popovers) in Capacitor context
-- **Mock Data Too Perfect, Production Integration Fails** - UI works with clean mocks but breaks with real data; include error scenarios, slow responses, incomplete data
-- **Dependency Version Drift** - Different packages use different versions of same dependency causing type mismatches and bloat; use workspace protocol and syncpack
-- **Over-Engineering Phase 1** - Complex architecture (microservices, event sourcing) before knowing requirements; optimize for changeability not premature scale
+1. **Drizzle `generate` treats table replacement as DROP + CREATE** -- auto-generated migrations cascade-delete all order/sale/purchase items. Prevention: use `db:push` for dev (clean cut) or hand-write phased migration SQL for production.
+2. **Integer-to-text FK type mismatch** -- cannot ALTER COLUMN from integer productId to text articuloCodigo. Prevention: clean cut with db:push in dev; in production, add new column, populate via mapping, add FK, drop old column.
+3. **Seed script idMap pattern breaks with text PKs** -- current `Map<number, number>` mapping is meaningless for text codes. Prevention: rewrite all generators to produce deterministic `codigo` values; remove idMap entirely.
+4. **ParseIntPipe on controller routes rejects text PKs** -- runtime 400 errors on all articulos routes. Prevention: remove ParseIntPipe, use plain string params.
+5. **Three-way type drift** -- backend, web, and mobile define types independently. During migration, one gets updated while others lag, causing runtime mismatches. Prevention: update all three in the same commit, or consolidate to `packages/types/`.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure follows a clear dependency chain: foundation (monorepo + auth) → backend (mock data validates contract) → web (faster iteration) → mobile (reuses patterns).
+Based on research, the suggested phase structure follows a strict dependency chain determined by the data model.
 
-### Phase 1: Foundation & Authentication
-**Rationale:** Monorepo configuration, TypeScript project references, and auth must be correct before any code sharing or protected routes can work. These are load-bearing decisions that are expensive to change later.
+### Phase 1: Schema Foundation + Core Entities (Articulos + Depositos)
 
-**Delivers:**
-- Monorepo structure with pnpm workspaces + Turborepo configuration
-- packages/ui with design tokens (colors, spacing, typography) and shared types
-- Supabase Auth project setup and configuration
-- NestJS backend auth module with JWT validation strategy
-- TypeScript project references configured correctly
+**Rationale:** Everything depends on the schema. Articulos is the central entity referenced by every other module. Depositos is the simplest new entity and unblocks existencias. These must exist before any other work can begin.
+**Delivers:** New Drizzle schema with all tables defined, ArticulosModule with full CRUD (text PK routes, multi-code search), DepositosModule with simple CRUD, seed generators rewritten, old ProductsModule and InventoryModule removed.
+**Addresses:** Articulos CRUD, multi-code identifiers, active/inactive toggle, depositos CRUD, rich product properties (from FEATURES.md table stakes)
+**Avoids:** Pitfall #1 (use db:push for clean cut), Pitfall #4 (rewrite seed from scratch), Pitfall #5 (no ParseIntPipe on new controllers), Pitfall #10 (use sql template for array defaults)
 
-**Addresses (STACK):**
-- Turborepo + pnpm setup for monorepo management
-- TypeScript 5.5+ configuration for type resolution
-- Supabase Auth integration pattern
+### Phase 2: Existencias Module + Frontend Migration
 
-**Avoids (PITFALLS):**
-- Pitfall #1: TypeScript Workspace Resolution Hell (Phase 1 critical)
-- Pitfall #2: Turborepo Caching Misconfiguration (Phase 1 critical)
-- Pitfall #5: Supabase Auth Client Scope Leakage (Phase 1 critical)
-- Pitfall #9: Dependency Version Drift (Phase 1 critical)
+**Rationale:** Existencias depends on articulos + depositos being stable. Frontend must be updated to use new types and API endpoints. This phase makes the app functional again after the schema break in Phase 1.
+**Delivers:** ExistenciasModule with deposito-aware queries, web and mobile pages updated for articulos and existencias, new TypeScript types across all apps, API layer updated with new endpoints.
+**Addresses:** Stock per deposito, low-stock alerts, dual view modes, server-side pagination (from FEATURES.md table stakes)
+**Avoids:** Pitfall #8 (update all three type systems together), Pitfall #11 (update API URLs alongside backend), Pitfall #12 (update TanStack Table column definitions)
 
-**Research flag:** SKIP - Standard monorepo patterns well-documented in Turborepo/pnpm docs
+### Phase 3: Downstream Module Updates (Orders/Sales/Purchases/Dashboard)
 
-### Phase 2: Backend API with Mock Data
-**Rationale:** Backend must serve realistic mock data through real REST endpoints before frontend development. This validates auth flow (JWT headers), tests API contract early, and prevents "frontend works in isolation but integration fails" scenario.
+**Rationale:** These modules have FK dependencies on articulos. Must update after articulos is stable. Mechanical but wide-reaching -- touches 23+ files with productId references.
+**Delivers:** All item tables reference articuloCodigo (text FK), dashboard KPIs query new model, seed data fully consistent across all entities.
+**Addresses:** FK migration, dashboard stats updates, terminology alignment (totalProducts -> totalArticulos)
+**Avoids:** Pitfall #2 (clean FK column replacement), Pitfall #7 (update productId references across all files), Pitfall #14 (rename KPI fields)
 
-**Delivers:**
-- NestJS feature modules (Products, Orders, Inventory, Dashboard)
-- Mock data services with realistic dummy data (500+ products, varied transactions)
-- REST endpoints with JWT guards protecting routes
-- CORS configuration for web (localhost:3000) and mobile
-- Shared database module and configuration management
+### Phase 4: Inventarios Module
 
-**Addresses (FEATURES):**
-- Product Catalog Management (mock CRUD operations)
-- Inventory Management (mock stock levels)
-- Sales Transaction Recording (mock transaction history)
-- Order Management (mock order workflow)
-
-**Uses (STACK):**
-- NestJS 11.x modular architecture
-- passport-jwt for JWT validation
-- class-validator/class-transformer for DTOs
-- Mock data pattern (no ORM yet, just in-memory arrays)
-
-**Avoids (PITFALLS):**
-- Pitfall #8: Mock Data Too Perfect (include error scenarios, slow responses, incomplete data in mocks)
-
-**Research flag:** SKIP - Standard NestJS REST API patterns well-documented
-
-### Phase 3: Web Application
-**Rationale:** Web is faster to develop and test than mobile (no build/deploy to device), so it validates backend API contract and auth flow first. Establishes design patterns and component structure that mobile app will adapt (not copy).
-
-**Delivers:**
-- Next.js 15 app with App Router structure and layouts
-- Supabase Auth integration (login, signup, session management)
-- Sidebar navigation layout (always visible, no hamburger menu)
-- Core section pages: Dashboard, Products, Orders, Inventory
-- shadcn/ui components adapted for dense data display
-- API client with JWT headers in Authorization Bearer token
-- TanStack Query for server state management and caching
-
-**Addresses (FEATURES):**
-- Dashboard with Key Metrics (operations-focused, dense but hierarchical)
-- Product/Catalog Management (CRUD with dense forms)
-- Inventory Management (stock levels, adjustments)
-- Sales Transaction Recording (transaction list)
-- Order Management (order status workflow)
-- Search & Filtering (fast product/order search)
-- Data Export (CSV export capability)
-
-**Uses (STACK):**
-- Next.js 15.5+ with App Router and `output: 'export'` configuration
-- React 19.2.x with Server Components
-- Tailwind CSS v4 for styling
-- shadcn/ui component library
-- TanStack Query v5 for data fetching
-- Zod v4 for validation
-
-**Implements (ARCHITECTURE):**
-- Client-side data fetching pattern (no SSR for Capacitor compatibility)
-- Dense data display philosophy (more info per screen)
-- Sidebar navigation with persistent layout
-
-**Avoids (PITFALLS):**
-- Pitfall #3: Next.js SSR Assumptions (configure `output: 'export'` from start)
-- Pitfall #6: Platform Abstraction Forced Early (web-specific components, not shared)
-- Pitfall #10: Over-Engineering Phase 1 (simple patterns, straightforward state management)
-
-**Research flag:** SKIP - Next.js App Router and shadcn/ui have extensive documentation
-
-### Phase 4: Mobile Application
-**Rationale:** Mobile comes last because it depends on web's validated patterns (auth, API integration, data flow). Capacitor build/deploy cycle is slower than web, and most complexity is already solved. Mobile adapts web patterns to platform-specific UI (bottom tabs + drawer instead of sidebar).
-
-**Delivers:**
-- React + Vite + Capacitor project structure
-- Supabase Auth integration (reuse pattern from web)
-- Bottom tab navigation (primary sections) + drawer (secondary actions)
-- Core section screens with same content as web but mobile-optimized UI
-- Platform-specific UI components using shared design tokens
-- API client with JWT headers (reuse pattern from web)
-- TanStack Query for data fetching (same as web)
-
-**Addresses (FEATURES):**
-- Mobile-Responsive Admin (core workflows mobile-friendly)
-- Same functional features as web (Dashboard, Products, Orders, Inventory)
-- Platform-appropriate navigation (bottom tabs vs sidebar)
-
-**Uses (STACK):**
-- Vite 6.x for bundling
-- Capacitor 7.4.x for iOS/Android runtime
-- React 19.2.x (same as web)
-- Tailwind-compatible styling solution or inline styles
-- Capacitor plugins (@capacitor/app, @capacitor/keyboard, etc.)
-
-**Implements (ARCHITECTURE):**
-- Platform-specific UI components (not shared with web)
-- Bottom tab navigation + drawer pattern
-- Mobile-optimized touch targets and spacing
-
-**Avoids (PITFALLS):**
-- Pitfall #4: iOS Navigation Routing Breaks (use Capacitor App plugin or patch Next.js router)
-- Pitfall #6: Platform Abstraction Forced Early (mobile-specific components accepted)
-- Pitfall #7: Dark Mode Breaks in Mobile (test theme propagation to portaled components)
-
-**Research flag:** NEEDS RESEARCH - iOS navigation workarounds are niche and version-specific; may need deeper investigation during implementation
-
-### Phase 5: Database Integration
-**Rationale:** Replace mock data with real PostgreSQL + Drizzle ORM after frontend-backend contract is validated and stable. This is a backend-only change that shouldn't require frontend modifications if contract was correct.
-
-**Delivers:**
-- PostgreSQL database schema with migrations
-- Drizzle ORM integration in NestJS
-- Real CRUD operations replacing mock data services
-- Database seeding with realistic demo data (500+ products)
-- Connection pooling and optimization
-
-**Uses (STACK):**
-- PostgreSQL 15+ database
-- Drizzle ORM with type-safe queries
-- Drizzle Kit for migrations
-
-**Addresses (ARCHITECTURE):**
-- Data layer persistence
-- Realistic demo data for showcasing product
-
-**Avoids (PITFALLS):**
-- Pitfall #8: Mock Data Too Perfect (maintain error handling and edge cases from mock phase)
-
-**Research flag:** SKIP - Drizzle ORM with NestJS is straightforward despite no official integration
-
-### Phase 6: Polish & Production Readiness
-**Rationale:** After core functionality works, focus on production-critical features: error handling, loading states, responsive design, performance optimization, security hardening.
-
-**Delivers:**
-- Error boundaries throughout application
-- Comprehensive loading states with skeletons
-- Mobile responsive refinements (tablet and phone)
-- Performance optimization (bundle splitting, image optimization)
-- User roles and permissions (RBAC guards)
-- Security audit (RLS policies if using Supabase features, rate limiting, input sanitization)
-
-**Addresses (FEATURES):**
-- User Roles & Permissions (Phase 2 feature)
-- Responsive Layout (complete mobile optimization)
-- Keyboard Shortcuts (power user efficiency)
-
-**Avoids (PITFALLS):**
-- Security mistakes (RLS policies, input validation, secrets management)
-- UX pitfalls (loading states, error states, feedback on actions)
-- Performance traps (pagination, bundle splitting)
-
-**Research flag:** SKIP - Standard production hardening patterns
+**Rationale:** The only genuinely new domain capability in v1.1. Depends on existencias for discrepancy calculations. Most complex module with lifecycle state machine. Can be deferred to v1.2 without breaking core operations if timeline pressure exists.
+**Delivers:** Physical count event lifecycle (create, assign sectors, record counts, view discrepancies, finalize), inventarios web section with discrepancy table, basic mobile inventarios page, navigation updates.
+**Addresses:** Inventory count events, sector-based counting, discrepancy view, status workflow (from FEATURES.md table stakes)
+**Avoids:** Pitfall #9 (test JSONB roundtrip before building on top), Pitfall #10 (use sql template for array defaults)
 
 ### Phase Ordering Rationale
 
-**Critical path:** Foundation → Backend → Web → Mobile → Database → Polish
-
-This order is based on:
-
-1. **Dependency chain from ARCHITECTURE:** packages/ui must exist before apps can import design tokens; backend auth must work before protected routes can be tested; web validates patterns before mobile adapts them
-
-2. **Risk mitigation from PITFALLS:** Phase 1 addresses all "must fix immediately" pitfalls (TypeScript resolution, Turborepo caching, auth scope leakage, dependency drift); Phase 2 validates mock data pattern to prevent integration surprises; Phase 3 establishes web patterns before mobile complexity
-
-3. **Feature dependencies from FEATURES:** Dashboard requires transactional data sources (sales, inventory, orders); Order Management requires Inventory for stock deduction; Reporting enhances with export capability
-
-4. **Validation strategy:** Backend serves mocks → Web validates contract → Mobile reuses patterns → Database swaps implementation (minimal frontend change)
-
-5. **Iteration speed:** Web is faster to develop/test than mobile (no device builds), so it validates API and UX patterns first
-
-**Parallel work opportunities:**
-- After Phase 1: Backend (Phase 2) and packages/ui enhancements can develop in parallel
-- After Phase 2: Web (Phase 3) and mobile (Phase 4) can start in parallel if different developers, but web should finish first to establish patterns
-- Phase 5 (Database) and Phase 6 (Polish) can overlap - database migration in backend while frontend polish continues
+- **Dependency chain is strict:** articulos -> depositos -> existencias -> inventarios. No phase can start before its dependencies are complete.
+- **Phases 2 and 3 can overlap** if treated as separate concerns (existencias/frontend vs downstream FK updates), but are safer run sequentially to avoid merge conflicts in shared files (schema.ts, seed.ts, api.ts).
+- **Phase 4 is the safety valve:** inventarios is entirely new functionality. If v1.1 runs long, it can be cut to v1.2 without breaking the core migration deliverable.
+- **The clean-cut approach (db:push + re-seed)** eliminates migration complexity entirely for development. Production migration scripts should only be written when approaching deployment.
 
 ### Research Flags
 
-**Phases needing deeper research during planning:**
-- **Phase 4 (Mobile):** iOS navigation workarounds with Capacitor are version-specific and niche; GitHub issues show ongoing challenges with Next.js router + Capacitor custom schemes; may need `/gsd:research-phase` to find current workarounds for Capacitor 7.4 + Next.js 15.5
+Phases likely needing deeper research during planning:
 
-**Phases with standard patterns (skip research-phase):**
-- **Phase 1 (Foundation):** Turborepo + pnpm monorepo setup is well-documented with multiple templates and guides
-- **Phase 2 (Backend):** NestJS REST API with JWT authentication follows standard patterns extensively documented
-- **Phase 3 (Web):** Next.js App Router with shadcn/ui has comprehensive official documentation and examples
-- **Phase 5 (Database):** Drizzle ORM integration is straightforward despite no official NestJS module
-- **Phase 6 (Polish):** Standard production hardening patterns apply universally
+- **Phase 4 (Inventarios):** Complex domain with lifecycle management, sector-based counting, and discrepancy calculations. Edge cases include articles found but not in system, articles in system but not counted, and partial counts. Recommend `/gsd:research-phase` or `/gsd:discuss-phase` before planning.
+
+Phases with standard patterns (skip research-phase):
+
+- **Phase 1 (Schema + Articulos + Depositos):** All column types verified against official Drizzle docs. Standard NestJS CRUD module pattern.
+- **Phase 2 (Existencias + Frontend):** Standard join queries, standard frontend CRUD migration. No novel patterns.
+- **Phase 3 (Downstream Updates):** Mechanical FK replacement across known files. No architectural decisions needed.
 
 ## Confidence Assessment
 
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Stack | HIGH | All technologies are production-ready with stable releases, official documentation, and active maintenance. Version compatibility verified across stack (React 19 + Next.js 15.5+, TypeScript 5.5+ + Zod v4, etc.). Multiple real-world examples of this stack combination in monorepo contexts. |
-| Features | HIGH | Based on analysis of industry standards, competitor feature sets, and best practices from multiple retail management systems. Clear consensus on table stakes vs differentiators. Anti-features identified from feature bloat research and usability studies. |
-| Architecture | HIGH | Monorepo architecture extensively documented with Turborepo + pnpm. Cross-platform patterns validated by multiple sources. Auth strategy (Supabase + NestJS JWT validation) has working examples and community implementations. Separation of concerns follows established best practices. |
-| Pitfalls | HIGH | Pitfalls sourced from real GitHub issues (Capacitor iOS navigation), production experience reports (Supabase scope leakage), and documented monorepo challenges (TypeScript resolution, Turborepo caching). Prevention strategies are specific and actionable. |
+| Area         | Confidence | Notes                                                                                                                                                                    |
+| ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Stack        | HIGH       | No new dependencies. All column types verified against official Drizzle docs and GitHub issues. Zero uncertainty.                                                        |
+| Features     | HIGH       | Based on industry patterns (ERP, multi-warehouse, physical inventory), competitor analysis, and direct codebase analysis of v1.0. Clear table stakes vs differentiators. |
+| Architecture | HIGH       | Based on direct codebase analysis of all layers (schema, 7 services, 6 API functions, 9 mobile pages). Schema design follows established Drizzle/NestJS patterns.        |
+| Pitfalls     | HIGH       | 10 of 14 pitfalls verified against official docs or directly observable in codebase. Remaining 4 based on documented GitHub issues.                                      |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-Despite high confidence, several areas need attention during planning and execution:
-
-- **iOS Navigation Workaround:** The Capacitor + Next.js router incompatibility has multiple proposed solutions (patch-package, Capacitor App plugin, custom router wrapper) but no definitive "best practice." Phase 4 planning should research current state with Capacitor 7.4 + Next.js 15.5 specifically.
-
-- **Dark Mode Implementation Details:** Research shows the problem (portaled components don't inherit theme) but solutions vary by Tailwind version and framework. Testing required early in Phase 1 to validate approach for Tailwind v4 + Next.js + Capacitor combination.
-
-- **Realistic Demo Data Approach:** Features research emphasizes importance of realistic data density (500+ products) but implementation details need planning: seed script strategy, data generation tool choice (Faker.js alternatives), maintaining data across phases (mock → database migration).
-
-- **Dense UI Design Patterns:** "Information-rich, Bloomberg terminal aesthetic" is the goal but specific component layouts and hierarchy need design exploration. This is less technical gap, more design validation - does target user actually prefer density or is it preference assumption?
-
-- **Mobile Touch Target Adaptation:** shadcn/ui components are web-optimized (mouse targets); mobile needs larger hit areas (44x44px iOS/Android guidelines). Systematic approach needed: override all shadcn components or case-by-case adaptation?
+- **Production migration strategy:** Research covers dev workflow (db:push + re-seed). If production data exists before v1.1 ships, a proper phased migration script must be written. Defer this decision until deployment planning.
+- **JSONB double-serialization:** Pitfall #9 is version-dependent (postgres-js driver). Must be tested with the project's specific driver version during Phase 4 implementation.
+- **Mobile inventarios UX:** The counting workflow on mobile (manual code entry vs barcode scanning) needs UX decisions during Phase 4 planning. Barcode scanning is flagged as v1.2 but the manual entry UX still needs design.
+- **Type consolidation timing:** Moving shared types to `packages/types/` before migration prevents three-way drift. Could be Phase 0 prep work or handled inline during Phase 2. Decision needed during roadmap creation.
+- **Monetary field migration:** Deferred to post-v1.1 but should be tracked. The `mode: 'number'` flag in Drizzle's `numeric()` type solves the string-return issue, but bundling it with the articulos migration adds unnecessary risk.
 
 ## Sources
 
 ### Primary (HIGH confidence)
 
-**Official Documentation:**
-- [React 19 Release Notes](https://react.dev/blog/2024/12/05/react-19) - React 19 features, Server Components, new hooks
-- [Next.js 15 Security Update](https://nextjs.org/blog/security-update-2025-12-11) - Critical CVE-2025-55184 and CVE-2025-55183 patches
-- [Vite 6.0 Announcement](https://vite.dev/blog/announcing-vite6) - Environment API, performance improvements
-- [Tailwind CSS v4 Release](https://tailwindcss.com/blog/tailwindcss-v4) - 5x faster builds, auto-content detection
-- [Capacitor 7 GA Announcement](https://ionic.io/blog/capacitor-7-has-hit-ga) - Android 15 & iOS 18 support
-- [pnpm in 2025](https://pnpm.io/blog/2025/12/29/pnpm-in-2025) - pnpm v10 security-first features
-- [Turborepo Docs](https://turbo.build/repo/docs) - Monorepo build system documentation
-- [shadcn/ui Monorepo Guide](https://ui.shadcn.com/docs/monorepo) - Official monorepo setup patterns
-- [NestJS Database Guide](https://docs.nestjs.com/techniques/database) - ORM integration patterns
-- [Supabase Auth Architecture](https://supabase.com/docs/guides/auth/architecture) - JWT validation patterns
-
-**Context7 Libraries (verified source):**
-- /vercel/next.js - Next.js App Router patterns and best practices
-- /websites/capacitorjs - Capacitor React integration
-- /websites/nestjs - NestJS REST API patterns
-- /websites/turborepo - Turborepo monorepo setup
-- /websites/ui_shadcn - shadcn/ui component patterns
-- /websites/tanstack_query_v5 - TanStack Query data fetching
+- [Drizzle ORM PostgreSQL column types](https://orm.drizzle.team/docs/column-types/pg) -- text PK, numeric, JSONB, array syntax
+- [Drizzle ORM custom migrations](https://orm.drizzle.team/docs/kit-custom-migrations) -- generate --custom workflow
+- [Drizzle ORM relations](https://orm.drizzle.team/docs/relations) -- text FK in relations API
+- [Drizzle ORM migrations](https://orm.drizzle.team/docs/migrations) -- migration generation and execution
+- [Drizzle empty array default guide](https://orm.drizzle.team/docs/guides/empty-array-default-value) -- sql template for array defaults
+- Direct codebase analysis of schema.ts, seed.ts, 7 backend services, web types, mobile types
 
 ### Secondary (MEDIUM confidence)
 
-**Industry Analysis & Best Practices:**
-- [Best Retail Management Systems 2026 | Capterra](https://www.capterra.com/retail-management-systems-software/) - Feature comparison and user expectations
-- [Retail Business Management Guide | Synergix](https://www.synergixtech.com/news-event/business-blog/retail-business-management-for-smes/) - SME-specific requirements
-- [Best ORM for NestJS 2025 | DEV](https://dev.to/sasithwarnakafonseka/best-orm-for-nestjs-in-2025-drizzle-orm-vs-typeorm-vs-prisma-229c) - Drizzle vs Prisma performance comparison
-- [Complete Monorepo Guide | jsdev.space](https://jsdev.space/complete-monorepo-guide/) - pnpm + Workspace + Changesets patterns
-- [Monorepo Configuration | Nhost](https://nhost.io/blog/how-we-configured-pnpm-and-turborepo-for-our-monorepo) - Production monorepo experience
+- [Drizzle numeric returns strings #1042](https://github.com/drizzle-team/drizzle-orm/issues/1042) -- mode: 'number' behavior
+- [Drizzle JSONB double-serialization #724](https://github.com/drizzle-team/drizzle-orm/issues/724) -- version-dependent bug
+- [Drizzle column rename bug #3826](https://github.com/drizzle-team/drizzle-orm/issues/3826) -- no rename detection in generate
 
-**Cross-Platform Architecture:**
-- [Setup Monorepo NestJS + Next.js | Medium](https://medium.com/@alan.nguyen2050/setup-monorepo-for-nestjs-api-nextjs-fe-05e82945a8b5) - Monorepo patterns
-- [Turborepo + pnpm + Capacitor | DEV](https://dev.to/saltorgil/from-monolith-to-monorepo-building-faster-with-turborepo-pnpm-and-capacitor-41ng) - Build optimization
-- [Backends for Frontends Pattern | AWS](https://aws.amazon.com/blogs/mobile/backends-for-frontends-pattern/) - When to use BFF pattern
-- [NestJS Supabase Auth | GitHub](https://github.com/hiro1107/nestjs-supabase-auth) - JWT validation implementation
+### Industry Sources (HIGH confidence for feature decisions)
 
-### Tertiary (LOW confidence - requires validation)
-
-**Pitfall-Specific Issues:**
-- [Capacitor iOS Navigation Issue #3664](https://github.com/ionic-team/capacitor/issues/3664) - Next.js router + iOS custom scheme incompatibility (version-specific)
-- [Setup Supabase with NestJS | Blog](https://blog.andriishupta.dev/setup-supabase-with-nestjs) - Auth client scope considerations (single blog post)
-- [Dark Mode in Shadcn | Medium](https://medium.com/@hiteshchauhan2023/dark-mode-in-shadcn-easy-theme-switching-3f3fde99eeb6) - Theme switching patterns (community guide)
-- [Building with Mock Data | Medium](https://medium.com/lotuss-it/building-with-mock-data-smart-front-end-strategy-or-future-headache-548cafe95c7b) - Mock data strategy considerations (opinion piece)
+- NetSuite, Verdantis -- item master data management patterns
+- Finale Inventory, Kardex, Dynamic Inventory, Veeqo -- multi-warehouse management
+- ScienceSoft, Bitergo, Count-Inventory -- physical inventory counting software
+- POSNation, SelectHub -- cycle count best practices
+- Actualog, Linnworks -- product identification codes and SKU management
 
 ---
-*Research completed: 2026-01-22*
-*Ready for roadmap: yes*
+
+_Research completed: 2026-03-05_
+_Ready for roadmap: yes_

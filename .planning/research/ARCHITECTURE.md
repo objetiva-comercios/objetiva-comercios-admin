@@ -1,745 +1,584 @@
-# Architecture Research
+# Architecture Patterns
 
-**Domain:** Cross-Platform Commercial Admin System (Mobile + Web + Backend)
-**Researched:** 2026-01-22
-**Confidence:** HIGH
+**Domain:** Data model migration -- articulos/existencias/inventarios replacing products/inventory
+**Researched:** 2026-03-05
+**Confidence:** HIGH (based on direct codebase analysis, established Drizzle/NestJS patterns)
 
-## Standard Architecture
+## Current Architecture Snapshot
 
-### System Overview
+### What Exists Today
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          CLIENT LAYER                                │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  │
-│  │   Mobile App     │  │    Web App       │  │  Shared UI Pkg   │  │
-│  │  (React+Cap)     │  │   (Next.js)      │  │  (Design System) │  │
-│  │  - iOS           │  │   - App Router   │  │  - Tokens        │  │
-│  │  - Android       │  │   - SSR          │  │  - Components    │  │
-│  │  - Bottom Tabs   │  │   - Sidebar      │  │  - Types         │  │
-│  │  - Drawer Nav    │  │   - CSR          │  │  - Utils         │  │
-│  └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘  │
-│           │                     │                     │             │
-│           └─────────────────────┴─────────────────────┘             │
-│                                 │                                   │
-├─────────────────────────────────┼───────────────────────────────────┤
-│                        AUTH LAYER (Supabase)                         │
-│  ┌──────────────────────────────┴────────────────────────────────┐  │
-│  │  Supabase Auth (JWT issuance, user management, sessions)      │  │
-│  │  - Email/Password, OAuth providers                            │  │
-│  │  - JWT signing with RS256 (asymmetric keys)                   │  │
-│  │  - Token refresh, session management                          │  │
-│  └────────────────────────────┬──────────────────────────────────┘  │
-│                                │ (JWT Bearer Token)                  │
-├─────────────────────────────────┼───────────────────────────────────┤
-│                          BACKEND LAYER                               │
-│  ┌────────────────────────────┴──────────────────────────────────┐  │
-│  │                      NestJS API                                │  │
-│  │  ┌───────────────┐  ┌───────────────┐  ┌───────────────────┐ │  │
-│  │  │ Auth Module   │  │  Core Modules │  │  Shared Module    │ │  │
-│  │  │ - JWT Guard   │  │  - Products   │  │  - Config         │ │  │
-│  │  │ - Passport    │  │  - Orders     │  │  - Database       │ │  │
-│  │  │ - Supabase    │  │  - Inventory  │  │  - Logging        │ │  │
-│  │  │   Strategy    │  │  - Dashboard  │  │  - Validation     │ │  │
-│  │  └───────┬───────┘  └───────┬───────┘  └─────────┬─────────┘ │  │
-│  │          │                  │                     │           │  │
-│  │          └──────────────────┴─────────────────────┘           │  │
-│  │                             │                                  │  │
-│  └─────────────────────────────┼──────────────────────────────────┘  │
-│                                │                                     │
-├─────────────────────────────────┼───────────────────────────────────┤
-│                          DATA LAYER                                  │
-│  ┌────────────────────────────┴──────────────────────────────────┐  │
-│  │              PostgreSQL (Business Data)                        │  │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │  │
-│  │  │ Products │  │  Orders  │  │Inventory │  │ Settings │      │  │
-│  │  │  Table   │  │  Table   │  │  Table   │  │  Table   │      │  │
-│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘      │  │
-│  │                                                                 │  │
-│  │  Note: Separate from Supabase PostgreSQL (auth.users)         │  │
-│  └─────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────┘
-```
+| Layer     | Component                                                                | Key Files                                                 | Products/Inventory Coupling                                          |
+| --------- | ------------------------------------------------------------------------ | --------------------------------------------------------- | -------------------------------------------------------------------- |
+| DB Schema | `products` table (PK: `id serial`)                                       | `apps/backend/src/db/schema.ts`                           | Central -- 3 FK tables reference `products.id`                       |
+| DB Schema | `inventory` table (FK: `productId`)                                      | same                                                      | 1:1 with products via `productId`                                    |
+| DB Schema | `orderItems.productId`, `saleItems.productId`, `purchaseItems.productId` | same                                                      | Integer FK to `products.id`                                          |
+| Backend   | `ProductsModule` (CRUD + stats + categories)                             | `apps/backend/src/modules/products/`                      | Self-contained                                                       |
+| Backend   | `InventoryModule` (list + stats + low-stock)                             | `apps/backend/src/modules/inventory/`                     | References `inventory` table only                                    |
+| Backend   | `DashboardService`                                                       | `apps/backend/src/modules/dashboard/dashboard.service.ts` | Injects `ProductsService` + `InventoryService`                       |
+| Backend   | `SalesService`, `OrdersService`, `PurchasesService`                      | respective modules                                        | Read/write `*Items` tables with `productId` integer FK               |
+| Web API   | `fetchProducts()`, `fetchInventory()`                                    | `apps/web/src/lib/api.ts`                                 | Hit `/api/products`, `/api/inventory`                                |
+| Web Types | `Product` (id: number), `Inventory` (productId: number)                  | `apps/web/src/types/`                                     | Numeric IDs throughout                                               |
+| Web Pages | `articles/page.tsx` (calls fetchProducts), `inventory/page.tsx`          | `apps/web/src/app/(dashboard)/`                           | Already labeled "Articulos" in UI but uses products backend          |
+| Mobile    | `Articles.tsx`, `Inventory.tsx` pages                                    | `apps/mobile/src/pages/`                                  | Same API contracts                                                   |
+| Shared    | `packages/types/`                                                        | Zod schemas, `AppRole`                                    | No product/inventory types here (they live in schema.ts + web types) |
+| Seed      | Generators for products, inventory, orders, sales, purchases             | `apps/backend/src/db/seed.ts` + `generators/`             | All use numeric `products.id` mapping                                |
 
-### Component Responsibilities
-
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| **Mobile App** | iOS/Android native experience with platform-specific navigation (bottom tabs + drawer) | React + TypeScript + Capacitor + Vite. Platform-specific UI components styled with Tailwind-compatible solution or inline styles. |
-| **Web App** | Desktop-optimized admin interface with sidebar navigation and SSR/CSR | Next.js 14+ (App Router) + React + TypeScript + shadcn/ui + Tailwind CSS. Server and client components based on data needs. |
-| **Shared UI Package** | Design system with tokens, component APIs, types, and utilities shared across platforms | TypeScript package with design tokens (colors, spacing, typography), type definitions, shared utilities. NOT full component implementations (platform-specific). |
-| **Supabase Auth** | User authentication, JWT issuance, session management | Managed service. Clients use @supabase/supabase-js, backend validates JWTs with passport-jwt + SUPABASE_JWT_SECRET. |
-| **NestJS Backend** | Business logic, data access, REST API endpoints, JWT validation | Modular architecture with feature modules (Products, Orders, etc.), shared module (config, database, guards), and auth module (JWT strategy). |
-| **PostgreSQL (Business)** | Persistent storage for all business data | Separate PostgreSQL instance from Supabase. Accessed via Prisma or Drizzle ORM with type-safe queries and migrations. |
-
-## Recommended Project Structure
+### Current FK Dependency Graph
 
 ```
-root/
-├── apps/                           # Application services
-│   ├── mobile/                     # Mobile app (React + Capacitor)
-│   │   ├── src/
-│   │   │   ├── app/                # App entry, routing, tab/drawer navigation
-│   │   │   ├── features/           # Feature modules (dashboard, products, etc.)
-│   │   │   ├── components/         # Mobile-specific UI components
-│   │   │   ├── hooks/              # React hooks for state, auth, data fetching
-│   │   │   ├── services/           # API client, Supabase client
-│   │   │   ├── stores/             # State management (Zustand/Context)
-│   │   │   └── styles/             # Platform-specific styles
-│   │   ├── capacitor.config.ts     # Capacitor config for iOS/Android
-│   │   ├── vite.config.ts          # Vite bundler config
-│   │   └── package.json
-│   │
-│   ├── web/                        # Web app (Next.js)
-│   │   ├── src/
-│   │   │   ├── app/                # App Router pages and layouts
-│   │   │   │   ├── (auth)/         # Auth routes (login, register)
-│   │   │   │   ├── (dashboard)/    # Dashboard routes with sidebar layout
-│   │   │   │   ├── layout.tsx      # Root layout
-│   │   │   │   └── page.tsx        # Home page
-│   │   │   ├── components/         # Web-specific UI components
-│   │   │   │   ├── ui/             # shadcn/ui components
-│   │   │   │   └── features/       # Feature-specific components
-│   │   │   ├── lib/                # Utilities, API client, Supabase client
-│   │   │   ├── hooks/              # React hooks
-│   │   │   └── stores/             # State management
-│   │   ├── public/                 # Static assets
-│   │   ├── next.config.js          # Next.js configuration
-│   │   └── package.json
-│   │
-│   └── backend/                    # Backend API (NestJS)
-│       ├── src/
-│       │   ├── main.ts             # Application entry point
-│       │   ├── app.module.ts       # Root module
-│       │   ├── auth/               # Auth module (JWT strategy, guards)
-│       │   │   ├── auth.module.ts
-│       │   │   ├── auth.guard.ts
-│       │   │   ├── supabase.strategy.ts
-│       │   │   └── decorators/
-│       │   ├── modules/            # Feature modules
-│       │   │   ├── products/
-│       │   │   │   ├── products.module.ts
-│       │   │   │   ├── products.controller.ts
-│       │   │   │   ├── products.service.ts
-│       │   │   │   └── dto/
-│       │   │   ├── orders/
-│       │   │   ├── inventory/
-│       │   │   ├── dashboard/
-│       │   │   └── ...
-│       │   ├── shared/             # Shared module
-│       │   │   ├── database/       # Prisma/Drizzle service
-│       │   │   ├── config/         # Configuration
-│       │   │   └── pipes/          # Validation pipes
-│       │   └── prisma/             # Prisma schema and migrations
-│       │       ├── schema.prisma
-│       │       └── migrations/
-│       ├── nest-cli.json
-│       └── package.json
-│
-├── packages/                       # Shared packages
-│   ├── ui/                         # Shared design system
-│   │   ├── src/
-│   │   │   ├── tokens/             # Design tokens (colors, spacing, etc.)
-│   │   │   │   ├── colors.ts
-│   │   │   │   ├── spacing.ts
-│   │   │   │   ├── typography.ts
-│   │   │   │   └── index.ts
-│   │   │   ├── types/              # Shared TypeScript types
-│   │   │   │   ├── models.ts       # Data models (Product, Order, etc.)
-│   │   │   │   ├── api.ts          # API request/response types
-│   │   │   │   └── index.ts
-│   │   │   └── utils/              # Shared utilities
-│   │   │       ├── formatters.ts   # Date, currency, number formatting
-│   │   │       ├── validators.ts   # Input validation helpers
-│   │   │       └── index.ts
-│   │   ├── tsconfig.json
-│   │   └── package.json
-│   │
-│   └── eslint-config/              # Shared ESLint config
-│       └── package.json
-│
-├── turbo.json                      # Turborepo pipeline configuration
-├── pnpm-workspace.yaml             # pnpm workspace configuration
-├── package.json                    # Root package.json
-└── .env.example                    # Environment variables template
+products (PK: id serial)
+  |
+  +-- inventory.productId (1:1, ON DELETE CASCADE)
+  +-- orderItems.productId (ON DELETE RESTRICT)
+  +-- saleItems.productId (ON DELETE RESTRICT)
+  +-- purchaseItems.productId (ON DELETE RESTRICT)
 ```
 
-### Structure Rationale
+All downstream tables use `integer` FK to `products.id`. This is the primary migration challenge.
 
-- **apps/:** Applications and services that can be deployed independently. Each app has its own package.json, build config, and dependencies. Mobile, web, and backend have different deployment targets and lifecycles.
+---
 
-- **packages/:** Shared code consumed by apps. The `ui` package contains design tokens, types, and utilities (NOT full component implementations) to maintain visual consistency without forcing cross-platform abstractions.
+## Recommended Architecture
 
-- **Feature modules:** Each domain (products, orders, inventory) is encapsulated in its own module with controllers, services, and DTOs. This follows NestJS best practices and enables clear boundaries.
+### New Data Model
 
-- **Platform-specific UI:** Mobile and web have their own component directories because native mobile patterns (bottom tabs, drawer) differ from web patterns (sidebar). Sharing component implementations between React Native (Capacitor) and React (Next.js) is an anti-pattern that hurts DX and UX.
+Replace `products` + `inventory` with 4 new domain tables and modify 3 existing item tables.
 
-- **Shared tokens, not components:** The `packages/ui` package shares design tokens (colors, spacing, typography) and TypeScript types, but NOT component implementations. This provides consistency without coupling.
+#### New Tables
 
-## Architectural Patterns
+```
+articulos (PK: codigo text)
+  |
+  +-- existencias (articulo_codigo + deposito_id = composite unique)
+  |     +-- depositos (PK: id serial)
+  |
+  +-- inventarios (PK: id serial) -- periodic physical count events
+        +-- inventarios_articulos (inventario_id + articulo_codigo)
+        +-- inventario_sectores (inventario_id + sector)
+        +-- dispositivos_moviles (inventario_id + device_id)
+```
 
-### Pattern 1: Unified Auth with Backend Validation
+#### Modified Tables
 
-**What:** Supabase Auth handles user authentication and JWT issuance for both mobile and web clients. Backend validates JWTs but doesn't store user data—it trusts Supabase's authentication and focuses on business logic.
+```
+orderItems.productId (integer) --> orderItems.articuloCodigo (text FK)
+saleItems.productId (integer) --> saleItems.articuloCodigo (text FK)
+purchaseItems.productId (integer) --> purchaseItems.articuloCodigo (text FK)
+```
 
-**When to use:** When you want a managed auth solution (email/password, OAuth, MFA) without building your own auth system, but need a separate backend for business logic and data.
+### Schema Design (Drizzle)
 
-**Trade-offs:**
-- **Pros:** Managed authentication with minimal backend code, consistent auth across platforms, secure JWT validation with RS256 asymmetric keys, easy to add OAuth providers.
-- **Cons:** Dependency on external service (Supabase), requires careful JWT secret management, need to handle token refresh on clients, potential latency if Supabase is in different region.
-
-**Example:**
 ```typescript
-// Backend: NestJS Supabase JWT Strategy
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+// ---- NEW TABLES ----
 
-@Injectable()
-export class SupabaseStrategy extends PassportStrategy(Strategy, 'supabase') {
-  constructor() {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: process.env.SUPABASE_JWT_SECRET,
-      algorithms: ['RS256'], // Asymmetric keys recommended
-    });
-  }
+export const articulos = pgTable(
+  'articulos',
+  {
+    codigo: varchar('codigo', { length: 50 }).primaryKey(),
+    descripcion: varchar('descripcion', { length: 255 }).notNull(),
+    descripcionCorta: varchar('descripcion_corta', { length: 100 }),
+    marca: varchar('marca', { length: 100 }),
+    modelo: varchar('modelo', { length: 100 }),
+    unidadMedida: varchar('unidad_medida', { length: 20 }).notNull().default('PZ'),
+    precioVenta: doublePrecision('precio_venta').notNull(),
+    costo: doublePrecision('costo').notNull(),
+    codigoBarras: varchar('codigo_barras', { length: 50 }),
+    categoria: varchar('categoria', { length: 100 }),
+    subcategoria: varchar('subcategoria', { length: 100 }),
+    impuesto: doublePrecision('impuesto').default(0.16),
+    activo: boolean('activo').notNull().default(true),
+    imagenUrl: text('imagen_url'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    index('articulos_categoria_idx').on(table.categoria),
+    index('articulos_activo_idx').on(table.activo),
+    index('articulos_codigo_barras_idx').on(table.codigoBarras),
+  ]
+)
 
-  async validate(payload: any) {
-    // JWT already validated by Passport
-    // Return user info to attach to request
-    return {
-      userId: payload.sub,
-      email: payload.email,
-      role: payload.role,
-    };
-  }
-}
+export const depositos = pgTable('depositos', {
+  id: serial('id').primaryKey(),
+  nombre: varchar('nombre', { length: 100 }).notNull().unique(),
+  direccion: text('direccion'),
+  activo: boolean('activo').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
 
-// Usage: Protect routes with JwtAuthGuard
-@Controller('products')
-@UseGuards(JwtAuthGuard)
-export class ProductsController {
-  // All endpoints require valid Supabase JWT
-}
+export const existencias = pgTable(
+  'existencias',
+  {
+    id: serial('id').primaryKey(),
+    articuloCodigo: varchar('articulo_codigo', { length: 50 })
+      .notNull()
+      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    depositoId: integer('deposito_id')
+      .notNull()
+      .references(() => depositos.id, { onDelete: 'restrict' }),
+    unidades: doublePrecision('unidades').notNull().default(0),
+    minimo: doublePrecision('minimo').default(0),
+    maximo: doublePrecision('maximo'),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    index('existencias_articulo_idx').on(table.articuloCodigo),
+    index('existencias_deposito_idx').on(table.depositoId),
+    // Composite unique: one stock row per articulo per deposito
+  ]
+)
+
+export const inventarios = pgTable('inventarios', {
+  id: serial('id').primaryKey(),
+  nombre: varchar('nombre', { length: 100 }).notNull(),
+  depositoId: integer('deposito_id')
+    .notNull()
+    .references(() => depositos.id),
+  estado: varchar('estado', { length: 20 }).notNull().default('pendiente'),
+  // estados: pendiente, en_progreso, completado, cancelado
+  fechaInicio: timestamp('fecha_inicio'),
+  fechaCierre: timestamp('fecha_cierre'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
+export const inventariosArticulos = pgTable('inventarios_articulos', {
+  id: serial('id').primaryKey(),
+  inventarioId: integer('inventario_id')
+    .notNull()
+    .references(() => inventarios.id, { onDelete: 'cascade' }),
+  articuloCodigo: varchar('articulo_codigo', { length: 50 })
+    .notNull()
+    .references(() => articulos.codigo, { onDelete: 'restrict' }),
+  cantidadSistema: doublePrecision('cantidad_sistema').notNull(),
+  cantidadFisica: doublePrecision('cantidad_fisica'),
+  diferencia: doublePrecision('diferencia'),
+  contadoPor: varchar('contado_por', { length: 100 }),
+  contadoEn: timestamp('contado_en'),
+})
+
+export const inventarioSectores = pgTable('inventario_sectores', {
+  id: serial('id').primaryKey(),
+  inventarioId: integer('inventario_id')
+    .notNull()
+    .references(() => inventarios.id, { onDelete: 'cascade' }),
+  nombre: varchar('nombre', { length: 50 }).notNull(),
+  estado: varchar('estado', { length: 20 }).notNull().default('pendiente'),
+})
+
+export const dispositivosMoviles = pgTable('dispositivos_moviles', {
+  id: serial('id').primaryKey(),
+  inventarioId: integer('inventario_id')
+    .notNull()
+    .references(() => inventarios.id, { onDelete: 'cascade' }),
+  deviceId: varchar('device_id', { length: 100 }).notNull(),
+  nombre: varchar('nombre', { length: 100 }),
+  asignadoA: varchar('asignado_a', { length: 100 }),
+  ultimaActividad: timestamp('ultima_actividad'),
+})
 ```
 
-### Pattern 2: Shared Design Tokens, Platform-Specific Components
+### Component Boundaries
 
-**What:** Extract design tokens (colors, spacing, typography, breakpoints) into a shared package. Each platform implements its own components using these tokens, rather than trying to share component code.
+| Component           | Responsibility                                       | Communicates With                                                              | Status                                          |
+| ------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------- |
+| `ArticulosModule`   | CRUD articulos, categories, search by codigo/barcode | DB only                                                                        | NEW -- replaces ProductsModule                  |
+| `DepositosModule`   | CRUD depositos (warehouses)                          | DB only                                                                        | NEW                                             |
+| `ExistenciasModule` | Stock per articulo per deposito, low-stock alerts    | ArticulosModule (lookup), DepositosModule (lookup)                             | NEW -- replaces InventoryModule                 |
+| `InventariosModule` | Physical count events lifecycle                      | ExistenciasModule (system qty), ArticulosModule (article list)                 | NEW                                             |
+| `OrdersModule`      | Orders + orderItems                                  | ArticulosModule (FK validation)                                                | MODIFIED -- FK from productId to articuloCodigo |
+| `SalesModule`       | Sales + saleItems                                    | ArticulosModule (FK validation)                                                | MODIFIED -- FK from productId to articuloCodigo |
+| `PurchasesModule`   | Purchases + purchaseItems                            | ArticulosModule (FK validation)                                                | MODIFIED -- FK from productId to articuloCodigo |
+| `DashboardModule`   | KPI aggregation                                      | ArticulosModule, ExistenciasModule, OrdersModule, SalesModule, PurchasesModule | MODIFIED -- swap injected services              |
+| `ProductsModule`    | DEPRECATED                                           | None                                                                           | REMOVED after migration                         |
+| `InventoryModule`   | DEPRECATED                                           | None                                                                           | REMOVED after migration                         |
 
-**When to use:** When building cross-platform apps where visual consistency matters but the underlying component APIs differ (React Native vs React DOM, Capacitor vs Next.js).
+### Data Flow
 
-**Trade-offs:**
-- **Pros:** Visual consistency without DX/UX compromises, platform-specific optimizations (SSR on web, native performance on mobile), easier to maintain and understand, no cross-platform abstraction leakage.
-- **Cons:** Some duplication of component logic, need to update multiple implementations when design changes, requires discipline to follow design tokens.
+**Articulo lifecycle:**
 
+```
+Create articulo (codigo as PK)
+  --> auto-create existencias rows per active deposito (or on-demand)
+  --> articulo.codigo used as FK in orderItems, saleItems, purchaseItems
+```
+
+**Existencias query:**
+
+```
+GET /api/existencias?deposito=1&search=...
+  --> Join existencias + articulos + depositos
+  --> Returns: { articulo: {...}, deposito: {...}, unidades, minimo, maximo }
+```
+
+**Inventario (physical count) flow:**
+
+```
+1. Create inventario for a deposito
+2. System populates inventarios_articulos with cantidad_sistema from existencias
+3. Mobile devices scan/count articles, update cantidad_fisica
+4. On close: calculate diferencia, optionally adjust existencias
+```
+
+**Dashboard updated flow:**
+
+```
+DashboardService injects:
+  - ArticulosService.getStats() (replaces ProductsService.getStats())
+  - ExistenciasService.getStats() (replaces InventoryService.getStats())
+  - Same: OrdersService, SalesService, PurchasesService
+```
+
+---
+
+## Integration Points -- Detailed Impact Analysis
+
+### 1. DB Schema (schema.ts)
+
+**Files changed:** 1
+**Impact:** HIGH -- this is ground zero
+
+- DROP: `products`, `inventory` table definitions + type exports
+- ADD: `articulos`, `depositos`, `existencias`, `inventarios`, `inventariosArticulos`, `inventarioSectores`, `dispositivosMoviles`
+- MODIFY: `orderItems.productId` -> `articuloCodigo` (text), `saleItems.productId` -> `articuloCodigo`, `purchaseItems.productId` -> `articuloCodigo`
+- MODIFY: Remove `productName` and `sku` denormalized columns from item tables (articulo data joins on codigo now)
+
+**Critical decision: PK type change (integer -> text)**
+
+The `productId integer` FK columns in orderItems/saleItems/purchaseItems become `articuloCodigo text`. This is NOT a simple ALTER -- it requires:
+
+1. New column added
+2. Data migration (map old productId to new codigo)
+3. Old column dropped
+4. FK constraint added
+
+Since this is a v1.0 app with seed data (no production data yet), the cleaner approach is: drop all tables, recreate with new schema, re-seed. Use Drizzle `db:push` for development, generate a clean migration for production later.
+
+### 2. Backend Modules
+
+**Files changed:** ~20 (4 new modules x 4 files each + 4 modified modules)
+
+| Module                 | Action | Key Changes                                                                |
+| ---------------------- | ------ | -------------------------------------------------------------------------- |
+| `modules/articulos/`   | CREATE | Controller, service, module, DTOs. PK is `codigo` (string param in routes) |
+| `modules/depositos/`   | CREATE | Simple CRUD. Small module.                                                 |
+| `modules/existencias/` | CREATE | Joins articulos+depositos. Replaces inventory logic.                       |
+| `modules/inventarios/` | CREATE | Complex -- lifecycle management, mobile device tracking                    |
+| `modules/products/`    | DELETE | Entirely replaced by articulos                                             |
+| `modules/inventory/`   | DELETE | Entirely replaced by existencias                                           |
+| `modules/orders/`      | MODIFY | `orderItems` schema change, service queries updated                        |
+| `modules/sales/`       | MODIFY | `saleItems` schema change                                                  |
+| `modules/purchases/`   | MODIFY | `purchaseItems` schema change                                              |
+| `modules/dashboard/`   | MODIFY | Swap service injections, update KPI interface                              |
+| `app.module.ts`        | MODIFY | Remove old modules, add new ones                                           |
+
+**Route design for text PK:**
+
+```
+GET    /api/articulos              -- list (paginated)
+GET    /api/articulos/:codigo      -- by codigo (text param, URL-encoded if needed)
+POST   /api/articulos              -- create
+PATCH  /api/articulos/:codigo      -- update
+DELETE /api/articulos/:codigo      -- delete
+
+GET    /api/depositos              -- list
+POST   /api/depositos              -- create
+PATCH  /api/depositos/:id          -- update (numeric)
+
+GET    /api/existencias            -- list (filterable by deposito, articulo)
+PATCH  /api/existencias/:id        -- update stock
+
+GET    /api/inventarios            -- list
+POST   /api/inventarios            -- create new count event
+GET    /api/inventarios/:id        -- detail with articles + sectors
+PATCH  /api/inventarios/:id        -- update status/lifecycle
+POST   /api/inventarios/:id/cerrar -- close and reconcile
+```
+
+### 3. Web Frontend
+
+**Files changed:** ~12
+
+| File/Dir                           | Action  | Changes                                                                                                    |
+| ---------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| `types/product.ts`                 | REPLACE | Becomes `types/articulo.ts` with text PK                                                                   |
+| `types/inventory.ts`               | REPLACE | Becomes `types/existencia.ts` with deposito info                                                           |
+| NEW `types/inventario.ts`          | CREATE  | Inventario event type                                                                                      |
+| NEW `types/deposito.ts`            | CREATE  | Deposito type                                                                                              |
+| `lib/api.ts`                       | MODIFY  | `fetchArticulos()`, `fetchExistencias()`, `fetchInventarios()`, `fetchDepositos()` replacing old functions |
+| `app/(dashboard)/articles/`        | MODIFY  | Update client component to use Articulo type, codigo as key                                                |
+| `app/(dashboard)/inventory/`       | MODIFY  | Becomes existencias view, add deposito filter                                                              |
+| NEW `app/(dashboard)/inventarios/` | CREATE  | Physical count management section                                                                          |
+| `app/(dashboard)/dashboard/`       | MODIFY  | Update KPI labels and types                                                                                |
+| `types/dashboard.ts`               | MODIFY  | Update interface for new stats shape                                                                       |
+
+### 4. Mobile App
+
+**Files changed:** ~6
+
+| File                        | Action | Changes                                           |
+| --------------------------- | ------ | ------------------------------------------------- |
+| `pages/Articles.tsx`        | MODIFY | New API endpoint, new type                        |
+| `pages/Inventory.tsx`       | MODIFY | Becomes existencias view                          |
+| NEW `pages/Inventarios.tsx` | CREATE | Physical count screen (scanner integration later) |
+| Navigation config           | MODIFY | Add Inventarios tab/drawer item                   |
+| API hooks/fetchers          | MODIFY | New endpoints                                     |
+
+### 5. Shared Packages
+
+**Files changed:** 2-3
+
+| Package           | Action | Changes                                                                                              |
+| ----------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| `packages/types/` | MODIFY | Add shared Articulo/Existencia/Inventario types if needed (currently product types live in web only) |
+
+### 6. Seed Data
+
+**Files changed:** ~6
+
+| File                                     | Action                                    |
+| ---------------------------------------- | ----------------------------------------- |
+| `seed.ts`                                | REWRITE truncation + seeding order        |
+| `generators/product.generator.ts`        | REPLACE with `articulo.generator.ts`      |
+| `generators/inventory.generator.ts`      | REPLACE with `existencia.generator.ts`    |
+| NEW `generators/deposito.generator.ts`   | CREATE                                    |
+| NEW `generators/inventario.generator.ts` | CREATE                                    |
+| `generators/order.generator.ts`          | MODIFY -- use codigo instead of productId |
+| `generators/sale.generator.ts`           | MODIFY -- use codigo instead of productId |
+| `generators/purchase.generator.ts`       | MODIFY -- use codigo instead of productId |
+
+---
+
+## Patterns to Follow
+
+### Pattern 1: Text PK in Drizzle Routes
+
+**What:** Use string params for articulo routes since PK is `codigo` (text).
+**When:** Any route that identifies an articulo.
 **Example:**
+
 ```typescript
-// packages/ui/src/tokens/colors.ts
-export const colors = {
-  primary: {
-    50: '#f0f9ff',
-    100: '#e0f2fe',
-    500: '#0ea5e9',
-    600: '#0284c7',
-    900: '#0c4a6e',
-  },
-  neutral: {
-    50: '#fafafa',
-    100: '#f5f5f5',
-    500: '#737373',
-    900: '#171717',
-  },
-  // ... more colors
-} as const;
-
-// packages/ui/src/tokens/spacing.ts
-export const spacing = {
-  xs: '0.25rem',    // 4px
-  sm: '0.5rem',     // 8px
-  md: '1rem',       // 16px
-  lg: '1.5rem',     // 24px
-  xl: '2rem',       // 32px
-  // ... more spacing
-} as const;
-
-// packages/ui/src/types/models.ts
-export interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-  stock: number;
-  createdAt: Date;
+// articulos.controller.ts
+@Get(':codigo')
+async findOne(@Param('codigo') codigo: string) {
+  const articulo = await this.articulosService.findOne(codigo)
+  if (!articulo) throw new NotFoundException(`Articulo ${codigo} not found`)
+  return articulo
 }
-
-// apps/web/src/components/ui/button.tsx (Next.js)
-import { colors } from '@repo/ui/tokens';
-
-export function Button({ children, variant = 'primary' }: ButtonProps) {
-  return (
-    <button
-      className="px-4 py-2 rounded-md"
-      style={{
-        backgroundColor: colors.primary[500],
-        color: colors.neutral[50],
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-// apps/mobile/src/components/Button.tsx (React Native)
-import { colors } from '@repo/ui/tokens';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-
-export function Button({ children, variant = 'primary' }: ButtonProps) {
-  return (
-    <TouchableOpacity style={styles.button}>
-      <Text style={styles.text}>{children}</Text>
-    </TouchableOpacity>
-  );
-}
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: colors.primary[500],
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-  },
-  text: {
-    color: colors.neutral[50],
-  },
-});
 ```
 
-### Pattern 3: Backend Serves Mock Data (Not Frontend)
+NestJS route params are strings by default, so no `ParseIntPipe` needed. This is simpler than the current numeric approach.
 
-**What:** Backend exposes REST endpoints with realistic dummy data instead of having frontend mock data locally. This validates the frontend-backend contract early and ensures auth, headers, and data flow work correctly from day one.
+### Pattern 2: Composite Filtering for Existencias
 
-**When to use:** In early project phases (greenfield projects) when you want to validate architecture and data flow before implementing real business logic.
-
-**Trade-offs:**
-- **Pros:** Validates auth flow (JWT in headers), tests API contract early, realistic network latency, easy to swap for real data later, consistent data across platforms.
-- **Cons:** Slightly more setup than local mocks, backend must be running for frontend dev (can mitigate with docker-compose), need to keep mock data realistic.
-
+**What:** Existencias always need deposito context. Default to "all depositos" aggregated, filter by specific deposito.
+**When:** Any existencias query.
 **Example:**
+
 ```typescript
-// apps/backend/src/modules/products/products.service.ts
-import { Injectable } from '@nestjs/common';
+// existencias.service.ts
+async findAll(query: ExistenciaQueryDto) {
+  let q = this.drizzle.db
+    .select({
+      id: existencias.id,
+      unidades: existencias.unidades,
+      minimo: existencias.minimo,
+      articulo: articulos,
+      deposito: depositos,
+    })
+    .from(existencias)
+    .innerJoin(articulos, eq(existencias.articuloCodigo, articulos.codigo))
+    .innerJoin(depositos, eq(existencias.depositoId, depositos.id))
 
-@Injectable()
-export class ProductsService {
-  // Mock data for Phase 1 - validates contract
-  private mockProducts = [
-    {
-      id: '1',
-      name: 'Laptop Dell XPS 13',
-      sku: 'DELL-XPS-13-2024',
-      price: 1299.99,
-      stock: 15,
-      category: 'Electronics',
-      createdAt: new Date('2024-01-15'),
-    },
-    {
-      id: '2',
-      name: 'Office Chair Ergonomic',
-      sku: 'CHAIR-ERG-001',
-      price: 299.99,
-      stock: 8,
-      category: 'Furniture',
-      createdAt: new Date('2024-02-01'),
-    },
-    // ... more realistic mock data
-  ];
-
-  findAll() {
-    // Later: return this.prisma.product.findMany();
-    return this.mockProducts;
+  if (query.depositoId) {
+    q = q.where(eq(existencias.depositoId, query.depositoId))
   }
-
-  findOne(id: string) {
-    // Later: return this.prisma.product.findUnique({ where: { id } });
-    return this.mockProducts.find(p => p.id === id);
-  }
-}
-
-// apps/backend/src/modules/products/products.controller.ts
-@Controller('products')
-@UseGuards(JwtAuthGuard) // Validates JWT from Supabase
-export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
-
-  @Get()
-  findAll() {
-    return this.productsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(id);
-  }
-}
-
-// apps/web/src/lib/api.ts (Frontend)
-export async function getProducts() {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-
-  const response = await fetch('http://localhost:3001/products', {
-    headers: {
-      'Authorization': `Bearer ${session?.access_token}`,
-    },
-  });
-
-  return response.json();
+  // ...
 }
 ```
 
-### Pattern 4: Monorepo Build Pipeline with Turborepo
+### Pattern 3: Denormalization Strategy for Item Tables
 
-**What:** Configure Turborepo to define task dependencies so shared packages build before apps, and enable caching to speed up repeated builds. Use pnpm workspaces for dependency management.
-
-**When to use:** Always in monorepos with multiple apps and shared packages. Essential for cross-platform projects where build times can become problematic.
-
-**Trade-offs:**
-- **Pros:** Intelligent caching (rebuild only what changed), parallel task execution, clear dependency graph, significantly faster CI/CD pipelines.
-- **Cons:** Additional configuration, learning curve for team, cache invalidation edge cases.
-
+**What:** Current item tables store `productName` and `sku` alongside `productId`. With the new model, `articuloCodigo` IS the identifier AND the human-readable code. Store `descripcion` snapshot at sale/order time.
+**When:** Writing orderItems, saleItems, purchaseItems.
 **Example:**
-```json
-// turbo.json
-{
-  "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["^build"]
-    },
-    "test": {
-      "dependsOn": ["^build"]
-    }
-  }
-}
 
-// pnpm-workspace.yaml
-packages:
-  - 'apps/*'
-  - 'packages/*'
-
-// Root package.json scripts
-{
-  "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "test": "turbo run test"
-  }
-}
-
-// packages/ui/package.json
-{
-  "name": "@repo/ui",
-  "version": "0.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc"
-  }
-}
-
-// apps/web/package.json
-{
-  "name": "web",
-  "dependencies": {
-    "@repo/ui": "workspace:*"  // pnpm workspace protocol
-  }
-}
+```typescript
+// In schema:
+articuloCodigo: varchar('articulo_codigo', { length: 50 })
+  .notNull()
+  .references(() => articulos.codigo, { onDelete: 'restrict' }),
+articuloDescripcion: varchar('articulo_descripcion', { length: 255 }).notNull(),
+// Remove: productId, productName, sku -- codigo IS the SKU equivalent
 ```
 
-## Data Flow
+**Rationale:** Keep description snapshot (it can change over time), but `codigo` is stable. No need for a separate `sku` column.
 
-### Request Flow
+### Pattern 4: Module Dependency via NestJS Standard Imports
 
-```
-[User Action]
-    ↓
-[UI Component] → [Event Handler] → [API Client] → [Backend Endpoint]
-    ↓                                                      ↓
-[Update UI]                                       [Validate JWT]
-    ↑                                                      ↓
-[State Update] ← [Transform Response] ← [Service] → [Database Query]
-                                              ↓
-                                        [Mock Data or Prisma]
-```
+**What:** DashboardModule needs ArticulosModule and ExistenciasModule. Use standard NestJS module imports with exported services.
+**When:** Cross-module dependencies.
+**Example:**
 
-### Authentication Flow
+```typescript
+// dashboard.module.ts
+@Module({
+  imports: [ArticulosModule, ExistenciasModule, OrdersModule, SalesModule, PurchasesModule],
+  controllers: [DashboardController],
+  providers: [DashboardService],
+})
+export class DashboardModule {}
 
-```
-[Login Form (Web/Mobile)]
-    ↓
-[@supabase/supabase-js client]
-    ↓
-[Supabase Auth API]
-    ↓
-[JWT Access Token + Refresh Token]
-    ↓
-[Store in local storage / secure storage]
-    ↓
-[Include in Authorization header for backend requests]
-    ↓
-[Backend JWT Guard validates token with SUPABASE_JWT_SECRET]
-    ↓
-[Extract user info from token payload]
-    ↓
-[Attach to request.user]
-    ↓
-[Controllers access via @CurrentUser() decorator]
+// articulos.module.ts -- must export the service
+@Module({
+  imports: [DbModule],
+  controllers: [ArticulosController],
+  providers: [ArticulosService],
+  exports: [ArticulosService], // Required for DashboardModule to inject
+})
+export class ArticulosModule {}
 ```
 
-### State Management
+---
+
+## Anti-Patterns to Avoid
+
+### Anti-Pattern 1: Dual-Write Migration with Both Old and New Tables
+
+**What:** Keeping `products` and `articulos` tables simultaneously with sync logic.
+**Why bad:** v1.0 has no production users. Dual-write adds complexity for zero benefit. Sync bugs are inevitable.
+**Instead:** Clean cut -- drop old tables, create new ones, re-seed. Single Drizzle `db:push` or migration.
+
+### Anti-Pattern 2: Surrogate ID + Natural Key Hybrid
+
+**What:** Adding an `id serial` to `articulos` alongside `codigo` PK, using `id` internally.
+**Why bad:** Defeats the purpose of the business model. `codigo` IS the identifier used everywhere (labels, invoices, ERP). Adding a surrogate creates mapping confusion.
+**Instead:** Use `codigo text` as the true PK. It is stable, short, and meaningful.
+
+### Anti-Pattern 3: Building Inventarios Before Existencias
+
+**What:** Implementing the physical count system before the basic stock model exists.
+**Why bad:** Inventarios reads from and writes to existencias. Without existencias, inventarios has nothing to count against.
+**Instead:** Build in dependency order: articulos -> depositos -> existencias -> inventarios.
+
+### Anti-Pattern 4: Keeping `productName`/`sku` Denormalization in Items
+
+**What:** Storing `articuloDescripcion` + `articuloCodigo` + separate `sku` in item tables.
+**Why bad:** In the new model, `codigo` IS the SKU. Three fields for two concepts.
+**Instead:** Store `articuloCodigo` (the identifier) and `articuloDescripcion` (snapshot at transaction time). Two fields, clean.
+
+### Anti-Pattern 5: Incremental Schema Changes Instead of Clean Cut
+
+**What:** Writing multiple ALTER TABLE migrations to gradually morph `products` into `articulos`.
+**Why bad:** No production data to preserve. Multiple migrations create fragile intermediate states. Drizzle schema drifts from actual DB.
+**Instead:** One clean schema definition. `db:push` to recreate. New seed. Done.
+
+---
+
+## Suggested Build Order
+
+The dependency chain determines phase ordering. Each phase should produce a working (if incomplete) system.
+
+### Phase 1: Schema Foundation + Articulos Module
+
+**What:** New Drizzle schema for all tables. Backend ArticulosModule + DepositosModule. Drop products/inventory.
+**Why first:** Everything depends on the schema. Articulos is the central entity.
+**Includes:**
+
+1. Rewrite `schema.ts` with all new tables + modified item tables
+2. New type exports for all entities
+3. `db:push` to apply
+4. Backend `ArticulosModule` (controller, service, DTOs) -- full CRUD
+5. Backend `DepositosModule` -- simple CRUD
+6. Remove `ProductsModule` and `InventoryModule`
+7. Update `app.module.ts`
+8. New seed generators: `articulo.generator.ts`, `deposito.generator.ts`
+9. Update existing generators (order, sale, purchase) for `articuloCodigo`
+10. Rewrite `seed.ts` truncation order and seeding flow
+
+**Risk:** Breaks orders/sales/purchases/dashboard until Phase 3. Acceptable because all changes happen in one milestone.
+
+### Phase 2: Existencias Module
+
+**What:** Full-stack replacement of inventory with existencias.
+**Why second:** Depends on articulos + depositos. Needed before inventarios.
+**Includes:**
+
+1. Backend `ExistenciasModule` with deposito-aware joins
+2. Seed: `existencia.generator.ts`
+3. Web: `types/existencia.ts`, `types/deposito.ts`
+4. Web: Update `lib/api.ts` with `fetchArticulos()`, `fetchDepositos()`, `fetchExistencias()`
+5. Web: Update `articles/` page to use Articulo type + codigo PK
+6. Web: Update `inventory/` page to become existencias view with deposito filter
+7. Web: Update `types/articulo.ts`
+8. Mobile: Update `Articles.tsx` and `Inventory.tsx`
+
+### Phase 3: Update Downstream Modules
+
+**What:** Fix orders, sales, purchases, dashboard to use new schema.
+**Why third:** These modules depend on articulos being stable.
+**Includes:**
+
+1. Backend: Update OrdersService -- join on `articuloCodigo`, remove `productName`/`sku` denorm
+2. Backend: Update SalesService -- same pattern
+3. Backend: Update PurchasesService -- same pattern
+4. Backend: Update DashboardService -- swap injected services, update KPI interface
+5. Web: Update `types/order.ts`, `types/sale.ts`, `types/purchase.ts` -- `productId` -> `articuloCodigo`
+6. Web: Update `types/dashboard.ts` for new stats shape
+7. Web: Update dashboard page components
+8. Mobile: Update corresponding pages
+9. Final seed verification -- all generators produce consistent data
+
+### Phase 4: Inventarios Module
+
+**What:** Physical count event system. Entirely new domain.
+**Why last:** Depends on existencias. Most complex. Can be deferred without breaking core operations.
+**Includes:**
+
+1. Backend `InventariosModule` with lifecycle management (create -> en_progreso -> completado)
+2. Sub-tables: inventarios_articulos, inventario_sectores, dispositivos_moviles
+3. Close/reconcile endpoint that adjusts existencias
+4. Web: New `app/(dashboard)/inventarios/` section
+5. Web: Navigation update (sidebar)
+6. Mobile: New `Inventarios.tsx` page + navigation update
+7. Seed: `inventario.generator.ts`
+
+### Phase Dependency Chain
 
 ```
-[Server State (API Data)]
-    ↓
-[TanStack Query / SWR] → [Cache] → [Automatic Refetch]
-    ↓                       ↓
-[Components]          [Optimistic Updates]
-
-[Client State (UI/Form)]
-    ↓
-[Zustand / Context API] → [State Store] → [Subscribers]
-    ↓                                          ↓
-[Actions/Setters]  ←  [Components]
+Phase 1 (Schema + Articulos + Depositos)
+  |
+  +-- Phase 2 (Existencias + Frontend updates)
+  |     |
+  |     +-- Phase 4 (Inventarios)
+  |
+  +-- Phase 3 (Orders/Sales/Purchases/Dashboard update)
 ```
 
-### Key Data Flows
+Phases 2 and 3 can run in parallel if different developers. Phase 4 must wait for Phase 2.
 
-1. **Authentication Flow:** User submits credentials → Supabase Auth validates → JWT issued → Stored in client → Included in all backend requests → Backend validates JWT → User info extracted → Request proceeds.
+---
 
-2. **Data Fetching Flow:** Component mounts → API client fetches with JWT → Backend validates token → Service returns mock/real data → Client caches response → Component renders → Subsequent requests use cache (TanStack Query/SWR).
+## Scalability Considerations
 
-3. **Form Submission Flow:** User fills form → Client validates → Submit handler calls API with JWT → Backend validates token → Service processes (mock or real) → Response returned → Client updates cache → UI reflects changes → Success/error feedback shown.
+| Concern                           | Current (seed data) | At 10K articulos                           | At 100K articulos                                  |
+| --------------------------------- | ------------------- | ------------------------------------------ | -------------------------------------------------- |
+| Text PK joins                     | Negligible          | Fine -- varchar(50) indexed joins are fast | Add GIN index on codigo if needed                  |
+| Existencias query (all depositos) | Simple              | Partition query by deposito, paginate      | Materialized view for total stock across depositos |
+| Inventario article list           | N/A                 | Load inventarios_articulos lazily          | Cursor-based pagination for count screens          |
+| Barcode lookup                    | Index scan          | Exact match on indexed column, fast        | Same -- B-tree handles this well                   |
 
-4. **Navigation Flow (Mobile):** Bottom tabs for primary sections (Dashboard, Products, Orders, Inventory) → Drawer from header for secondary actions (Profile, Settings, Logout). No context-dependent navigation changes.
+Text PKs with varchar(50) are well within PostgreSQL performance norms. The ERP-style `codigo` values are typically 6-20 characters -- shorter than many UUID PKs used in production systems.
 
-5. **Navigation Flow (Web):** Sidebar always visible for all sections → Consistent layout across all pages → No hamburger menu on desktop.
-
-## Scaling Considerations
-
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| **0-1k users** | Monolith is perfectly fine. Single NestJS backend, single PostgreSQL instance, Supabase Auth. No caching layer needed. Deploy backend + web to single server, mobile apps to stores. |
-| **1k-10k users** | Add Redis for session caching and rate limiting. Optimize database queries (indexes, query analysis). Enable Next.js ISR for static content. Consider read replicas for PostgreSQL if read-heavy. CDN for static assets. |
-| **10k-100k users** | Horizontal scaling: Deploy multiple backend instances behind load balancer. Database connection pooling (PgBouncer). Add Redis cluster for distributed caching. Separate background jobs (BullMQ). Monitor and optimize N+1 queries. Consider database sharding if write-heavy. |
-| **100k+ users** | Consider splitting backend into microservices by domain (products, orders, inventory) if team size justifies complexity. API Gateway or BFF pattern for client-specific optimizations. Dedicated analytics database (separate from transactional DB). Event-driven architecture for async operations. Full observability stack (logging, metrics, tracing). |
-
-### Scaling Priorities
-
-1. **First bottleneck: Database queries** — Most commercial admin systems are CRUD-heavy with complex queries (joins, aggregations for dashboard). Solution: Add indexes, optimize queries, use read replicas, implement query result caching with Redis. Prisma/Drizzle query analysis helps identify slow queries early.
-
-2. **Second bottleneck: API response times** — As data grows, response times increase. Solution: Implement pagination for list endpoints, add Redis caching for frequently accessed data (dashboard metrics, product lists), use database indexes, consider materialized views for complex aggregations.
-
-3. **Third bottleneck: Authentication overhead** — JWT validation on every request adds latency. Solution: Cache validated JWTs in Redis with short TTL (5-10 minutes), implement connection pooling, consider API Gateway with caching layer.
-
-4. **Fourth bottleneck: Frontend bundle size** — Mobile apps especially sensitive to bundle size. Solution: Code splitting in Next.js (already built-in), lazy loading for mobile features, optimize images and assets, tree-shake unused dependencies.
-
-## Anti-Patterns
-
-### Anti-Pattern 1: Sharing Component Code Between React Native and React DOM
-
-**What people do:** Try to create "universal components" that work on both mobile (React Native) and web (React DOM) by abstracting away platform differences.
-
-**Why it's wrong:** React Native and React DOM have fundamentally different APIs (View vs div, Text vs span, StyleSheet vs CSS). Abstraction layers leak constantly, hurt DX (confusing types, IDE support breaks), hurt UX (platform-specific patterns ignored), and create maintenance nightmares.
-
-**Do this instead:** Share design tokens (colors, spacing, typography) and TypeScript types (data models, API contracts), but implement components separately for each platform. Accept some duplication in exchange for clarity, maintainability, and platform-specific optimizations.
-
-### Anti-Pattern 2: Frontend Mock Data Instead of Backend Mock Data
-
-**What people do:** Add mock data directly in frontend code (mock arrays, JSON files) and plan to "swap it out later" when backend is ready.
-
-**Why it's wrong:** Doesn't validate auth flow (no JWT headers), doesn't test API contract (no network requests), doesn't reveal integration issues early, hard to keep in sync across mobile + web, creates false sense of progress (frontend "works" but nothing is integrated).
-
-**Do this instead:** Backend serves mock data through real REST endpoints from day one. Frontend always calls API with JWT headers. This validates architecture, surfaces integration issues early (CORS, auth headers, data shape mismatches), and makes transitioning to real data trivial (change service implementation, not all frontend code).
-
-### Anti-Pattern 3: Using Supabase PostgreSQL for Business Data
-
-**What people do:** Since Supabase provides PostgreSQL for auth.users, developers add business tables (products, orders, inventory) to the same Supabase database.
-
-**Why it's wrong:** Couples business logic to auth provider (vendor lock-in), Supabase PostgreSQL has limitations (can't easily migrate to self-hosted, RLS complexity for complex permissions, potential costs), mixing auth and business data creates unclear boundaries, harder to scale independently.
-
-**Do this instead:** Use Supabase ONLY for authentication (auth.users table). Run a separate PostgreSQL instance for business data accessed via your NestJS backend. Clean separation of concerns, easy to migrate or replace Supabase Auth later, independent scaling, clear ownership boundaries.
-
-### Anti-Pattern 4: BFF (Backend for Frontend) Too Early
-
-**What people do:** Create separate backends for mobile and web (mobile-api, web-api) from the start, thinking it will simplify client code.
-
-**Why it's wrong:** Premature abstraction that adds complexity without proven benefit. In Phase 1, mobile and web need the same data (products, orders, inventory). Creating separate backends means duplicating business logic, auth validation, database queries, and deployment pipelines. The overhead doesn't pay off until clients have genuinely different needs (rare in admin systems).
-
-**Do this instead:** Start with a single NestJS backend serving both mobile and web. If/when client-specific needs emerge (e.g., mobile needs push notifications, web needs real-time websockets, different data shapes), THEN consider BFF pattern or client-specific endpoints in the same backend (e.g., /api/mobile/*, /api/web/*).
-
-### Anti-Pattern 5: Over-Modularizing in Monorepo
-
-**What people do:** Create excessive packages in the monorepo: @repo/utils, @repo/constants, @repo/validators, @repo/formatters, @repo/hooks, @repo/api-client, etc. Each tiny piece of shared code becomes its own package.
-
-**Why it's wrong:** Overhead of maintaining package.json, tsconfig, build config for each package outweighs benefits. Circular dependency issues proliferate. Harder to understand project structure. Slower builds (Turborepo must build many packages). Premature optimization that assumes massive reuse.
-
-**Do this instead:** Start with minimal packages: @repo/ui (design tokens, types, utilities). Only extract new packages when a clear need emerges (e.g., if you add a CLI tool that needs types, extract @repo/types). Prefer duplication over wrong abstraction. It's easier to extract code into packages later than to merge over-modularized packages.
-
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| **Supabase Auth** | Client SDK (@supabase/supabase-js) for login/signup. Backend validates JWTs with passport-jwt + SUPABASE_JWT_SECRET. | Keep SUPABASE_JWT_SECRET secure. Use RS256 asymmetric keys (recommended). Handle token refresh on clients. |
-| **PostgreSQL (Business)** | NestJS connects via Prisma or Drizzle ORM. Use connection pooling (PgBouncer) for production. | Separate from Supabase PostgreSQL. Use DATABASE_URL env var. Run migrations via Prisma/Drizzle CLI. |
-| **Capacitor Plugins** | Mobile app uses Capacitor plugins for native features (camera, filesystem, push notifications, etc.). | Check plugin compatibility with React. Use official @capacitor/* plugins when available. Test on real devices. |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| **Mobile ↔ Backend** | REST API with JWT Bearer token. Fetch API or axios. | Handle network errors gracefully (offline mode, retry logic). Use TanStack Query for caching and retries. |
-| **Web ↔ Backend** | REST API with JWT Bearer token. Fetch API (built-in). | Leverage Next.js API routes as proxy if needed for security (hide backend URL). SSR can fetch directly server-side. |
-| **Backend ↔ PostgreSQL** | Prisma Client or Drizzle ORM with type-safe queries. | Use Prisma migrations or Drizzle migrations. Connection pooling in production. Monitor query performance. |
-| **Apps ↔ packages/ui** | Direct imports via pnpm workspace protocol (`@repo/ui`). | Must build packages/ui first (Turborepo handles this). TypeScript types flow through. |
-| **Backend Modules** | Direct imports between modules (ProductsModule imports SharedModule). NestJS dependency injection. | Use @Global() decorator for truly shared modules (DatabaseModule, ConfigModule). Otherwise, explicit imports in module metadata. |
-
-## Build Order and Dependencies
-
-### Phase 1: Foundation (Week 1-2)
-
-**What to build:**
-1. Monorepo structure (pnpm workspaces + Turborepo config)
-2. packages/ui with design tokens and types
-3. Supabase Auth project setup (already exists per context)
-4. Backend auth module (JWT strategy, guards)
-
-**Why this order:**
-- Design tokens and types must exist before apps can import them.
-- Auth must work before protected routes can be tested.
-- Backend auth validates the Supabase integration pattern.
-
-**Build command:** `turbo run build --filter=@repo/ui` → `turbo run build --filter=backend`
-
-### Phase 2: Backend API (Week 2-3)
-
-**What to build:**
-1. NestJS modules for each domain (Products, Orders, Inventory, Dashboard)
-2. Mock data services (realistic dummy data)
-3. REST endpoints with JWT guards
-4. CORS configuration for web and mobile
-
-**Why this order:**
-- Frontend needs working API endpoints to test integration.
-- Mock data validates contract before real data complexity.
-
-**Dependencies:** Requires Phase 1 auth module.
-
-**Build command:** `turbo run build --filter=backend`
-
-### Phase 3: Web App (Week 3-4)
-
-**What to build:**
-1. Next.js app with App Router structure
-2. Supabase Auth integration (login, signup, session)
-3. Sidebar navigation layout
-4. Core section pages (Dashboard, Products, Orders, etc.)
-5. shadcn/ui components
-6. API client with JWT headers
-
-**Why this order:**
-- Web is faster to develop and test than mobile (no build/deploy to device).
-- Validates backend API contract and auth flow.
-- Establishes design patterns for mobile app.
-
-**Dependencies:** Requires Phase 2 backend API.
-
-**Build command:** `turbo run build --filter=web`
-
-### Phase 4: Mobile App (Week 4-5)
-
-**What to build:**
-1. React + Capacitor project structure
-2. Supabase Auth integration (reuse patterns from web)
-3. Bottom tab navigation + drawer navigation
-4. Core section screens (same content as web)
-5. Platform-specific UI components
-6. API client with JWT headers (reuse pattern from web)
-
-**Why this order:**
-- Mobile is last because it depends on web's validated patterns.
-- Capacitor build/deploy cycle is slower than web.
-- Most complexity is already solved (auth, API integration, data flow).
-
-**Dependencies:** Requires Phase 2 backend API, Phase 3 web app patterns.
-
-**Build command:** `turbo run build --filter=mobile`, then Capacitor CLI for iOS/Android builds.
-
-### Parallel Work Opportunities
-
-- **After Phase 1:** Backend and packages/ui can be developed in parallel.
-- **After Phase 2:** Web and mobile can start in parallel if different developers, but web should finish first to establish patterns.
-- **Ongoing:** Design tokens and types in packages/ui can be enhanced in parallel with app development.
-
-### Critical Path
-
-**packages/ui → backend (auth) → backend (modules) → web → mobile**
-
-This is the minimum viable path. Web and mobile could be swapped, but web is faster to iterate on, so it's better for validating patterns.
+---
 
 ## Sources
 
-### Monorepo & Build Tools
-- [Setup monorepo for nestjs(api) & nextjs(fe) - Medium](https://medium.com/@alan.nguyen2050/setup-monorepo-for-nestjs-api-nextjs-fe-05e82945a8b5)
-- [From Monolith to Monorepo: Building Faster with Turborepo, pnpm and Capacitor - DEV](https://dev.to/saltorgil/from-monolith-to-monorepo-building-faster-with-turborepo-pnpm-and-capacitor-41ng)
-- [Setting Up a React and React Native Monorepo with TurboRepo and pnpm - Medium](https://medium.com/@alex.derville/setting-up-a-react-and-react-native-monorepo-with-turborepo-and-pnpm-8310c1faf18c)
-- [How to setup a monorepo project using NextJS, NestJS, Turborepo and pnpm - Medium](https://medium.com/@chengchao60827/how-to-setup-a-monorepo-project-using-nextjs-nestjs-turborepo-and-pnpm-e0d3ade0360d)
-- [How we configured pnpm and Turborepo for our monorepo - Nhost](https://nhost.io/blog/how-we-configured-pnpm-and-turborepo-for-our-monorepo)
-- [Structuring a repository - Turborepo Docs](https://turborepo.dev/docs/crafting-your-repository/structuring-a-repository)
-- [Managing dependencies - Turborepo Docs](https://turborepo.dev/docs/crafting-your-repository/managing-dependencies)
-
-### Cross-Platform Architecture
-- [Exploring Modern Web App Architectures: Trends and Best Practices for 2026 - Tech Stack](https://tech-stack.com/blog/modern-application-development/)
-- [The 2026 Blueprint for Unbeatable Mobile App Architecture - Impact Tech Lab](https://impacttechlab.com/future-proof-your-app-the-2026-blueprint-for-unbeatable-mobile-app-architecture/)
-- [Frontend Design Patterns That Actually Work in 2026 - Netguru](https://www.netguru.com/blog/frontend-design-patterns)
-- [Backends for Frontends Pattern - AWS](https://aws.amazon.com/blogs/mobile/backends-for-frontends-pattern/)
-- [Backend for Frontend Pattern - GeeksforGeeks](https://www.geeksforgeeks.org/system-design/backend-for-frontend-pattern/)
-- [Sam Newman - Backends For Frontends](https://samnewman.io/patterns/architectural/bff/)
-
-### Design System & Components
-- [Next.js + Capacitor starter with TailwindCSS - GitHub](https://github.com/RobSchilderr/nextjs-native-starter)
-- [Next.js + Tailwind + Ionic + Capacitor starter - GitHub](https://github.com/mlynch/nextjs-tailwind-ionic-capacitor-starter)
-- [React Native Reusables - Bringing shadcn/ui to React Native - GitHub](https://github.com/mrzachnugent/react-native-reusables)
-- [gluestack - React & React Native UI components library](https://gluestack.io/)
-
-### Authentication & Backend
-- [NestJS Supabase Auth - GitHub](https://github.com/hiro1107/nestjs-supabase-auth)
-- [Auth architecture - Supabase Docs](https://supabase.com/docs/guides/auth/architecture)
-- [Building Full stack application with NestJs, NextJs and Supabase - Medium](https://shobhitb.medium.com/building-full-stack-application-with-nestjs-nextjs-and-supabase-fce78be07074)
-- [JSON Web Token (JWT) - Supabase Docs](https://supabase.com/docs/guides/auth/jwts)
-- [NestJS Database & Prisma - Prisma](https://www.prisma.io/nestjs)
-- [Build a REST API with NestJS, Prisma, PostgreSQL and Swagger - Prisma Blog](https://www.prisma.io/blog/nestjs-prisma-rest-api-7D056s1BmOL0)
-- [Best ORM for NestJS in 2025: Drizzle ORM vs TypeORM vs Prisma - DEV](https://dev.to/sasithwarnakafonseka/best-orm-for-nestjs-in-2025-drizzle-orm-vs-typeorm-vs-prisma-229c)
-
-### Admin Dashboard Patterns
-- [Admin Dashboard: Ultimate Guide, Templates & Examples (2026) - WeWeb](https://www.weweb.io/blog/admin-dashboard-ultimate-guide-templates-examples)
-- [Top Admin Dashboard Design Ideas for 2026 - FanRuan](https://www.fanruan.com/en/blog/top-admin-dashboard-design-ideas-inspiration)
-- [Inventory Management System Design: Key Principles for Optimal Control - 10Web](https://10web.io/blog/inventory-management-system-design/)
-
----
-*Architecture research for: Cross-Platform Commercial Admin System (Mobile + Web + Backend)*
-*Researched: 2026-01-22*
+- Direct codebase analysis of `apps/backend/src/db/schema.ts` (current schema with 8 table definitions)
+- Direct codebase analysis of all 7 backend service files (dependency mapping, query patterns)
+- Direct codebase analysis of `apps/web/src/lib/api.ts` (6 fetch functions) and `apps/web/src/types/` (7 type files)
+- Direct codebase analysis of `apps/mobile/src/pages/` (9 page components)
+- Direct codebase analysis of `apps/backend/src/db/seed.ts` and generator pattern
+- Drizzle ORM text PK and FK patterns -- HIGH confidence (well-documented, standard PostgreSQL feature)
+- NestJS module imports/exports pattern -- HIGH confidence (core NestJS feature)
+- PostgreSQL varchar PK performance -- HIGH confidence (established, benchmarked extensively in industry)

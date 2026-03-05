@@ -1,467 +1,336 @@
-# Pitfalls Research
+# Domain Pitfalls
 
-**Domain:** Cross-platform Commercial Admin (Monorepo, Mobile + Web + Backend)
-**Researched:** 2026-01-22
-**Confidence:** HIGH
+**Domain:** Core data model replacement (products -> articulos) in NestJS + Drizzle + Next.js monorepo
+**Researched:** 2026-03-05
+**Milestone:** v1.1 -- Modelo Articulos + Inventario
 
 ## Critical Pitfalls
 
-### Pitfall 1: TypeScript Workspace Resolution Hell
+Mistakes that cause data loss, broken migrations, or full rewrites.
 
-**What goes wrong:**
-TypeScript fails to resolve internal dependencies correctly across workspace packages, causing type errors in the IDE despite successful builds. JavaScript resolves dependencies fine, but TypeScript expects explicit configuration in each tsconfig.json about where to find dependencies.
+### Pitfall 1: Drizzle `generate` Treats Table Replacement as Drop + Create (Data Loss)
 
-**Why it happens:**
-Developers assume that pnpm workspace configuration is sufficient for TypeScript to understand package relationships. TypeScript has its own resolution system that doesn't automatically respect workspace configurations.
+**What goes wrong:** Drizzle Kit's `generate` command compares the current schema file against the migration snapshot. If you remove the `products` table definition and add an `articulos` table, Drizzle generates `DROP TABLE products CASCADE` followed by `CREATE TABLE articulos`. This destroys all existing order_items, sale_items, and purchase_items data because of `CASCADE` on the foreign keys.
 
-**How to avoid:**
-- Use TypeScript project references in each package's tsconfig.json
-- Configure `paths` in root tsconfig.json to map workspace packages
-- Set up proper `composite: true` for packages that are dependencies
-- Use `@org/package-name` naming convention consistently
-- Ensure `baseUrl` and `paths` align with workspace structure
+**Why it happens:** Drizzle Kit has no concept of "rename table" or "replace table." It performs a structural diff. Removing a table definition = drop it. Adding a new one = create it. There is no interactive prompt to detect renames.
 
-**Warning signs:**
-- "Cannot find module '@/components'" errors in IDE but builds succeed
-- Type imports working in one package but failing in another
-- Autocomplete/IntelliSense not working for workspace packages
-- Build works locally but fails in CI due to path resolution
+**Consequences:** All historical order/sale/purchase line items are deleted. The `onDelete: 'cascade'` on order_items and sale_items references to products means PostgreSQL cascades the drop through every child table. Even the `onDelete: 'restrict'` on purchase_items won't save you -- `DROP TABLE CASCADE` overrides restrict constraints at the DDL level.
 
-**Phase to address:**
-Phase 1 (Foundation) - Must be solved before any code sharing begins
+**Prevention:**
 
----
+1. Never remove the `products` table from schema.ts in the same migration as adding `articulos`.
+2. Write the migration in manual SQL phases:
+   - Phase A: Create new tables (articulos, existencias, depositos, inventarios) alongside existing tables.
+   - Phase B: Populate articulos from products data, establishing codigo values.
+   - Phase C: Add `articulo_codigo` columns to items tables, populate from mapping, add new FKs, drop old `product_id` FKs.
+   - Phase D: Only after all FKs point to articulos, drop the products table.
+3. Use `drizzle-kit generate` for the final schema state, but hand-edit the generated SQL to follow this phased approach.
 
-### Pitfall 2: Turborepo Caching Misconfiguration
+**Detection:** Run `drizzle-kit generate` and inspect the SQL before applying. Any `DROP TABLE` statement is a red flag.
 
-**What goes wrong:**
-Cache hits occur when outputs should be rebuilt, or cache misses happen constantly despite no changes. The caching configuration isn't perfect out of the box and requires tuning to match your specific monorepo structure.
+**Confidence:** HIGH -- verified against [Drizzle migration docs](https://orm.drizzle.team/docs/migrations) and [column rename bug #3826](https://github.com/drizzle-team/drizzle-orm/issues/3826).
 
-**Why it happens:**
-Default Turborepo configuration doesn't account for project-specific dependencies like environment files, configuration files outside the package directory, or platform-specific build variations (web vs mobile).
-
-**How to avoid:**
-- Explicitly declare all `inputs` in turbo.json (env files, config files, schemas)
-- Use different cache keys for web vs mobile builds even if sharing code
-- Include `.env.example` in inputs but exclude actual `.env` from cache
-- Configure `outputs` to include all generated files (types, build artifacts)
-- Use `globalDependencies` for root-level files affecting all packages
-- Test cache behavior with `turbo run build --dry-run`
-
-**Warning signs:**
-- Mobile app shows stale data after web package updates
-- Type changes not reflected in dependent packages
-- Environment variable changes not triggering rebuilds
-- CI builds succeed but local builds fail (or vice versa)
-- `pnpm install` doesn't trigger necessary rebuilds
-
-**Phase to address:**
-Phase 1 (Foundation) - Configure during initial monorepo setup
+**Phase:** Must be addressed first. Database migration before any service/API changes.
 
 ---
 
-### Pitfall 3: Next.js SSR Assumptions with Capacitor
+### Pitfall 2: Foreign Key Type Mismatch -- integer productId Cannot Map to text codigo
 
-**What goes wrong:**
-Next.js features like `getServerSideProps`, `getStaticProps`, API routes, and image optimization stop working when the app is built for mobile with Capacitor. The mobile app requires pure client-side execution but developers build server-dependent features.
+**What goes wrong:** The current `order_items.productId`, `sale_items.productId`, and `purchase_items.productId` are `integer` referencing `products.id` (serial). The new `articulos` table uses `codigo` (text) as PK. You cannot `ALTER COLUMN product_id TYPE text` and repoint the FK -- PostgreSQL throws `ERROR: column "product_id" cannot be cast automatically to type text`, and even with `USING`, the integer values ("42") are meaningless as articulo codigos.
 
-**Why it happens:**
-Developers are familiar with Next.js SSR patterns and forget that Capacitor apps run entirely client-side. The mobile build uses `output: 'export'` which creates a static site with minimal HTML shell.
+**Why it happens:** This is a semantic change from surrogate key (auto-increment integer) to natural key (business code). There is no automatic mapping between `products.id = 42` and `articulos.codigo = 'ARROZ-001'`.
 
-**How to avoid:**
-- Configure Next.js with `output: 'export'` from day one
-- Use `unoptimized: true` for next/image
-- Avoid `getServerSideProps` and `getStaticProps` - use client-side data fetching
-- If API routes needed, treat them as separate backend concern (NestJS)
-- Use environment detection to conditionally use features only on web
-- Test mobile builds early and often, not just web
+**Consequences:** If you force-cast with `USING product_id::text`, all FK values become string integers ("42") that don't match any articulo codigo. The FK constraint creation fails, or worse, it succeeds with orphaned references.
 
-**Warning signs:**
-- Features work in `npm run dev` but break in mobile build
-- Images fail to load on mobile but work on web
-- "Server-side only" errors in mobile app
-- Mobile app shows blank screens or loading states forever
-- SEO requirements being discussed for mobile app (mobile apps don't need SSR)
+**Prevention:**
 
-**Phase to address:**
-Phase 1 (Foundation) - Must be configured before any Next.js features are built
+1. Add a new column `articulo_codigo text` to each items table alongside the existing `product_id`.
+2. Use the existing `products.sku` as a bridge -- the current schema stores SKU on both products and all items tables. Use this to map: `UPDATE order_items SET articulo_codigo = (SELECT a.codigo FROM articulos a WHERE a.codigo = order_items.sku)`.
+3. Add FK constraint on `articulo_codigo -> articulos.codigo`.
+4. Drop old `product_id` column and its FK.
+5. Optionally rename `articulo_codigo` to the final column name.
+
+**Detection:** Any migration containing `ALTER COLUMN ... TYPE text` on a column currently holding integer FK values.
+
+**Confidence:** HIGH -- standard PostgreSQL behavior.
+
+**Phase:** Database migration phase. Must complete before API layer changes.
 
 ---
 
-### Pitfall 4: iOS Navigation Routing Breaks
+### Pitfall 3: `onDelete: 'restrict'` on Items Tables Blocks Products Deletion During Migration
 
-**What goes wrong:**
-Navigation works perfectly on web and Android but completely breaks on iOS. Next.js router rejects Capacitor's custom scheme (`capacitor://localhost`) because it validates URLs and only accepts `http` or `https`.
+**What goes wrong:** The current schema has `onDelete: 'restrict'` on `sale_items.productId` and `purchase_items.productId` (lines 140-141, 190-191 in schema.ts). During migration, you cannot drop or delete products that are referenced by existing sale/purchase records. If the migration strategy involves deleting products after creating articulos, it fails for any product with historical transactions.
 
-**Why it happens:**
-Capacitor uses a custom URL scheme for iOS apps, but Next.js router has built-in URL validation that doesn't recognize this scheme. This is a known incompatibility that requires patching Next.js core files.
+**Why it happens:** `restrict` is correct for normal operations (prevent deleting a product that has sales). But during a schema migration, this constraint blocks the cleanup step.
 
-**How to avoid:**
-- Use Capacitor's App plugin to handle navigation on iOS
-- Consider implementing custom navigation wrapper that detects platform
-- Apply necessary patches to Next.js router (requires patch-package)
-- Test iOS specifically - simulator and physical device behavior can differ
-- Document the iOS navigation approach for future developers
+**Consequences:** Migration script hangs or fails at the "drop old products" step. Partial migration leaves database in inconsistent state with both old and new tables coexisting permanently.
 
-**Warning signs:**
-- `router.push()` works on web but silently fails on iOS
-- Links navigate on Android but not iOS
-- Console shows URL validation errors only on iOS
-- Users can load first screen but can't navigate anywhere
+**Prevention:**
 
-**Phase to address:**
-Phase 1 (Navigation) - Critical for basic mobile functionality
+1. Never delete individual products during migration. The strategy is: migrate all FKs away from products FIRST, then drop the entire products table.
+2. Migration order must be: create articulos -> populate articulos -> migrate all item FKs to articulos -> verify no remaining FK references to products -> drop products table.
+3. Add a verification query before dropping: `SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY' AND ... references products`.
+
+**Detection:** Try `DROP TABLE products` in a test database with existing sale_items data. PostgreSQL will refuse.
+
+**Confidence:** HIGH -- directly observable in schema.ts.
+
+**Phase:** Database migration phase. Critical ordering constraint.
 
 ---
 
-### Pitfall 5: Supabase Auth Client Scope Leakage
+### Pitfall 4: Seed Script idMap Pattern Breaks With Text PKs
 
-**What goes wrong:**
-Multiple users share the same Supabase client instance in NestJS backend, causing authentication context to leak between requests. User A makes request, then User B's request uses User A's auth context.
+**What goes wrong:** The current seed.ts builds `idMap: Map<number, number>` to map generator IDs to real database IDs (line 48-51). Every items table uses `idMap.get(item.productId)!` to resolve the FK. When articulos uses `codigo` (text) as PK, this entire mapping pattern breaks -- `idMap.get()` returns `undefined`, and the non-null assertion `!` causes silent `undefined` insertion.
 
-**Why it happens:**
-Default NestJS providers use singleton scope. Developers inject Supabase client as a regular service without understanding that auth context is request-specific and must be isolated per request.
+**Why it happens:** The seed was designed for auto-increment integer PKs where the DB assigns the ID. Natural text keys are known before insertion, so the mapping pattern is unnecessary.
 
-**How to avoid:**
-- Use `@Injectable({ scope: Scope.REQUEST })` for Supabase client service
-- Create client per request with request-specific auth headers
-- Set `persistSession: false` in Supabase client options for backend
-- Extract JWT from request headers and pass to Supabase client creation
-- Never share Supabase client instances across requests
-- Test with concurrent requests from different users
+**Consequences:** `pnpm db:seed` crashes or inserts null/undefined values. Local development environment is broken. Any CI pipeline that seeds before tests fails.
 
-**Warning signs:**
-- User sees another user's data intermittently
-- Auth works perfectly in development but fails in production under load
-- Race conditions in tests involving multiple users
-- Session data leaking across API calls
-- "You don't have permission" errors that resolve on retry
+**Prevention:**
 
-**Phase to address:**
-Phase 1 (Auth Integration) - Must be correct before any user-specific data flows
+1. Rewrite generators to produce `codigo` values directly (e.g., `ARROZ-001`, `LECHE-002`).
+2. Remove the `idMap` pattern -- articulo codigos are deterministic, not DB-assigned.
+3. Items tables reference `articuloCodigo` directly from generator output.
+4. Update all 5 generators: product.generator -> articulo.generator, inventory.generator -> existencias.generator, plus order/sale/purchase generators.
+5. The TRUNCATE statement must also be updated to reference new table names.
+
+**Detection:** Any seed script using `Map<number, number>` for ID mapping after switching to text PKs.
+
+**Confidence:** HIGH -- directly observable in seed.ts.
+
+**Phase:** Must be rewritten alongside schema migration. Cannot seed new model with old script.
 
 ---
 
-### Pitfall 6: Platform Abstraction Forced Too Early
+### Pitfall 5: `ParseIntPipe` on Controller Routes Rejects Text PKs
 
-**What goes wrong:**
-Attempt to create unified components that work on both mobile and web, leading to components that work poorly on both platforms instead of well on one. Components become complex conditional messes: "if mobile show X, if web show Y."
+**What goes wrong:** The products controller uses `@Param('id', ParseIntPipe) id: number` (line 39 of products.controller.ts). When articulos uses `codigo` (text), routes like `GET /articulos/ARROZ-001` return 400 Bad Request because `ParseIntPipe` rejects non-numeric strings.
 
-**Why it happens:**
-Desire to maximize code sharing and DRY principles. Developers assume cross-platform means single implementation. The monorepo structure tempts developers to share everything rather than selectively share what makes sense.
+**Why it happens:** NestJS `ParseIntPipe` is designed for integer parameters. The PK type change requires removing this pipe.
 
-**How to avoid:**
-- Accept that UI will have platform-specific implementations
-- Share design tokens, utilities, and business logic - not necessarily UI components
-- Use `.web.tsx` and `.mobile.tsx` file extensions for platform-specific components
-- Create shared "headless" components (logic) with platform-specific views
-- Let web feel like web and mobile feel like mobile
-- Share shadcn components carefully - many need mobile adaptations
+**Consequences:** Every articulos CRUD route returns 400. The entire API is broken. Easy to miss because the controller compiles fine -- the error is runtime-only.
 
-**Warning signs:**
-- Components with excessive `Platform.select()` or conditional rendering
-- Props like `isMobile`, `isWeb` being passed everywhere
-- Touch targets wrong size on mobile because designed for mouse
-- Navigation patterns feeling awkward on one platform
-- Team debates "should this button be here or there" constantly
+**Prevention:**
 
-**Phase to address:**
-Phase 1 (UI Foundation) - Establish pattern before building many components
+1. Remove `ParseIntPipe` from the articulos controller entirely.
+2. Use `@Param('codigo') codigo: string` with no pipe, or add a custom validation pipe for codigo format.
+3. Update service methods: `findOne(id: number)` becomes `findOne(codigo: string)`.
+4. Update all Drizzle queries: `eq(products.id, id)` becomes `eq(articulos.codigo, codigo)`.
+5. Search for `ParseIntPipe` across all controllers to catch any other affected routes.
 
----
+**Detection:** Any controller route parameter that uses `ParseIntPipe` but receives a text PK.
 
-### Pitfall 7: Dark Mode Works on Web, Breaks in Mobile
+**Confidence:** HIGH -- directly observable in products.controller.ts.
 
-**What goes wrong:**
-Dark mode toggles work perfectly on web but fail in mobile app, or vice versa. Popover components, dialogs, and modals always render in light mode despite dark theme being active.
+**Phase:** API layer phase, after database migration.
 
-**Why it happens:**
-shadcn/ui uses Tailwind's `class` strategy for dark mode with `next-themes`, but Capacitor's rendering context may not properly propagate the dark class to portaled components (dialogs, popovers). Mobile OS also has its own dark mode that may conflict.
+## Moderate Pitfalls
 
-**How to avoid:**
-- Test dark mode on mobile early, not just web
-- Ensure `darkMode: "class"` in tailwind.config.js
-- Apply dark class to root element in both web and mobile contexts
-- Check that portaled components inherit theme context
-- Consider using CSS variables with media queries as fallback
-- Respect mobile OS theme preference via Capacitor Status Bar API
-- Verify theme persistence works in mobile app (localStorage vs native storage)
+### Pitfall 6: `doublePrecision` to `numeric(10,2)` Migration Breaks All Arithmetic
 
-**Warning signs:**
-- Dark mode toggle works but specific components stay light
-- Theme resets when app backgrounds/foregrounds on mobile
-- Dialogs/popovers render in wrong theme
-- Flash of wrong theme on app startup (mobile)
-- iOS vs Android showing different theme behavior
+**What goes wrong:** PROJECT.md flags `doublePrecision` as tech debt for monetary fields. If v1.1 also switches to `numeric(10,2)`, Drizzle's `numeric()` type returns **strings** in TypeScript, not numbers. Every service, controller, DTO, and frontend component that does arithmetic on price/cost/total fields produces `NaN`.
 
-**Phase to address:**
-Phase 1 (Layout & Theme) - Core visual foundation must work everywhere
+**Why it happens:** PostgreSQL `numeric` has arbitrary precision that can't fit in JavaScript's float64. The postgres-js driver returns strings to preserve precision. Drizzle passes them through.
+
+**Consequences:** Dashboard KPIs show `NaN`. Sale totals calculate as `NaN`. Frontend price displays crash. The bug is insidious -- TypeScript won't catch it because the Drizzle inferred type changes from `number` to `string`, but existing code was written expecting `number`.
+
+**Prevention:** Do NOT bundle the numeric migration with the articulos migration. Keep `doublePrecision` for v1.1. The precision loss (rounding at ~$10M) is irrelevant for a small commercial operation. Address numeric precision in a future milestone as a dedicated refactor.
+
+**Detection:** Search codebase for arithmetic on price/cost/total fields. Currently 6 tables use `doublePrecision` for money across ~20 columns total.
+
+**Confidence:** HIGH -- verified via [Drizzle issue #1042](https://github.com/drizzle-team/drizzle-orm/issues/1042) and [Drizzle PostgreSQL column types docs](https://orm.drizzle.team/docs/column-types/pg).
+
+**Phase:** Defer to v1.2 or later. Do NOT include in v1.1.
 
 ---
 
-### Pitfall 8: Mock Data Too Perfect, Production Integration Fails
+### Pitfall 7: Dashboard Service Hardcodes `productId: number` in 23+ Files
 
-**What goes wrong:**
-UI works beautifully with clean mock data but breaks when connected to real backend. Error states never tested, edge cases not handled, loading states inadequate. The "happy path bias" means production reveals crashes that mocks never exposed.
+**What goes wrong:** The dashboard service, web types, and mobile types all define `LowStockItem` with `productId: number`. After migration, this must change to reference articulo codigo (string). If only the backend schema changes but interfaces don't, the frontend receives fields with wrong types or undefined values.
 
-**Why it happens:**
-Backend serves mock data in early phases, so developers build UI against perfect, complete data. Mocks don't include API errors, slow responses, partial data, pagination edge cases, or validation errors. Contract drift occurs as backend evolves.
+**Why it happens:** Types are defined independently in 3 places: backend interfaces (dashboard.service.ts), web types (apps/web/src/types/\*.ts), and mobile types (apps/mobile/src/types/index.ts). During a multi-phase migration, one gets updated while others lag.
 
-**How to avoid:**
-- Include realistic error scenarios in mock data (400, 401, 403, 500 responses)
-- Mock slow network conditions (loading states actually show)
-- Create incomplete data sets (empty arrays, null fields, missing optional data)
-- Use realistic data density - not just 3 perfect items, but 100 items with variety
-- Establish API contract testing (JSON schema or OpenAPI spec)
-- Sync backend changes with frontend team early
-- Test against real backend in a dev environment regularly, not just at end
+**Consequences:** Frontend displays "undefined" for product references. Dashboard low-stock alerts component breaks. TypeScript doesn't catch it if interfaces are manually maintained rather than derived from schema.
 
-**Warning signs:**
-- No error boundary implementations
-- Loading states that never appear in development
-- "Cannot read property X of undefined" in production
-- Pagination works for page 1 but breaks on page 2
-- Forms don't show backend validation errors
-- Success flow tested but failure flow ignored
+**Prevention:**
 
-**Phase to address:**
-Phase 1 (Mock Data Strategy) - Set pattern before building features
-Phase 2+ (Backend Integration) - Systematic testing of real integration
+1. Run `grep -r "productId" apps/` to get the full list of affected files (currently 23+ .ts files, 5+ .tsx files).
+2. Update in strict dependency order: schema -> service -> controller -> shared types -> web types -> mobile types.
+3. Update all 3 type definition locations in the same commit, never partially.
+4. Consider moving shared API response types to `packages/types/` to enforce a single source of truth.
+
+**Detection:** `grep -rn "productId\|product_id" apps/` shows all locations. Track the count as your migration progress metric.
+
+**Confidence:** HIGH -- directly observable across codebase.
+
+**Phase:** Must be coordinated across API + frontend phases. Update all in one sweep.
 
 ---
 
-### Pitfall 9: Dependency Version Drift Across Packages
+### Pitfall 8: Three Separate Type Systems Drift During Migration
 
-**What goes wrong:**
-Packages within the monorepo use different versions of the same dependency (React 18.2.0 in one, 18.3.1 in another). This causes subtle bugs, type mismatches, and bloated bundle sizes with duplicate dependencies.
+**What goes wrong:** The `Product` interface exists in 3 independent definitions: Drizzle's inferred `typeof products.$inferSelect` (backend), `apps/web/src/types/*.ts` (web), and `apps/mobile/src/types/index.ts` (mobile). When the backend schema changes to `articulos`, the manually-maintained web and mobile types become stale.
 
-**Why it happens:**
-Developers run `pnpm add` in individual packages instead of using workspace protocols. Auto-merge of dependabot PRs without checking workspace consistency. Copy-pasting package.json entries between packages.
+**Why it happens:** The project already has "Web type drift" flagged as medium tech debt from v1.0. The articulos migration makes this debt critical -- it's no longer missing fields, it's entirely wrong entity names and PK types.
 
-**How to avoid:**
-- Use workspace protocol `"dependency": "workspace:*"` for internal packages
-- Centralize shared dependencies in root package.json where possible
-- Use pnpm's `catalog:` protocol for enforcing version consistency
-- Set up dependabot to group updates per dependency across workspace
-- Run `pnpm dedupe` regularly
-- Use `syncpack` tool to detect and fix version inconsistencies
-- Lint for version mismatches in CI
+**Consequences:** TypeScript compiles fine in each app individually, but the API contract is broken at runtime. Web sends `productId: number`, backend expects `articuloCodigo: string`.
 
-**Warning signs:**
-- "Module not found" errors that make no sense
-- Type errors: "Type X is not assignable to type X"
-- Bundle size increases unexpectedly
-- Multiple React versions warning in console
-- Same fix needed in multiple packages separately
+**Prevention:**
 
-**Phase to address:**
-Phase 1 (Monorepo Setup) - Prevent from beginning with proper tooling
+1. Before starting the migration, consolidate types into `packages/types/`.
+2. Export shared API interfaces from one location; import in web and mobile.
+3. If keeping separate types: create a checklist of every type file that references `Product`, `OrderItem`, `SaleItem`, `PurchaseItem`, `Inventory`, `LowStockItem`.
+4. Add a CI type-check that catches mismatches.
+
+**Detection:** Compare `Product` interface definition across the three locations after any schema change.
+
+**Confidence:** HIGH -- type drift is already documented as v1.0 tech debt.
+
+**Phase:** Types consolidation should be Phase 0 (pre-migration prep) or the first sub-task.
 
 ---
 
-### Pitfall 10: Over-Engineering Phase 1 with Enterprise Patterns
+### Pitfall 9: JSONB Columns Double-Serialize with postgres-js Driver
 
-**What goes wrong:**
-Team implements complex architecture (microservices, event sourcing, CQRS, saga patterns) before knowing actual requirements. Phase 1 becomes 3 months instead of 2 weeks. Code is over-abstracted and hard to change quickly.
+**What goes wrong:** If inventarios model uses JSONB columns (for sector configuration, device metadata, count results), the postgres-js driver has a [known issue](https://github.com/drizzle-team/drizzle-orm/issues/724) where objects get double-serialized. You insert `{ sector: "A" }` and PostgreSQL stores `"{\"sector\":\"A\"}"` (a JSON string wrapping JSON, not a JSON object).
 
-**Why it happens:**
-Developers anticipate future scale and complexity. "We might need this later" thinking. Previous experience with legacy systems makes developers over-correct. The greenfield project feels like opportunity to do everything "right."
+**Why it happens:** Both postgres-js and Drizzle serialize the value, resulting in double serialization.
 
-**How to avoid:**
-- Phase 1 focus: Navigation works, auth works, layout looks right
-- Use simple patterns: REST API, straightforward state management, basic components
-- Build "just enough" architecture - optimize for changeability not premature scale
-- Remember: Greenfield is greenfield for about a week, then you refactor
-- Defer complex patterns until Phase 2+ when requirements are clearer
-- Document "things we intentionally deferred" to avoid false sense of forgetting
+**Prevention:**
 
-**Warning signs:**
-- Discussing microservices before knowing what services you need
-- Implementing complex state management before knowing state shape
-- Building abstractions for "when we add more platforms later"
-- Spending more time on architecture docs than code
-- Team velocity very slow despite "just" building basic features
-- Multiple layers of indirection for simple operations
+1. After inserting a JSONB value, read it back and verify it's an object, not a string.
+2. Use `.$type<YourInterface>()` on all JSONB columns for type safety: `jsonb('config').$type<SectorConfig>()`.
+3. Write a test that roundtrips a JSONB insert/select.
+4. If double-serialization occurs, check your postgres-js version -- the issue may be fixed in recent versions.
 
-**Phase to address:**
-Phase 1 (Foundation) - Actively resist over-engineering temptation
+**Detection:** Query the JSONB column with `psql` directly: `SELECT pg_typeof(config_column) FROM inventarios LIMIT 1`. If it returns `text` instead of `jsonb`, double-serialization occurred.
+
+**Confidence:** MEDIUM -- bug is documented but may be version-dependent.
+
+**Phase:** Relevant when implementing inventarios (likely Phase 2 or 3 of the milestone).
 
 ---
 
-## Technical Debt Patterns
+### Pitfall 10: Text Array Columns Need sql`` Default Syntax
 
-Shortcuts that seem reasonable but create long-term problems.
+**What goes wrong:** If articulos or inventarios use `text().array()` columns (tags, deposito codes), using `.default([])` generates invalid SQL. PostgreSQL rejects it.
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-|----------|-------------------|----------------|-----------------|
-| Skip TypeScript project references | Faster initial setup | Type errors across packages, poor IDE support | Never - fix it in Phase 1 |
-| Use `any` types extensively | Faster development initially | No type safety, refactoring nightmares | Only for true unknowns or complex third-party types |
-| Hard-code API URLs instead of env vars | Quick prototyping | Can't switch environments, breaks in production | Only in throwaway prototypes |
-| Skip responsive mobile testing, only test web | Faster iteration on web UI | Complete mobile UI rebuild later | Never - test both from start |
-| Use frontend local mocks instead of backend mocks | Frontend can work independently | Contract drift, integration surprises | Phase 1 only, switch to backend mocks in Phase 2 |
-| Same component for web and mobile (no platform-specific) | Less code to maintain | Poor UX on both platforms, constant conditionals | Only for truly platform-agnostic components (utilities, hooks) |
-| Skip error boundaries | Faster feature completion | App crashes for users, poor error recovery | Never - add boundaries in Phase 1 layout |
-| Duplicate code instead of shared package | Unblocked development | Divergence, bugs fixed in one place but not others | Early prototyping only, extract by Phase 2 |
-| Skip Turborepo cache configuration tuning | Builds work out of the box | Stale builds or cache misses, wasted CI time | Never - tune in Phase 1 |
-| Commit .env files with real secrets | Easier team onboarding | Security breach, leaked credentials | Never - use .env.example only |
+**Why it happens:** Drizzle's `.default([])` generates `DEFAULT '[]'` which is JSON syntax, not PostgreSQL array syntax.
 
----
+**Prevention:**
 
-## Integration Gotchas
+1. Use SQL template literal: `text('tags').array().default(sql\`'{}'\`\`::text[]')`.
+2. For non-empty defaults: `sql\`ARRAY['val1','val2']::text[]\``.
+3. Never use `.default([])` for array columns.
 
-Common mistakes when connecting to external services.
+**Detection:** `db:push` or `db:migrate` fails with a syntax error on the DEFAULT clause.
 
-| Integration | Common Mistake | Correct Approach |
-|-------------|----------------|------------------|
-| Supabase Auth + NestJS | Using singleton-scoped Supabase client | Use `Scope.REQUEST` and create client per request with JWT from headers |
-| Capacitor + Next.js | Assuming SSR features work on mobile | Configure `output: 'export'`, use only client-side features |
-| next-themes + Capacitor | Theme not persisting in mobile app | Use Capacitor Preferences API instead of localStorage for mobile |
-| shadcn + Mobile | Touch targets too small (designed for mouse) | Override button/input sizing for mobile with larger hit areas |
-| pnpm workspaces + Turborepo | Running `pnpm install` doesn't trigger rebuilds | Add `pnpm-lock.yaml` to `globalDependencies` in turbo.json |
-| Capacitor iOS | Navigation completely broken despite working on Android | Patch Next.js router or use Capacitor App plugin for navigation |
-| Supabase Auth | Missing RLS policies - clients can read all data | Create RLS policies immediately after creating tables |
-| TypeScript in monorepo | Types not resolving across workspace packages | Set up project references and paths in tsconfig.json |
-| Mock data | Only testing happy path, no error scenarios | Include error responses, slow loading, incomplete data in mocks |
-| Capacitor + CSS | Fixed positioning behaves differently on mobile | Test on real devices, use safe-area-inset CSS variables |
+**Confidence:** HIGH -- documented in [Drizzle empty array default guide](https://orm.drizzle.team/docs/guides/empty-array-default-value).
+
+**Phase:** Schema definition phase, when creating new tables.
+
+## Minor Pitfalls
+
+### Pitfall 11: Frontend API URLs Change (`/products` -> `/articulos`)
+
+**What goes wrong:** Frontend services hardcode API paths like `/api/products`. After the backend controller becomes `@Controller('articulos')`, all frontend fetch calls 404.
+
+**Prevention:**
+
+1. Search all frontend code for `/products` and `/inventory` API paths.
+2. Update web and mobile API service files alongside backend controller rename.
+3. Consider temporary aliases (both endpoints work) if deploying incrementally.
+
+**Confidence:** HIGH.
+
+**Phase:** Frontend update phase, immediately after API deployment.
 
 ---
 
-## Performance Traps
+### Pitfall 12: TanStack Table Column Definitions Reference Old Field Names
 
-Patterns that work at small scale but fail as usage grows.
+**What goes wrong:** Web tables use TanStack Table with column accessors referencing `product.id`, `product.name`, `product.sku`. These must change to `articulo.codigo`, `articulo.descripcion`, etc. Sort field mappings in the backend `colMap` (products.service.ts lines 55-66) also break.
 
-| Trap | Symptoms | Prevention | When It Breaks |
-|------|----------|------------|----------------|
-| Loading all data on initial page load | App feels fast with 10 items | Implement pagination or infinite scroll from start | 100+ items (seconds to load) |
-| No bundle splitting in Next.js | Fast builds, simple config | Use dynamic imports for heavy components/libraries | Bundle > 500KB (slow initial load) |
-| Syncing entire dataset to mobile app | Works with test data | Implement incremental sync, only changed data | 1000+ records (app startup hangs) |
-| Re-rendering entire list on single item change | Simple state management | Use React.memo, proper key props, or virtualization | Lists > 50 items (UI lags) |
-| Fetching user data on every API call in backend | Stateless, simple logic | Cache user session data with Redis or in-memory store | 100+ concurrent users |
-| Not using Turborepo remote caching in CI | Local development feels fast | Set up Vercel/custom remote cache for CI | Team > 3 developers (wasted CI time) |
-| Loading all images at full resolution | Looks perfect | Use next/image with proper sizing or compress images | 10+ images per page (slow load) |
-| No database indexes on foreign keys | Queries fast with 100 rows | Add indexes on commonly queried/joined columns | 10,000+ rows (queries timeout) |
+**Prevention:**
 
----
+1. Update column definitions in all table components under `apps/web/src/components/tables/`.
+2. Update the `colMap` in the new articulos service.
+3. Test that sorting, filtering, and search work after renaming.
 
-## Security Mistakes
+**Confidence:** HIGH.
 
-Domain-specific security issues beyond general web security.
-
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| Skipping Row Level Security (RLS) in Supabase Auth setup | Users can access all data by inspecting API calls | Implement RLS policies before adding any real data |
-| Storing sensitive data in localStorage on mobile | Data accessible to other apps on jailbroken devices | Use Capacitor SecureStorage for tokens/secrets |
-| Exposing admin endpoints without role checks | Any authenticated user can access admin functions | Implement role-based guards in NestJS from Phase 1 |
-| Committing .env files to git | Leaked API keys, database credentials | Use .env.example only, add .env to .gitignore |
-| Client-side only validation | Malicious users bypass validation | Always validate on backend, client validation is UX only |
-| Using Supabase anon key for admin operations | Public key in bundle allows data manipulation | Use service_role key only in backend, never in frontend |
-| No rate limiting on auth endpoints | Brute force attacks, account takeover | Implement rate limiting in NestJS or use Supabase rate limits |
-| Logging sensitive data (passwords, tokens) | Credentials leak in log files | Sanitize logs, use structured logging with filtering |
-| Trusting user_id from client | User can impersonate others | Extract user_id from verified JWT only, never from request body |
+**Phase:** Frontend update phase.
 
 ---
 
-## UX Pitfalls
+### Pitfall 13: Mobile TanStack Query Cache Holds Stale Product Data
 
-Common user experience mistakes in this domain.
+**What goes wrong:** Mobile app users who had the app open before migration see cached product data with old schema. Interactions with cached items fail because endpoints/IDs changed.
 
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| Same navigation pattern on mobile and web | Mobile users struggle with desktop-style menus | Bottom tab navigation for mobile, sidebar for web |
-| Empty states showing instead of realistic data | Can't evaluate UI density and usefulness | Show realistic dummy data in Phase 1 to demonstrate actual usage |
-| No loading states (assumes instant API responses) | App appears frozen or broken | Show skeletons/spinners for all async operations |
-| Forms that don't show backend validation errors | User submits, nothing happens, confusion | Display server errors clearly next to relevant fields |
-| No feedback on actions (save, delete, etc.) | User uncertainty - did it work? | Toast notifications or inline confirmations for all actions |
-| Tiny touch targets on mobile (designed for mouse) | Users miss buttons, frustration | Minimum 44x44px touch targets per iOS/Android guidelines |
-| Inconsistent behavior across platforms | Relearning required, cognitive load | Allow platform-specific patterns where appropriate |
-| Modal overuse on mobile | Modals block entire screen, poor mobile UX | Use bottom sheets or inline expansion on mobile |
-| No offline state handling in mobile app | App appears broken when network drops | Show offline indicator, queue actions for when online |
-| Desktop-width forms on mobile | Horizontal scrolling, poor accessibility | Responsive single-column layout for mobile forms |
+**Prevention:**
+
+1. Invalidate all queries on app resume after deployment.
+2. Add error boundary handling for 404s on stale references.
+3. Bump API version or add a schema version check.
+
+**Confidence:** MEDIUM -- depends on cache TTL configuration.
+
+**Phase:** Mobile update phase, coordinated with backend deployment.
 
 ---
 
-## "Looks Done But Isn't" Checklist
+### Pitfall 14: Dashboard `totalProducts` KPI Name Is Misleading After Migration
 
-Things that appear complete but are missing critical pieces.
+**What goes wrong:** `DashboardStats.totalProducts` refers to the count of products. After migration, this should be `totalArticulos`. If only the backend query changes but the field name stays `totalProducts`, the API contract is technically correct but semantically confusing. Worse, if the frontend displays "Productos: 500" when the label should say "Articulos: 500", users see incorrect terminology.
 
-- [ ] **Authentication:** UI works but missing token refresh logic - verify auto-refresh before expiry
-- [ ] **Dark Mode:** Toggle works but portaled components (Dialog, Popover) stay light - check all modals
-- [ ] **Mobile Build:** Next.js dev server works but production build fails - test `output: 'export'` build
-- [ ] **Error Handling:** Happy path works but no error boundaries - verify error states for all async operations
-- [ ] **Form Validation:** Client validation works but backend returns different errors - test server validation display
-- [ ] **Navigation:** Routing works on web but breaks on iOS - test on actual iOS device/simulator
-- [ ] **API Integration:** Mock data works but real API has different field names - verify against actual backend contract
-- [ ] **Loading States:** Data appears instantly with mocks but no loaders - test with network throttling
-- [ ] **Responsive Design:** Looks perfect on laptop but broken on mobile - test on real devices, not just browser DevTools
-- [ ] **Monorepo Types:** IDE shows types but build fails in CI - verify TypeScript project references configured
-- [ ] **Permissions:** All features accessible to test user but missing role checks - verify permission guards on backend
-- [ ] **Safe Areas:** UI looks fine on emulator but notch/home indicator overlap on real device - test on physical iPhone/Android
+**Prevention:**
 
----
+1. Rename the field in the API response: `totalProducts` -> `totalArticulos`.
+2. Update the `DashboardStats` interface in all 3 type locations.
+3. Update frontend display labels.
 
-## Recovery Strategies
+**Confidence:** HIGH.
 
-When pitfalls occur despite prevention, how to recover.
+**Phase:** API + frontend update phase.
 
-| Pitfall | Recovery Cost | Recovery Steps |
-|---------|---------------|----------------|
-| TypeScript resolution broken | MEDIUM | Add project references to all tsconfig.json files, run clean build, restart IDE |
-| Turborepo cache poisoned | LOW | Run `turbo run build --force`, clear `.turbo` cache directory |
-| Next.js SSR features used | HIGH | Refactor to client-side fetching, remove SSR functions, test mobile build |
-| iOS navigation broken | MEDIUM | Apply Next.js router patch or implement Capacitor navigation wrapper |
-| Supabase client scope leakage | HIGH | Refactor to REQUEST scope, add tests for concurrent user requests |
-| Platform abstraction too deep | HIGH | Extract platform-specific files (.web/.mobile), accept some duplication |
-| Dark mode broken on mobile | MEDIUM | Audit component tree for theme context loss, add ThemeProvider wrapper |
-| Mock/real API contract drift | MEDIUM-HIGH | Generate TypeScript types from backend schema, add contract tests |
-| Dependency version drift | MEDIUM | Run `syncpack fix-mismatches`, update package.json files, reinstall |
-| Over-engineered Phase 1 | HIGH | Simplify architecture, remove unused abstractions, focus on working features |
-| Missing RLS policies | HIGH | Write RLS policies for all tables, test with different user roles, audit data access |
-| Production secrets in git | CRITICAL | Rotate all leaked credentials immediately, audit git history, add pre-commit hooks |
+## Phase-Specific Warnings
 
----
+| Phase Topic               | Likely Pitfall                                                                   | Mitigation                                                                                               |
+| ------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Database schema migration | #1 (drop+create data loss), #2 (FK type mismatch), #3 (restrict blocks deletion) | Hand-write migration SQL in phases. Never auto-generate destructive migrations. Test on a DB copy first. |
+| Seed data rewrite         | #4 (idMap breaks with text PK)                                                   | Rewrite generators to produce codigos. Remove idMap pattern entirely.                                    |
+| New table definitions     | #10 (array defaults), #9 (JSONB double-serialize)                                | Use SQL template literals for defaults. Test JSONB roundtrip before building features on top.            |
+| Backend API layer         | #5 (ParseIntPipe rejects text), #7 (hardcoded productId interfaces)              | Remove ParseIntPipe, update all service signatures from `id: number` to `codigo: string`.                |
+| Types alignment           | #8 (3 type systems drift)                                                        | Update all 3 apps' types in same commit. Consider consolidating to packages/types/.                      |
+| Dashboard KPIs            | #7 (productId in LowStockItem), #14 (totalProducts naming)                       | Update dashboard interfaces, rename KPI fields, update low-stock-alerts component.                       |
+| Frontend update           | #11 (URL changes), #12 (TanStack columns)                                        | Search-and-replace API paths. Update all column accessors and sort maps.                                 |
+| Mobile deployment         | #13 (stale cache)                                                                | Invalidate TanStack Query cache on app resume post-deploy.                                               |
+| Money type decision       | #6 (doublePrecision -> numeric)                                                  | Defer to v1.2. Do NOT bundle with articulos migration.                                                   |
 
-## Pitfall-to-Phase Mapping
+## Migration Order Recommendation
 
-How roadmap phases should address these pitfalls.
+Based on pitfall dependencies, the safest order is:
 
-| Pitfall | Prevention Phase | Verification |
-|---------|------------------|--------------|
-| TypeScript workspace resolution | Phase 1 (Foundation) | All packages show types in IDE, clean build succeeds |
-| Turborepo caching issues | Phase 1 (Foundation) | Dry run shows correct cache hits/misses |
-| Next.js SSR with Capacitor | Phase 1 (Foundation) | Mobile build completes successfully |
-| iOS navigation breaks | Phase 1 (Navigation) | Navigate between screens on iOS device |
-| Supabase client scope leakage | Phase 1 (Auth) | Concurrent user tests pass |
-| Platform abstraction forced early | Phase 1 (UI Foundation) | Components feel native on each platform |
-| Dark mode mobile breaks | Phase 1 (Layout & Theme) | Toggle works on all platforms, all components |
-| Mock data too perfect | Phase 1 (Mock Strategy) then ongoing | Error states and edge cases handled |
-| Dependency version drift | Phase 1 (Monorepo Setup) | syncpack reports no mismatches |
-| Over-engineering Phase 1 | Phase 1 (All) | Features delivered in weeks not months |
-| Missing RLS policies | Phase 1 (Auth) then Phase 2+ | All tables have policies, audit passes |
-| Empty states instead of density | Phase 1 (Mock Data) | Realistic data volume shown in demos |
-
----
+1. **Types consolidation** (pre-migration) -- Move shared types to `packages/types/` to avoid 3-way drift during migration.
+2. **Schema creation** -- Create articulos, existencias, depositos, inventarios tables alongside existing tables. No drops, no renames. Coexistence.
+3. **Data bridge** -- Populate new tables from existing data. Use `products.sku` as the bridge to `articulos.codigo`.
+4. **FK migration** -- Add new FK columns to items tables, populate from mapping, add constraints, drop old FK columns.
+5. **Backend API** -- New controllers/services for articulos/existencias/inventarios. Keep products controller alive temporarily.
+6. **Frontend update** -- Switch web and mobile to new endpoints and field names.
+7. **Cleanup** -- Drop products table, old controllers, old types. Only after everything works end-to-end.
 
 ## Sources
 
-- [How we configured pnpm and Turborepo for our monorepo | Nhost](https://nhost.io/blog/how-we-configured-pnpm-and-turborepo-for-our-monorepo)
-- [Structuring a repository | Turborepo](https://turborepo.dev/docs/crafting-your-repository/structuring-a-repository)
-- [Integrating Capacitor with Next.js: A Step-by-Step Guide | Medium](https://hamzaaliuddin.medium.com/integrating-capacitor-with-next-js-a-step-by-step-guide-685c5030710c)
-- [Convert Your Next.js App to iOS & Android with Capacitor 8](https://capgo.app/blog/building-a-native-mobile-app-with-nextjs-and-capacitor/)
-- [bug: Next.js app won't navigate to other pages on iOS · Issue #3664 | Capacitor](https://github.com/ionic-team/capacitor/issues/3664)
-- [Setup Supabase with Nest.js](https://blog.andriishupta.dev/setup-supabase-with-nestjs)
-- [Next x Nest - Using Supabase & Google OAuth in NestJS](https://abhik.hashnode.dev/next-x-nest-using-supabase-google-oauth-in-nestjs)
-- [Best way to authenticate a user in the backend · Supabase Discussion #15633](https://github.com/orgs/supabase/discussions/15633)
-- [Cross-Platform UX: Designing Consistency Across Devices | Medium](https://medium.com/@harsh.mudgal_27075/cross-platform-ux-designing-consistency-across-devices-42ad853c7e15)
-- [Common Challenges in Cross-Platform App Development and How to Overcome Them in 2026](https://www.techloy.com/common-challenges-in-cross-platform-app-development-and-how-to-overcome-them-in-2026/)
-- [Organizing components in a monorepo | Knack Engineering](https://engineering.joinknack.com/file-structure/)
-- [Share code between React Web & React Native Mobile with Nx](https://nx.dev/blog/share-code-between-react-web-react-native-mobile-with-nx)
-- [Dark Mode in Shadcn: Easy Theme Switching | Medium](https://medium.com/@hiteshchauhan2023/dark-mode-in-shadcn-easy-theme-switching-3f3fde99eeb6)
-- [Frontend Handbook | React / Tailwind / Shadcn | Infinum](https://infinum.com/handbook/frontend/react/tailwind/shadcn)
-- [Building with Mock Data: Smart Front-End Strategy or Future Headache? | Medium](https://medium.com/lotuss-it/building-with-mock-data-smart-front-end-strategy-or-future-headache-548cafe95c7b)
-- [The API Dilemma – Choosing a Mock API vs. a Real Backend](https://www.confluent.io/blog/choosing-between-mock-api-and-real-backend/)
-- [Delivering Greenfield Projects: Getting the Foundations Right | Medium](https://medium.com/@audaciatech/delivering-greenfield-projects-getting-the-foundations-right-d09c9e52e8b8)
-- [How I deal with greenfield technical debt | Medium](https://medium.com/@ScalaWilliam/how-i-deal-with-greenfield-technical-debt-1a35be33dc71)
-
----
-*Pitfalls research for: Cross-platform Commercial Admin (Monorepo, Mobile + Web + Backend)*
-*Researched: 2026-01-22*
+- [Drizzle ORM migrations documentation](https://orm.drizzle.team/docs/migrations)
+- [Drizzle column rename bug #3826](https://github.com/drizzle-team/drizzle-orm/issues/3826)
+- [Drizzle numeric returns strings #1042](https://github.com/drizzle-team/drizzle-orm/issues/1042)
+- [Drizzle JSONB double-serialization #724](https://github.com/drizzle-team/drizzle-orm/issues/724)
+- [Drizzle empty array default guide](https://orm.drizzle.team/docs/guides/empty-array-default-value)
+- [Drizzle PostgreSQL column types](https://orm.drizzle.team/docs/column-types/pg)
+- [PostgreSQL change primary key strategy](https://gist.github.com/scaryguy/6269293)
+- [Migrating foreign keys in PostgreSQL](https://thomas.skowron.eu/blog/migrating-foreign-keys-in-postgresql/)
+- [NestJS + Drizzle money storage](https://wanago.io/2024/11/04/api-nestjs-drizzle-orm-postgresql-money/)
+- [PostgreSQL arrays with Drizzle ORM](https://wanago.io/2024/07/08/api-nestjs-postgresql-arrays-drizzle-orm/)
+- Codebase analysis: `apps/backend/src/db/schema.ts`, `seed.ts`, `products.service.ts`, `products.controller.ts`, `dashboard.service.ts`, `apps/web/src/types/*.ts`, `apps/mobile/src/types/index.ts`
