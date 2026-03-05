@@ -7,6 +7,9 @@ import {
   doublePrecision,
   timestamp,
   index,
+  numeric,
+  boolean,
+  jsonb,
 } from 'drizzle-orm/pg-core'
 
 // ─── Products ────────────────────────────────────────────────────────────────
@@ -210,6 +213,86 @@ export const businessSettings = pgTable('business_settings', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
+// ─── Articulos ───────────────────────────────────────────────────────────────
+
+export const articulos = pgTable(
+  'articulos',
+  {
+    // PK
+    codigo: text('codigo').primaryKey(),
+
+    // Identification
+    nombre: varchar('nombre', { length: 255 }).notNull(),
+    sku: varchar('sku', { length: 50 }),
+    codigoBarras: varchar('codigo_barras', { length: 50 }),
+    observaciones: text('observaciones'),
+
+    // Properties
+    marca: varchar('marca', { length: 100 }),
+    modelo: varchar('modelo', { length: 100 }),
+    talle: varchar('talle', { length: 50 }),
+    color: varchar('color', { length: 50 }),
+    material: varchar('material', { length: 100 }),
+    presentacion: varchar('presentacion', { length: 100 }),
+    medida: varchar('medida', { length: 50 }),
+
+    // Prices
+    precio: numeric('precio', { precision: 10, scale: 2 }),
+    costo: numeric('costo', { precision: 10, scale: 2 }),
+
+    // Images
+    imagenesProducto: jsonb('imagenes_producto').$type<string[]>().default([]),
+    imagenesEtiqueta: jsonb('imagenes_etiqueta').$type<string[]>().default([]),
+    etiquetasOcr: jsonb('etiquetas_ocr').$type<string[]>().default([]),
+    jsonArticulo: jsonb('json_articulo'),
+
+    // ERP
+    erpId: varchar('erp_id', { length: 50 }),
+    erpCodigo: varchar('erp_codigo', { length: 50 }),
+    erpNombre: varchar('erp_nombre', { length: 255 }),
+    erpPrecio: numeric('erp_precio', { precision: 10, scale: 2 }),
+    erpCosto: numeric('erp_costo', { precision: 10, scale: 2 }),
+    erpUnidades: integer('erp_unidades'),
+    erpDatos: jsonb('erp_datos'),
+    erpSincronizado: boolean('erp_sincronizado').default(false),
+    erpFechaSync: timestamp('erp_fecha_sync'),
+
+    // Origin
+    originSource: varchar('origin_source', { length: 50 }),
+    originSyncId: varchar('origin_sync_id', { length: 100 }),
+    originSyncedAt: timestamp('origin_synced_at'),
+
+    // State
+    activo: boolean('activo').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    index('articulos_nombre_idx').on(table.nombre),
+    index('articulos_sku_idx').on(table.sku),
+    index('articulos_codigo_barras_idx').on(table.codigoBarras),
+    index('articulos_erp_codigo_idx').on(table.erpCodigo),
+    index('articulos_activo_idx').on(table.activo),
+    index('articulos_marca_idx').on(table.marca),
+  ]
+)
+
+// ─── Depositos ───────────────────────────────────────────────────────────────
+
+export const depositos = pgTable(
+  'depositos',
+  {
+    id: serial('id').primaryKey(),
+    nombre: varchar('nombre', { length: 100 }).notNull(),
+    direccion: varchar('direccion', { length: 255 }),
+    descripcion: text('descripcion'),
+    activo: boolean('activo').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [index('depositos_activo_idx').on(table.activo)]
+)
+
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 
 export type Product = typeof products.$inferSelect
@@ -238,3 +321,9 @@ export type NewPurchaseItem = typeof purchaseItems.$inferInsert
 
 export type BusinessSetting = typeof businessSettings.$inferSelect
 export type NewBusinessSetting = typeof businessSettings.$inferInsert
+
+export type Articulo = typeof articulos.$inferSelect
+export type NewArticulo = typeof articulos.$inferInsert
+
+export type Deposito = typeof depositos.$inferSelect
+export type NewDeposito = typeof depositos.$inferInsert
