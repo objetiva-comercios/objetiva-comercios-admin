@@ -9,13 +9,13 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### Articulos
 
-- [ ] **ART-01**: User can view a paginated list of articulos with server-side search and filtering
-- [ ] **ART-02**: User can search articulos by any code identifier (codigo, sku, codigo_barras, erp_codigo) or name from a single search input
+- [x] **ART-01**: User can view a paginated list of articulos with server-side search and filtering
+- [x] **ART-02**: User can search articulos by any code identifier (codigo, sku, codigo_barras, erp_codigo) or name from a single search input
 - [ ] **ART-03**: User can create a new articulo with all fields (codes, properties, prices, images, observations)
 - [ ] **ART-04**: User can edit an existing articulo's fields
-- [ ] **ART-05**: User can toggle an articulo's active/inactive status (soft-delete)
+- [x] **ART-05**: User can toggle an articulo's active/inactive status (soft-delete)
 - [ ] **ART-06**: User can view articulo detail in a sheet/drawer showing all fields organized by section (identification, properties, prices, images, state)
-- [ ] **ART-07**: User can filter the articulos list to show only active, only inactive, or all
+- [x] **ART-07**: User can filter the articulos list to show only active, only inactive, or all
 - [x] **ART-08**: Articulo stores rich properties: marca, modelo, talle, color, material, presentacion, medida
 - [x] **ART-09**: Articulo stores image URL arrays (imagenes_producto, imagenes_etiqueta) and OCR data (etiquetas_ocr, json_articulo as JSONB)
 - [x] **ART-10**: Articulo stores ERP synchronization fields (erp_id, erp_codigo, erp_nombre, erp_precio, erp_costo, erp_unidades, erp_datos, erp_sincronizado, erp_fecha_sync)
@@ -24,10 +24,10 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### Depositos
 
-- [ ] **DEP-01**: User can view a list of depositos with stock summary (total items, distinct articulos)
-- [ ] **DEP-02**: User can create a new deposito (nombre, direccion, description)
-- [ ] **DEP-03**: User can edit an existing deposito
-- [ ] **DEP-04**: User can deactivate a deposito (soft-delete; cannot delete if referenced by existencias or inventarios)
+- [x] **DEP-01**: User can view a list of depositos with stock summary (total items, distinct articulos)
+- [x] **DEP-02**: User can create a new deposito (nombre, direccion, description)
+- [x] **DEP-03**: User can edit an existing deposito
+- [x] **DEP-04**: User can deactivate a deposito (soft-delete; cannot delete if referenced by existencias or inventarios)
 
 ### Existencias
 
@@ -123,22 +123,22 @@ Deferred to future releases. Tracked but not in current roadmap.
 
 | Requirement | Phase    | Status   |
 | ----------- | -------- | -------- |
-| ART-01      | Phase 14 | Pending  |
-| ART-02      | Phase 14 | Pending  |
+| ART-01      | Phase 14 | Complete |
+| ART-02      | Phase 14 | Complete |
 | ART-03      | Phase 14 | Pending  |
 | ART-04      | Phase 14 | Pending  |
-| ART-05      | Phase 14 | Pending  |
+| ART-05      | Phase 14 | Complete |
 | ART-06      | Phase 14 | Pending  |
-| ART-07      | Phase 14 | Pending  |
+| ART-07      | Phase 14 | Complete |
 | ART-08      | Phase 14 | Complete |
 | ART-09      | Phase 14 | Complete |
 | ART-10      | Phase 14 | Complete |
 | ART-11      | Phase 14 | Complete |
 | ART-12      | Phase 14 | Complete |
-| DEP-01      | Phase 14 | Pending  |
-| DEP-02      | Phase 14 | Pending  |
-| DEP-03      | Phase 14 | Pending  |
-| DEP-04      | Phase 14 | Pending  |
+| DEP-01      | Phase 14 | Complete |
+| DEP-02      | Phase 14 | Complete |
+| DEP-03      | Phase 14 | Complete |
+| DEP-04      | Phase 14 | Complete |
 | EXI-01      | Phase 15 | Pending  |
 | EXI-02      | Phase 15 | Pending  |
 | EXI-03      | Phase 15 | Pending  |

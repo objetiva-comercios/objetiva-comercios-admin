@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: executing
-stopped_at: Completed 14-01-PLAN.md
-last_updated: '2026-03-05T14:05:59.892Z'
-last_activity: 2026-03-05 — Completed 14-01 schema foundation
+stopped_at: Completed 14-02-PLAN.md
+last_updated: '2026-03-05T14:11:40.935Z'
+last_activity: 2026-03-05 — Completed 14-02 backend modules (articulos + depositos)
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
-  percent: 20
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 14 of 17 (Schema Foundation + Articulos + Depositos)
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Executing phase 14
-Last activity: 2026-03-05 — Completed 14-01 schema foundation
+Last activity: 2026-03-05 — Completed 14-02 backend modules (articulos + depositos)
 
-Progress: [██░░░░░░░░] 20%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [██░░░░░░░░] 20%
 | 14-01 | 1     | 5min  | 5min     |
 
 _Updated after each plan completion_
+| Phase 14 P02 | 3min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,7 @@ _Updated after each plan completion_
 - Text PK (codigo) for articulos: sequential "ART-001" format in seed, no auto-increment
 - Removed User/ApiResponse from @objetiva/types (DEBT-04 resolved)
 - Settings RBAC secured on write endpoints (DEBT-01 resolved)
+- [Phase 14]: Text PK param (:codigo) on articulos endpoints — no ParseIntPipe, NestJS auto-decodes URL params
 
 ### Pending Todos
 
@@ -72,9 +74,9 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T14:05:16Z
-Stopped at: Completed 14-01-PLAN.md
-Resume file: .planning/phases/14-schema-foundation-articulos-depositos/14-01-SUMMARY.md
+Last session: 2026-03-05T14:11:40.932Z
+Stopped at: Completed 14-02-PLAN.md
+Resume file: None
 Next action: Execute 14-02-PLAN.md
 
 ---
