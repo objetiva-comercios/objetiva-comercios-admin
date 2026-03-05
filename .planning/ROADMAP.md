@@ -91,7 +91,14 @@ Plans:
 2. Dashboard KPI cards show articulo counts (total, active) and low stock alerts query existencias aggregated across depositos
 3. Web sidebar shows "Articulos", "Existencias", "Inventarios" replacing "Products" and "Inventory"; depositos accessible from settings or standalone nav item
 4. Mobile navigation updated with new section names, routes, and all labels localized to Spanish
-   **Plans**: TBD
+
+**Plans:** 3 plans
+
+Plans:
+
+- [ ] 16-01-PLAN.md — Schema FK migration + seed update + old module cleanup
+- [ ] 16-02-PLAN.md — Dashboard KPI rewiring (ArticulosService + ExistenciasService)
+- [ ] 16-03-PLAN.md — Web + mobile navigation update and dead code cleanup
 
 ### Phase 17: Inventarios
 
@@ -129,10 +136,10 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
 | 15. Existencias                        | 3/3       | Complete       | 2026-03-05  | -          |
-| 16. Downstream + Dashboard + Nav       | v1.1      | 0/?            | Not started | -          |
+| 16. Downstream + Dashboard + Nav       | v1.1      | 0/3            | Not started | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-05 (Phase 15 planned: 3 plans in 3 waves)_
+_Last updated: 2026-03-05 (Phase 16 planned: 3 plans in 2 waves)_
