@@ -14,7 +14,7 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 - [ ] **ART-03**: User can create a new articulo with all fields (codes, properties, prices, images, observations)
 - [ ] **ART-04**: User can edit an existing articulo's fields
 - [x] **ART-05**: User can toggle an articulo's active/inactive status (soft-delete)
-- [ ] **ART-06**: User can view articulo detail in a sheet/drawer showing all fields organized by section (identification, properties, prices, images, state)
+- [x] **ART-06**: User can view articulo detail in a sheet/drawer showing all fields organized by section (identification, properties, prices, images, state)
 - [x] **ART-07**: User can filter the articulos list to show only active, only inactive, or all
 - [x] **ART-08**: Articulo stores rich properties: marca, modelo, talle, color, material, presentacion, medida
 - [x] **ART-09**: Articulo stores image URL arrays (imagenes_producto, imagenes_etiqueta) and OCR data (etiquetas_ocr, json_articulo as JSONB)
@@ -128,7 +128,7 @@ Deferred to future releases. Tracked but not in current roadmap.
 | ART-03      | Phase 14 | Pending  |
 | ART-04      | Phase 14 | Pending  |
 | ART-05      | Phase 14 | Complete |
-| ART-06      | Phase 14 | Pending  |
+| ART-06      | Phase 14 | Complete |
 | ART-07      | Phase 14 | Complete |
 | ART-08      | Phase 14 | Complete |
 | ART-09      | Phase 14 | Complete |
