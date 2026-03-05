@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { eq, asc } from 'drizzle-orm'
+import { eq, asc, count, sum, sql } from 'drizzle-orm'
 import { DrizzleService } from '../../db/index'
-import { depositos } from '../../db/schema'
+import { depositos, existencias } from '../../db/schema'
 import { CreateDepositoDto } from './dto/create-deposito.dto'
 import { UpdateDepositoDto } from './dto/update-deposito.dto'
 
@@ -12,9 +12,29 @@ export class DepositosService {
   async findAll() {
     const data = await this.drizzle.db.select().from(depositos).orderBy(asc(depositos.nombre))
 
+    // Aggregate stock summary per deposito
+    const summaries = await this.drizzle.db
+      .select({
+        depositoId: existencias.depositoId,
+        totalArticulos: count(),
+        totalUnidades: sum(existencias.cantidad),
+      })
+      .from(existencias)
+      .groupBy(existencias.depositoId)
+
+    const summaryMap = new Map(
+      summaries.map(s => [
+        s.depositoId,
+        {
+          totalArticulos: s.totalArticulos,
+          totalUnidades: Number(s.totalUnidades ?? 0),
+        },
+      ])
+    )
+
     return data.map(deposito => ({
       ...deposito,
-      stockSummary: {
+      stockSummary: summaryMap.get(deposito.id) ?? {
         totalArticulos: 0,
         totalUnidades: 0,
       },

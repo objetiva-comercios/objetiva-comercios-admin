@@ -3,6 +3,7 @@ import type { Order } from '@/types/order'
 import type { Product } from '@/types/product'
 import type { Articulo } from '@/types/articulo'
 import type { Deposito } from '@/types/deposito'
+import type { Existencia, ExistenciasKpi, ExistenciaMatrixRow } from '@/types/existencia'
 import type { BusinessSettings } from '@/types/settings'
 
 interface PaginatedResponse<T> {
@@ -194,6 +195,89 @@ export async function toggleDepositoActivo(id: number): Promise<Deposito> {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...headers },
   })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchExistenciasByDepositoClient(
+  depositoId: number,
+  params?: { page?: number; limit?: number; search?: string; stockStatus?: string }
+): Promise<PaginatedResponse<Existencia>> {
+  const headers = await getAuthHeaders()
+  const searchParams = new URLSearchParams()
+  searchParams.set('depositoId', depositoId.toString())
+
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.search) searchParams.set('search', params.search)
+  if (params?.stockStatus) searchParams.set('stockStatus', params.stockStatus)
+
+  const url = `${API_BASE_URL}/api/existencias?${searchParams.toString()}`
+  const response = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchExistenciasMatrixClient(params?: {
+  page?: number
+  limit?: number
+  search?: string
+}): Promise<PaginatedResponse<ExistenciaMatrixRow>> {
+  const headers = await getAuthHeaders()
+  const searchParams = new URLSearchParams()
+
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.search) searchParams.set('search', params.search)
+
+  const queryString = searchParams.toString()
+  const url = `${API_BASE_URL}/api/existencias/matrix${queryString ? `?${queryString}` : ''}`
+  const response = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchExistenciasKpiClient(): Promise<ExistenciasKpi> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/existencias/kpi`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchExistenciasByArticuloClient(
+  articuloCodigo: string
+): Promise<Existencia[]> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/existencias/articulo/${encodeURIComponent(articuloCodigo)}`,
+    {
+      headers: { 'Content-Type': 'application/json', ...headers },
+    }
+  )
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updateExistenciaClient(
+  articuloCodigo: string,
+  depositoId: number,
+  data: { cantidad?: number; stockMinimo?: number; stockMaximo?: number }
+): Promise<Existencia> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/existencias/${encodeURIComponent(articuloCodigo)}/${depositoId}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify(data),
+    }
+  )
   await throwIfError(response)
   return response.json()
 }

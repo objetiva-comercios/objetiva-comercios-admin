@@ -7,6 +7,7 @@ import type { Order } from '@/types/order'
 import type { Sale } from '@/types/sale'
 import type { Purchase } from '@/types/purchase'
 import type { Inventory } from '@/types/inventory'
+import type { Existencia, ExistenciasKpi } from '@/types/existencia'
 import { createClient } from '@/lib/supabase/server'
 
 const API_BASE_URL =
@@ -161,6 +162,31 @@ export async function fetchPurchases(params?: {
   const endpoint = `/purchases${queryString ? `?${queryString}` : ''}`
 
   return fetchWithAuth<PaginatedResponse<Purchase>>(endpoint)
+}
+
+export async function fetchExistencias(params?: {
+  depositoId?: number
+  page?: number
+  limit?: number
+  search?: string
+  stockStatus?: string
+}): Promise<PaginatedResponse<Existencia>> {
+  const searchParams = new URLSearchParams()
+
+  if (params?.depositoId) searchParams.set('depositoId', params.depositoId.toString())
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.search) searchParams.set('search', params.search)
+  if (params?.stockStatus) searchParams.set('stockStatus', params.stockStatus)
+
+  const queryString = searchParams.toString()
+  const endpoint = `/existencias${queryString ? `?${queryString}` : ''}`
+
+  return fetchWithAuth<PaginatedResponse<Existencia>>(endpoint)
+}
+
+export async function fetchExistenciasKpi(): Promise<ExistenciasKpi> {
+  return fetchWithAuth<ExistenciasKpi>('/existencias/kpi')
 }
 
 export async function fetchInventory(params?: {
