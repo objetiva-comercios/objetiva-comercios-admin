@@ -1,7 +1,7 @@
 export interface PurchaseItem {
   id: number
-  productId: number
-  productName: string
+  articuloCodigo: string
+  articuloNombre: string
   quantity: number
   unitCost: number
   subtotal: number

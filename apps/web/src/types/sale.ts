@@ -1,7 +1,7 @@
 export interface SaleItem {
   id: number
-  productId: number
-  productName: string
+  articuloCodigo: string
+  articuloNombre: string
   quantity: number
   price: number
   subtotal: number

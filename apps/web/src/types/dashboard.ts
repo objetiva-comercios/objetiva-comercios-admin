@@ -1,5 +1,5 @@
 export interface DashboardStats {
-  totalProducts: number
+  totalArticulos: number
   totalOrders: number
   totalRevenue: number
   totalSales: number
@@ -12,11 +12,10 @@ export interface DashboardStats {
 }
 
 export interface LowStockItem {
-  id: number
-  productId: number
-  productName: string
-  quantity: number
-  status: 'in_stock' | 'low_stock' | 'out_of_stock'
+  articuloCodigo: string
+  articuloNombre: string
+  cantidad: number
+  stockStatus: string
 }
 
 export interface RecentOrder {

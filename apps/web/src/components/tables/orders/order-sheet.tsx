@@ -78,7 +78,7 @@ export function OrderSheet({ order, open, onOpenChange }: OrderSheetProps) {
               {order.items.map(item => (
                 <div key={item.id} className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{item.productName}</p>
+                    <p className="text-sm font-medium">{item.articuloNombre}</p>
                     <p className="text-xs text-muted-foreground">Cant.: {item.quantity}</p>
                   </div>
                   <div className="text-right">

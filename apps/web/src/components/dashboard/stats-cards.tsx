@@ -25,8 +25,8 @@ export function StatsCards({ stats, purchases }: StatsCardsProps) {
       iconColor: 'text-blue-600',
     },
     {
-      title: 'Total de productos',
-      value: formatNumber(stats.totalProducts),
+      title: 'Total de articulos',
+      value: formatNumber(stats.totalArticulos),
       icon: Package,
       description: `${stats.lowStockCount} con stock bajo`,
       iconColor: 'text-purple-600',

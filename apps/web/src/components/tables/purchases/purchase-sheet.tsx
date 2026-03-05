@@ -75,7 +75,7 @@ export function PurchaseSheet({ purchase, open, onOpenChange }: PurchaseSheetPro
               {purchase.items.map(item => (
                 <div key={item.id} className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{item.productName}</p>
+                    <p className="text-sm font-medium">{item.articuloNombre}</p>
                     <p className="text-xs text-muted-foreground">
                       {item.quantity} x {formatCurrency(item.unitCost)}
                     </p>
