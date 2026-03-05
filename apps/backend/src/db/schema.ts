@@ -10,6 +10,7 @@ import {
   numeric,
   boolean,
   jsonb,
+  primaryKey,
 } from 'drizzle-orm/pg-core'
 
 // ─── Products ────────────────────────────────────────────────────────────────
@@ -293,6 +294,29 @@ export const depositos = pgTable(
   table => [index('depositos_activo_idx').on(table.activo)]
 )
 
+// ─── Existencias ────────────────────────────────────────────────────────────
+
+export const existencias = pgTable(
+  'existencias',
+  {
+    articuloCodigo: text('articulo_codigo')
+      .notNull()
+      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    depositoId: integer('deposito_id')
+      .notNull()
+      .references(() => depositos.id, { onDelete: 'restrict' }),
+    cantidad: integer('cantidad').notNull().default(0),
+    stockMinimo: integer('stock_minimo').notNull().default(0),
+    stockMaximo: integer('stock_maximo').notNull().default(0),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    primaryKey({ columns: [table.articuloCodigo, table.depositoId] }),
+    index('existencias_deposito_id_idx').on(table.depositoId),
+    index('existencias_articulo_codigo_idx').on(table.articuloCodigo),
+  ]
+)
+
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 
 export type Product = typeof products.$inferSelect
@@ -327,3 +351,6 @@ export type NewArticulo = typeof articulos.$inferInsert
 
 export type Deposito = typeof depositos.$inferSelect
 export type NewDeposito = typeof depositos.$inferInsert
+
+export type Existencia = typeof existencias.$inferSelect
+export type NewExistencia = typeof existencias.$inferInsert

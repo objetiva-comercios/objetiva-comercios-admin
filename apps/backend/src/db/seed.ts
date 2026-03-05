@@ -10,6 +10,7 @@ import { generateOrders } from './generators/order.generator'
 import { generateInventory } from './generators/inventory.generator'
 import { generateSales } from './generators/sale.generator'
 import { generatePurchases } from './generators/purchase.generator'
+import { generateExistencias } from './generators/existencia.generator'
 
 const client = postgres(process.env.DATABASE_URL!)
 const db = drizzle(client, { schema })
@@ -20,7 +21,7 @@ async function seed() {
     TRUNCATE TABLE
       purchase_items, sale_items, order_items,
       inventory, purchases, sales, orders, products,
-      articulos, depositos
+      existencias, articulos, depositos
     RESTART IDENTITY CASCADE
   `)
 
@@ -78,6 +79,29 @@ async function seed() {
         originSyncId: a.originSyncId,
         originSyncedAt: a.originSyncedAt,
         activo: a.activo,
+      }))
+    )
+  }
+
+  // ── Existencias ─────────────────────────────────────────────────────────
+
+  // Get inserted deposito IDs
+  const insertedDepositos = await db.select({ id: schema.depositos.id }).from(schema.depositos)
+  const depositoIds = insertedDepositos.map(d => d.id)
+  const articuloCodigos = articulosData.map(a => a.codigo)
+
+  const existenciasData = generateExistencias(articuloCodigos, depositoIds)
+  console.log(`Seeding ${existenciasData.length} existencias...`)
+
+  for (let i = 0; i < existenciasData.length; i += 100) {
+    const batch = existenciasData.slice(i, i + 100)
+    await db.insert(schema.existencias).values(
+      batch.map(e => ({
+        articuloCodigo: e.articuloCodigo,
+        depositoId: e.depositoId,
+        cantidad: e.cantidad,
+        stockMinimo: e.stockMinimo,
+        stockMaximo: e.stockMaximo,
       }))
     )
   }
