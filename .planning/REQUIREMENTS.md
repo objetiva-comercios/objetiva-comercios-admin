@@ -69,9 +69,9 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### Dashboard
 
-- [ ] **DASH-01**: Dashboard KPI cards updated to query articulos instead of products (total count, active count)
-- [ ] **DASH-02**: Dashboard low stock alerts query existencias instead of inventory, aggregated across depositos
-- [ ] **DASH-03**: Dashboard revenue/sales metrics updated to reference articuloCodigo
+- [x] **DASH-01**: Dashboard KPI cards updated to query articulos instead of products (total count, active count)
+- [x] **DASH-02**: Dashboard low stock alerts query existencias instead of inventory, aggregated across depositos
+- [x] **DASH-03**: Dashboard revenue/sales metrics updated to reference articuloCodigo
 
 ### Tech Debt
 
@@ -165,9 +165,9 @@ Deferred to future releases. Tracked but not in current roadmap.
 | NAV-01      | Phase 16 | Pending  |
 | NAV-02      | Phase 16 | Pending  |
 | NAV-03      | Phase 16 | Pending  |
-| DASH-01     | Phase 16 | Pending  |
-| DASH-02     | Phase 16 | Pending  |
-| DASH-03     | Phase 16 | Pending  |
+| DASH-01     | Phase 16 | Complete |
+| DASH-02     | Phase 16 | Complete |
+| DASH-03     | Phase 16 | Complete |
 | DEBT-01     | Phase 14 | Complete |
 | DEBT-02     | Phase 15 | Complete |
 | DEBT-03     | Phase 16 | Pending  |

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: executing
-stopped_at: Completed 16-01-PLAN.md
-last_updated: '2026-03-05T19:58:23Z'
+stopped_at: Completed 16-02-PLAN.md
+last_updated: '2026-03-05T20:05:15.486Z'
 last_activity: 2026-03-05 — Completed 16-01 downstream migration
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 9
-  percent: 90
+  total_plans: 11
+  completed_plans: 10
+  percent: 91
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 16 of 17 (Downstream Migration)
-Plan: 1 of 3 (16-01 downstream migration complete)
+Plan: 2 of 3 (16-02 dashboard KPI + low stock complete)
 Status: Phase 16 in progress
-Last activity: 2026-03-05 — Completed 16-01 downstream migration
+Last activity: 2026-03-05 — Completed 16-02 dashboard KPI + low stock
 
-Progress: [█████████░] 90%
+Progress: [█████████░] 91%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ _Updated after each plan completion_
 | Phase 15 P02 | 3min | 2 tasks | 8 files |
 | Phase 15 P03 | 3min | 2 tasks | 3 files |
 | Phase 16 P01 | 9min | 2 tasks | 17 files |
+| Phase 16 P02 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,7 @@ _Updated after each plan completion_
 - [Phase 16]: Dashboard service migrated to ArticulosService+ExistenciasService after products/inventory removal
 - [Phase 16]: ArticuloRef type pattern for generators: { codigo, nombre, sku } — minimal reference interface
 - [Phase 16]: Clean schema drop+push for dev DB migration when tables are removed
+- [Phase 16]: Low stock aggregation uses GROUP BY articuloCodigo with HAVING for cross-deposito accuracy
 
 ### Pending Todos
 
@@ -99,10 +101,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T19:58:23Z
-Stopped at: Completed 16-01-PLAN.md
-Resume file: .planning/phases/16-downstream-migration-dashboard-navigation/16-01-SUMMARY.md
-Next action: Execute 16-02-PLAN.md
+Last session: 2026-03-05T20:05:15.483Z
+Stopped at: Completed 16-02-PLAN.md
+Resume file: .planning/phases/16-downstream-migration-dashboard-navigation/16-02-SUMMARY.md
+Next action: Execute 16-03-PLAN.md
 
 ---
 
