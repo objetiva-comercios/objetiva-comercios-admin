@@ -16,11 +16,11 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 - [ ] **ART-05**: User can toggle an articulo's active/inactive status (soft-delete)
 - [ ] **ART-06**: User can view articulo detail in a sheet/drawer showing all fields organized by section (identification, properties, prices, images, state)
 - [ ] **ART-07**: User can filter the articulos list to show only active, only inactive, or all
-- [ ] **ART-08**: Articulo stores rich properties: marca, modelo, talle, color, material, presentacion, medida
-- [ ] **ART-09**: Articulo stores image URL arrays (imagenes_producto, imagenes_etiqueta) and OCR data (etiquetas_ocr, json_articulo as JSONB)
-- [ ] **ART-10**: Articulo stores ERP synchronization fields (erp_id, erp_codigo, erp_nombre, erp_precio, erp_costo, erp_unidades, erp_datos, erp_sincronizado, erp_fecha_sync)
-- [ ] **ART-11**: Articulo stores origin tracking fields (origin_source, origin_sync_id, origin_synced_at)
-- [ ] **ART-12**: Articulo uses text primary key (codigo) matching real business ERP model
+- [x] **ART-08**: Articulo stores rich properties: marca, modelo, talle, color, material, presentacion, medida
+- [x] **ART-09**: Articulo stores image URL arrays (imagenes_producto, imagenes_etiqueta) and OCR data (etiquetas_ocr, json_articulo as JSONB)
+- [x] **ART-10**: Articulo stores ERP synchronization fields (erp_id, erp_codigo, erp_nombre, erp_precio, erp_costo, erp_unidades, erp_datos, erp_sincronizado, erp_fecha_sync)
+- [x] **ART-11**: Articulo stores origin tracking fields (origin_source, origin_sync_id, origin_synced_at)
+- [x] **ART-12**: Articulo uses text primary key (codigo) matching real business ERP model
 
 ### Depositos
 
@@ -53,13 +53,13 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### Schema Migration
 
-- [ ] **MIG-01**: Products table replaced by articulos table with text PK (codigo) in Drizzle schema
+- [x] **MIG-01**: Products table replaced by articulos table with text PK (codigo) in Drizzle schema
 - [ ] **MIG-02**: Inventory table replaced by existencias table (articulo_codigo + deposito_id composite)
 - [ ] **MIG-03**: Order items, sale items, and purchase items FK updated from productId (integer) to articuloCodigo (text)
-- [ ] **MIG-04**: Depositos table created in Drizzle schema
+- [x] **MIG-04**: Depositos table created in Drizzle schema
 - [ ] **MIG-05**: Inventarios model tables created (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles)
-- [ ] **MIG-06**: Seed data rewritten for all new tables (articulos, depositos, existencias, inventarios with sample counts)
-- [ ] **MIG-07**: Articulo monetary fields (precio, costo) use numeric(10,2) type
+- [x] **MIG-06**: Seed data rewritten for all new tables (articulos, depositos, existencias, inventarios with sample counts)
+- [x] **MIG-07**: Articulo monetary fields (precio, costo) use numeric(10,2) type
 
 ### UI Navigation
 
@@ -75,10 +75,10 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### Tech Debt
 
-- [ ] **DEBT-01**: Settings RBAC gap fixed — PATCH/POST/DELETE /api/settings protected with @Roles('admin')
+- [x] **DEBT-01**: Settings RBAC gap fixed — PATCH/POST/DELETE /api/settings protected with @Roles('admin')
 - [ ] **DEBT-02**: Web type drift resolved — all type interfaces aligned with DB schema
 - [ ] **DEBT-03**: Mobile navigation labels localized to Spanish
-- [ ] **DEBT-04**: Unused shared package exports cleaned up (@objetiva/types, @objetiva/ui)
+- [x] **DEBT-04**: Unused shared package exports cleaned up (@objetiva/types, @objetiva/ui)
 
 ## v1.2+ Requirements
 
@@ -121,57 +121,57 @@ Deferred to future releases. Tracked but not in current roadmap.
 
 ## Traceability
 
-| Requirement | Phase    | Status  |
-| ----------- | -------- | ------- |
-| ART-01      | Phase 14 | Pending |
-| ART-02      | Phase 14 | Pending |
-| ART-03      | Phase 14 | Pending |
-| ART-04      | Phase 14 | Pending |
-| ART-05      | Phase 14 | Pending |
-| ART-06      | Phase 14 | Pending |
-| ART-07      | Phase 14 | Pending |
-| ART-08      | Phase 14 | Pending |
-| ART-09      | Phase 14 | Pending |
-| ART-10      | Phase 14 | Pending |
-| ART-11      | Phase 14 | Pending |
-| ART-12      | Phase 14 | Pending |
-| DEP-01      | Phase 14 | Pending |
-| DEP-02      | Phase 14 | Pending |
-| DEP-03      | Phase 14 | Pending |
-| DEP-04      | Phase 14 | Pending |
-| EXI-01      | Phase 15 | Pending |
-| EXI-02      | Phase 15 | Pending |
-| EXI-03      | Phase 15 | Pending |
-| EXI-04      | Phase 15 | Pending |
-| EXI-05      | Phase 15 | Pending |
-| EXI-06      | Phase 15 | Pending |
-| EXI-07      | Phase 15 | Pending |
-| INV-01      | Phase 17 | Pending |
-| INV-02      | Phase 17 | Pending |
-| INV-03      | Phase 17 | Pending |
-| INV-04      | Phase 17 | Pending |
-| INV-05      | Phase 17 | Pending |
-| INV-06      | Phase 17 | Pending |
-| INV-07      | Phase 17 | Pending |
-| INV-08      | Phase 17 | Pending |
-| INV-09      | Phase 17 | Pending |
-| MIG-01      | Phase 14 | Pending |
-| MIG-02      | Phase 15 | Pending |
-| MIG-03      | Phase 16 | Pending |
-| MIG-04      | Phase 14 | Pending |
-| MIG-05      | Phase 17 | Pending |
-| MIG-06      | Phase 14 | Pending |
-| MIG-07      | Phase 14 | Pending |
-| NAV-01      | Phase 16 | Pending |
-| NAV-02      | Phase 16 | Pending |
-| NAV-03      | Phase 16 | Pending |
-| DASH-01     | Phase 16 | Pending |
-| DASH-02     | Phase 16 | Pending |
-| DASH-03     | Phase 16 | Pending |
-| DEBT-01     | Phase 14 | Pending |
-| DEBT-02     | Phase 15 | Pending |
-| DEBT-03     | Phase 16 | Pending |
-| DEBT-04     | Phase 14 | Pending |
+| Requirement | Phase    | Status   |
+| ----------- | -------- | -------- |
+| ART-01      | Phase 14 | Pending  |
+| ART-02      | Phase 14 | Pending  |
+| ART-03      | Phase 14 | Pending  |
+| ART-04      | Phase 14 | Pending  |
+| ART-05      | Phase 14 | Pending  |
+| ART-06      | Phase 14 | Pending  |
+| ART-07      | Phase 14 | Pending  |
+| ART-08      | Phase 14 | Complete |
+| ART-09      | Phase 14 | Complete |
+| ART-10      | Phase 14 | Complete |
+| ART-11      | Phase 14 | Complete |
+| ART-12      | Phase 14 | Complete |
+| DEP-01      | Phase 14 | Pending  |
+| DEP-02      | Phase 14 | Pending  |
+| DEP-03      | Phase 14 | Pending  |
+| DEP-04      | Phase 14 | Pending  |
+| EXI-01      | Phase 15 | Pending  |
+| EXI-02      | Phase 15 | Pending  |
+| EXI-03      | Phase 15 | Pending  |
+| EXI-04      | Phase 15 | Pending  |
+| EXI-05      | Phase 15 | Pending  |
+| EXI-06      | Phase 15 | Pending  |
+| EXI-07      | Phase 15 | Pending  |
+| INV-01      | Phase 17 | Pending  |
+| INV-02      | Phase 17 | Pending  |
+| INV-03      | Phase 17 | Pending  |
+| INV-04      | Phase 17 | Pending  |
+| INV-05      | Phase 17 | Pending  |
+| INV-06      | Phase 17 | Pending  |
+| INV-07      | Phase 17 | Pending  |
+| INV-08      | Phase 17 | Pending  |
+| INV-09      | Phase 17 | Pending  |
+| MIG-01      | Phase 14 | Complete |
+| MIG-02      | Phase 15 | Pending  |
+| MIG-03      | Phase 16 | Pending  |
+| MIG-04      | Phase 14 | Complete |
+| MIG-05      | Phase 17 | Pending  |
+| MIG-06      | Phase 14 | Complete |
+| MIG-07      | Phase 14 | Complete |
+| NAV-01      | Phase 16 | Pending  |
+| NAV-02      | Phase 16 | Pending  |
+| NAV-03      | Phase 16 | Pending  |
+| DASH-01     | Phase 16 | Pending  |
+| DASH-02     | Phase 16 | Pending  |
+| DASH-03     | Phase 16 | Pending  |
+| DEBT-01     | Phase 14 | Complete |
+| DEBT-02     | Phase 15 | Pending  |
+| DEBT-03     | Phase 16 | Pending  |
+| DEBT-04     | Phase 14 | Complete |
 
 **Coverage:**
 

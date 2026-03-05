@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
-status: planning
-stopped_at: Phase 14 context gathered
-last_updated: '2026-03-05T13:39:27.868Z'
-last_activity: 2026-03-05 — Roadmap created for v1.1
+status: executing
+stopped_at: Completed 14-01-PLAN.md
+last_updated: '2026-03-05T14:05:59.892Z'
+last_activity: 2026-03-05 — Completed 14-01 schema foundation
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 5
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 14 of 17 (Schema Foundation + Articulos + Depositos)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-03-05 — Roadmap created for v1.1
+Plan: 2 of 5
+Status: Executing phase 14
+Last activity: 2026-03-05 — Completed 14-01 schema foundation
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
@@ -44,7 +44,7 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase | Plans | Total | Avg/Plan |
 | ----- | ----- | ----- | -------- |
-| -     | -     | -     | -        |
+| 14-01 | 1     | 5min  | 5min     |
 
 _Updated after each plan completion_
 
@@ -58,6 +58,9 @@ _Updated after each plan completion_
 - Clean-cut migration (db:push + re-seed) — no production data to preserve
 - Keep doublePrecision for monetary fields in v1.1 (numeric migration deferred)
 - Tech debt items addressed in the phase where related code is modified
+- Text PK (codigo) for articulos: sequential "ART-001" format in seed, no auto-increment
+- Removed User/ApiResponse from @objetiva/types (DEBT-04 resolved)
+- Settings RBAC secured on write endpoints (DEBT-01 resolved)
 
 ### Pending Todos
 
@@ -69,12 +72,12 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T13:39:27.864Z
-Stopped at: Phase 14 context gathered
-Resume file: .planning/phases/14-schema-foundation-articulos-depositos/14-CONTEXT.md
-Next action: `/gsd:plan-phase 14`
+Last session: 2026-03-05T14:05:16Z
+Stopped at: Completed 14-01-PLAN.md
+Resume file: .planning/phases/14-schema-foundation-articulos-depositos/14-01-SUMMARY.md
+Next action: Execute 14-02-PLAN.md
 
 ---
 
 _State initialized: 2026-01-23_
-_Last updated: 2026-03-05 (v1.1 roadmap created)_
+_Last updated: 2026-03-05 (14-01 schema foundation complete)_
