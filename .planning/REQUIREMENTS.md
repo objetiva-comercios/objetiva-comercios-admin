@@ -63,9 +63,9 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### UI Navigation
 
-- [ ] **NAV-01**: Web sidebar updated: "Products" and "Inventory" replaced by "Articulos", "Existencias", "Inventarios"
-- [ ] **NAV-02**: Mobile navigation updated with new section names and routes
-- [ ] **NAV-03**: Depositos accessible from settings or as standalone nav item
+- [x] **NAV-01**: Web sidebar updated: "Products" and "Inventory" replaced by "Articulos", "Existencias", "Inventarios"
+- [x] **NAV-02**: Mobile navigation updated with new section names and routes
+- [x] **NAV-03**: Depositos accessible from settings or as standalone nav item
 
 ### Dashboard
 
@@ -77,7 +77,7 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 - [x] **DEBT-01**: Settings RBAC gap fixed — PATCH/POST/DELETE /api/settings protected with @Roles('admin')
 - [x] **DEBT-02**: Web type drift resolved — all type interfaces aligned with DB schema
-- [ ] **DEBT-03**: Mobile navigation labels localized to Spanish
+- [x] **DEBT-03**: Mobile navigation labels localized to Spanish
 - [x] **DEBT-04**: Unused shared package exports cleaned up (@objetiva/types, @objetiva/ui)
 
 ## v1.2+ Requirements
@@ -162,15 +162,15 @@ Deferred to future releases. Tracked but not in current roadmap.
 | MIG-05      | Phase 17 | Pending  |
 | MIG-06      | Phase 14 | Complete |
 | MIG-07      | Phase 14 | Complete |
-| NAV-01      | Phase 16 | Pending  |
-| NAV-02      | Phase 16 | Pending  |
-| NAV-03      | Phase 16 | Pending  |
+| NAV-01      | Phase 16 | Complete |
+| NAV-02      | Phase 16 | Complete |
+| NAV-03      | Phase 16 | Complete |
 | DASH-01     | Phase 16 | Complete |
 | DASH-02     | Phase 16 | Complete |
 | DASH-03     | Phase 16 | Complete |
 | DEBT-01     | Phase 14 | Complete |
 | DEBT-02     | Phase 15 | Complete |
-| DEBT-03     | Phase 16 | Pending  |
+| DEBT-03     | Phase 16 | Complete |
 | DEBT-04     | Phase 14 | Complete |
 
 **Coverage:**

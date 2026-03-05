@@ -32,7 +32,7 @@
 
 - [x] **Phase 14: Schema Foundation + Articulos + Depositos** — New Drizzle schema, articulos full CRUD with text PK, depositos CRUD, seed rewrite (completed 2026-03-05)
 - [x] **Phase 15: Existencias** — Stock per articulo per deposito with low-stock alerts and dual view modes (completed 2026-03-05)
-- [ ] **Phase 16: Downstream Migration + Dashboard + Navigation** — FK updates across orders/sales/purchases, dashboard KPIs on new model, nav restructure
+- [x] **Phase 16: Downstream Migration + Dashboard + Navigation** — FK updates across orders/sales/purchases, dashboard KPIs on new model, nav restructure (completed 2026-03-05)
 - [ ] **Phase 17: Inventarios** — Physical inventory count events with sectors, dispositivos, discrepancy view, status workflow
 
 ## Phase Details
@@ -92,7 +92,7 @@ Plans:
 3. Web sidebar shows "Articulos", "Existencias", "Inventarios" replacing "Products" and "Inventory"; depositos accessible from settings or standalone nav item
 4. Mobile navigation updated with new section names, routes, and all labels localized to Spanish
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 
@@ -136,7 +136,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
 | 15. Existencias                        | 3/3       | Complete       | 2026-03-05  | -          |
-| 16. Downstream + Dashboard + Nav       | 2/3       | In Progress    |             | -          |
+| 16. Downstream + Dashboard + Nav       | 3/3       | Complete       | 2026-03-05  | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
 
 ---
