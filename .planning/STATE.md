@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: executing
-stopped_at: Phase 16 context gathered
-last_updated: '2026-03-05T19:34:46.201Z'
-last_activity: 2026-03-05 — Completed 15-02 existencias UI
+stopped_at: Completed 16-01-PLAN.md
+last_updated: '2026-03-05T19:58:23Z'
+last_activity: 2026-03-05 — Completed 16-01 downstream migration
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 8
-  completed_plans: 8
-  percent: 88
+  completed_plans: 9
+  percent: 90
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-05)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 15 — Existencias (Stock por Deposito)
+**Current focus:** Phase 16 — Downstream Migration, Dashboard, Navigation
 
 ## Current Position
 
-Phase: 15 of 17 (Existencias)
-Plan: 2 of 3 (existencias UI complete)
-Status: Phase 15 in progress
-Last activity: 2026-03-05 — Completed 15-02 existencias UI
+Phase: 16 of 17 (Downstream Migration)
+Plan: 1 of 3 (16-01 downstream migration complete)
+Status: Phase 16 in progress
+Last activity: 2026-03-05 — Completed 16-01 downstream migration
 
-Progress: [████████░░] 88%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ _Updated after each plan completion_
 | Phase 15 P01 | 5min | 2 tasks | 14 files |
 | Phase 15 P02 | 3min | 2 tasks | 8 files |
 | Phase 15 P03 | 3min | 2 tasks | 3 files |
+| Phase 16 P01 | 9min | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ _Updated after each plan completion_
 - [Phase 15]: Optimistic update pattern for inline edits with background KPI refetch
 - [Phase 15]: Custom HTML table with sticky CSS columns for matrix layout (not ServerDataTable)
 - [Phase 15]: Independent pagination/search state per viewMode to avoid cross-contamination
+- [Phase 16]: Dashboard service migrated to ArticulosService+ExistenciasService after products/inventory removal
+- [Phase 16]: ArticuloRef type pattern for generators: { codigo, nombre, sku } — minimal reference interface
+- [Phase 16]: Clean schema drop+push for dev DB migration when tables are removed
 
 ### Pending Todos
 
@@ -95,10 +99,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T19:34:46.198Z
-Stopped at: Phase 16 context gathered
-Resume file: .planning/phases/16-downstream-migration-dashboard-navigation/16-CONTEXT.md
-Next action: Execute 15-03-PLAN.md (existencias matrix view)
+Last session: 2026-03-05T19:58:23Z
+Stopped at: Completed 16-01-PLAN.md
+Resume file: .planning/phases/16-downstream-migration-dashboard-navigation/16-01-SUMMARY.md
+Next action: Execute 16-02-PLAN.md
 
 ---
 
