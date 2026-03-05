@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { PencilIcon } from 'lucide-react'
@@ -13,8 +14,12 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrency } from '@objetiva/utils'
+import { fetchExistenciasByArticuloClient } from '@/lib/api.client'
+import { getStockStatus } from '@/types/existencia'
 import type { Articulo } from '@/types/articulo'
+import type { Existencia } from '@/types/existencia'
 
 interface ArticuloSheetProps {
   articulo: Articulo | null
@@ -60,8 +65,45 @@ function hasAnyOriginField(articulo: Articulo): boolean {
   return !!(articulo.originSource || articulo.originSyncId || articulo.originSyncedAt)
 }
 
+const stockStatusConfig: Record<
+  string,
+  { label: string; variant: 'default' | 'secondary' | 'destructive' }
+> = {
+  normal: { label: 'Normal', variant: 'default' },
+  bajo: { label: 'Bajo', variant: 'secondary' },
+  sin_stock: { label: 'Sin stock', variant: 'destructive' },
+}
+
 export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetProps) {
+  const [existencias, setExistencias] = useState<Existencia[]>([])
+  const [stockLoading, setStockLoading] = useState(false)
+
+  useEffect(() => {
+    if (!articulo?.codigo || !open) {
+      setExistencias([])
+      return
+    }
+    let cancelled = false
+    setStockLoading(true)
+    fetchExistenciasByArticuloClient(articulo.codigo)
+      .then(data => {
+        if (!cancelled) setExistencias(data)
+      })
+      .catch(err => {
+        console.error('Error fetching stock:', err)
+        if (!cancelled) setExistencias([])
+      })
+      .finally(() => {
+        if (!cancelled) setStockLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [articulo?.codigo, open])
+
   if (!articulo) return null
+
+  const totalStock = existencias.reduce((sum, e) => sum + e.cantidad, 0)
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -125,6 +167,64 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                 value={articulo.costo ? formatCurrency(parseFloat(articulo.costo)) : null}
               />
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Stock por Deposito */}
+          <div>
+            <SectionHeader title="Stock por Deposito" />
+            {stockLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-8 w-full" />
+                ))}
+              </div>
+            ) : existencias.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Sin stock registrado</p>
+            ) : (
+              <div>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr>
+                      <th className="h-8 text-left font-medium text-muted-foreground">Deposito</th>
+                      <th className="h-8 text-right font-medium text-muted-foreground">Cantidad</th>
+                      <th className="h-8 text-right font-medium text-muted-foreground">Min</th>
+                      <th className="h-8 text-right font-medium text-muted-foreground">Max</th>
+                      <th className="h-8 text-right font-medium text-muted-foreground">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {existencias.map(e => {
+                      const status = getStockStatus(e.cantidad, e.stockMinimo)
+                      const config = stockStatusConfig[status]
+                      return (
+                        <tr key={`${e.articuloCodigo}-${e.depositoId}`} className="border-t">
+                          <td className="h-8">{e.depositoNombre ?? `Dep. ${e.depositoId}`}</td>
+                          <td className="h-8 text-right tabular-nums">{e.cantidad}</td>
+                          <td className="h-8 text-right tabular-nums text-muted-foreground">
+                            {e.stockMinimo}
+                          </td>
+                          <td className="h-8 text-right tabular-nums text-muted-foreground">
+                            {e.stockMaximo}
+                          </td>
+                          <td className="h-8 text-right">
+                            <Badge variant={config.variant} className="text-xs">
+                              {config.label}
+                            </Badge>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                    <tr className="border-t">
+                      <td className="h-8 font-semibold">Total</td>
+                      <td className="h-8 text-right font-semibold tabular-nums">{totalStock}</td>
+                      <td colSpan={3} />
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           <Separator />
