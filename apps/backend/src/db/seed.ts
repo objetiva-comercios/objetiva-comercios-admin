@@ -3,6 +3,8 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { sql } from 'drizzle-orm'
 import * as schema from './schema'
+import { generateArticulos } from './generators/articulo.generator'
+import { generateDepositos } from './generators/deposito.generator'
 import { generateProducts } from './generators/product.generator'
 import { generateOrders } from './generators/order.generator'
 import { generateInventory } from './generators/inventory.generator'
@@ -17,14 +19,73 @@ async function seed() {
   await db.execute(sql`
     TRUNCATE TABLE
       purchase_items, sale_items, order_items,
-      inventory, purchases, sales, orders, products
+      inventory, purchases, sales, orders, products,
+      articulos, depositos
     RESTART IDENTITY CASCADE
   `)
 
-  // ── Products ─────────────────────────────────────────────────────────────
+  // ── Depositos ───────────────────────────────────────────────────────────
 
-  console.log('Seeding 500 products...')
-  const productsData = generateProducts(500)
+  const depositosData = generateDepositos()
+  console.log(`Seeding ${depositosData.length} depositos...`)
+  await db.insert(schema.depositos).values(
+    depositosData.map(d => ({
+      nombre: d.nombre,
+      direccion: d.direccion,
+      descripcion: d.descripcion,
+      activo: d.activo,
+    }))
+  )
+
+  // ── Articulos ───────────────────────────────────────────────────────────
+
+  const articulosData = generateArticulos(300)
+  console.log(`Seeding ${articulosData.length} articulos...`)
+
+  // Insert in batches of 100 to avoid parameter limit
+  for (let i = 0; i < articulosData.length; i += 100) {
+    const batch = articulosData.slice(i, i + 100)
+    await db.insert(schema.articulos).values(
+      batch.map(a => ({
+        codigo: a.codigo,
+        nombre: a.nombre,
+        sku: a.sku,
+        codigoBarras: a.codigoBarras,
+        observaciones: a.observaciones,
+        marca: a.marca,
+        modelo: a.modelo,
+        talle: a.talle,
+        color: a.color,
+        material: a.material,
+        presentacion: a.presentacion,
+        medida: a.medida,
+        precio: a.precio,
+        costo: a.costo,
+        imagenesProducto: a.imagenesProducto,
+        imagenesEtiqueta: a.imagenesEtiqueta,
+        etiquetasOcr: a.etiquetasOcr,
+        jsonArticulo: a.jsonArticulo,
+        erpId: a.erpId,
+        erpCodigo: a.erpCodigo,
+        erpNombre: a.erpNombre,
+        erpPrecio: a.erpPrecio,
+        erpCosto: a.erpCosto,
+        erpUnidades: a.erpUnidades,
+        erpDatos: a.erpDatos,
+        erpSincronizado: a.erpSincronizado,
+        erpFechaSync: a.erpFechaSync,
+        originSource: a.originSource,
+        originSyncId: a.originSyncId,
+        originSyncedAt: a.originSyncedAt,
+        activo: a.activo,
+      }))
+    )
+  }
+
+  // ── Products (v1.0 compat — reduced to 100) ────────────────────────────
+
+  console.log('Seeding 100 products (v1.0 compat)...')
+  const productsData = generateProducts(100)
   const insertedProducts = await db
     .insert(schema.products)
     .values(
@@ -44,15 +105,15 @@ async function seed() {
     )
     .returning()
 
-  // Build mapping from generator ID → real DB ID
+  // Build mapping from generator ID -> real DB ID
   const idMap = new Map<number, number>()
   for (let i = 0; i < productsData.length; i++) {
     idMap.set(productsData[i].id, insertedProducts[i].id)
   }
 
-  // ── Inventory ─────────────────────────────────────────────────────────────
+  // ── Inventory ───────────────────────────────────────────────────────────
 
-  console.log('Seeding inventory (500 items)...')
+  console.log('Seeding inventory (100 items)...')
   const inventoryData = generateInventory(productsData)
   await db.insert(schema.inventory).values(
     inventoryData.map(inv => ({
@@ -71,10 +132,10 @@ async function seed() {
     }))
   )
 
-  // ── Orders + Order Items ──────────────────────────────────────────────────
+  // ── Orders + Order Items ────────────────────────────────────────────────
 
-  console.log('Seeding 200 orders...')
-  const ordersData = generateOrders(200, productsData)
+  console.log('Seeding 80 orders...')
+  const ordersData = generateOrders(80, productsData)
 
   for (const order of ordersData) {
     const [insertedOrder] = await db
@@ -109,10 +170,10 @@ async function seed() {
     }
   }
 
-  // ── Sales + Sale Items ────────────────────────────────────────────────────
+  // ── Sales + Sale Items ──────────────────────────────────────────────────
 
-  console.log('Seeding 150 sales...')
-  const salesData = generateSales(150, productsData)
+  console.log('Seeding 60 sales...')
+  const salesData = generateSales(60, productsData)
 
   for (const sale of salesData) {
     const [insertedSale] = await db
@@ -147,10 +208,10 @@ async function seed() {
     }
   }
 
-  // ── Purchases + Purchase Items ────────────────────────────────────────────
+  // ── Purchases + Purchase Items ──────────────────────────────────────────
 
-  console.log('Seeding 50 purchases...')
-  const purchasesData = generatePurchases(50, productsData)
+  console.log('Seeding 20 purchases...')
+  const purchasesData = generatePurchases(20, productsData)
 
   for (const purchase of purchasesData) {
     const [insertedPurchase] = await db
