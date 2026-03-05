@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards,
   UseInterceptors,
   UploadedFile,
   ParseFilePipe,
@@ -17,6 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { writeFile } from 'fs/promises'
 import { join, extname } from 'path'
 import { Public } from '../../common/decorators/public.decorator'
+import { Roles } from '../../common/decorators/roles.decorator'
+import { RolesGuard } from '../../common/guards/roles.guard'
 import { SettingsService } from './settings.service'
 import { UpdateSettingsDto } from './dto/update-settings.dto'
 
@@ -38,11 +41,15 @@ export class SettingsController {
     return this.settingsService.get()
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Patch()
   update(@Body() dto: UpdateSettingsDto) {
     return this.settingsService.update(dto)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Post('logo/:type')
   @UseInterceptors(FileInterceptor('file'))
   async uploadLogo(
@@ -71,6 +78,8 @@ export class SettingsController {
     return this.settingsService.updateLogo(fieldMap[type as LogoType], filename)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Delete('logo/:type')
   deleteLogo(@Param('type') type: string) {
     if (!LOGO_TYPES.includes(type as LogoType)) {
