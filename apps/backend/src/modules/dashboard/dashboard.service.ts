@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
-import { ProductsService } from '../products/products.service'
+import { ArticulosService } from '../articulos/articulos.service'
 import { OrdersService } from '../orders/orders.service'
-import { InventoryService } from '../inventory/inventory.service'
+import { ExistenciasService } from '../existencias/existencias.service'
 import { SalesService } from '../sales/sales.service'
 import { PurchasesService } from '../purchases/purchases.service'
 
 interface DashboardStats {
-  totalProducts: number
+  totalArticulos: number
   totalOrders: number
   totalRevenue: number
   totalSales: number
@@ -19,11 +19,10 @@ interface DashboardStats {
 }
 
 interface LowStockItem {
-  id: number
-  productId: number
-  productName: string
-  quantity: number
-  status: 'in_stock' | 'low_stock' | 'out_of_stock'
+  articuloCodigo: string
+  articuloNombre: string
+  cantidad: number
+  stockStatus: string
 }
 
 interface RecentOrder {
@@ -48,20 +47,20 @@ interface DashboardResponse {
 @Injectable()
 export class DashboardService {
   constructor(
-    private productsService: ProductsService,
+    private articulosService: ArticulosService,
     private ordersService: OrdersService,
-    private inventoryService: InventoryService,
+    private existenciasService: ExistenciasService,
     private salesService: SalesService,
     private purchasesService: PurchasesService
   ) {}
 
   async getKpis(): Promise<DashboardResponse> {
-    const [salesStats, orderStats, inventoryStats, productStats, purchaseStats, allOrders] =
+    const [salesStats, orderStats, existenciasStats, articulosResult, purchaseStats, allOrders] =
       await Promise.all([
         this.salesService.getStats(),
         this.ordersService.getStats(),
-        this.inventoryService.getStats(),
-        this.productsService.getStats(),
+        this.existenciasService.getKpiStats(),
+        this.articulosService.findAll({ page: 1, limit: 1 }),
         this.purchasesService.getStats(),
         this.ordersService.findAll({ page: 1, limit: 5 }),
       ])
@@ -76,23 +75,14 @@ export class DashboardService {
       createdAt: order.createdAt,
     }))
 
-    // Get low stock items
-    const lowStockItems = inventoryStats.lowStockItems.slice(0, 5).map(item => ({
-      id: item.id,
-      productId: item.productId,
-      productName: item.productName,
-      quantity: item.quantity,
-      status: item.status as 'in_stock' | 'low_stock' | 'out_of_stock',
-    }))
-
     return {
       stats: {
-        totalProducts: productStats.total,
+        totalArticulos: articulosResult.meta.total,
         totalOrders: orderStats.total,
         totalRevenue: salesStats.totalRevenue,
         totalSales: salesStats.totalSales,
         pendingOrders: orderStats.byStatus.pending,
-        lowStockCount: inventoryStats.byStatus.low_stock,
+        lowStockCount: existenciasStats.stockBajo,
         todaySales: salesStats.todaySales,
         todayRevenue: salesStats.todayRevenue,
         weekSales: salesStats.thisWeekSales,
@@ -102,7 +92,7 @@ export class DashboardService {
         pendingOrders: purchaseStats.pendingOrders,
         pendingValue: purchaseStats.pendingValue,
       },
-      lowStockItems,
+      lowStockItems: [],
       recentOrders,
     }
   }

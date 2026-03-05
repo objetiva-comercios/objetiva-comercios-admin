@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
-import type { GeneratedProduct } from './product.generator'
+
+type ArticuloRef = { codigo: string; nombre: string; sku: string | null }
 
 const ORDER_STATUSES = [
   { value: 'delivered' as const, weight: 50 },
@@ -10,8 +11,8 @@ const ORDER_STATUSES = [
 ]
 
 export interface GeneratedOrderItem {
-  productId: number
-  productName: string
+  articuloCodigo: string
+  articuloNombre: string
   sku: string
   quantity: number
   price: number
@@ -34,7 +35,7 @@ export interface GeneratedOrder {
   shippingAddress: string
 }
 
-export function generateOrder(id: number, products: GeneratedProduct[]): GeneratedOrder {
+export function generateOrder(id: number, articulos: ArticuloRef[]): GeneratedOrder {
   // Use deterministic seed for reproducibility
   faker.seed(id + 20000)
 
@@ -42,15 +43,15 @@ export function generateOrder(id: number, products: GeneratedProduct[]): Generat
   const items: GeneratedOrderItem[] = []
 
   for (let i = 0; i < itemCount; i++) {
-    const product = faker.helpers.arrayElement(products)
+    const articulo = faker.helpers.arrayElement(articulos)
     const quantity = faker.number.int({ min: 1, max: 10 })
-    const price = product.price
+    const price = faker.number.float({ min: 10, max: 500, fractionDigits: 2 })
     const subtotal = parseFloat((quantity * price).toFixed(2))
 
     items.push({
-      productId: product.id,
-      productName: product.name,
-      sku: product.sku,
+      articuloCodigo: articulo.codigo,
+      articuloNombre: articulo.nombre,
+      sku: articulo.sku ?? '',
       quantity,
       price,
       subtotal,
@@ -78,6 +79,6 @@ export function generateOrder(id: number, products: GeneratedProduct[]): Generat
   }
 }
 
-export function generateOrders(count: number, products: GeneratedProduct[]): GeneratedOrder[] {
-  return Array.from({ length: count }, (_, i) => generateOrder(i + 1, products))
+export function generateOrders(count: number, articulos: ArticuloRef[]): GeneratedOrder[] {
+  return Array.from({ length: count }, (_, i) => generateOrder(i + 1, articulos))
 }

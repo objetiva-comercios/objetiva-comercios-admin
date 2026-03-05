@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
-import type { GeneratedProduct } from './product.generator'
+
+type ArticuloRef = { codigo: string; nombre: string; sku: string | null }
 
 const SALE_STATUSES = [
   { value: 'completed' as const, weight: 90 },
@@ -10,8 +11,8 @@ const SALE_STATUSES = [
 const PAYMENT_METHODS = ['cash', 'card', 'transfer', 'credit'] as const
 
 export interface GeneratedSaleItem {
-  productId: number
-  productName: string
+  articuloCodigo: string
+  articuloNombre: string
   sku: string
   quantity: number
   price: number
@@ -34,7 +35,7 @@ export interface GeneratedSale {
   updatedAt: string
 }
 
-export function generateSale(id: number, products: GeneratedProduct[]): GeneratedSale {
+export function generateSale(id: number, articulos: ArticuloRef[]): GeneratedSale {
   // Use deterministic seed for reproducibility
   faker.seed(id + 30000)
 
@@ -42,15 +43,15 @@ export function generateSale(id: number, products: GeneratedProduct[]): Generate
   const items: GeneratedSaleItem[] = []
 
   for (let i = 0; i < itemCount; i++) {
-    const product = faker.helpers.arrayElement(products)
+    const articulo = faker.helpers.arrayElement(articulos)
     const quantity = faker.number.int({ min: 1, max: 10 })
-    const price = product.price
+    const price = faker.number.float({ min: 10, max: 500, fractionDigits: 2 })
     const subtotal = parseFloat((quantity * price).toFixed(2))
 
     items.push({
-      productId: product.id,
-      productName: product.name,
-      sku: product.sku,
+      articuloCodigo: articulo.codigo,
+      articuloNombre: articulo.nombre,
+      sku: articulo.sku ?? '',
       quantity,
       price,
       subtotal,
@@ -81,6 +82,6 @@ export function generateSale(id: number, products: GeneratedProduct[]): Generate
   }
 }
 
-export function generateSales(count: number, products: GeneratedProduct[]): GeneratedSale[] {
-  return Array.from({ length: count }, (_, i) => generateSale(i + 1, products))
+export function generateSales(count: number, articulos: ArticuloRef[]): GeneratedSale[] {
+  return Array.from({ length: count }, (_, i) => generateSale(i + 1, articulos))
 }
