@@ -118,4 +118,14 @@ export class ArticulosService {
 
     return rows[0]
   }
+
+  async getStats() {
+    const [result] = await this.drizzle.db
+      .select({
+        total: count(),
+        active: count(sql`CASE WHEN ${articulos.activo} = true THEN 1 END`),
+      })
+      .from(articulos)
+    return { total: result.total, active: result.active }
+  }
 }

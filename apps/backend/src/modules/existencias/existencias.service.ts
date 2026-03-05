@@ -258,4 +258,48 @@ export class ExistenciasService {
       totalUnidades: Number(result?.totalUnidades ?? 0),
     }
   }
+
+  async getLowStockAggregated(limit = 5) {
+    const rows = await this.drizzle.db
+      .select({
+        articuloCodigo: existencias.articuloCodigo,
+        articuloNombre: articulos.nombre,
+        totalCantidad: sql<number>`COALESCE(sum(${existencias.cantidad}), 0)::int`,
+        minStockMinimo: sql<number>`min(${existencias.stockMinimo})`,
+      })
+      .from(existencias)
+      .innerJoin(articulos, eq(existencias.articuloCodigo, articulos.codigo))
+      .groupBy(existencias.articuloCodigo, articulos.nombre)
+      .having(
+        and(
+          sql`min(${existencias.stockMinimo}) > 0`,
+          sql`sum(${existencias.cantidad}) <= min(${existencias.stockMinimo})`
+        )
+      )
+      .limit(limit)
+    return rows
+  }
+
+  async getLowStockCount(): Promise<number> {
+    const [result] = await this.drizzle.db
+      .select({
+        count: sql<number>`count(*)::int`,
+      })
+      .from(
+        this.drizzle.db
+          .select({
+            articuloCodigo: existencias.articuloCodigo,
+          })
+          .from(existencias)
+          .groupBy(existencias.articuloCodigo)
+          .having(
+            and(
+              sql`min(${existencias.stockMinimo}) > 0`,
+              sql`sum(${existencias.cantidad}) <= min(${existencias.stockMinimo})`
+            )
+          )
+          .as('low_stock')
+      )
+    return result?.count ?? 0
+  }
 }

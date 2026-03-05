@@ -7,6 +7,7 @@ import { PurchasesService } from '../purchases/purchases.service'
 
 interface DashboardStats {
   totalArticulos: number
+  activeArticulos: number
   totalOrders: number
   totalRevenue: number
   totalSales: number
@@ -21,8 +22,8 @@ interface DashboardStats {
 interface LowStockItem {
   articuloCodigo: string
   articuloNombre: string
-  cantidad: number
-  stockStatus: string
+  totalCantidad: number
+  minStockMinimo: number
 }
 
 interface RecentOrder {
@@ -55,15 +56,23 @@ export class DashboardService {
   ) {}
 
   async getKpis(): Promise<DashboardResponse> {
-    const [salesStats, orderStats, existenciasStats, articulosResult, purchaseStats, allOrders] =
-      await Promise.all([
-        this.salesService.getStats(),
-        this.ordersService.getStats(),
-        this.existenciasService.getKpiStats(),
-        this.articulosService.findAll({ page: 1, limit: 1 }),
-        this.purchasesService.getStats(),
-        this.ordersService.findAll({ page: 1, limit: 5 }),
-      ])
+    const [
+      salesStats,
+      orderStats,
+      articuloStats,
+      lowStockItems,
+      lowStockCount,
+      purchaseStats,
+      allOrders,
+    ] = await Promise.all([
+      this.salesService.getStats(),
+      this.ordersService.getStats(),
+      this.articulosService.getStats(),
+      this.existenciasService.getLowStockAggregated(5),
+      this.existenciasService.getLowStockCount(),
+      this.purchasesService.getStats(),
+      this.ordersService.findAll({ page: 1, limit: 5 }),
+    ])
 
     // Get recent orders (last 5)
     const recentOrders = allOrders.data.slice(0, 5).map((order: any) => ({
@@ -77,12 +86,13 @@ export class DashboardService {
 
     return {
       stats: {
-        totalArticulos: articulosResult.meta.total,
+        totalArticulos: articuloStats.total,
+        activeArticulos: articuloStats.active,
         totalOrders: orderStats.total,
         totalRevenue: salesStats.totalRevenue,
         totalSales: salesStats.totalSales,
         pendingOrders: orderStats.byStatus.pending,
-        lowStockCount: existenciasStats.stockBajo,
+        lowStockCount,
         todaySales: salesStats.todaySales,
         todayRevenue: salesStats.todayRevenue,
         weekSales: salesStats.thisWeekSales,
@@ -92,7 +102,7 @@ export class DashboardService {
         pendingOrders: purchaseStats.pendingOrders,
         pendingValue: purchaseStats.pendingValue,
       },
-      lowStockItems: [],
+      lowStockItems,
       recentOrders,
     }
   }
