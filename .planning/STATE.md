@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
-status: in-progress
-stopped_at: Completed 15-02-PLAN.md
-last_updated: '2026-03-05T18:39:46.000Z'
+status: executing
+stopped_at: Completed 15-03-PLAN.md
+last_updated: '2026-03-05T18:46:06.655Z'
 last_activity: 2026-03-05 — Completed 15-02 existencias UI
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
   percent: 88
 ---
 
@@ -53,6 +53,7 @@ _Updated after each plan completion_
 | Phase 14 P05 | 3min | 2 tasks | 8 files |
 | Phase 15 P01 | 5min | 2 tasks | 14 files |
 | Phase 15 P02 | 3min | 2 tasks | 8 files |
+| Phase 15 P03 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ _Updated after each plan completion_
 - [Phase 15]: InlineEditCell saves on Enter only, cancels on blur to prevent accidental saves
 - [Phase 15]: KPI cards double as filters — clicking toggles stockStatus query param
 - [Phase 15]: Optimistic update pattern for inline edits with background KPI refetch
+- [Phase 15]: Custom HTML table with sticky CSS columns for matrix layout (not ServerDataTable)
+- [Phase 15]: Independent pagination/search state per viewMode to avoid cross-contamination
 
 ### Pending Todos
 
@@ -92,9 +95,9 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T18:39:46.000Z
-Stopped at: Completed 15-02-PLAN.md
-Resume file: .planning/phases/15-existencias/15-02-SUMMARY.md
+Last session: 2026-03-05T18:46:06.652Z
+Stopped at: Completed 15-03-PLAN.md
+Resume file: None
 Next action: Execute 15-03-PLAN.md (existencias matrix view)
 
 ---

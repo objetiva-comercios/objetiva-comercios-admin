@@ -31,7 +31,7 @@
 **Milestone Goal:** Replace products/inventory models with articulos/existencias/inventarios to align with the real business data model. Multi-deposito stock, physical inventory counts, and downstream FK migration.
 
 - [x] **Phase 14: Schema Foundation + Articulos + Depositos** — New Drizzle schema, articulos full CRUD with text PK, depositos CRUD, seed rewrite (completed 2026-03-05)
-- [ ] **Phase 15: Existencias** — Stock per articulo per deposito with low-stock alerts and dual view modes
+- [x] **Phase 15: Existencias** — Stock per articulo per deposito with low-stock alerts and dual view modes (completed 2026-03-05)
 - [ ] **Phase 16: Downstream Migration + Dashboard + Navigation** — FK updates across orders/sales/purchases, dashboard KPIs on new model, nav restructure
 - [ ] **Phase 17: Inventarios** — Physical inventory count events with sectors, dispositivos, discrepancy view, status workflow
 
@@ -72,7 +72,7 @@ Plans:
 3. User can inline-edit stock quantities with adjustment reason and see total stock aggregation across depositos for each articulo
 4. Web type interfaces are aligned with the new DB schema (no type drift between backend Drizzle inference and web/mobile types)
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 
@@ -128,7 +128,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
-| 15. Existencias                        | 2/3       | In Progress    |             | -          |
+| 15. Existencias                        | 3/3       | Complete       | 2026-03-05  | -          |
 | 16. Downstream + Dashboard + Nav       | v1.1      | 0/?            | Not started | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
 
