@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: completed
-stopped_at: Completed 16-04-PLAN.md
-last_updated: '2026-03-05T20:39:40.789Z'
+stopped_at: Phase 17 context gathered
+last_updated: '2026-03-05T22:02:04.182Z'
 last_activity: 2026-03-05 — Completed 16-04 mobile types gap closure
 progress:
   total_phases: 4
@@ -107,9 +107,9 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T20:35:20.000Z
-Stopped at: Completed 16-04-PLAN.md
-Resume file: .planning/phases/16-downstream-migration-dashboard-navigation/16-04-SUMMARY.md
+Last session: 2026-03-05T22:02:04.179Z
+Stopped at: Phase 17 context gathered
+Resume file: .planning/phases/17-inventarios/17-CONTEXT.md
 Next action: Phase 16 complete (all gap closures done). Proceed to Phase 17 or milestone completion.
 
 ---
