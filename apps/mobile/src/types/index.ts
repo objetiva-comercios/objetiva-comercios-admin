@@ -1,6 +1,7 @@
 // Dashboard types
 export interface DashboardStats {
-  totalProducts: number
+  totalArticulos: number
+  activeArticulos: number
   totalOrders: number
   totalRevenue: number
   totalSales: number
@@ -13,11 +14,10 @@ export interface DashboardStats {
 }
 
 export interface LowStockItem {
-  id: number
-  productId: number
-  productName: string
-  quantity: number
-  status: 'in_stock' | 'low_stock' | 'out_of_stock'
+  articuloCodigo: string
+  articuloNombre: string
+  totalCantidad: number
+  minStockMinimo: number
 }
 
 export interface RecentOrder {
@@ -39,25 +39,11 @@ export interface DashboardResponse {
   recentOrders: RecentOrder[]
 }
 
-// Product types
-export interface Product {
-  id: number
-  sku: string
-  name: string
-  description: string
-  category: string
-  price: number
-  cost: number
-  status: 'active' | 'inactive' | 'discontinued'
-  createdAt: string
-  updatedAt: string
-}
-
 // Order types
 export interface OrderItem {
   id: number
-  productId: number
-  productName: string
+  articuloCodigo: string
+  articuloNombre: string
   quantity: number
   price: number
 }
@@ -80,8 +66,8 @@ export interface Order {
 // Sale types
 export interface SaleItem {
   id: number
-  productId: number
-  productName: string
+  articuloCodigo: string
+  articuloNombre: string
   quantity: number
   price: number
   subtotal: number
@@ -104,8 +90,8 @@ export interface Sale {
 // Purchase types
 export interface PurchaseItem {
   id: number
-  productId: number
-  productName: string
+  articuloCodigo: string
+  articuloNombre: string
   quantity: number
   unitCost: number
   subtotal: number
@@ -126,19 +112,4 @@ export interface Purchase {
   receivedAt: string | null
   notes: string
   createdAt: string
-}
-
-// Inventory types
-export interface Inventory {
-  id: number
-  productId: number
-  productName: string
-  sku: string
-  quantity: number
-  reservedQuantity: number
-  availableQuantity: number
-  reorderPoint: number
-  status: 'in_stock' | 'low_stock' | 'out_of_stock'
-  lastRestocked: string
-  updatedAt: string
 }
