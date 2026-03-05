@@ -10,6 +10,7 @@ import { SalesModule } from './modules/sales/sales.module'
 import { PurchasesModule } from './modules/purchases/purchases.module'
 import { DashboardModule } from './modules/dashboard/dashboard.module'
 import { SettingsModule } from './modules/settings/settings.module'
+import { ArticulosModule } from './modules/articulos/articulos.module'
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SettingsModule } from './modules/settings/settings.module'
     PurchasesModule,
     DashboardModule,
     SettingsModule,
+    ArticulosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
