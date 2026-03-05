@@ -29,7 +29,18 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ### Active
 
-(Fresh for next milestone — define with `/gsd:new-milestone`)
+#### Current Milestone: v1.1 — Modelo Articulos + Inventario
+
+**Goal:** Replace products/inventory models with articulos/existencias/inventarios to align with the real business data model.
+
+**Target features:**
+
+- Articulos: full CRUD with the real business schema (PK: codigo), replacing products
+- Existencias: stock per article per deposito, replacing inventory
+- Inventarios: periodic physical count events with sectors and mobile devices
+- Depositos: warehouse/location management
+- FK migration: orders/sales/purchases updated to reference articulos.codigo
+- UI: 3 new sections (Articulos, Existencias, Inventarios) replacing 2 old ones
 
 ### Out of Scope
 
@@ -43,7 +54,7 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ## Context
 
-**Current state:** Shipped v1.0 with 12,650 LOC TypeScript across 377 files.
+**Current state:** Shipped v1.0 with 12,650 LOC TypeScript across 377 files. Starting v1.1 data model migration.
 
 **Tech stack:**
 
@@ -88,6 +99,10 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 | Global JWT guard with @Public() opt-out              | Deny-by-default — all new routes auto-protected                                             | ✓ Good — prevented auth gaps as features were added                   |
 | doublePrecision for monetary fields                  | Returns JS numbers directly, no string parsing needed                                       | ⚠️ Revisit — may need numeric() for precision in financial operations |
 
+| PK articulos is `codigo` (text), not numeric ID | Real business model uses ERP codes as identifiers, not surrogate keys | — Pending |
+| Existencias split from articulos | Multi-deposito support requires separate stock table per location | — Pending |
+| Inventarios = periodic physical counts | Distinct from stock/existencias — events with sectors and mobile devices | — Pending |
+
 ---
 
-_Last updated: 2026-03-04 after v1.0 milestone_
+_Last updated: 2026-03-05 after v1.1 milestone start_
