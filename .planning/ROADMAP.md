@@ -49,7 +49,16 @@
 3. User can create, edit, view, and deactivate depositos (warehouses) with stock summary visible in the list
 4. Running `pnpm db:push && pnpm db:seed` from apps/backend produces a working database with articulos, depositos, and all v1.0 tables updated to use the new schema
 5. Settings write endpoints are protected with @Roles('admin') and unused shared package exports are removed
-   **Plans**: TBD
+
+**Plans:** 5 plans
+
+Plans:
+
+- [ ] 14-01-PLAN.md — Schema + seed + tech debt (Drizzle tables, generators, settings RBAC, shared cleanup)
+- [ ] 14-02-PLAN.md — Backend modules (ArticulosModule + DepositosModule with full CRUD)
+- [ ] 14-03-PLAN.md — Web articulos list (ServerDataTable, search, filter, detail sheet)
+- [ ] 14-04-PLAN.md — Web articulos form (create/edit pages with 6-section form)
+- [ ] 14-05-PLAN.md — Web depositos settings (list + dialog in Settings sub-section)
 
 ### Phase 15: Existencias
 
@@ -111,7 +120,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 14. Schema + Articulos + Depositos     | v1.1      | 0/?            | Not started | -          |
+| 14. Schema + Articulos + Depositos     | v1.1      | 0/5            | Planning    | -          |
 | 15. Existencias                        | v1.1      | 0/?            | Not started | -          |
 | 16. Downstream + Dashboard + Nav       | v1.1      | 0/?            | Not started | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
@@ -119,4 +128,4 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-05 (v1.1 roadmap added)_
+_Last updated: 2026-03-05 (Phase 14 planned: 5 plans in 3 waves)_
