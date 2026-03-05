@@ -11,8 +11,8 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 - [x] **ART-01**: User can view a paginated list of articulos with server-side search and filtering
 - [x] **ART-02**: User can search articulos by any code identifier (codigo, sku, codigo_barras, erp_codigo) or name from a single search input
-- [ ] **ART-03**: User can create a new articulo with all fields (codes, properties, prices, images, observations)
-- [ ] **ART-04**: User can edit an existing articulo's fields
+- [x] **ART-03**: User can create a new articulo with all fields (codes, properties, prices, images, observations)
+- [x] **ART-04**: User can edit an existing articulo's fields
 - [x] **ART-05**: User can toggle an articulo's active/inactive status (soft-delete)
 - [x] **ART-06**: User can view articulo detail in a sheet/drawer showing all fields organized by section (identification, properties, prices, images, state)
 - [x] **ART-07**: User can filter the articulos list to show only active, only inactive, or all
@@ -125,8 +125,8 @@ Deferred to future releases. Tracked but not in current roadmap.
 | ----------- | -------- | -------- |
 | ART-01      | Phase 14 | Complete |
 | ART-02      | Phase 14 | Complete |
-| ART-03      | Phase 14 | Pending  |
-| ART-04      | Phase 14 | Pending  |
+| ART-03      | Phase 14 | Complete |
+| ART-04      | Phase 14 | Complete |
 | ART-05      | Phase 14 | Complete |
 | ART-06      | Phase 14 | Complete |
 | ART-07      | Phase 14 | Complete |
