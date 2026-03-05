@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: in-progress
-stopped_at: Completed 15-01-PLAN.md
-last_updated: '2026-03-05T18:34:10.000Z'
-last_activity: 2026-03-05 — Completed 15-01 existencias data layer
+stopped_at: Completed 15-02-PLAN.md
+last_updated: '2026-03-05T18:39:46.000Z'
+last_activity: 2026-03-05 — Completed 15-02 existencias UI
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 88
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 15 of 17 (Existencias)
-Plan: 1 of 3 (existencias data layer complete)
+Plan: 2 of 3 (existencias UI complete)
 Status: Phase 15 in progress
-Last activity: 2026-03-05 — Completed 15-01 existencias data layer
+Last activity: 2026-03-05 — Completed 15-02 existencias UI
 
-Progress: [███████░░░] 75%
+Progress: [████████░░] 88%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ _Updated after each plan completion_
 | Phase 14 P04 | 2min | 2 tasks | 6 files |
 | Phase 14 P05 | 3min | 2 tasks | 8 files |
 | Phase 15 P01 | 5min | 2 tasks | 14 files |
+| Phase 15 P02 | 3min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,10 @@ _Updated after each plan completion_
 - [Phase 15]: Composite PK pattern for existencias (articulo_codigo, deposito_id) with individual indexes
 - [Phase 15]: Dual-view query pattern: flat list by deposito + matrix view by articulo
 - [Phase 15]: KPI aggregation via SQL CASE+count in single query
+- [Phase 15]: Client layout with usePathname for tab navigation (Listado | Existencias)
+- [Phase 15]: InlineEditCell saves on Enter only, cancels on blur to prevent accidental saves
+- [Phase 15]: KPI cards double as filters — clicking toggles stockStatus query param
+- [Phase 15]: Optimistic update pattern for inline edits with background KPI refetch
 
 ### Pending Todos
 
@@ -87,10 +92,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T18:34:10.000Z
-Stopped at: Completed 15-01-PLAN.md
-Resume file: .planning/phases/15-existencias/15-01-SUMMARY.md
-Next action: Execute 15-02-PLAN.md (existencias UI)
+Last session: 2026-03-05T18:39:46.000Z
+Stopped at: Completed 15-02-PLAN.md
+Resume file: .planning/phases/15-existencias/15-02-SUMMARY.md
+Next action: Execute 15-03-PLAN.md (existencias matrix view)
 
 ---
 
