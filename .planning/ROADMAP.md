@@ -30,7 +30,7 @@
 
 **Milestone Goal:** Replace products/inventory models with articulos/existencias/inventarios to align with the real business data model. Multi-deposito stock, physical inventory counts, and downstream FK migration.
 
-- [ ] **Phase 14: Schema Foundation + Articulos + Depositos** — New Drizzle schema, articulos full CRUD with text PK, depositos CRUD, seed rewrite
+- [x] **Phase 14: Schema Foundation + Articulos + Depositos** — New Drizzle schema, articulos full CRUD with text PK, depositos CRUD, seed rewrite (completed 2026-03-05)
 - [ ] **Phase 15: Existencias** — Stock per articulo per deposito with low-stock alerts and dual view modes
 - [ ] **Phase 16: Downstream Migration + Dashboard + Navigation** — FK updates across orders/sales/purchases, dashboard KPIs on new model, nav restructure
 - [ ] **Phase 17: Inventarios** — Physical inventory count events with sectors, dispositivos, discrepancy view, status workflow
@@ -50,7 +50,7 @@
 4. Running `pnpm db:push && pnpm db:seed` from apps/backend produces a working database with articulos, depositos, and all v1.0 tables updated to use the new schema
 5. Settings write endpoints are protected with @Roles('admin') and unused shared package exports are removed
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 
@@ -120,7 +120,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 14. Schema + Articulos + Depositos     | 4/5       | In Progress    |             | -          |
+| 14. Schema + Articulos + Depositos     | 5/5       | Complete       | 2026-03-05  | -          |
 | 15. Existencias                        | v1.1      | 0/?            | Not started | -          |
 | 16. Downstream + Dashboard + Nav       | v1.1      | 0/?            | Not started | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |

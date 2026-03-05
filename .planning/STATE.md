@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: executing
-stopped_at: Completed 14-04-PLAN.md
-last_updated: '2026-03-05T14:21:45.253Z'
-last_activity: 2026-03-05 — Completed 14-04 articulo create/edit form
+stopped_at: Completed 14-05-PLAN.md (Phase 14 complete)
+last_updated: '2026-03-05T14:26:00.000Z'
+last_activity: 2026-03-05 — Completed 14-05 depositos UI
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 14 of 17 (Schema Foundation + Articulos + Depositos)
-Plan: 5 of 5
-Status: Executing phase 14
-Last activity: 2026-03-05 — Completed 14-04 articulo create/edit form
+Plan: 5 of 5 (COMPLETE)
+Status: Phase 14 complete
+Last activity: 2026-03-05 — Completed 14-05 depositos UI
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ _Updated after each plan completion_
 | Phase 14 P02 | 3min | 2 tasks | 12 files |
 | Phase 14 P03 | 4min | 2 tasks | 10 files |
 | Phase 14 P04 | 2min | 2 tasks | 6 files |
+| Phase 14 P05 | 3min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ _Updated after each plan completion_
 - [Phase 14]: Sidebar navigation updated from /articles to /articulos
 - [Phase 14]: Shared ArticuloForm with mode='create'|'edit' for both pages
 - [Phase 14]: Long form pattern: SectionHeader + Separator for visual grouping
+- [Phase 14]: Inline dialog pattern for deposito CRUD (3 fields: nombre, direccion, descripcion)
+- [Phase 14]: Settings sub-page pattern: nav item + /settings/[section]/page.tsx + dedicated component
 
 ### Pending Todos
 
@@ -80,10 +83,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T14:21:45Z
-Stopped at: Completed 14-04-PLAN.md
+Last session: 2026-03-05T14:26:00Z
+Stopped at: Completed 14-05-PLAN.md (Phase 14 complete)
 Resume file: None
-Next action: Execute 14-05-PLAN.md
+Next action: Begin Phase 15 planning
 
 ---
 
