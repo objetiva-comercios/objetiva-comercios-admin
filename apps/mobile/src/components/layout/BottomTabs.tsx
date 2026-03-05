@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Package, ClipboardList, Warehouse } from 'lucide-react'
+import { LayoutDashboard, Package, ClipboardList, ShoppingBag } from 'lucide-react'
 
 const tabs = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/articles', label: 'Articles', icon: Package },
-  { to: '/orders', label: 'Orders', icon: ClipboardList },
-  { to: '/inventory', label: 'Inventory', icon: Warehouse },
+  { to: '/dashboard', label: 'Panel', icon: LayoutDashboard },
+  { to: '/articulos', label: 'Artículos', icon: Package },
+  { to: '/pedidos', label: 'Pedidos', icon: ClipboardList },
+  { to: '/ventas', label: 'Ventas', icon: ShoppingBag },
 ]
 
 export function BottomTabs() {

@@ -15,14 +15,14 @@ const STATUS_FILTERS = [
   { label: 'Discontinued', value: 'discontinued' },
 ]
 
-export function Articles() {
+export function Articulos() {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   const params: Record<string, string> = {}
   if (selectedStatus) params['status'] = selectedStatus
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useInfiniteList<Product>('/products', params)
+    useInfiniteList<Product>('/articulos', params)
 
   const products = data?.pages.flatMap(p => p.data) ?? []
 

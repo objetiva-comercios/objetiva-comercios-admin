@@ -1,12 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { ShoppingBag, ShoppingCart, UserCircle, Settings, LogOut } from 'lucide-react'
+import { ShoppingCart, UserCircle, Settings, LogOut } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
 const navItems = [
-  { to: '/sales', label: 'Sales', icon: ShoppingBag },
-  { to: '/purchases', label: 'Purchases', icon: ShoppingCart },
-  { to: '/profile', label: 'Profile', icon: UserCircle },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/compras', label: 'Compras', icon: ShoppingCart },
+  { to: '/profile', label: 'Perfil', icon: UserCircle },
+  { to: '/settings', label: 'Configuración', icon: Settings },
 ]
 
 interface DrawerNavProps {
@@ -73,7 +72,7 @@ export function DrawerNav({ open, onClose }: DrawerNavProps) {
             className="flex w-full items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 min-h-[44px]"
           >
             <LogOut size={20} />
-            <span>Logout</span>
+            <span>Cerrar sesión</span>
           </button>
         </div>
       </div>

@@ -5,9 +5,8 @@ import { Login } from '../../pages/Login'
 import { Signup } from '../../pages/Signup'
 import { AppShell } from '../layout/AppShell'
 import { Dashboard } from '../../pages/Dashboard'
-import { Articles } from '../../pages/Articles'
+import { Articulos } from '../../pages/Articulos'
 import { Orders } from '../../pages/Orders'
-import { Inventory } from '../../pages/Inventory'
 import { Sales } from '../../pages/Sales'
 import { Purchases } from '../../pages/Purchases'
 import { Profile } from '../../pages/Profile'
@@ -56,15 +55,15 @@ export function SplashGate() {
           }
         />
         <Route
-          path="/articles"
+          path="/articulos"
           element={
             <ErrorBoundary FallbackComponent={SectionErrorFallback}>
-              <Articles />
+              <Articulos />
             </ErrorBoundary>
           }
         />
         <Route
-          path="/orders"
+          path="/pedidos"
           element={
             <ErrorBoundary FallbackComponent={SectionErrorFallback}>
               <Orders />
@@ -72,15 +71,7 @@ export function SplashGate() {
           }
         />
         <Route
-          path="/inventory"
-          element={
-            <ErrorBoundary FallbackComponent={SectionErrorFallback}>
-              <Inventory />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/sales"
+          path="/ventas"
           element={
             <ErrorBoundary FallbackComponent={SectionErrorFallback}>
               <Sales />
@@ -88,7 +79,7 @@ export function SplashGate() {
           }
         />
         <Route
-          path="/purchases"
+          path="/compras"
           element={
             <ErrorBoundary FallbackComponent={SectionErrorFallback}>
               <Purchases />

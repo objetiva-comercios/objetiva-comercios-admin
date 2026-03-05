@@ -203,10 +203,10 @@ export function Dashboard() {
           </ul>
         )}
         <button
-          onClick={() => navigate('/inventory')}
+          onClick={() => navigate('/articulos')}
           className="mt-3 text-xs text-primary font-medium"
         >
-          View Inventory &rarr;
+          Ver artículos &rarr;
         </button>
       </div>
 

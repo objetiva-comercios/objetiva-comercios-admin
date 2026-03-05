@@ -2,14 +2,13 @@ import { useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 
 const PATH_TITLES: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/articles': 'Articles',
-  '/orders': 'Orders',
-  '/inventory': 'Inventory',
-  '/sales': 'Sales',
-  '/purchases': 'Purchases',
-  '/profile': 'Profile',
-  '/settings': 'Settings',
+  '/dashboard': 'Panel',
+  '/articulos': 'Artículos',
+  '/pedidos': 'Pedidos',
+  '/ventas': 'Ventas',
+  '/compras': 'Compras',
+  '/profile': 'Perfil',
+  '/settings': 'Configuración',
 }
 
 interface AppHeaderProps {
