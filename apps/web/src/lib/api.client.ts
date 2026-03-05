@@ -111,6 +111,31 @@ export async function fetchArticuloByCodigoClient(codigo: string): Promise<Artic
   return response.json()
 }
 
+export async function createArticulo(data: Record<string, unknown>): Promise<Articulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/articulos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updateArticulo(
+  codigo: string,
+  data: Record<string, unknown>
+): Promise<Articulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
 export async function toggleArticuloActivo(codigo: string): Promise<Articulo> {
   const headers = await getAuthHeaders()
   const response = await fetch(
