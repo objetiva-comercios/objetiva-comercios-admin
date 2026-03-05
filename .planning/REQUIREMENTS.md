@@ -31,13 +31,13 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### Existencias
 
-- [ ] **EXI-01**: User can view stock per articulo per deposito in a table with low-stock status badges
-- [ ] **EXI-02**: User can filter existencias by deposito (warehouse manager view)
-- [ ] **EXI-03**: User can view stock for a specific articulo across all depositos (product manager view)
-- [ ] **EXI-04**: User can see total stock aggregation across all depositos for each articulo
-- [ ] **EXI-05**: User can inline-edit stock quantities with adjustment reason
-- [ ] **EXI-06**: System displays low stock alerts when quantity falls below stock_minimo threshold
-- [ ] **EXI-07**: Existencias support min/max stock thresholds per articulo-deposito combination
+- [x] **EXI-01**: User can view stock per articulo per deposito in a table with low-stock status badges
+- [x] **EXI-02**: User can filter existencias by deposito (warehouse manager view)
+- [x] **EXI-03**: User can view stock for a specific articulo across all depositos (product manager view)
+- [x] **EXI-04**: User can see total stock aggregation across all depositos for each articulo
+- [x] **EXI-05**: User can inline-edit stock quantities with adjustment reason
+- [x] **EXI-06**: System displays low stock alerts when quantity falls below stock_minimo threshold
+- [x] **EXI-07**: Existencias support min/max stock thresholds per articulo-deposito combination
 
 ### Inventarios
 
@@ -54,7 +54,7 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 ### Schema Migration
 
 - [x] **MIG-01**: Products table replaced by articulos table with text PK (codigo) in Drizzle schema
-- [ ] **MIG-02**: Inventory table replaced by existencias table (articulo_codigo + deposito_id composite)
+- [x] **MIG-02**: Inventory table replaced by existencias table (articulo_codigo + deposito_id composite)
 - [ ] **MIG-03**: Order items, sale items, and purchase items FK updated from productId (integer) to articuloCodigo (text)
 - [x] **MIG-04**: Depositos table created in Drizzle schema
 - [ ] **MIG-05**: Inventarios model tables created (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles)
@@ -76,7 +76,7 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 ### Tech Debt
 
 - [x] **DEBT-01**: Settings RBAC gap fixed — PATCH/POST/DELETE /api/settings protected with @Roles('admin')
-- [ ] **DEBT-02**: Web type drift resolved — all type interfaces aligned with DB schema
+- [x] **DEBT-02**: Web type drift resolved — all type interfaces aligned with DB schema
 - [ ] **DEBT-03**: Mobile navigation labels localized to Spanish
 - [x] **DEBT-04**: Unused shared package exports cleaned up (@objetiva/types, @objetiva/ui)
 
@@ -139,13 +139,13 @@ Deferred to future releases. Tracked but not in current roadmap.
 | DEP-02      | Phase 14 | Complete |
 | DEP-03      | Phase 14 | Complete |
 | DEP-04      | Phase 14 | Complete |
-| EXI-01      | Phase 15 | Pending  |
-| EXI-02      | Phase 15 | Pending  |
-| EXI-03      | Phase 15 | Pending  |
-| EXI-04      | Phase 15 | Pending  |
-| EXI-05      | Phase 15 | Pending  |
-| EXI-06      | Phase 15 | Pending  |
-| EXI-07      | Phase 15 | Pending  |
+| EXI-01      | Phase 15 | Complete |
+| EXI-02      | Phase 15 | Complete |
+| EXI-03      | Phase 15 | Complete |
+| EXI-04      | Phase 15 | Complete |
+| EXI-05      | Phase 15 | Complete |
+| EXI-06      | Phase 15 | Complete |
+| EXI-07      | Phase 15 | Complete |
 | INV-01      | Phase 17 | Pending  |
 | INV-02      | Phase 17 | Pending  |
 | INV-03      | Phase 17 | Pending  |
@@ -156,7 +156,7 @@ Deferred to future releases. Tracked but not in current roadmap.
 | INV-08      | Phase 17 | Pending  |
 | INV-09      | Phase 17 | Pending  |
 | MIG-01      | Phase 14 | Complete |
-| MIG-02      | Phase 15 | Pending  |
+| MIG-02      | Phase 15 | Complete |
 | MIG-03      | Phase 16 | Pending  |
 | MIG-04      | Phase 14 | Complete |
 | MIG-05      | Phase 17 | Pending  |
@@ -169,7 +169,7 @@ Deferred to future releases. Tracked but not in current roadmap.
 | DASH-02     | Phase 16 | Pending  |
 | DASH-03     | Phase 16 | Pending  |
 | DEBT-01     | Phase 14 | Complete |
-| DEBT-02     | Phase 15 | Pending  |
+| DEBT-02     | Phase 15 | Complete |
 | DEBT-03     | Phase 16 | Pending  |
 | DEBT-04     | Phase 14 | Complete |
 

@@ -72,7 +72,7 @@ Plans:
 3. User can inline-edit stock quantities with adjustment reason and see total stock aggregation across depositos for each articulo
 4. Web type interfaces are aligned with the new DB schema (no type drift between backend Drizzle inference and web/mobile types)
 
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 
@@ -128,7 +128,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
-| 15. Existencias                        | v1.1      | 0/3            | Not started | -          |
+| 15. Existencias                        | 1/3       | In Progress    |             | -          |
 | 16. Downstream + Dashboard + Nav       | v1.1      | 0/?            | Not started | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
 
