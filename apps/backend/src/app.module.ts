@@ -11,6 +11,7 @@ import { PurchasesModule } from './modules/purchases/purchases.module'
 import { DashboardModule } from './modules/dashboard/dashboard.module'
 import { SettingsModule } from './modules/settings/settings.module'
 import { ArticulosModule } from './modules/articulos/articulos.module'
+import { DepositosModule } from './modules/depositos/depositos.module'
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ArticulosModule } from './modules/articulos/articulos.module'
     DashboardModule,
     SettingsModule,
     ArticulosModule,
+    DepositosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
