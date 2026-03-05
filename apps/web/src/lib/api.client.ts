@@ -1,7 +1,18 @@
 import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { Order } from '@/types/order'
 import type { Product } from '@/types/product'
+import type { Articulo } from '@/types/articulo'
 import type { BusinessSettings } from '@/types/settings'
+
+interface PaginatedResponse<T> {
+  data: T[]
+  meta: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+  }
+}
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
@@ -62,6 +73,53 @@ export async function deleteLogo(type: 'square' | 'rectangular'): Promise<Busine
     method: 'DELETE',
     headers,
   })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchArticulosClient(params?: {
+  page?: number
+  limit?: number
+  search?: string
+  activo?: boolean | null
+}): Promise<PaginatedResponse<Articulo>> {
+  const headers = await getAuthHeaders()
+  const searchParams = new URLSearchParams()
+
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.search) searchParams.set('search', params.search)
+  if (params?.activo !== undefined && params?.activo !== null)
+    searchParams.set('activo', params.activo.toString())
+
+  const queryString = searchParams.toString()
+  const url = `${API_BASE_URL}/api/articulos${queryString ? `?${queryString}` : ''}`
+
+  const response = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchArticuloByCodigoClient(codigo: string): Promise<Articulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function toggleArticuloActivo(codigo: string): Promise<Articulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}/toggle`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+    }
+  )
   await throwIfError(response)
   return response.json()
 }

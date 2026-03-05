@@ -1,6 +1,7 @@
 import type { BusinessSettings } from '@/types/settings'
 import type { DashboardResponse } from '@/types/dashboard'
 import type { Product } from '@/types/product'
+import type { Articulo } from '@/types/articulo'
 import type { Order } from '@/types/order'
 import type { Sale } from '@/types/sale'
 import type { Purchase } from '@/types/purchase'
@@ -82,6 +83,26 @@ export async function fetchProducts(params?: {
   const endpoint = `/products${queryString ? `?${queryString}` : ''}`
 
   return fetchWithAuth<PaginatedResponse<Product>>(endpoint)
+}
+
+export async function fetchArticulos(params?: {
+  page?: number
+  limit?: number
+  search?: string
+  activo?: boolean | null
+}): Promise<PaginatedResponse<Articulo>> {
+  const searchParams = new URLSearchParams()
+
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.search) searchParams.set('search', params.search)
+  if (params?.activo !== undefined && params?.activo !== null)
+    searchParams.set('activo', params.activo.toString())
+
+  const queryString = searchParams.toString()
+  const endpoint = `/articulos${queryString ? `?${queryString}` : ''}`
+
+  return fetchWithAuth<PaginatedResponse<Articulo>>(endpoint)
 }
 
 export async function fetchOrders(params?: {
