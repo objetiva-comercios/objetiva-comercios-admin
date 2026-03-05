@@ -24,7 +24,7 @@ export const routes: NavRoute[] = [
   {
     label: 'Artículos',
     icon: Package,
-    href: '/articles',
+    href: '/articulos',
   },
   {
     label: 'Compras',
