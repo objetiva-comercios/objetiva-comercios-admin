@@ -2,6 +2,7 @@ import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/clie
 import type { Order } from '@/types/order'
 import type { Product } from '@/types/product'
 import type { Articulo } from '@/types/articulo'
+import type { Deposito } from '@/types/deposito'
 import type { BusinessSettings } from '@/types/settings'
 
 interface PaginatedResponse<T> {
@@ -145,6 +146,54 @@ export async function toggleArticuloActivo(codigo: string): Promise<Articulo> {
       headers: { 'Content-Type': 'application/json', ...headers },
     }
   )
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchDepositosClient(): Promise<Deposito[]> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function createDeposito(data: {
+  nombre: string
+  direccion?: string
+  descripcion?: string
+}): Promise<Deposito> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updateDeposito(
+  id: number,
+  data: Partial<{ nombre: string; direccion: string; descripcion: string }>
+): Promise<Deposito> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function toggleDepositoActivo(id: number): Promise<Deposito> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos/${id}/toggle`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
   await throwIfError(response)
   return response.json()
 }

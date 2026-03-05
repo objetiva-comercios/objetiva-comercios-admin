@@ -2,6 +2,7 @@ import type { BusinessSettings } from '@/types/settings'
 import type { DashboardResponse } from '@/types/dashboard'
 import type { Product } from '@/types/product'
 import type { Articulo } from '@/types/articulo'
+import type { Deposito } from '@/types/deposito'
 import type { Order } from '@/types/order'
 import type { Sale } from '@/types/sale'
 import type { Purchase } from '@/types/purchase'
@@ -103,6 +104,10 @@ export async function fetchArticulos(params?: {
   const endpoint = `/articulos${queryString ? `?${queryString}` : ''}`
 
   return fetchWithAuth<PaginatedResponse<Articulo>>(endpoint)
+}
+
+export async function fetchDepositos(): Promise<Deposito[]> {
+  return fetchWithAuth<Deposito[]>('/depositos')
 }
 
 export async function fetchOrders(params?: {
