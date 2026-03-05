@@ -2,13 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
-status: in_progress
-last_updated: '2026-03-05'
+status: planning
+stopped_at: Phase 14 context gathered
+last_updated: '2026-03-05T13:39:27.868Z'
+last_activity: 2026-03-05 — Roadmap created for v1.1
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -66,9 +69,9 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05
-Stopped at: Roadmap created for v1.1 milestone
-Resume file: None
+Last session: 2026-03-05T13:39:27.864Z
+Stopped at: Phase 14 context gathered
+Resume file: .planning/phases/14-schema-foundation-articulos-depositos/14-CONTEXT.md
 Next action: `/gsd:plan-phase 14`
 
 ---
