@@ -1,6 +1,5 @@
 import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { Order } from '@/types/order'
-import type { Product } from '@/types/product'
 import type { Articulo } from '@/types/articulo'
 import type { Deposito } from '@/types/deposito'
 import type { Existencia, ExistenciasKpi, ExistenciaMatrixRow } from '@/types/existencia'
@@ -288,21 +287,6 @@ export async function fetchOrderById(id: number): Promise<Order> {
     data: { session },
   } = await supabase.auth.getSession()
   const response = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
-    },
-  })
-  if (!response.ok) throw new Error(`API error: ${response.status}`)
-  return response.json()
-}
-
-export async function fetchProductById(id: number): Promise<Product> {
-  const supabase = createBrowserSupabaseClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
     headers: {
       'Content-Type': 'application/json',
       ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),

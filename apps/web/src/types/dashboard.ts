@@ -1,5 +1,6 @@
 export interface DashboardStats {
   totalArticulos: number
+  activeArticulos: number
   totalOrders: number
   totalRevenue: number
   totalSales: number
@@ -14,8 +15,8 @@ export interface DashboardStats {
 export interface LowStockItem {
   articuloCodigo: string
   articuloNombre: string
-  cantidad: number
-  stockStatus: string
+  totalCantidad: number
+  minStockMinimo: number
 }
 
 export interface RecentOrder {
