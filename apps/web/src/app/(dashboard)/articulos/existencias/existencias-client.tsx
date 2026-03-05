@@ -13,14 +13,21 @@ import {
 } from '@/components/ui/select'
 import { ExistenciasKpiCards } from '@/components/existencias/existencias-kpi-cards'
 import { ExistenciasPorDeposito } from '@/components/existencias/existencias-por-deposito'
+import { ExistenciasPorArticulo } from '@/components/existencias/existencias-por-articulo'
 import { cn } from '@/lib/utils'
 import {
   fetchExistenciasByDepositoClient,
+  fetchExistenciasMatrixClient,
   fetchExistenciasKpiClient,
   updateExistenciaClient,
 } from '@/lib/api.client'
 import type { Deposito } from '@/types/deposito'
-import type { Existencia, ExistenciasKpi, StockStatus } from '@/types/existencia'
+import type {
+  Existencia,
+  ExistenciaMatrixRow,
+  ExistenciasKpi,
+  StockStatus,
+} from '@/types/existencia'
 
 type ViewMode = 'por_deposito' | 'por_articulo'
 
@@ -52,6 +59,14 @@ export function ExistenciasClient({ depositos, initialData, initialKpi }: Existe
   const [isLoading, setIsLoading] = useState(false)
   const [kpiLoading, setKpiLoading] = useState(false)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Matrix view state (por_articulo)
+  const [matrixData, setMatrixData] = useState<ExistenciaMatrixRow[]>([])
+  const [matrixMeta, setMatrixMeta] = useState({ total: 0, page: 1, limit: 20, totalPages: 0 })
+  const [matrixPage, setMatrixPage] = useState(1)
+  const [matrixSearch, setMatrixSearch] = useState('')
+  const [matrixLoading, setMatrixLoading] = useState(false)
+  const matrixSearchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchData = useCallback(
     async (
@@ -92,6 +107,50 @@ export function ExistenciasClient({ depositos, initialData, initialKpi }: Existe
     }
   }, [])
 
+  const fetchMatrixData = useCallback(async (fetchPage: number, fetchSearch: string) => {
+    setMatrixLoading(true)
+    try {
+      const response = await fetchExistenciasMatrixClient({
+        page: fetchPage,
+        limit: 20,
+        search: fetchSearch || undefined,
+      })
+      setMatrixData(response.data)
+      setMatrixMeta(response.meta)
+    } catch (error) {
+      console.error('Error fetching matrix data:', error)
+    } finally {
+      setMatrixLoading(false)
+    }
+  }, [])
+
+  // Fetch matrix data when switching to por_articulo view
+  useEffect(() => {
+    if (viewMode === 'por_articulo') {
+      fetchMatrixData(matrixPage, matrixSearch)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode])
+
+  // Debounced matrix search
+  useEffect(() => {
+    if (viewMode !== 'por_articulo') return
+    if (matrixSearchTimeoutRef.current) {
+      clearTimeout(matrixSearchTimeoutRef.current)
+    }
+    matrixSearchTimeoutRef.current = setTimeout(() => {
+      setMatrixPage(1)
+      fetchMatrixData(1, matrixSearch)
+    }, 300)
+
+    return () => {
+      if (matrixSearchTimeoutRef.current) {
+        clearTimeout(matrixSearchTimeoutRef.current)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matrixSearch])
+
   // Debounced search
   useEffect(() => {
     if (searchTimeoutRef.current) {
@@ -126,6 +185,36 @@ export function ExistenciasClient({ depositos, initialData, initialKpi }: Existe
     setStatusFilter(status)
     setPage(1)
     fetchData(1, search, status, selectedDepositoId)
+  }
+
+  const handleMatrixPageChange = (newPage: number) => {
+    setMatrixPage(newPage)
+    fetchMatrixData(newPage, matrixSearch)
+  }
+
+  const handleMatrixStockUpdate = async (
+    articuloCodigo: string,
+    depositoId: number,
+    newValue: number
+  ) => {
+    // Optimistic update on matrix data
+    setMatrixData(prev =>
+      prev.map(row => {
+        if (row.articuloCodigo !== articuloCodigo) return row
+        const oldValue = row.stock[depositoId] ?? 0
+        const diff = newValue - oldValue
+        return {
+          ...row,
+          stock: { ...row.stock, [depositoId]: newValue },
+          total: row.total + diff,
+        }
+      })
+    )
+
+    await updateExistenciaClient(articuloCodigo, depositoId, { cantidad: newValue })
+
+    // Refetch KPI after edit
+    fetchKpi()
   }
 
   const handleStockUpdate = async (
@@ -217,9 +306,31 @@ export function ExistenciasClient({ depositos, initialData, initialKpi }: Existe
           />
         </>
       ) : (
-        <div className="rounded-sm border p-8 text-center text-sm text-muted-foreground">
-          Vista de matriz (Plan 03)
-        </div>
+        <>
+          {/* Toolbar: search */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative">
+              <SearchIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por codigo o nombre..."
+                value={matrixSearch}
+                onChange={e => setMatrixSearch(e.target.value)}
+                className="h-8 w-[200px] pl-8 text-sm lg:w-[300px]"
+              />
+            </div>
+          </div>
+
+          {/* Matrix Table */}
+          <ExistenciasPorArticulo
+            depositos={depositos}
+            data={matrixData}
+            isLoading={matrixLoading}
+            onStockUpdate={handleMatrixStockUpdate}
+            pageCount={matrixMeta.totalPages}
+            currentPage={matrixPage}
+            onPageChange={handleMatrixPageChange}
+          />
+        </>
       )}
     </div>
   )
