@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
-status: executing
+status: completed
 stopped_at: Completed 14-05-PLAN.md (Phase 14 complete)
-last_updated: '2026-03-05T14:26:00.000Z'
+last_updated: '2026-03-05T14:30:34.451Z'
 last_activity: 2026-03-05 — Completed 14-05 depositos UI
 progress:
   total_phases: 4
