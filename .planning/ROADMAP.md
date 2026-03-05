@@ -71,7 +71,14 @@ Plans:
 2. User can filter existencias by deposito (warehouse manager view) and view stock for a specific articulo across all depositos (product manager view)
 3. User can inline-edit stock quantities with adjustment reason and see total stock aggregation across depositos for each articulo
 4. Web type interfaces are aligned with the new DB schema (no type drift between backend Drizzle inference and web/mobile types)
-   **Plans**: TBD
+
+**Plans:** 3 plans
+
+Plans:
+
+- [ ] 15-01-PLAN.md — Schema + seed + backend module + web types + API client
+- [ ] 15-02-PLAN.md — Tab navigation + KPI cards + "Por Deposito" view with inline editing
+- [ ] 15-03-PLAN.md — "Por Articulo" matrix view + ArticuloSheet stock section
 
 ### Phase 16: Downstream Migration + Dashboard + Navigation
 
@@ -120,12 +127,12 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete    | 2026-03-03 |
 | 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 14. Schema + Articulos + Depositos     | 5/5       | Complete       | 2026-03-05  | -          |
-| 15. Existencias                        | v1.1      | 0/?            | Not started | -          |
+| 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
+| 15. Existencias                        | v1.1      | 0/3            | Not started | -          |
 | 16. Downstream + Dashboard + Nav       | v1.1      | 0/?            | Not started | -          |
 | 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-05 (Phase 14 planned: 5 plans in 3 waves)_
+_Last updated: 2026-03-05 (Phase 15 planned: 3 plans in 3 waves)_
