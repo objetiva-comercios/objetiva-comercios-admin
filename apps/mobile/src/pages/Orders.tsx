@@ -125,7 +125,7 @@ export function Orders() {
                 {selectedOrder.items.map(item => (
                   <div key={item.id} className="flex items-center justify-between text-sm">
                     <div className="flex-1 mr-2">
-                      <span className="text-foreground">{item.productName}</span>
+                      <span className="text-foreground">{item.articuloNombre}</span>
                       <span className="text-muted-foreground ml-2">x{item.quantity}</span>
                     </div>
                     <span className="text-foreground font-medium">

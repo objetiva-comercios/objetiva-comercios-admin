@@ -39,6 +39,43 @@ export interface DashboardResponse {
   recentOrders: RecentOrder[]
 }
 
+// Articulo types
+export interface Articulo {
+  codigo: string
+  nombre: string
+  sku: string | null
+  codigoBarras: string | null
+  observaciones: string | null
+  marca: string | null
+  modelo: string | null
+  talle: string | null
+  color: string | null
+  material: string | null
+  presentacion: string | null
+  medida: string | null
+  precio: string | null
+  costo: string | null
+  imagenesProducto: string[]
+  imagenesEtiqueta: string[]
+  etiquetasOcr: string[]
+  jsonArticulo: unknown | null
+  erpId: string | null
+  erpCodigo: string | null
+  erpNombre: string | null
+  erpPrecio: string | null
+  erpCosto: string | null
+  erpUnidades: number | null
+  erpDatos: unknown | null
+  erpSincronizado: boolean | null
+  erpFechaSync: string | null
+  originSource: string | null
+  originSyncId: string | null
+  originSyncedAt: string | null
+  activo: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 // Order types
 export interface OrderItem {
   id: number

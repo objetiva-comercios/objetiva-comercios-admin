@@ -2,29 +2,27 @@ import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { formatCurrency, formatDate } from '@objetiva/utils'
 import { Card } from '../components/ui/Card'
-import { StatusBadge } from '../components/ui/StatusBadge'
 import { FilterChips } from '../components/ui/FilterChips'
 import { BottomSheet } from '../components/ui/BottomSheet'
 import { CardSkeleton } from '../components/ui/Skeleton'
 import { useInfiniteList } from '../hooks/useInfiniteList'
-import type { Product } from '../types'
+import type { Articulo } from '../types'
 
 const STATUS_FILTERS = [
-  { label: 'Active', value: 'active' },
-  { label: 'Inactive', value: 'inactive' },
-  { label: 'Discontinued', value: 'discontinued' },
+  { label: 'Activo', value: 'true' },
+  { label: 'Inactivo', value: 'false' },
 ]
 
 export function Articulos() {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedArticulo, setSelectedArticulo] = useState<Articulo | null>(null)
 
   const params: Record<string, string> = {}
-  if (selectedStatus) params['status'] = selectedStatus
+  if (selectedStatus) params['activo'] = selectedStatus
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useInfiniteList<Product>('/articulos', params)
+    useInfiniteList<Articulo>('/articulos', params)
 
-  const products = data?.pages.flatMap(p => p.data) ?? []
+  const articulos = data?.pages.flatMap(p => p.data) ?? []
 
   const { ref: sentinelRef, inView } = useInView()
 
@@ -34,9 +32,11 @@ export function Articulos() {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
-  const profitMargin = (product: Product) => {
-    if (product.price === 0) return 0
-    return (((product.price - product.cost) / product.price) * 100).toFixed(1)
+  const profitMargin = (articulo: Articulo) => {
+    const precio = parseFloat(articulo.precio ?? '0')
+    const costo = parseFloat(articulo.costo ?? '0')
+    if (precio === 0) return 0
+    return (((precio - costo) / precio) * 100).toFixed(1)
   }
 
   return (
@@ -54,25 +54,33 @@ export function Articulos() {
       <div className="flex flex-col gap-3 p-4">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => <CardSkeleton key={i} />)
-        ) : products.length === 0 ? (
+        ) : articulos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-muted-foreground">No articles found</p>
+            <p className="text-muted-foreground">No se encontraron articulos</p>
           </div>
         ) : (
-          products.map(product => (
-            <Card key={product.id} onClick={() => setSelectedProduct(product)}>
+          articulos.map(articulo => (
+            <Card key={articulo.codigo} onClick={() => setSelectedArticulo(articulo)}>
               <div className="flex items-start justify-between mb-1">
                 <span className="font-medium text-foreground leading-snug flex-1 mr-2">
-                  {product.name}
+                  {articulo.nombre}
                 </span>
-                <StatusBadge status={product.status} />
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${articulo.activo ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}
+                >
+                  {articulo.activo ? 'Activo' : 'Inactivo'}
+                </span>
               </div>
-              <p className="text-xs text-muted-foreground mb-2">{product.sku}</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                {articulo.sku ?? articulo.codigo}
+              </p>
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-foreground">
-                  {formatCurrency(product.price)}
+                  {formatCurrency(parseFloat(articulo.precio ?? '0'))}
                 </span>
-                <span className="text-xs text-muted-foreground capitalize">{product.category}</span>
+                {articulo.marca && (
+                  <span className="text-xs text-muted-foreground">{articulo.marca}</span>
+                )}
               </div>
             </Card>
           ))
@@ -85,64 +93,74 @@ export function Articulos() {
         <div ref={sentinelRef} className="h-1" />
       </div>
 
-      {/* Product detail bottom sheet */}
+      {/* Articulo detail bottom sheet */}
       <BottomSheet
-        open={selectedProduct !== null}
-        onClose={() => setSelectedProduct(null)}
-        title={selectedProduct?.name ?? ''}
+        open={selectedArticulo !== null}
+        onClose={() => setSelectedArticulo(null)}
+        title={selectedArticulo?.nombre ?? ''}
       >
-        {selectedProduct && (
+        {selectedArticulo && (
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="text-xs text-muted-foreground">SKU</p>
-                <p className="text-sm font-medium text-foreground">{selectedProduct.sku}</p>
+                <p className="text-xs text-muted-foreground">Codigo</p>
+                <p className="text-sm font-medium text-foreground">{selectedArticulo.codigo}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Status</p>
-                <StatusBadge status={selectedProduct.status} />
+                <p className="text-xs text-muted-foreground">Estado</p>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${selectedArticulo.activo ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}
+                >
+                  {selectedArticulo.activo ? 'Activo' : 'Inactivo'}
+                </span>
               </div>
+              {selectedArticulo.sku && (
+                <div>
+                  <p className="text-xs text-muted-foreground">SKU</p>
+                  <p className="text-sm font-medium text-foreground">{selectedArticulo.sku}</p>
+                </div>
+              )}
+              {selectedArticulo.marca && (
+                <div>
+                  <p className="text-xs text-muted-foreground">Marca</p>
+                  <p className="text-sm font-medium text-foreground">{selectedArticulo.marca}</p>
+                </div>
+              )}
               <div>
-                <p className="text-xs text-muted-foreground">Category</p>
-                <p className="text-sm font-medium text-foreground capitalize">
-                  {selectedProduct.category}
+                <p className="text-xs text-muted-foreground">Precio</p>
+                <p className="text-sm font-medium text-foreground">
+                  {formatCurrency(parseFloat(selectedArticulo.precio ?? '0'))}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Price</p>
+                <p className="text-xs text-muted-foreground">Costo</p>
                 <p className="text-sm font-medium text-foreground">
-                  {formatCurrency(selectedProduct.price)}
+                  {formatCurrency(parseFloat(selectedArticulo.costo ?? '0'))}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Cost</p>
+                <p className="text-xs text-muted-foreground">Margen</p>
                 <p className="text-sm font-medium text-foreground">
-                  {formatCurrency(selectedProduct.cost)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Profit Margin</p>
-                <p className="text-sm font-medium text-foreground">
-                  {profitMargin(selectedProduct)}%
+                  {profitMargin(selectedArticulo)}%
                 </p>
               </div>
             </div>
 
-            {selectedProduct.description && (
+            {selectedArticulo.observaciones && (
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Description</p>
-                <p className="text-sm text-foreground">{selectedProduct.description}</p>
+                <p className="text-xs text-muted-foreground mb-1">Observaciones</p>
+                <p className="text-sm text-foreground">{selectedArticulo.observaciones}</p>
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-3 border-t border-border pt-3">
               <div>
-                <p className="text-xs text-muted-foreground">Created</p>
-                <p className="text-sm text-foreground">{formatDate(selectedProduct.createdAt)}</p>
+                <p className="text-xs text-muted-foreground">Creado</p>
+                <p className="text-sm text-foreground">{formatDate(selectedArticulo.createdAt)}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Updated</p>
-                <p className="text-sm text-foreground">{formatDate(selectedProduct.updatedAt)}</p>
+                <p className="text-xs text-muted-foreground">Actualizado</p>
+                <p className="text-sm text-foreground">{formatDate(selectedArticulo.updatedAt)}</p>
               </div>
             </div>
           </div>

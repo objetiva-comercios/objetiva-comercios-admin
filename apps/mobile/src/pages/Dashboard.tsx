@@ -24,12 +24,6 @@ const ORDER_STATUS_COLORS: Record<string, string> = {
   cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
 }
 
-const STOCK_STATUS_COLORS: Record<string, string> = {
-  out_of_stock: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-  low_stock: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-  in_stock: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-}
-
 function SkeletonCard() {
   return (
     <div className="bg-card rounded-lg p-4 border border-border">
@@ -119,8 +113,8 @@ export function Dashboard() {
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-card rounded-lg p-4 border border-border">
           <Package size={20} className="text-primary mb-2" />
-          <p className="text-xs text-muted-foreground mb-1">Total Products</p>
-          <p className="text-2xl font-bold text-foreground">{stats.totalProducts}</p>
+          <p className="text-xs text-muted-foreground mb-1">Total Articulos</p>
+          <p className="text-2xl font-bold text-foreground">{stats.totalArticulos}</p>
         </div>
         <div className="bg-card rounded-lg p-4 border border-border">
           <ClipboardList size={20} className="text-primary mb-2" />
@@ -187,17 +181,12 @@ export function Dashboard() {
         ) : (
           <ul className="space-y-2">
             {lowStockItems.slice(0, 5).map(item => (
-              <li key={item.id} className="flex items-center justify-between gap-2">
-                <span className="text-sm text-foreground truncate flex-1">{item.productName}</span>
-                <span className="text-xs text-muted-foreground mr-2">{item.quantity} left</span>
-                <span
-                  className={[
-                    'text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0',
-                    STOCK_STATUS_COLORS[item.status] ?? '',
-                  ].join(' ')}
-                >
-                  {item.status.replace('_', ' ')}
+              <li key={item.articuloCodigo} className="flex items-center justify-between gap-2">
+                <span className="text-sm text-foreground truncate flex-1">
+                  {item.articuloNombre}
                 </span>
+                <span className="text-xs text-muted-foreground mr-2">{item.totalCantidad} uds</span>
+                <span className="text-xs text-muted-foreground">min: {item.minStockMinimo}</span>
               </li>
             ))}
           </ul>
