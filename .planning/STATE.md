@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 17 of 17 (Inventarios)
-Plan: 1 of 5 (17-01 schema & seed complete)
+Plan: 2 of 5 (17-02 backend API modules complete)
 Status: In progress
-Last activity: 2026-03-06 — Completed 17-01 schema & seed
+Last activity: 2026-03-06 — Completed 17-02 backend API modules
 
 Progress: [██████████] 100%
 
@@ -59,6 +59,7 @@ _Updated after each plan completion_
 | Phase 16 P03 | 4min | 2 tasks | 23 files |
 | Phase 16 P04 | 3min | 2 tasks | 6 files |
 | Phase 17 P01 | 3min | 2 tasks | 4 files |
+| Phase 17 P02 | 6min | 2 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,9 @@ _Updated after each plan completion_
 - [Phase 17]: dispositivos_moviles as standalone table for reuse across inventory events
 - [Phase 17]: inventario_sectores linked to depositos (persistent config) not inventarios (per-event)
 - [Phase 17]: uniqueIndex on (inventarioId, articuloCodigo) prevents duplicate counts per articulo per event
+- [Phase 17]: Status transition map as const with validateTransition() + assertEventEditable() guard pattern
+- [Phase 17]: Discrepancy query LEFT JOINs existencias filtered by event depositoId with COALESCE null safety
+- [Phase 17]: Nested sectores endpoints under depositos/:id/sectores with ownership verification
 
 ### Pending Todos
 
@@ -111,10 +115,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-06T01:04:59Z
-Stopped at: Completed 17-01-PLAN.md
-Resume file: .planning/phases/17-inventarios/17-01-SUMMARY.md
-Next action: Execute 17-02-PLAN.md (backend NestJS modules for inventarios domain)
+Last session: 2026-03-06T01:13:48Z
+Stopped at: Completed 17-02-PLAN.md
+Resume file: .planning/phases/17-inventarios/17-02-SUMMARY.md
+Next action: Execute 17-03-PLAN.md (web UI for inventarios)
 
 ---
 

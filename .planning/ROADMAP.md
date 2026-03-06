@@ -114,7 +114,7 @@ Plans:
 4. User can view inventory event history filtered by date or status, and manage dispositivos moviles (CRUD)
 5. Inventarios schema tables (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles) exist in Drizzle with seed data
 
-**Plans:** 1/5 plans executed
+**Plans:** 2/5 plans executed
 
 Plans:
 
@@ -147,7 +147,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete   | 2026-03-05 |
 | 15. Existencias                        | 3/3       | Complete       | 2026-03-05 | -          |
 | 16. Downstream + Dashboard + Nav       | 4/4       | Complete       | 2026-03-05 | -          |
-| 17. Inventarios                        | 1/5       | In Progress    |            | -          |
+| 17. Inventarios                        | 2/5       | In Progress    |            | -          |
 
 ---
 

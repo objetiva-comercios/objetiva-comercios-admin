@@ -41,15 +41,15 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 
 ### Inventarios
 
-- [ ] **INV-01**: User can create an inventory count event (nombre, fecha, deposito, description)
-- [ ] **INV-02**: User can define sectors/zones for a count event (nombre, columnas)
-- [ ] **INV-03**: User can record per-articulo unit counts within an inventory event
-- [ ] **INV-04**: User can view discrepancies between counted quantities and system stock (existencias)
-- [ ] **INV-05**: User can finalize/close an inventory event (locks counts as read-only)
+- [x] **INV-01**: User can create an inventory count event (nombre, fecha, deposito, description)
+- [x] **INV-02**: User can define sectors/zones for a count event (nombre, columnas)
+- [x] **INV-03**: User can record per-articulo unit counts within an inventory event
+- [x] **INV-04**: User can view discrepancies between counted quantities and system stock (existencias)
+- [x] **INV-05**: User can finalize/close an inventory event (locks counts as read-only)
 - [ ] **INV-06**: User can view inventory event history filtered by date or status
-- [ ] **INV-07**: Inventory events follow a status workflow: pendiente -> en_curso -> finalizado (or cancelado)
-- [ ] **INV-08**: User can manage dispositivos moviles (CRUD) for assignment during counting
-- [ ] **INV-09**: User can assign dispositivos moviles to inventory count records
+- [x] **INV-07**: Inventory events follow a status workflow: pendiente -> en_curso -> finalizado (or cancelado)
+- [x] **INV-08**: User can manage dispositivos moviles (CRUD) for assignment during counting
+- [x] **INV-09**: User can assign dispositivos moviles to inventory count records
 
 ### Schema Migration
 
@@ -146,15 +146,15 @@ Deferred to future releases. Tracked but not in current roadmap.
 | EXI-05      | Phase 15 | Complete |
 | EXI-06      | Phase 15 | Complete |
 | EXI-07      | Phase 15 | Complete |
-| INV-01      | Phase 17 | Pending  |
-| INV-02      | Phase 17 | Pending  |
-| INV-03      | Phase 17 | Pending  |
-| INV-04      | Phase 17 | Pending  |
-| INV-05      | Phase 17 | Pending  |
+| INV-01      | Phase 17 | Complete |
+| INV-02      | Phase 17 | Complete |
+| INV-03      | Phase 17 | Complete |
+| INV-04      | Phase 17 | Complete |
+| INV-05      | Phase 17 | Complete |
 | INV-06      | Phase 17 | Pending  |
-| INV-07      | Phase 17 | Pending  |
-| INV-08      | Phase 17 | Pending  |
-| INV-09      | Phase 17 | Pending  |
+| INV-07      | Phase 17 | Complete |
+| INV-08      | Phase 17 | Complete |
+| INV-09      | Phase 17 | Complete |
 | MIG-01      | Phase 14 | Complete |
 | MIG-02      | Phase 15 | Complete |
 | MIG-03      | Phase 16 | Complete |
