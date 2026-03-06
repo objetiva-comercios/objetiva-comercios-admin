@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: completed
-stopped_at: Phase 18 context gathered
-last_updated: '2026-03-06T15:09:53.185Z'
-last_activity: 2026-03-06 — Completed 17-05 counting page with articulo search and discrepancy table
+stopped_at: Completed 18-01-PLAN.md
+last_updated: '2026-03-06T15:12:19.140Z'
+last_activity: 2026-03-06 — Fixed findOne field name and findAll aggregation for article counts
 progress:
   total_phases: 5
   completed_phases: 5
