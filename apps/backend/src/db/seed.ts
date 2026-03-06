@@ -9,6 +9,8 @@ import { generateOrders } from './generators/order.generator'
 import { generateSales } from './generators/sale.generator'
 import { generatePurchases } from './generators/purchase.generator'
 import { generateExistencias } from './generators/existencia.generator'
+import { generateDispositivos } from './generators/dispositivo.generator'
+import { generateInventarioSectores, generateInventarios } from './generators/inventario.generator'
 
 const client = postgres(process.env.DATABASE_URL!)
 const db = drizzle(client, { schema })
@@ -17,6 +19,7 @@ async function seed() {
   console.log('Truncating all tables...')
   await db.execute(sql`
     TRUNCATE TABLE
+      inventarios_articulos, inventarios, inventario_sectores, dispositivos_moviles,
       purchase_items, sale_items, order_items,
       purchases, sales, orders,
       existencias, articulos, depositos,
@@ -101,6 +104,75 @@ async function seed() {
         cantidad: e.cantidad,
         stockMinimo: e.stockMinimo,
         stockMaximo: e.stockMaximo,
+      }))
+    )
+  }
+
+  // ── Dispositivos Moviles ───────────────────────────────────────────────
+
+  const dispositivosData = generateDispositivos()
+  console.log(`Seeding ${dispositivosData.length} dispositivos moviles...`)
+  const insertedDispositivos = await db
+    .insert(schema.dispositivosMoviles)
+    .values(
+      dispositivosData.map(d => ({
+        nombre: d.nombre,
+        identificador: d.identificador,
+        descripcion: d.descripcion,
+        activo: d.activo,
+      }))
+    )
+    .returning({ id: schema.dispositivosMoviles.id })
+  const dispositivoIds = insertedDispositivos.map(d => d.id)
+
+  // ── Inventario Sectores ───────────────────────────────────────────────
+
+  const sectoresData = generateInventarioSectores(depositoIds)
+  console.log(`Seeding ${sectoresData.length} inventario sectores...`)
+  const insertedSectores = await db
+    .insert(schema.inventarioSectores)
+    .values(
+      sectoresData.map(s => ({
+        depositoId: s.depositoId,
+        nombre: s.nombre,
+        columnas: s.columnas,
+      }))
+    )
+    .returning({ id: schema.inventarioSectores.id })
+  const sectorIds = insertedSectores.map(s => s.id)
+
+  // ── Inventarios + Inventarios Articulos ───────────────────────────────
+
+  const { inventarios: inventariosData, inventariosArticulos: invArticulosData } =
+    generateInventarios(depositoIds, articuloCodigos, dispositivoIds, sectorIds)
+  console.log(`Seeding ${inventariosData.length} inventarios...`)
+
+  const insertedInventarioIds: number[] = []
+  for (const inv of inventariosData) {
+    const [inserted] = await db
+      .insert(schema.inventarios)
+      .values({
+        nombre: inv.nombre,
+        fecha: inv.fecha,
+        depositoId: inv.depositoId,
+        descripcion: inv.descripcion,
+        estado: inv.estado,
+      })
+      .returning({ id: schema.inventarios.id })
+    insertedInventarioIds.push(inserted.id)
+  }
+
+  console.log(`Seeding ${invArticulosData.length} inventarios articulos...`)
+  for (let i = 0; i < invArticulosData.length; i += 100) {
+    const batch = invArticulosData.slice(i, i + 100)
+    await db.insert(schema.inventariosArticulos).values(
+      batch.map(ia => ({
+        inventarioId: insertedInventarioIds[ia.inventarioIdx],
+        articuloCodigo: ia.articuloCodigo,
+        cantidadContada: ia.cantidadContada,
+        dispositivoId: ia.dispositivoId,
+        sectorId: ia.sectorId,
+        observaciones: ia.observaciones,
       }))
     )
   }
