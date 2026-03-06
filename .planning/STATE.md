@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: executing
-stopped_at: Completed 17-04-PLAN.md
-last_updated: '2026-03-06T01:30:18Z'
+stopped_at: Completed 17-05-PLAN.md — Phase 17 complete
+last_updated: '2026-03-06T01:38:56.937Z'
 last_activity: 2026-03-06 — Completed 17-04 inventarios list and detail pages
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 17
-  completed_plans: 16
+  completed_plans: 17
   percent: 94
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 17 of 17 (Inventarios)
-Plan: 4 of 5 (17-04 inventarios list and detail pages complete)
-Status: In progress
-Last activity: 2026-03-06 — Completed 17-04 inventarios list and detail pages
+Plan: 5 of 5 (17-05 counting page with discrepancy view complete)
+Status: Phase 17 complete
+Last activity: 2026-03-06 — Completed 17-05 counting page with articulo search and discrepancy table
 
-Progress: [█████████░] 94%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ _Updated after each plan completion_
 | Phase 17 P02 | 6min | 2 tasks | 18 files |
 | Phase 17 P03 | 5min | 2 tasks | 11 files |
 | Phase 17 P04 | 6min | 2 tasks | 6 files |
+| Phase 17 P05 | 5min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,8 @@ _Updated after each plan completion_
 - [Phase 17]: Dispositivos page uses server-side fetch via page.tsx prop drilling — matches depositos pattern
 - [Phase 17]: ESTADO_BADGE_MAP const for consistent status badge rendering across list and detail
 - [Phase 17]: Contextual action buttons per estado with AlertDialog confirmations for destructive transitions
+- [Phase 17]: ConteoTable manages both search and table state internally for simpler mutation/re-fetch coordination
+- [Phase 17]: Reused InlineEditCell from existencias for inventory counting — Enter saves, blur cancels
 
 ### Pending Todos
 
@@ -121,9 +124,9 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-06T01:30:18Z
-Stopped at: Completed 17-04-PLAN.md
-Resume file: .planning/phases/17-inventarios/17-04-SUMMARY.md
+Last session: 2026-03-06T01:38:56.933Z
+Stopped at: Completed 17-05-PLAN.md — Phase 17 complete
+Resume file: None
 Next action: Execute 17-05-PLAN.md (counting page with articulo entry and discrepancy view)
 
 ---

@@ -33,7 +33,7 @@
 - [x] **Phase 14: Schema Foundation + Articulos + Depositos** — New Drizzle schema, articulos full CRUD with text PK, depositos CRUD, seed rewrite (completed 2026-03-05)
 - [x] **Phase 15: Existencias** — Stock per articulo per deposito with low-stock alerts and dual view modes (completed 2026-03-05)
 - [x] **Phase 16: Downstream Migration + Dashboard + Navigation** — FK updates across orders/sales/purchases, dashboard KPIs on new model, nav restructure (completed 2026-03-05)
-- [ ] **Phase 17: Inventarios** — Physical inventory count events with sectors, dispositivos, discrepancy view, status workflow
+- [x] **Phase 17: Inventarios** — Physical inventory count events with sectors, dispositivos, discrepancy view, status workflow (completed 2026-03-06)
 
 ## Phase Details
 
@@ -114,7 +114,7 @@ Plans:
 4. User can view inventory event history filtered by date or status, and manage dispositivos moviles (CRUD)
 5. Inventarios schema tables (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles) exist in Drizzle with seed data
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 
@@ -147,7 +147,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete   | 2026-03-05 |
 | 15. Existencias                        | 3/3       | Complete       | 2026-03-05 | -          |
 | 16. Downstream + Dashboard + Nav       | 4/4       | Complete       | 2026-03-05 | -          |
-| 17. Inventarios                        | 4/5       | In Progress    |            | -          |
+| 17. Inventarios                        | 5/5       | Complete       | 2026-03-06 | -          |
 
 ---
 
