@@ -77,8 +77,23 @@ export class InventariosService {
       .limit(limit)
       .offset(offset)
 
+    const articleCounts = await this.drizzle.db
+      .select({
+        inventarioId: inventariosArticulos.inventarioId,
+        totalArticulos: count(),
+      })
+      .from(inventariosArticulos)
+      .groupBy(inventariosArticulos.inventarioId)
+
+    const countMap = new Map(articleCounts.map(c => [c.inventarioId, c.totalArticulos]))
+
+    const dataWithCounts = data.map(inv => ({
+      ...inv,
+      totalArticulos: countMap.get(inv.id) ?? 0,
+    }))
+
     const totalPages = Math.ceil(total / limit)
-    return new PaginatedResponseDto(data, { total, page, limit, totalPages })
+    return new PaginatedResponseDto(dataWithCounts, { total, page, limit, totalPages })
   }
 
   async findOne(id: number) {
