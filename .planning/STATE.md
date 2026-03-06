@@ -4,13 +4,13 @@ milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: completed
 stopped_at: Phase 18 context gathered
-last_updated: '2026-03-06T14:53:19.575Z'
+last_updated: '2026-03-06T15:09:53.185Z'
 last_activity: 2026-03-06 — Completed 17-05 counting page with articulo search and discrepancy table
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 17
-  completed_plans: 17
+  completed_phases: 5
+  total_plans: 18
+  completed_plans: 18
   percent: 100
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-05)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 17 — Inventarios
+**Current focus:** Phase 18 — Fix Inventarios Article Count
 
 ## Current Position
 
-Phase: 17 of 17 (Inventarios)
-Plan: 5 of 5 (17-05 counting page with discrepancy view complete)
-Status: Phase 17 complete
-Last activity: 2026-03-06 — Completed 17-05 counting page with articulo search and discrepancy table
+Phase: 18 of 18 (Fix Inventarios Article Count)
+Plan: 1 of 1 (18-01 fix inventarios article count complete)
+Status: Phase 18 complete
+Last activity: 2026-03-06 — Fixed findOne field name and findAll aggregation for article counts
 
 Progress: [██████████] 100%
 
@@ -63,6 +63,7 @@ _Updated after each plan completion_
 | Phase 17 P03 | 5min | 2 tasks | 11 files |
 | Phase 17 P04 | 6min | 2 tasks | 6 files |
 | Phase 17 P05 | 5min | 2 tasks | 4 files |
+| Phase 18 P01 | 2min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,7 @@ _Updated after each plan completion_
 - [Phase 17]: Contextual action buttons per estado with AlertDialog confirmations for destructive transitions
 - [Phase 17]: ConteoTable manages both search and table state internally for simpler mutation/re-fetch coordination
 - [Phase 17]: Reused InlineEditCell from existencias for inventory counting — Enter saves, blur cancels
+- [Phase 18]: Followed depositos service aggregation pattern for findAll article counts
 
 ### Pending Todos
 
@@ -124,10 +126,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-06T14:53:19.572Z
-Stopped at: Phase 18 context gathered
-Resume file: .planning/phases/18-fix-inventarios-article-count/18-CONTEXT.md
-Next action: Execute 17-05-PLAN.md (counting page with articulo entry and discrepancy view)
+Last session: 2026-03-06T15:09:22Z
+Stopped at: Completed 18-01-PLAN.md
+Resume file: .planning/phases/18-fix-inventarios-article-count/18-01-SUMMARY.md
+Next action: Phase 18 complete - all plans executed
 
 ---
 

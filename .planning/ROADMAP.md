@@ -34,7 +34,7 @@
 - [x] **Phase 15: Existencias** — Stock per articulo per deposito with low-stock alerts and dual view modes (completed 2026-03-05)
 - [x] **Phase 16: Downstream Migration + Dashboard + Navigation** — FK updates across orders/sales/purchases, dashboard KPIs on new model, nav restructure (completed 2026-03-05)
 - [x] **Phase 17: Inventarios** — Physical inventory count events with sectors, dispositivos, discrepancy view, status workflow (completed 2026-03-06)
-- [ ] **Phase 18: Fix Inventarios Article Count Display** — Fix field name mismatch and missing list aggregation for inventario article counts
+- [x] **Phase 18: Fix Inventarios Article Count Display** — Fix field name mismatch and missing list aggregation for inventario article counts (completed 2026-03-06)
 
 ## Phase Details
 
@@ -136,7 +136,7 @@ Plans:
 1. Inventario detail page shows correct article count (field name aligned between backend and frontend)
 2. Inventario list page shows correct article count per inventario (aggregation subquery in findAll)
 
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 
@@ -166,7 +166,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 15. Existencias                        | 3/3       | Complete       | 2026-03-05 | -          |
 | 16. Downstream + Dashboard + Nav       | 4/4       | Complete       | 2026-03-05 | -          |
 | 17. Inventarios                        | 5/5       | Complete       | 2026-03-06 | -          |
-| 18. Fix Inventarios Article Count      | v1.1      | 0/1            | Planned    | -          |
+| 18. Fix Inventarios Article Count      | 1/1       | Complete       | 2026-03-06 | -          |
 
 ---
 
