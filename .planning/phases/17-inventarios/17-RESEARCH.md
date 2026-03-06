@@ -1,6 +1,6 @@
 # Phase 17: Inventarios - Research
 
-**Researched:** 2026-03-05
+**Researched:** 2026-03-06
 **Domain:** Physical inventory count events (schema, backend CRUD, web UI)
 **Confidence:** HIGH
 
@@ -103,7 +103,7 @@ This phase uses exclusively existing dependencies. No new npm packages required.
 apps/backend/src/
 ├── db/
 │   ├── schema.ts                    # ADD: inventarios, inventariosArticulos, inventarioSectores, dispositivosMoviles tables
-│   ├── seed.ts                      # ADD: seed calls for new tables
+│   ├── seed.ts                      # ADD: seed calls for new tables (update TRUNCATE list)
 │   └── generators/
 │       ├── inventario.generator.ts  # NEW: generates inventory events with counts
 │       └── dispositivo.generator.ts # NEW: generates mobile devices
@@ -153,7 +153,7 @@ apps/web/src/
 │       ├── dispositivos-list.tsx   # NEW: device list
 │       └── dispositivo-dialog.tsx  # NEW: create/edit device dialog
 ├── lib/
-│   ├── api.ts                      # ADD: fetchInventarios, fetchInventario
+│   ├── api.ts                      # ADD: fetchInventarios, fetchInventario, fetchInventarioArticulos
 │   └── api.client.ts               # ADD: client mutation functions
 └── types/
     ├── inventario.ts               # NEW: Inventario, InventarioArticulo types
@@ -235,6 +235,8 @@ const tabs = [
 **When to use:** Dispositivos settings page
 **Reference:** `apps/web/src/app/(dashboard)/settings/depositos/page.tsx`
 
+The settings-nav.tsx uses a `settingsNavItems` array with `{title, href, icon, description}`. Add a new entry for Dispositivos with `Smartphone` icon from lucide-react.
+
 ### Pattern 6: Server-Side Paginated List
 
 **What:** ServerDataTable with server-side pagination, filtering, sorting
@@ -314,7 +316,13 @@ const statusVariants: Record<string, string> = {
 
 **What goes wrong:** Seed fails because inventarios reference deposito IDs that don't exist yet
 **Why it happens:** Seed order matters -- inventarios must come after depositos
-**How to avoid:** Seed order: depositos -> dispositivos_moviles -> inventarios -> inventario_sectores -> inventarios_articulos. Use inserted IDs from earlier steps.
+**How to avoid:** Seed order: depositos -> dispositivos_moviles -> inventarios -> inventario_sectores -> inventarios_articulos. Use inserted IDs from earlier steps. Also update the TRUNCATE statement in seed.ts to include the new tables.
+
+### Pitfall 7: Unique Constraint on Counted Articulos
+
+**What goes wrong:** Duplicate articulo entries in the same inventory event
+**Why it happens:** No unique constraint on (inventario_id, articulo_codigo)
+**How to avoid:** Add a unique index on (inventarioId, articuloCodigo) in the inventarios_articulos table. When the user searches and adds an articulo that already exists in the count, show it in the table and focus the quantity field instead of creating a duplicate.
 
 ## Schema Design
 
@@ -360,6 +368,9 @@ export const inventariosArticulos = pgTable(
     dispositivoId: integer('dispositivo_id').references(() => dispositivosMoviles.id, {
       onDelete: 'set null',
     }),
+    sectorId: integer('sector_id').references(() => inventarioSectores.id, {
+      onDelete: 'set null',
+    }),
     observaciones: text('observaciones'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -368,9 +379,12 @@ export const inventariosArticulos = pgTable(
     index('inv_articulos_inventario_id_idx').on(table.inventarioId),
     index('inv_articulos_articulo_codigo_idx').on(table.articuloCodigo),
     index('inv_articulos_dispositivo_id_idx').on(table.dispositivoId),
+    uniqueIndex('inv_articulos_unique_idx').on(table.inventarioId, table.articuloCodigo),
   ]
 )
 ```
+
+**Design decision:** Unique constraint on (inventarioId, articuloCodigo) enforces one count record per articulo per event. This aligns with the "manual search and add" flow -- if the same articulo is searched again, the UI should focus the existing row rather than creating a duplicate. Optional sectorId FK added to support per-sector counting views without adding complexity (nullable, ignored if not needed).
 
 ### inventario_sectores Table
 
@@ -533,17 +547,136 @@ const searchArticulos = async (query: string) => {
 
 This is a greenfield feature within the existing architecture. All patterns are established from phases 14-16.
 
+## Validation Architecture
+
+### Test Framework
+
+| Property           | Value                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------ |
+| Framework          | No test framework currently installed (no jest, vitest, or test scripts in backend or web) |
+| Config file        | None -- no test infrastructure exists                                                      |
+| Quick run command  | Manual verification via `curl` for API + browser for UI                                    |
+| Full suite command | `pnpm -w run build` (type-check + build all apps)                                          |
+
+**Note:** The project has no automated test infrastructure. Validation relies on type-checking (`tsc --noEmit`), build success, manual API testing, and manual UI verification. Installing a test framework is out of scope for this phase (it would be a separate infrastructure task).
+
+### Phase Requirements to Test Map
+
+| Req ID | Behavior                             | Test Type         | Verification Method                                                                                    |
+| ------ | ------------------------------------ | ----------------- | ------------------------------------------------------------------------------------------------------ |
+| MIG-05 | Schema tables exist in Drizzle       | Schema validation | `cd apps/backend && pnpm db:push` succeeds + `pnpm db:seed` populates new tables                       |
+| INV-01 | Create inventory event               | API + UI manual   | `POST /api/inventarios` returns 201 + dialog creates event in web UI                                   |
+| INV-02 | Define sectors/zones for deposito    | API + UI manual   | `POST /api/depositos/:id/sectores` returns 201 + sectors visible in deposito settings                  |
+| INV-03 | Record per-articulo counts           | API + UI manual   | `POST /api/inventarios/:id/articulos` + counting page allows quantity input                            |
+| INV-04 | View discrepancies vs system stock   | API + UI manual   | `GET /api/inventarios/:id/articulos` returns diferencia field + color coding visible in counting table |
+| INV-05 | Finalize event (lock as read-only)   | API + UI manual   | `PATCH /api/inventarios/:id/estado` with finalizado + UI disables editing controls                     |
+| INV-06 | View event history with filters      | API + UI manual   | `GET /api/inventarios?estado=finalizado&fecha=...` returns filtered results + UI filters work          |
+| INV-07 | Status workflow transitions          | API manual        | Test all valid transitions succeed + invalid transitions return 400                                    |
+| INV-08 | Manage dispositivos moviles (CRUD)   | API + UI manual   | `POST/PATCH/GET /api/dispositivos` + settings page shows CRUD                                          |
+| INV-09 | Assign dispositivos to count records | API manual        | `POST /api/inventarios/:id/articulos` with dispositivoId + field persisted on record                   |
+
+### Verification Commands (per wave/plan completion)
+
+```bash
+# 1. Type-check all apps (catches schema/type errors)
+cd /home/sanchez/proyectos/objetiva-comercios-admin && pnpm -w run build
+
+# 2. Push schema to DB (validates Drizzle schema compiles and applies)
+cd apps/backend && pnpm db:push
+
+# 3. Seed DB (validates FK relationships and data integrity)
+cd apps/backend && pnpm db:seed
+
+# 4. Start backend + verify endpoints
+cd apps/backend && pnpm dev &
+# Then test key endpoints:
+# curl -s http://localhost:3001/api/inventarios | jq .
+# curl -s http://localhost:3001/api/dispositivos | jq .
+# curl -s http://localhost:3001/api/depositos/1/sectores | jq .
+
+# 5. Start web + verify pages load
+cd apps/web && pnpm dev &
+# Then visit:
+# http://localhost:3000/articulos/inventarios (list page)
+# http://localhost:3000/settings/dispositivos (settings page)
+```
+
+### Manual Verification Checklist
+
+**Schema (MIG-05):**
+
+- [ ] `pnpm db:push` succeeds without errors
+- [ ] `pnpm db:seed` populates inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles
+- [ ] Drizzle Studio shows all 4 new tables with correct columns and FK relationships
+
+**Inventory Events (INV-01, INV-06):**
+
+- [ ] Create event dialog opens from inventory list page
+- [ ] Fill nombre, fecha, deposito (select), descripcion and submit
+- [ ] New event appears in ServerDataTable with correct columns
+- [ ] Status badge shows "pendiente" for new events
+- [ ] Filter by estado works (shows only matching events)
+- [ ] Filter by fecha range works
+
+**Sectores (INV-02):**
+
+- [ ] Settings > Depositos shows sector management for each deposito
+- [ ] Can create sector with nombre + columnas
+- [ ] Can edit/delete sectors
+- [ ] Inventory event detail shows inherited sectors from deposito
+
+**Counting (INV-03, INV-04):**
+
+- [ ] Counting page (/articulos/inventarios/[id]/conteo) loads
+- [ ] Search finds articulos by codigo, nombre, or SKU
+- [ ] Adding articulo creates row in counting table with cantidad_contada = 0
+- [ ] Can edit cantidad_contada inline
+- [ ] Stock sistema column shows current existencia for the deposito
+- [ ] Diferencia column calculated correctly (contada - sistema)
+- [ ] Color coding: green (difference = 0), red (negative/faltante), yellow (positive/sobrante)
+- [ ] Toggle/filter to show only discrepancies works
+
+**Status Workflow (INV-05, INV-07):**
+
+- [ ] pendiente event shows "Iniciar Conteo" button
+- [ ] Clicking "Iniciar Conteo" transitions to en_curso
+- [ ] en_curso event shows "Finalizar" button
+- [ ] Clicking "Finalizar" transitions to finalizado
+- [ ] Any non-terminal event shows "Cancelar" button
+- [ ] Finalized event: counting table is read-only (no edit controls)
+- [ ] Cancelled event: counting table is read-only
+- [ ] Backend rejects invalid transitions (e.g., finalizado -> en_curso) with 400
+
+**Dispositivos (INV-08, INV-09):**
+
+- [ ] Settings > Dispositivos page loads with list
+- [ ] Can create device with nombre, identificador, descripcion
+- [ ] Can edit existing device
+- [ ] Can toggle active/inactive
+- [ ] dispositivo_id field accepted on POST /api/inventarios/:id/articulos
+- [ ] dispositivo info visible on counted articulo records
+
+### Sampling Rate
+
+- **Per task commit:** `cd apps/backend && pnpm db:push && pnpm db:seed` (schema integrity)
+- **Per wave merge:** Full `pnpm -w run build` + manual UI spot-check
+- **Phase gate:** Full manual verification checklist above before `/gsd:verify-work`
+
+### Wave 0 Gaps
+
+- [ ] No automated test framework exists -- all validation is manual + type-check + build
+- [ ] Seed data generators for inventario and dispositivo tables need creation
+- [ ] TRUNCATE list in seed.ts must be updated to include new tables (inventarios_articulos, inventarios, inventario_sectores, dispositivos_moviles) in correct order for FK cascade
+
 ## Open Questions
 
 1. **Sector assignment to counted articulos**
    - What we know: Sectores are deposito config, events inherit them
    - What's unclear: Should inventarios_articulos have a sector_id FK to track which sector an articulo was counted in?
-   - Recommendation: Add optional sectorId FK on inventarios_articulos. This enables per-sector counting views without adding complexity. If not needed now, the column can be nullable and ignored.
+   - Recommendation: Add optional sectorId FK on inventarios_articulos. This enables per-sector counting views without adding complexity. The column is nullable and can be ignored if not needed in the UI for now. Schema included above reflects this.
 
-2. **Duplicate articulo counts within an event**
-   - What we know: Articulos are added via search to the count
-   - What's unclear: Can the same articulo be counted multiple times (e.g., by different devices in different sectors)?
-   - Recommendation: Allow multiple records per articulo per event (different sectors/devices may count the same item). The discrepancy calculation should SUM cantidadContada per articuloCodigo. Alternatively, enforce unique articulo per event and update quantity. The simpler approach (unique per event, update quantity) aligns better with the "manual search and add" flow decided in CONTEXT.md.
+2. **Duplicate articulo counts within an event -- RESOLVED**
+   - Decision: Unique constraint on (inventarioId, articuloCodigo). One count record per articulo per event. If the user searches an already-counted articulo, focus the existing row. This is simpler and aligns with the manual search flow.
 
 ## Sources
 
@@ -552,6 +685,7 @@ This is a greenfield feature within the existing architecture. All patterns are 
 - Codebase analysis of existing patterns (schema.ts, seed.ts, depositos module, existencias module, articulos layout, settings nav)
 - CONTEXT.md decisions from discuss-phase session
 - REQUIREMENTS.md requirement definitions
+- Direct inspection of depositos.controller.ts, settings-nav.tsx, articulos/layout.tsx for exact patterns
 
 ### Secondary (MEDIUM confidence)
 
@@ -565,6 +699,7 @@ This is a greenfield feature within the existing architecture. All patterns are 
 - Architecture: HIGH - all patterns established in phases 14-16, this is composition
 - Schema design: HIGH - follows exact patterns from existing tables (depositos, existencias)
 - Pitfalls: HIGH - based on direct codebase analysis and domain understanding
+- Validation: HIGH - verification methods based on existing project workflow (db:push, db:seed, build)
 
-**Research date:** 2026-03-05
-**Valid until:** 2026-04-05 (stable -- no external dependencies to version-check)
+**Research date:** 2026-03-06
+**Valid until:** 2026-04-06 (stable -- no external dependencies to version-check)
