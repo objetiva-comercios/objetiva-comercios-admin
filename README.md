@@ -1,6 +1,6 @@
 # Objetiva Comercios Admin
 
-Sistema de administracion reutilizable para aplicaciones comerciales. Provee una base solida con autenticacion, navegacion y secciones operativas (dashboard, productos, ordenes, inventario, ventas, compras) para comercios pequenos y medianos. Funciona como monorepo con una app web (Next.js), una app movil (Capacitor + React), y un backend (NestJS) que comparten autenticacion via Supabase y datos de negocio en PostgreSQL separado.
+Sistema de administracion para operaciones comerciales. Permite gestionar articulos, existencias (stock multi-deposito), inventarios fisicos, ordenes, ventas y compras desde una app web y una app movil. Funciona como monorepo con un backend NestJS, una app web Next.js y una app movil Capacitor + React, compartiendo autenticacion via Supabase y datos de negocio en PostgreSQL con Drizzle ORM. Dirigido a duenos de comercios y personal interno de operaciones diarias.
 
 ## Tecnologias
 
@@ -43,12 +43,12 @@ pnpm build
 
 3. Configurar las variables de entorno (ver seccion siguiente).
 
-4. Crear la base de datos PostgreSQL y ejecutar migraciones:
+4. Crear la base de datos PostgreSQL y cargar schema + datos de prueba:
 
 ```bash
 createdb nombre_de_tu_base
 cd apps/backend
-pnpm db:migrate
+pnpm db:push
 pnpm db:seed
 ```
 
@@ -63,7 +63,7 @@ pnpm dev
 El proyecto usa **dos bases de datos separadas**:
 
 - **Supabase**: Exclusivamente para autenticacion (login, signup, JWT). No almacena datos de negocio.
-- **PostgreSQL local** (Drizzle ORM): Todos los datos de negocio (productos, ordenes, inventario, ventas, compras).
+- **PostgreSQL local** (Drizzle ORM): Todos los datos de negocio (articulos, existencias, inventarios, ordenes, ventas, compras, depositos, configuracion).
 
 El backend no se conecta a la base de Supabase. Solo valida los JWT que Supabase genera, usando el endpoint JWKS publico.
 
@@ -154,33 +154,40 @@ Los servicios `erp-web` y `erp-backend` se conectan a la red externa `sanchez_do
 ```
 objetiva-comercios-admin/
 ├── apps/
-│   ├── backend/             # NestJS API + Drizzle ORM
+│   ├── backend/                # NestJS API + Drizzle ORM
 │   │   ├── src/
-│   │   │   ├── auth/        # Modulo de autenticacion (controller, types)
-│   │   │   ├── common/      # Guards (JWT), decoradores, DTOs base, filtros de excepcion
-│   │   │   ├── db/          # DrizzleService, schema, seed, generators
-│   │   │   └── modules/     # dashboard, products, orders, inventory, sales, purchases, settings
-│   │   └── drizzle/         # Migraciones SQL generadas
-│   ├── web/                 # Next.js 14 App Router
+│   │   │   ├── auth/           # Modulo de autenticacion (controller, types)
+│   │   │   ├── common/         # Guards (JWT, Roles), decoradores, DTOs, filtros
+│   │   │   ├── db/             # DrizzleService, schema, seed, generators
+│   │   │   └── modules/        # articulos, depositos, existencias, inventarios,
+│   │   │                       # dispositivos, dashboard, orders, sales, purchases, settings
+│   │   └── drizzle/            # Migraciones SQL generadas
+│   ├── web/                    # Next.js 14 App Router
 │   │   └── src/
-│   │       ├── app/         # Rutas: dashboard, articles, orders, inventory, sales, purchases, settings
-│   │       ├── components/  # dashboard/, layout/, providers/, settings/, tables/, ui/ (shadcn)
-│   │       └── lib/         # Supabase clients, API fetch, utilidades
-│   └── mobile/              # Vite + React + Capacitor
+│   │       ├── app/            # Rutas: dashboard, articulos (listado/existencias/inventarios),
+│   │       │                   #   orders, sales, purchases, settings (depositos/dispositivos)
+│   │       ├── components/     # articulos/, depositos/, existencias/, inventarios/,
+│   │       │                   #   dispositivos/, dashboard/, layout/, settings/, tables/, ui/
+│   │       ├── config/         # navigation.ts (sidebar config)
+│   │       ├── lib/            # Supabase clients, API fetch (server + client), utilidades
+│   │       └── types/          # Interfaces TypeScript por dominio
+│   └── mobile/                 # Vite + React + Capacitor
 │       └── src/
-│           ├── components/  # auth/, layout/ (AppShell, BottomTabs, DrawerNav), ui/, OfflineBanner
-│           ├── pages/       # Dashboard, Articles, Orders, Inventory, Sales, Purchases, Login, Signup, Profile, Settings
-│           └── lib/         # Supabase client, API fetch
+│           ├── components/     # auth/, layout/ (AppShell, BottomTabs, DrawerNav), ui/
+│           ├── pages/          # Dashboard, Articulos, Pedidos, Ventas, Compras, Login, Signup,
+│           │                   #   Profile, Settings
+│           ├── lib/            # Supabase client, API fetch
+│           └── types/          # Interfaces TypeScript
 ├── packages/
-│   ├── types/               # Tipos compartidos: User, AppRole, ApiResponse, schemas Zod
-│   ├── ui/                  # Design tokens (spacing, typography), utilidad cn()
-│   └── utils/               # formatCurrency (MXN), formatDate (es-MX)
+│   ├── types/                  # Tipos compartidos: AppRole, schemas Zod de auth
+│   ├── ui/                     # Design tokens (spacing, typography), utilidad cn()
+│   └── utils/                  # formatCurrency (MXN), formatDate (es-MX)
 ├── docker/
-│   ├── web.Dockerfile       # Build multi-stage Next.js standalone
-│   └── backend.Dockerfile   # Build multi-stage NestJS
-├── docker-compose.yml       # Servicios erp-web + erp-backend
-├── turbo.json               # Pipeline de build con cache
-└── pnpm-workspace.yaml      # apps/* + packages/*
+│   ├── web.Dockerfile          # Build multi-stage Next.js standalone
+│   └── backend.Dockerfile      # Build multi-stage NestJS
+├── docker-compose.yml          # Servicios erp-web + erp-backend
+├── turbo.json                  # Pipeline de build con cache
+└── pnpm-workspace.yaml         # apps/* + packages/*
 ```
 
 Flujo de autenticacion:
@@ -210,21 +217,66 @@ Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_m
 
 ### Dashboard
 
-| Metodo | Ruta             | Descripcion                                          |
-| ------ | ---------------- | ---------------------------------------------------- |
-| GET    | `/api/dashboard` | KPIs agregados: ventas, ordenes, inventario, compras |
+| Metodo | Ruta             | Descripcion                                                  |
+| ------ | ---------------- | ------------------------------------------------------------ |
+| GET    | `/api/dashboard` | KPIs: total articulos, activos, stock bajo, ventas recientes |
 
-### Productos
+### Articulos
 
-| Metodo | Ruta                       | Descripcion                                           |
-| ------ | -------------------------- | ----------------------------------------------------- |
-| GET    | `/api/products`            | Lista paginada con filtros (search, status, category) |
-| GET    | `/api/products/categories` | Lista de categorias                                   |
-| GET    | `/api/products/stats`      | Conteo por estado                                     |
-| GET    | `/api/products/:id`        | Detalle de producto                                   |
-| POST   | `/api/products`            | Crear producto (admin)                                |
-| PATCH  | `/api/products/:id`        | Actualizar producto (admin)                           |
-| DELETE | `/api/products/:id`        | Eliminar producto (admin)                             |
+| Metodo | Ruta                            | Descripcion                                                   |
+| ------ | ------------------------------- | ------------------------------------------------------------- |
+| GET    | `/api/articulos`                | Lista paginada con busqueda multi-campo (codigo, SKU, nombre) |
+| GET    | `/api/articulos/:codigo`        | Detalle de articulo                                           |
+| POST   | `/api/articulos`                | Crear articulo (admin)                                        |
+| PATCH  | `/api/articulos/:codigo`        | Actualizar articulo (admin)                                   |
+| PATCH  | `/api/articulos/:codigo/toggle` | Toggle activo/inactivo (admin)                                |
+
+### Depositos
+
+| Metodo | Ruta                                    | Descripcion                    |
+| ------ | --------------------------------------- | ------------------------------ |
+| GET    | `/api/depositos`                        | Lista con resumen de stock     |
+| POST   | `/api/depositos`                        | Crear deposito (admin)         |
+| PATCH  | `/api/depositos/:id`                    | Actualizar deposito (admin)    |
+| PATCH  | `/api/depositos/:id/toggle`             | Toggle activo/inactivo (admin) |
+| GET    | `/api/depositos/:id/sectores`           | Sectores de un deposito        |
+| POST   | `/api/depositos/:id/sectores`           | Crear sector (admin)           |
+| PATCH  | `/api/depositos/:id/sectores/:sectorId` | Actualizar sector (admin)      |
+| DELETE | `/api/depositos/:id/sectores/:sectorId` | Eliminar sector (admin)        |
+
+### Existencias
+
+| Metodo | Ruta                                           | Descripcion                                  |
+| ------ | ---------------------------------------------- | -------------------------------------------- |
+| GET    | `/api/existencias`                             | Stock por deposito (filtrable)               |
+| GET    | `/api/existencias/matrix`                      | Vista matricial: articulos x depositos       |
+| GET    | `/api/existencias/kpi`                         | KPIs: total con stock, stock bajo, sin stock |
+| GET    | `/api/existencias/articulo/:articuloCodigo`    | Stock de un articulo en todos los depositos  |
+| POST   | `/api/existencias`                             | Upsert de existencia (admin)                 |
+| PATCH  | `/api/existencias/:articuloCodigo/:depositoId` | Actualizar cantidad/thresholds (admin)       |
+
+### Inventarios
+
+| Metodo | Ruta                                         | Descripcion                                       |
+| ------ | -------------------------------------------- | ------------------------------------------------- |
+| GET    | `/api/inventarios`                           | Lista de eventos de conteo (filtrable por estado) |
+| GET    | `/api/inventarios/:id`                       | Detalle de evento con total de articulos          |
+| POST   | `/api/inventarios`                           | Crear evento de conteo (admin)                    |
+| PATCH  | `/api/inventarios/:id`                       | Actualizar evento (admin)                         |
+| PATCH  | `/api/inventarios/:id/estado`                | Transicion de estado (admin)                      |
+| GET    | `/api/inventarios/:id/articulos`             | Articulos contados con discrepancias vs stock     |
+| POST   | `/api/inventarios/:id/articulos`             | Agregar articulo al conteo (admin)                |
+| PATCH  | `/api/inventarios/:id/articulos/:articuloId` | Actualizar cantidad contada (admin)               |
+| DELETE | `/api/inventarios/:id/articulos/:articuloId` | Quitar articulo del conteo (admin)                |
+
+### Dispositivos Moviles
+
+| Metodo | Ruta                           | Descripcion                    |
+| ------ | ------------------------------ | ------------------------------ |
+| GET    | `/api/dispositivos`            | Lista de dispositivos          |
+| POST   | `/api/dispositivos`            | Crear dispositivo (admin)      |
+| PATCH  | `/api/dispositivos/:id`        | Actualizar dispositivo (admin) |
+| PATCH  | `/api/dispositivos/:id/toggle` | Toggle activo/inactivo (admin) |
 
 ### Ordenes
 
@@ -236,16 +288,6 @@ Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_m
 | POST   | `/api/orders`       | Crear orden (admin)        |
 | PATCH  | `/api/orders/:id`   | Actualizar orden (admin)   |
 | DELETE | `/api/orders/:id`   | Eliminar orden (admin)     |
-
-### Inventario
-
-| Metodo | Ruta                       | Descripcion                   |
-| ------ | -------------------------- | ----------------------------- |
-| GET    | `/api/inventory`           | Lista paginada con filtros    |
-| GET    | `/api/inventory/stats`     | Conteo por estado             |
-| GET    | `/api/inventory/low-stock` | Items con stock bajo          |
-| GET    | `/api/inventory/:id`       | Detalle de item               |
-| PATCH  | `/api/inventory/:id`       | Actualizar inventario (admin) |
 
 ### Ventas
 
@@ -274,21 +316,21 @@ Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_m
 | Metodo | Ruta                       | Descripcion                                          |
 | ------ | -------------------------- | ---------------------------------------------------- |
 | GET    | `/api/settings`            | Obtener configuracion del negocio (publico)          |
-| PATCH  | `/api/settings`            | Actualizar configuracion                             |
+| PATCH  | `/api/settings`            | Actualizar configuracion (admin)                     |
 | POST   | `/api/settings/logo/:type` | Subir logo (type: `square` o `rectangular`, max 2MB) |
-| DELETE | `/api/settings/logo/:type` | Eliminar logo (type: `square` o `rectangular`)       |
+| DELETE | `/api/settings/logo/:type` | Eliminar logo (admin)                                |
 
 ## Scripts y automatizacion
 
 ### Base de datos (desde `apps/backend/`)
 
-| Comando            | Descripcion                                                                            |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| `pnpm db:generate` | Genera migraciones a partir del schema Drizzle                                         |
-| `pnpm db:migrate`  | Aplica migraciones pendientes                                                          |
-| `pnpm db:push`     | Empuja el schema directamente (sin migracion)                                          |
-| `pnpm db:seed`     | Llena la base con datos de prueba (500 productos, 200 ordenes, 150 ventas, 50 compras) |
-| `pnpm db:studio`   | Abre Drizzle Studio (editor visual de base de datos)                                   |
+| Comando            | Descripcion                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| `pnpm db:generate` | Genera migraciones a partir del schema Drizzle                                                    |
+| `pnpm db:migrate`  | Aplica migraciones pendientes                                                                     |
+| `pnpm db:push`     | Empuja el schema directamente (sin migracion)                                                     |
+| `pnpm db:seed`     | Llena la base con datos de prueba (300 articulos, 5 depositos, existencias, inventarios, ordenes) |
+| `pnpm db:studio`   | Abre Drizzle Studio (editor visual de base de datos)                                              |
 
 ### Pre-commit (automatico)
 
@@ -358,6 +400,6 @@ pnpm install
 
 ## Estado del proyecto
 
-Milestone v1.0 completado -- 13 fases ejecutadas, 42 planes completados (100%).
+Milestone v1.1 "Modelo Articulos + Inventario" completado -- 5 fases, 18 planes ejecutados (100%). Reemplazo completo del modelo de datos: articulos con PK texto, existencias multi-deposito, inventarios fisicos con conteo por sectores y dispositivos moviles.
 
-Ultimo avance: 2026-03-04 (traduccion completa a espanol, fix JWT ES256/JWKS, fix redirects Docker).
+Ultimo avance: 2026-03-06.
