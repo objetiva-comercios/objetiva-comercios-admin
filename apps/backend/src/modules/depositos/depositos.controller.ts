@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Param,
   Body,
   ParseIntPipe,
@@ -12,6 +13,8 @@ import {
 import { DepositosService } from './depositos.service'
 import { CreateDepositoDto } from './dto/create-deposito.dto'
 import { UpdateDepositoDto } from './dto/update-deposito.dto'
+import { CreateSectorDto } from './dto/create-sector.dto'
+import { UpdateSectorDto } from './dto/update-sector.dto'
 import { RolesGuard } from '../../common/guards/roles.guard'
 import { Roles } from '../../common/decorators/roles.decorator'
 
@@ -52,5 +55,40 @@ export class DepositosController {
   @Patch(':id/toggle')
   toggleActive(@Param('id', ParseIntPipe) id: number) {
     return this.depositosService.toggleActive(id)
+  }
+
+  // ─── Sectores ──────────────────────────────────────────────────────────────
+
+  @Get(':id/sectores')
+  findSectores(@Param('id', ParseIntPipe) id: number) {
+    return this.depositosService.findSectores(id)
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Post(':id/sectores')
+  createSector(@Param('id', ParseIntPipe) id: number, @Body() dto: CreateSectorDto) {
+    return this.depositosService.createSector(id, dto)
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Patch(':id/sectores/:sectorId')
+  updateSector(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('sectorId', ParseIntPipe) sectorId: number,
+    @Body() dto: UpdateSectorDto
+  ) {
+    return this.depositosService.updateSector(id, sectorId, dto)
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Delete(':id/sectores/:sectorId')
+  deleteSector(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('sectorId', ParseIntPipe) sectorId: number
+  ) {
+    return this.depositosService.deleteSector(id, sectorId)
   }
 }

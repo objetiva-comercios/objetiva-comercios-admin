@@ -11,6 +11,8 @@ import { SettingsModule } from './modules/settings/settings.module'
 import { ArticulosModule } from './modules/articulos/articulos.module'
 import { DepositosModule } from './modules/depositos/depositos.module'
 import { ExistenciasModule } from './modules/existencias/existencias.module'
+import { InventariosModule } from './modules/inventarios/inventarios.module'
+import { DispositivosModule } from './modules/dispositivos/dispositivos.module'
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { ExistenciasModule } from './modules/existencias/existencias.module'
     ArticulosModule,
     DepositosModule,
     ExistenciasModule,
+    InventariosModule,
+    DispositivosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
