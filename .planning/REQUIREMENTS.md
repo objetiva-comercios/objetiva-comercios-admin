@@ -46,7 +46,7 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 - [x] **INV-03**: User can record per-articulo unit counts within an inventory event
 - [x] **INV-04**: User can view discrepancies between counted quantities and system stock (existencias)
 - [x] **INV-05**: User can finalize/close an inventory event (locks counts as read-only)
-- [ ] **INV-06**: User can view inventory event history filtered by date or status
+- [x] **INV-06**: User can view inventory event history filtered by date or status
 - [x] **INV-07**: Inventory events follow a status workflow: pendiente -> en_curso -> finalizado (or cancelado)
 - [x] **INV-08**: User can manage dispositivos moviles (CRUD) for assignment during counting
 - [x] **INV-09**: User can assign dispositivos moviles to inventory count records
@@ -151,7 +151,7 @@ Deferred to future releases. Tracked but not in current roadmap.
 | INV-03      | Phase 17 | Complete |
 | INV-04      | Phase 17 | Complete |
 | INV-05      | Phase 17 | Complete |
-| INV-06      | Phase 17 | Pending  |
+| INV-06      | Phase 17 | Complete |
 | INV-07      | Phase 17 | Complete |
 | INV-08      | Phase 17 | Complete |
 | INV-09      | Phase 17 | Complete |

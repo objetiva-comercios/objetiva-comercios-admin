@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
 status: executing
-stopped_at: Completed 17-02-PLAN.md
-last_updated: '2026-03-06T01:22:15.262Z'
-last_activity: 2026-03-06 — Completed 17-02 backend API modules
+stopped_at: Completed 17-04-PLAN.md
+last_updated: '2026-03-06T01:30:18Z'
+last_activity: 2026-03-06 — Completed 17-04 inventarios list and detail pages
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 17
-  completed_plans: 15
-  percent: 88
+  completed_plans: 16
+  percent: 94
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Position
 
 Phase: 17 of 17 (Inventarios)
-Plan: 3 of 5 (17-03 web types, API layer, settings UI complete)
+Plan: 4 of 5 (17-04 inventarios list and detail pages complete)
 Status: In progress
-Last activity: 2026-03-06 — Completed 17-03 web types, API layer, settings UI
+Last activity: 2026-03-06 — Completed 17-04 inventarios list and detail pages
 
-Progress: [█████████░] 88%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ _Updated after each plan completion_
 | Phase 17 P01 | 3min | 2 tasks | 4 files |
 | Phase 17 P02 | 6min | 2 tasks | 18 files |
 | Phase 17 P03 | 5min | 2 tasks | 11 files |
+| Phase 17 P04 | 6min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,8 @@ _Updated after each plan completion_
 - [Phase 17]: Nested sectores endpoints under depositos/:id/sectores with ownership verification
 - [Phase 17]: Expandable deposito rows for inline sectores CRUD — client-side fetch on expand
 - [Phase 17]: Dispositivos page uses server-side fetch via page.tsx prop drilling — matches depositos pattern
+- [Phase 17]: ESTADO_BADGE_MAP const for consistent status badge rendering across list and detail
+- [Phase 17]: Contextual action buttons per estado with AlertDialog confirmations for destructive transitions
 
 ### Pending Todos
 
@@ -118,10 +121,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-06T01:21:29Z
-Stopped at: Completed 17-03-PLAN.md
-Resume file: .planning/phases/17-inventarios/17-03-SUMMARY.md
-Next action: Execute 17-04-PLAN.md (inventarios list and detail pages)
+Last session: 2026-03-06T01:30:18Z
+Stopped at: Completed 17-04-PLAN.md
+Resume file: .planning/phases/17-inventarios/17-04-SUMMARY.md
+Next action: Execute 17-05-PLAN.md (counting page with articulo entry and discrepancy view)
 
 ---
 
