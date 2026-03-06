@@ -110,7 +110,7 @@ export class InventariosService {
 
     return {
       ...rows[0],
-      totalArticulosContados: summary?.totalArticulos ?? 0,
+      totalArticulos: summary?.totalArticulos ?? 0,
     }
   }
 
