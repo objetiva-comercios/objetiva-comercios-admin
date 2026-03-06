@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 
 ## Current Position
 
-Phase: 16 of 17 (Downstream Migration)
-Plan: 4 of 4 (16-04 mobile types gap closure complete)
-Status: Phase 16 complete
-Last activity: 2026-03-05 — Completed 16-04 mobile types gap closure
+Phase: 17 of 17 (Inventarios)
+Plan: 1 of 5 (17-01 schema & seed complete)
+Status: In progress
+Last activity: 2026-03-06 — Completed 17-01 schema & seed
 
 Progress: [██████████] 100%
 
@@ -58,6 +58,7 @@ _Updated after each plan completion_
 | Phase 16 P02 | 4min | 2 tasks | 7 files |
 | Phase 16 P03 | 4min | 2 tasks | 23 files |
 | Phase 16 P04 | 3min | 2 tasks | 6 files |
+| Phase 17 P01 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ _Updated after each plan completion_
 - [Phase 16]: Mobile Spanish route paths: /articulos, /pedidos, /ventas, /compras
 - [Phase 16]: Mobile Articulo type mirrors web Articulo interface for API consistency
 - [Phase 16]: Mobile Articulos page uses activo boolean filter instead of status enum
+- [Phase 17]: dispositivos_moviles as standalone table for reuse across inventory events
+- [Phase 17]: inventario_sectores linked to depositos (persistent config) not inventarios (per-event)
+- [Phase 17]: uniqueIndex on (inventarioId, articuloCodigo) prevents duplicate counts per articulo per event
 
 ### Pending Todos
 
@@ -107,10 +111,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-05T22:02:04.179Z
-Stopped at: Phase 17 context gathered
-Resume file: .planning/phases/17-inventarios/17-CONTEXT.md
-Next action: Phase 16 complete (all gap closures done). Proceed to Phase 17 or milestone completion.
+Last session: 2026-03-06T01:04:59Z
+Stopped at: Completed 17-01-PLAN.md
+Resume file: .planning/phases/17-inventarios/17-01-SUMMARY.md
+Next action: Execute 17-02-PLAN.md (backend NestJS modules for inventarios domain)
 
 ---
 

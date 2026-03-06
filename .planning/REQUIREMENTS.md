@@ -57,7 +57,7 @@ Requirements for milestone v1.1: Modelo Articulos + Inventario. Each maps to roa
 - [x] **MIG-02**: Inventory table replaced by existencias table (articulo_codigo + deposito_id composite)
 - [x] **MIG-03**: Order items, sale items, and purchase items FK updated from productId (integer) to articuloCodigo (text)
 - [x] **MIG-04**: Depositos table created in Drizzle schema
-- [ ] **MIG-05**: Inventarios model tables created (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles)
+- [x] **MIG-05**: Inventarios model tables created (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles)
 - [x] **MIG-06**: Seed data rewritten for all new tables (articulos, depositos, existencias, inventarios with sample counts)
 - [x] **MIG-07**: Articulo monetary fields (precio, costo) use numeric(10,2) type
 
@@ -159,7 +159,7 @@ Deferred to future releases. Tracked but not in current roadmap.
 | MIG-02      | Phase 15 | Complete |
 | MIG-03      | Phase 16 | Complete |
 | MIG-04      | Phase 14 | Complete |
-| MIG-05      | Phase 17 | Pending  |
+| MIG-05      | Phase 17 | Complete |
 | MIG-06      | Phase 14 | Complete |
 | MIG-07      | Phase 14 | Complete |
 | NAV-01      | Phase 16 | Complete |
