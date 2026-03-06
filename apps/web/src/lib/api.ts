@@ -6,6 +6,12 @@ import type { Order } from '@/types/order'
 import type { Sale } from '@/types/sale'
 import type { Purchase } from '@/types/purchase'
 import type { Existencia, ExistenciasKpi } from '@/types/existencia'
+import type {
+  Inventario,
+  InventarioArticuloWithDiscrepancy,
+  InventarioSector,
+} from '@/types/inventario'
+import type { DispositivoMovil } from '@/types/dispositivo'
 import { createClient } from '@/lib/supabase/server'
 
 const API_BASE_URL =
@@ -164,4 +170,45 @@ export async function fetchExistencias(params?: {
 
 export async function fetchExistenciasKpi(): Promise<ExistenciasKpi> {
   return fetchWithAuth<ExistenciasKpi>('/existencias/kpi')
+}
+
+export async function fetchInventarios(params?: {
+  page?: number
+  limit?: number
+  estado?: string
+  fechaDesde?: string
+  fechaHasta?: string
+}): Promise<PaginatedResponse<Inventario>> {
+  const searchParams = new URLSearchParams()
+
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.estado) searchParams.set('estado', params.estado)
+  if (params?.fechaDesde) searchParams.set('fechaDesde', params.fechaDesde)
+  if (params?.fechaHasta) searchParams.set('fechaHasta', params.fechaHasta)
+
+  const queryString = searchParams.toString()
+  const endpoint = `/inventarios${queryString ? `?${queryString}` : ''}`
+
+  return fetchWithAuth<PaginatedResponse<Inventario>>(endpoint)
+}
+
+export async function fetchInventario(id: number): Promise<Inventario> {
+  return fetchWithAuth<Inventario>(`/inventarios/${id}`)
+}
+
+export async function fetchInventarioArticulos(
+  inventarioId: number
+): Promise<InventarioArticuloWithDiscrepancy[]> {
+  return fetchWithAuth<InventarioArticuloWithDiscrepancy[]>(
+    `/inventarios/${inventarioId}/articulos`
+  )
+}
+
+export async function fetchDispositivos(): Promise<DispositivoMovil[]> {
+  return fetchWithAuth<DispositivoMovil[]>('/dispositivos')
+}
+
+export async function fetchSectores(depositoId: number): Promise<InventarioSector[]> {
+  return fetchWithAuth<InventarioSector[]>(`/depositos/${depositoId}/sectores`)
 }

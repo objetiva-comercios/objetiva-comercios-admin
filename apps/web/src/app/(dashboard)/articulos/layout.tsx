@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 const tabs = [
   { label: 'Listado', href: '/articulos' },
   { label: 'Existencias', href: '/articulos/existencias' },
+  { label: 'Inventarios', href: '/articulos/inventarios' },
 ]
 
 export default function ArticulosLayout({ children }: { children: React.ReactNode }) {

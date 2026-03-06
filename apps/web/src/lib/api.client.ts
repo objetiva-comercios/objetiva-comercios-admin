@@ -4,6 +4,8 @@ import type { Articulo } from '@/types/articulo'
 import type { Deposito } from '@/types/deposito'
 import type { Existencia, ExistenciasKpi, ExistenciaMatrixRow } from '@/types/existencia'
 import type { BusinessSettings } from '@/types/settings'
+import type { Inventario, InventarioArticulo, InventarioSector } from '@/types/inventario'
+import type { DispositivoMovil } from '@/types/dispositivo'
 
 interface PaginatedResponse<T> {
   data: T[]
@@ -277,6 +279,192 @@ export async function updateExistenciaClient(
       body: JSON.stringify(data),
     }
   )
+  await throwIfError(response)
+  return response.json()
+}
+
+// --- Inventarios ---
+
+export async function createInventario(data: {
+  nombre: string
+  fecha: string
+  depositoId: number
+  descripcion?: string
+}): Promise<Inventario> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/inventarios`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updateInventario(
+  id: number,
+  data: { nombre?: string; descripcion?: string }
+): Promise<Inventario> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/inventarios/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function transitionInventarioEstado(id: number, estado: string): Promise<Inventario> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/inventarios/${id}/estado`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify({ estado }),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function addInventarioArticulo(
+  inventarioId: number,
+  data: {
+    articuloCodigo: string
+    cantidadContada?: number
+    dispositivoId?: number
+    sectorId?: number
+    observaciones?: string
+  }
+): Promise<InventarioArticulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/inventarios/${inventarioId}/articulos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updateInventarioArticulo(
+  inventarioId: number,
+  articuloId: number,
+  data: { cantidadContada?: number; observaciones?: string }
+): Promise<InventarioArticulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/inventarios/${inventarioId}/articulos/${articuloId}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify(data),
+    }
+  )
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function removeInventarioArticulo(
+  inventarioId: number,
+  articuloId: number
+): Promise<void> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/inventarios/${inventarioId}/articulos/${articuloId}`,
+    {
+      method: 'DELETE',
+      headers: { ...headers },
+    }
+  )
+  await throwIfError(response)
+}
+
+// --- Dispositivos ---
+
+export async function createDispositivo(data: {
+  nombre: string
+  identificador: string
+  descripcion?: string
+}): Promise<DispositivoMovil> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/dispositivos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updateDispositivo(
+  id: number,
+  data: { nombre?: string; identificador?: string; descripcion?: string }
+): Promise<DispositivoMovil> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/dispositivos/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function toggleDispositivo(id: number): Promise<DispositivoMovil> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/dispositivos/${id}/toggle`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+// --- Sectores ---
+
+export async function createSector(
+  depositoId: number,
+  data: { nombre: string; columnas?: string[] }
+): Promise<InventarioSector> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos/${depositoId}/sectores`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updateSector(
+  depositoId: number,
+  sectorId: number,
+  data: { nombre?: string; columnas?: string[] }
+): Promise<InventarioSector> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos/${depositoId}/sectores/${sectorId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function deleteSector(depositoId: number, sectorId: number): Promise<void> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos/${depositoId}/sectores/${sectorId}`, {
+    method: 'DELETE',
+    headers: { ...headers },
+  })
+  await throwIfError(response)
+}
+
+export async function fetchSectoresClient(depositoId: number): Promise<InventarioSector[]> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/depositos/${depositoId}/sectores`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
   await throwIfError(response)
   return response.json()
 }
