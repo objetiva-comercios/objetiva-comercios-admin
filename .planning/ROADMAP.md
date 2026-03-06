@@ -136,7 +136,11 @@ Plans:
 1. Inventario detail page shows correct article count (field name aligned between backend and frontend)
 2. Inventario list page shows correct article count per inventario (aggregation subquery in findAll)
 
-Plans: 0/1 plans
+**Plans:** 1 plan
+
+Plans:
+
+- [ ] 18-01-PLAN.md — Fix findOne field name mismatch and findAll article count aggregation
 
 ## Progress
 
@@ -167,4 +171,4 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-06 (Phase 17 planned: 5 plans)_
+_Last updated: 2026-03-06 (Phase 18 planned: 1 plan)_
