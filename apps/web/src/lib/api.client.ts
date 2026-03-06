@@ -4,7 +4,12 @@ import type { Articulo } from '@/types/articulo'
 import type { Deposito } from '@/types/deposito'
 import type { Existencia, ExistenciasKpi, ExistenciaMatrixRow } from '@/types/existencia'
 import type { BusinessSettings } from '@/types/settings'
-import type { Inventario, InventarioArticulo, InventarioSector } from '@/types/inventario'
+import type {
+  Inventario,
+  InventarioArticulo,
+  InventarioArticuloWithDiscrepancy,
+  InventarioSector,
+} from '@/types/inventario'
 import type { DispositivoMovil } from '@/types/dispositivo'
 
 interface PaginatedResponse<T> {
@@ -463,6 +468,17 @@ export async function deleteSector(depositoId: number, sectorId: number): Promis
 export async function fetchSectoresClient(depositoId: number): Promise<InventarioSector[]> {
   const headers = await getAuthHeaders()
   const response = await fetch(`${API_BASE_URL}/api/depositos/${depositoId}/sectores`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchInventarioArticulosClient(
+  inventarioId: number
+): Promise<InventarioArticuloWithDiscrepancy[]> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/inventarios/${inventarioId}/articulos`, {
     headers: { 'Content-Type': 'application/json', ...headers },
   })
   await throwIfError(response)
