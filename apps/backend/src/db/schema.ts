@@ -7,6 +7,7 @@ import {
   doublePrecision,
   timestamp,
   index,
+  uniqueIndex,
   numeric,
   boolean,
   jsonb,
@@ -268,6 +269,96 @@ export const existencias = pgTable(
   ]
 )
 
+// ─── Inventarios ────────────────────────────────────────────────────────────
+
+export const inventarios = pgTable(
+  'inventarios',
+  {
+    id: serial('id').primaryKey(),
+    nombre: varchar('nombre', { length: 255 }).notNull(),
+    fecha: timestamp('fecha').notNull(),
+    depositoId: integer('deposito_id')
+      .notNull()
+      .references(() => depositos.id, { onDelete: 'restrict' }),
+    descripcion: text('descripcion'),
+    estado: varchar('estado', { length: 20 }).notNull().default('pendiente'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    index('inventarios_deposito_id_idx').on(table.depositoId),
+    index('inventarios_estado_idx').on(table.estado),
+    index('inventarios_fecha_idx').on(table.fecha),
+  ]
+)
+
+// ─── Dispositivos Moviles ───────────────────────────────────────────────────
+
+export const dispositivosMoviles = pgTable(
+  'dispositivos_moviles',
+  {
+    id: serial('id').primaryKey(),
+    nombre: varchar('nombre', { length: 100 }).notNull(),
+    identificador: varchar('identificador', { length: 100 }).notNull().unique(),
+    descripcion: text('descripcion'),
+    activo: boolean('activo').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    index('dispositivos_moviles_identificador_idx').on(table.identificador),
+    index('dispositivos_moviles_activo_idx').on(table.activo),
+  ]
+)
+
+// ─── Inventario Sectores ────────────────────────────────────────────────────
+
+export const inventarioSectores = pgTable(
+  'inventario_sectores',
+  {
+    id: serial('id').primaryKey(),
+    depositoId: integer('deposito_id')
+      .notNull()
+      .references(() => depositos.id, { onDelete: 'cascade' }),
+    nombre: varchar('nombre', { length: 100 }).notNull(),
+    columnas: jsonb('columnas').$type<string[]>().default([]),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [index('inv_sectores_deposito_id_idx').on(table.depositoId)]
+)
+
+// ─── Inventarios Articulos ──────────────────────────────────────────────────
+
+export const inventariosArticulos = pgTable(
+  'inventarios_articulos',
+  {
+    id: serial('id').primaryKey(),
+    inventarioId: integer('inventario_id')
+      .notNull()
+      .references(() => inventarios.id, { onDelete: 'cascade' }),
+    articuloCodigo: text('articulo_codigo')
+      .notNull()
+      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    cantidadContada: integer('cantidad_contada').notNull().default(0),
+    dispositivoId: integer('dispositivo_id').references(() => dispositivosMoviles.id, {
+      onDelete: 'set null',
+    }),
+    sectorId: integer('sector_id').references(() => inventarioSectores.id, {
+      onDelete: 'set null',
+    }),
+    observaciones: text('observaciones'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    index('inv_articulos_inventario_id_idx').on(table.inventarioId),
+    index('inv_articulos_articulo_codigo_idx').on(table.articuloCodigo),
+    index('inv_articulos_dispositivo_id_idx').on(table.dispositivoId),
+    uniqueIndex('inv_articulos_unique_idx').on(table.inventarioId, table.articuloCodigo),
+  ]
+)
+
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 
 export type Order = typeof orders.$inferSelect
@@ -299,3 +390,15 @@ export type NewDeposito = typeof depositos.$inferInsert
 
 export type Existencia = typeof existencias.$inferSelect
 export type NewExistencia = typeof existencias.$inferInsert
+
+export type Inventario = typeof inventarios.$inferSelect
+export type NewInventario = typeof inventarios.$inferInsert
+
+export type InventarioArticulo = typeof inventariosArticulos.$inferSelect
+export type NewInventarioArticulo = typeof inventariosArticulos.$inferInsert
+
+export type InventarioSector = typeof inventarioSectores.$inferSelect
+export type NewInventarioSector = typeof inventarioSectores.$inferInsert
+
+export type DispositivoMovil = typeof dispositivosMoviles.$inferSelect
+export type NewDispositivoMovil = typeof dispositivosMoviles.$inferInsert
