@@ -113,7 +113,16 @@ Plans:
 3. User can finalize/close an inventory event (locking counts as read-only) following the status workflow: pendiente -> en_curso -> finalizado (or cancelado)
 4. User can view inventory event history filtered by date or status, and manage dispositivos moviles (CRUD)
 5. Inventarios schema tables (inventarios, inventarios_articulos, inventario_sectores, dispositivos_moviles) exist in Drizzle with seed data
-   **Plans**: TBD
+
+**Plans:** 5 plans
+
+Plans:
+
+- [ ] 17-01-PLAN.md — Schema tables + seed generators (Drizzle tables, type exports, generators, seed update)
+- [ ] 17-02-PLAN.md — Backend modules (InventariosModule + DispositivosModule + sectores extension)
+- [ ] 17-03-PLAN.md — Web types + API + tab nav + Dispositivos settings + Sectores in depositos settings
+- [ ] 17-04-PLAN.md — Inventarios list page + create dialog + event detail with status transitions
+- [ ] 17-05-PLAN.md — Counting page with articulo search, discrepancy table, inline editing
 
 ## Progress
 
@@ -138,9 +147,9 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17
 | 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
 | 15. Existencias                        | 3/3       | Complete       | 2026-03-05  | -          |
 | 16. Downstream + Dashboard + Nav       | 4/4       | Complete       | 2026-03-05  | -          |
-| 17. Inventarios                        | v1.1      | 0/?            | Not started | -          |
+| 17. Inventarios                        | v1.1      | 0/5            | Not started | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-05 (Phase 16 gap closure: 1 plan added)_
+_Last updated: 2026-03-06 (Phase 17 planned: 5 plans)_
