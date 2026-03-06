@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Modelo Articulos + Inventario
-status: completed
-stopped_at: Phase 17 context gathered
-last_updated: '2026-03-05T22:02:04.182Z'
-last_activity: 2026-03-05 — Completed 16-04 mobile types gap closure
+status: executing
+stopped_at: Completed 17-02-PLAN.md
+last_updated: '2026-03-06T01:22:15.262Z'
+last_activity: 2026-03-06 — Completed 17-02 backend API modules
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 12
-  completed_plans: 12
-  percent: 100
+  total_plans: 17
+  completed_plans: 15
+  percent: 88
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-05)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 16 — Downstream Migration, Dashboard, Navigation
+**Current focus:** Phase 17 — Inventarios
 
 ## Current Position
 
 Phase: 17 of 17 (Inventarios)
-Plan: 2 of 5 (17-02 backend API modules complete)
+Plan: 3 of 5 (17-03 web types, API layer, settings UI complete)
 Status: In progress
-Last activity: 2026-03-06 — Completed 17-02 backend API modules
+Last activity: 2026-03-06 — Completed 17-03 web types, API layer, settings UI
 
-Progress: [██████████] 100%
+Progress: [█████████░] 88%
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ _Updated after each plan completion_
 | Phase 16 P04 | 3min | 2 tasks | 6 files |
 | Phase 17 P01 | 3min | 2 tasks | 4 files |
 | Phase 17 P02 | 6min | 2 tasks | 18 files |
+| Phase 17 P03 | 5min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -104,6 +105,8 @@ _Updated after each plan completion_
 - [Phase 17]: Status transition map as const with validateTransition() + assertEventEditable() guard pattern
 - [Phase 17]: Discrepancy query LEFT JOINs existencias filtered by event depositoId with COALESCE null safety
 - [Phase 17]: Nested sectores endpoints under depositos/:id/sectores with ownership verification
+- [Phase 17]: Expandable deposito rows for inline sectores CRUD — client-side fetch on expand
+- [Phase 17]: Dispositivos page uses server-side fetch via page.tsx prop drilling — matches depositos pattern
 
 ### Pending Todos
 
@@ -115,10 +118,10 @@ None — research complete, roadmap defined.
 
 ## Session Continuity
 
-Last session: 2026-03-06T01:13:48Z
-Stopped at: Completed 17-02-PLAN.md
-Resume file: .planning/phases/17-inventarios/17-02-SUMMARY.md
-Next action: Execute 17-03-PLAN.md (web UI for inventarios)
+Last session: 2026-03-06T01:21:29Z
+Stopped at: Completed 17-03-PLAN.md
+Resume file: .planning/phases/17-inventarios/17-03-SUMMARY.md
+Next action: Execute 17-04-PLAN.md (inventarios list and detail pages)
 
 ---
 
