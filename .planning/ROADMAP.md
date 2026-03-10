@@ -62,12 +62,12 @@
 2. User can click edit on any articulo, see the form pre-populated with current data, modify fields, and save changes
 3. User can soft-delete an articulo (toggle activo/inactivo) via a confirmation dialog, and the list reflects the change
 4. User can type in a search box and the articulos list filters in real-time with debounce
-   **Plans**: TBD
+   **Plans:** 2 plans
 
 Plans:
 
-- [ ] 19-01: TBD
-- [ ] 19-02: TBD
+- [ ] 19-01-PLAN.md — Backend search expansion + table row actions + AlertDialog toggle
+- [ ] 19-02-PLAN.md — Edit page AlertDialog + Sheet JSONB read-only sections
 
 ### Phase 20: Image Upload Backend
 
@@ -183,7 +183,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 16. Downstream + Dashboard + Nav       | v1.1      | 4/4            | Complete    | 2026-03-05 |
 | 17. Inventarios                        | v1.1      | 5/5            | Complete    | 2026-03-06 |
 | 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete    | 2026-03-06 |
-| 19. Articulos CRUD Completo            | v1.2      | 0/?            | Not started | -          |
+| 19. Articulos CRUD Completo            | v1.2      | 0/2            | Planning    | -          |
 | 20. Image Upload Backend               | v1.2      | 0/?            | Not started | -          |
 | 21. Image Upload Frontend + Detalle    | v1.2      | 0/?            | Not started | -          |
 | 22. Vista Lista Configurable           | v1.2      | 0/?            | Not started | -          |
@@ -193,4 +193,4 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-10 (v1.2 milestone roadmap added)_
+_Last updated: 2026-03-10 (Phase 19 planned — 2 plans)_
