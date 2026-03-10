@@ -5,16 +5,16 @@
 
 ## v1.2 Requirements
 
-Requirements for milestone v1.2: Artículos CRUD + API Keys + Webhooks.
+Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks.
 
-### Artículos CRUD
+### Articulos CRUD
 
-- [ ] **ART-01**: User can create a new artículo filling all ~30 fields grouped efficiently (frequent fields on top)
-- [ ] **ART-02**: User can edit an existing artículo with the same form, pre-populated with current data
-- [ ] **ART-03**: User can soft-delete an artículo (toggle activo/inactivo) with confirmation dialog
-- [ ] **ART-04**: User can search/filter artículos in the list with debounce (real-time as they type)
+- [ ] **ART-01**: User can create a new articulo filling all ~30 fields grouped efficiently (frequent fields on top)
+- [ ] **ART-02**: User can edit an existing articulo with the same form, pre-populated with current data
+- [ ] **ART-03**: User can soft-delete an articulo (toggle activo/inactivo) with confirmation dialog
+- [ ] **ART-04**: User can search/filter articulos in the list with debounce (real-time as they type)
 
-### Imágenes
+### Imagenes
 
 - [ ] **IMG-01**: User can upload images to labeled slots (3 etiqueta + 6 producto) stored on filesystem
 - [ ] **IMG-02**: User can preview uploaded images as thumbnails and remove individual images
@@ -23,9 +23,9 @@ Requirements for milestone v1.2: Artículos CRUD + API Keys + Webhooks.
 
 ### Vista Lista & Detalle
 
-- [ ] **VIEW-01**: User can configure which columns are visible in the artículos list (global setting persisted in DB)
-- [ ] **VIEW-02**: User can view artículo detail in a lateral panel/sheet showing all fields and images
-- [ ] **VIEW-03**: User can sort the artículos list by clicking column headers (asc/desc)
+- [ ] **VIEW-01**: User can configure which columns are visible in the articulos list (global setting persisted in DB)
+- [ ] **VIEW-02**: User can view articulo detail in a lateral panel/sheet showing all fields and images
+- [ ] **VIEW-03**: User can sort the articulos list by clicking column headers (asc/desc)
 
 ### API Keys
 
@@ -42,7 +42,7 @@ Requirements for milestone v1.2: Artículos CRUD + API Keys + Webhooks.
 - [ ] **HOOK-04**: Admin can view delivery log with status (ok/fail), HTTP response code, and timestamp
 - [ ] **HOOK-05**: Admin can send a test ping to a webhook URL to verify connectivity
 - [ ] **HOOK-06**: System signs webhook payloads with HMAC-SHA256, included in X-Signature header
-- [ ] **HOOK-07**: v1.2 supports artículos entity events (create/update/delete), architecture supports adding more entities
+- [ ] **HOOK-07**: v1.2 supports articulos entity events (create/update/delete), architecture supports adding more entities
 
 ## Future Requirements
 
@@ -54,8 +54,8 @@ Requirements for milestone v1.2: Artículos CRUD + API Keys + Webhooks.
 
 ### Mobile Enhancements
 
-- **MOB-F01**: Artículos CRUD from mobile app
-- **MOB-F02**: Image capture from camera for artículo slots
+- **MOB-F01**: Articulos CRUD from mobile app
+- **MOB-F02**: Image capture from camera for articulo slots
 
 ## Out of Scope
 
@@ -71,38 +71,38 @@ Requirements for milestone v1.2: Artículos CRUD + API Keys + Webhooks.
 
 ## Traceability
 
-| Requirement | Phase | Status  |
-| ----------- | ----- | ------- |
-| ART-01      | —     | Pending |
-| ART-02      | —     | Pending |
-| ART-03      | —     | Pending |
-| ART-04      | —     | Pending |
-| IMG-01      | —     | Pending |
-| IMG-02      | —     | Pending |
-| IMG-03      | —     | Pending |
-| IMG-04      | —     | Pending |
-| VIEW-01     | —     | Pending |
-| VIEW-02     | —     | Pending |
-| VIEW-03     | —     | Pending |
-| APIKEY-01   | —     | Pending |
-| APIKEY-02   | —     | Pending |
-| APIKEY-03   | —     | Pending |
-| APIKEY-04   | —     | Pending |
-| HOOK-01     | —     | Pending |
-| HOOK-02     | —     | Pending |
-| HOOK-03     | —     | Pending |
-| HOOK-04     | —     | Pending |
-| HOOK-05     | —     | Pending |
-| HOOK-06     | —     | Pending |
-| HOOK-07     | —     | Pending |
+| Requirement | Phase    | Status  |
+| ----------- | -------- | ------- |
+| ART-01      | Phase 19 | Pending |
+| ART-02      | Phase 19 | Pending |
+| ART-03      | Phase 19 | Pending |
+| ART-04      | Phase 19 | Pending |
+| IMG-01      | Phase 21 | Pending |
+| IMG-02      | Phase 21 | Pending |
+| IMG-03      | Phase 20 | Pending |
+| IMG-04      | Phase 21 | Pending |
+| VIEW-01     | Phase 22 | Pending |
+| VIEW-02     | Phase 21 | Pending |
+| VIEW-03     | Phase 22 | Pending |
+| APIKEY-01   | Phase 23 | Pending |
+| APIKEY-02   | Phase 23 | Pending |
+| APIKEY-03   | Phase 23 | Pending |
+| APIKEY-04   | Phase 23 | Pending |
+| HOOK-01     | Phase 24 | Pending |
+| HOOK-02     | Phase 24 | Pending |
+| HOOK-03     | Phase 24 | Pending |
+| HOOK-04     | Phase 24 | Pending |
+| HOOK-05     | Phase 24 | Pending |
+| HOOK-06     | Phase 24 | Pending |
+| HOOK-07     | Phase 24 | Pending |
 
 **Coverage:**
 
 - v1.2 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22 ⚠️
+- Mapped to phases: 22
+- Unmapped: 0
 
 ---
 
 _Requirements defined: 2026-03-10_
-_Last updated: 2026-03-10 after initial definition_
+_Last updated: 2026-03-10 after roadmap creation_
