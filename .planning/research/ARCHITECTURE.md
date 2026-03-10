@@ -1,584 +1,639 @@
 # Architecture Patterns
 
-**Domain:** Data model migration -- articulos/existencias/inventarios replacing products/inventory
-**Researched:** 2026-03-05
-**Confidence:** HIGH (based on direct codebase analysis, established Drizzle/NestJS patterns)
+**Domain:** v1.2 feature integration -- File uploads, API Keys, Webhooks, Column config
+**Researched:** 2026-03-10
+**Confidence:** HIGH (direct codebase analysis + established NestJS/Drizzle patterns)
 
 ## Current Architecture Snapshot
 
-### What Exists Today
+### What Exists Today (post-v1.1)
 
-| Layer     | Component                                                                | Key Files                                                 | Products/Inventory Coupling                                          |
-| --------- | ------------------------------------------------------------------------ | --------------------------------------------------------- | -------------------------------------------------------------------- |
-| DB Schema | `products` table (PK: `id serial`)                                       | `apps/backend/src/db/schema.ts`                           | Central -- 3 FK tables reference `products.id`                       |
-| DB Schema | `inventory` table (FK: `productId`)                                      | same                                                      | 1:1 with products via `productId`                                    |
-| DB Schema | `orderItems.productId`, `saleItems.productId`, `purchaseItems.productId` | same                                                      | Integer FK to `products.id`                                          |
-| Backend   | `ProductsModule` (CRUD + stats + categories)                             | `apps/backend/src/modules/products/`                      | Self-contained                                                       |
-| Backend   | `InventoryModule` (list + stats + low-stock)                             | `apps/backend/src/modules/inventory/`                     | References `inventory` table only                                    |
-| Backend   | `DashboardService`                                                       | `apps/backend/src/modules/dashboard/dashboard.service.ts` | Injects `ProductsService` + `InventoryService`                       |
-| Backend   | `SalesService`, `OrdersService`, `PurchasesService`                      | respective modules                                        | Read/write `*Items` tables with `productId` integer FK               |
-| Web API   | `fetchProducts()`, `fetchInventory()`                                    | `apps/web/src/lib/api.ts`                                 | Hit `/api/products`, `/api/inventory`                                |
-| Web Types | `Product` (id: number), `Inventory` (productId: number)                  | `apps/web/src/types/`                                     | Numeric IDs throughout                                               |
-| Web Pages | `articles/page.tsx` (calls fetchProducts), `inventory/page.tsx`          | `apps/web/src/app/(dashboard)/`                           | Already labeled "Articulos" in UI but uses products backend          |
-| Mobile    | `Articles.tsx`, `Inventory.tsx` pages                                    | `apps/mobile/src/pages/`                                  | Same API contracts                                                   |
-| Shared    | `packages/types/`                                                        | Zod schemas, `AppRole`                                    | No product/inventory types here (they live in schema.ts + web types) |
-| Seed      | Generators for products, inventory, orders, sales, purchases             | `apps/backend/src/db/seed.ts` + `generators/`             | All use numeric `products.id` mapping                                |
+| Layer     | Component                                                                                          | Key Files                                          | Relevance to v1.2                                                         |
+| --------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------- |
+| DB Schema | `articulos` (PK: `codigo` text, ~30 fields, `imagenesProducto`/`imagenesEtiqueta` as jsonb arrays) | `apps/backend/src/db/schema.ts`                    | Image upload target, webhook event source                                 |
+| DB Schema | `businessSettings` (singleton row, logos)                                                          | same                                               | Column config candidate, API key management location                      |
+| Backend   | `ArticulosModule` (CRUD, text PK routes)                                                           | `apps/backend/src/modules/articulos/`              | Needs file upload endpoints, webhook emission on CUD                      |
+| Backend   | `SettingsModule` (GET/PATCH + logo upload via `FileInterceptor`)                                   | `apps/backend/src/modules/settings/`               | Existing file upload pattern to follow; API Keys + Webhooks UI lives here |
+| Backend   | `JwtAuthGuard` (global, `@Public()` opt-out)                                                       | `apps/backend/src/common/guards/jwt-auth.guard.ts` | Must coexist with new API Key auth                                        |
+| Backend   | `RolesGuard` (per-endpoint, `@Roles('admin')`)                                                     | `apps/backend/src/common/guards/roles.guard.ts`    | API Key requests need role assignment too                                 |
+| Frontend  | Settings has sub-pages: business, appearance, depositos, dispositivos, profile                     | `apps/web/src/app/(dashboard)/settings/`           | New sub-pages: api-keys, webhooks                                         |
+| Frontend  | Articulos list page with TanStack Table                                                            | `apps/web/src/app/(dashboard)/articulos/`          | Column config consumer                                                    |
+| Static    | `uploads/` dir served at `/api/uploads/` prefix                                                    | `apps/backend/src/main.ts`                         | Already configured for logos, extends to articulo images                  |
 
-### Current FK Dependency Graph
+### Current Auth Flow
 
 ```
-products (PK: id serial)
+Request --> JwtAuthGuard (global)
   |
-  +-- inventory.productId (1:1, ON DELETE CASCADE)
-  +-- orderItems.productId (ON DELETE RESTRICT)
-  +-- saleItems.productId (ON DELETE RESTRICT)
-  +-- purchaseItems.productId (ON DELETE RESTRICT)
+  +-- @Public() route? --> SKIP auth, allow
+  |
+  +-- Extract Bearer token --> Verify JWT via Supabase JWKS
+  |     |
+  |     +-- Attach user to request: { userId, email, role }
+  |
+  +-- @Roles('admin') endpoint? --> RolesGuard checks user.role
 ```
 
-All downstream tables use `integer` FK to `products.id`. This is the primary migration challenge.
+### Current File Upload Pattern (settings/logo)
+
+```
+POST /api/settings/logo/:type
+  --> @UseInterceptors(FileInterceptor('file'))
+  --> ParseFilePipe (MaxSize 2MB, FileType image/*)
+  --> Manual writeFile to uploads/ dir
+  --> Store filename in DB (not full path)
+  --> Serve via app.useStaticAssets(uploadsDir, { prefix: '/api/uploads/' })
+```
 
 ---
 
 ## Recommended Architecture
 
-### New Data Model
+### New Components Overview
 
-Replace `products` + `inventory` with 4 new domain tables and modify 3 existing item tables.
+| Component                  | Type                | Responsibility                                           | Communicates With                  |
+| -------------------------- | ------------------- | -------------------------------------------------------- | ---------------------------------- |
+| `ApiKeysModule`            | NEW module          | CRUD API keys, hash storage, validation                  | DB, AuthGuard                      |
+| `WebhooksModule`           | NEW module          | CRUD subscriptions, emit events, deliver payloads        | DB, ArticulosService, queue        |
+| `ApiKeyGuard`              | NEW guard           | Validate `Bearer <api-key>` tokens as alternative to JWT | DB (api_keys table)                |
+| `AuthGuard` (composite)    | MODIFIED guard      | Try JWT first, fall back to API key                      | JwtAuthGuard, ApiKeyGuard          |
+| Articulos upload endpoints | MODIFIED controller | File upload for imagenes_producto / imagenes_etiqueta    | Filesystem, DB                     |
+| Settings sub-pages         | MODIFIED frontend   | New tabs: API Keys, Webhooks                             | Backend API                        |
+| Column config              | NEW in settings     | Store global column visibility/order preferences         | DB (businessSettings or new table) |
 
-#### New Tables
-
-```
-articulos (PK: codigo text)
-  |
-  +-- existencias (articulo_codigo + deposito_id = composite unique)
-  |     +-- depositos (PK: id serial)
-  |
-  +-- inventarios (PK: id serial) -- periodic physical count events
-        +-- inventarios_articulos (inventario_id + articulo_codigo)
-        +-- inventario_sectores (inventario_id + sector)
-        +-- dispositivos_moviles (inventario_id + device_id)
-```
-
-#### Modified Tables
+### New DB Tables
 
 ```
-orderItems.productId (integer) --> orderItems.articuloCodigo (text FK)
-saleItems.productId (integer) --> saleItems.articuloCodigo (text FK)
-purchaseItems.productId (integer) --> purchaseItems.articuloCodigo (text FK)
+api_keys (NEW)
+  id: serial PK
+  nombre: varchar(100) -- human-readable label
+  key_hash: varchar(64) -- SHA-256 hash of the API key
+  key_prefix: varchar(8) -- first 8 chars for identification (obj_xxxx...)
+  role: varchar(20) -- 'admin' or 'viewer'
+  created_by: text -- userId who created it
+  last_used_at: timestamp -- nullable
+  expires_at: timestamp -- nullable
+  activo: boolean default true
+  created_at: timestamp
+  updated_at: timestamp
+
+webhook_subscriptions (NEW)
+  id: serial PK
+  url: text NOT NULL -- delivery URL
+  entidad: varchar(50) NOT NULL -- 'articulos' (extensible later)
+  eventos: jsonb NOT NULL -- ['create', 'update', 'delete']
+  secret: varchar(64) -- HMAC signing secret
+  activo: boolean default true
+  created_by: text
+  created_at: timestamp
+  updated_at: timestamp
+
+webhook_deliveries (NEW)
+  id: serial PK
+  subscription_id: integer FK -> webhook_subscriptions.id
+  evento: varchar(50) -- 'articulos.create', 'articulos.update', 'articulos.delete'
+  payload: jsonb -- the full event payload
+  status: varchar(20) -- 'pending', 'success', 'failed'
+  status_code: integer -- HTTP response code
+  response_body: text -- truncated response
+  attempts: integer default 0
+  next_retry_at: timestamp
+  delivered_at: timestamp
+  created_at: timestamp
+
+column_configs (NEW -- or extend businessSettings)
+  id: serial PK
+  tabla: varchar(50) NOT NULL -- 'articulos' (extensible)
+  columnas: jsonb NOT NULL -- [{ key, visible, order, width? }]
+  updated_at: timestamp
 ```
 
-### Schema Design (Drizzle)
+### Component Boundaries (v1.2)
 
-```typescript
-// ---- NEW TABLES ----
-
-export const articulos = pgTable(
-  'articulos',
-  {
-    codigo: varchar('codigo', { length: 50 }).primaryKey(),
-    descripcion: varchar('descripcion', { length: 255 }).notNull(),
-    descripcionCorta: varchar('descripcion_corta', { length: 100 }),
-    marca: varchar('marca', { length: 100 }),
-    modelo: varchar('modelo', { length: 100 }),
-    unidadMedida: varchar('unidad_medida', { length: 20 }).notNull().default('PZ'),
-    precioVenta: doublePrecision('precio_venta').notNull(),
-    costo: doublePrecision('costo').notNull(),
-    codigoBarras: varchar('codigo_barras', { length: 50 }),
-    categoria: varchar('categoria', { length: 100 }),
-    subcategoria: varchar('subcategoria', { length: 100 }),
-    impuesto: doublePrecision('impuesto').default(0.16),
-    activo: boolean('activo').notNull().default(true),
-    imagenUrl: text('imagen_url'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  },
-  table => [
-    index('articulos_categoria_idx').on(table.categoria),
-    index('articulos_activo_idx').on(table.activo),
-    index('articulos_codigo_barras_idx').on(table.codigoBarras),
-  ]
-)
-
-export const depositos = pgTable('depositos', {
-  id: serial('id').primaryKey(),
-  nombre: varchar('nombre', { length: 100 }).notNull().unique(),
-  direccion: text('direccion'),
-  activo: boolean('activo').notNull().default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-})
-
-export const existencias = pgTable(
-  'existencias',
-  {
-    id: serial('id').primaryKey(),
-    articuloCodigo: varchar('articulo_codigo', { length: 50 })
-      .notNull()
-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
-    depositoId: integer('deposito_id')
-      .notNull()
-      .references(() => depositos.id, { onDelete: 'restrict' }),
-    unidades: doublePrecision('unidades').notNull().default(0),
-    minimo: doublePrecision('minimo').default(0),
-    maximo: doublePrecision('maximo'),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  },
-  table => [
-    index('existencias_articulo_idx').on(table.articuloCodigo),
-    index('existencias_deposito_idx').on(table.depositoId),
-    // Composite unique: one stock row per articulo per deposito
-  ]
-)
-
-export const inventarios = pgTable('inventarios', {
-  id: serial('id').primaryKey(),
-  nombre: varchar('nombre', { length: 100 }).notNull(),
-  depositoId: integer('deposito_id')
-    .notNull()
-    .references(() => depositos.id),
-  estado: varchar('estado', { length: 20 }).notNull().default('pendiente'),
-  // estados: pendiente, en_progreso, completado, cancelado
-  fechaInicio: timestamp('fecha_inicio'),
-  fechaCierre: timestamp('fecha_cierre'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-})
-
-export const inventariosArticulos = pgTable('inventarios_articulos', {
-  id: serial('id').primaryKey(),
-  inventarioId: integer('inventario_id')
-    .notNull()
-    .references(() => inventarios.id, { onDelete: 'cascade' }),
-  articuloCodigo: varchar('articulo_codigo', { length: 50 })
-    .notNull()
-    .references(() => articulos.codigo, { onDelete: 'restrict' }),
-  cantidadSistema: doublePrecision('cantidad_sistema').notNull(),
-  cantidadFisica: doublePrecision('cantidad_fisica'),
-  diferencia: doublePrecision('diferencia'),
-  contadoPor: varchar('contado_por', { length: 100 }),
-  contadoEn: timestamp('contado_en'),
-})
-
-export const inventarioSectores = pgTable('inventario_sectores', {
-  id: serial('id').primaryKey(),
-  inventarioId: integer('inventario_id')
-    .notNull()
-    .references(() => inventarios.id, { onDelete: 'cascade' }),
-  nombre: varchar('nombre', { length: 50 }).notNull(),
-  estado: varchar('estado', { length: 20 }).notNull().default('pendiente'),
-})
-
-export const dispositivosMoviles = pgTable('dispositivos_moviles', {
-  id: serial('id').primaryKey(),
-  inventarioId: integer('inventario_id')
-    .notNull()
-    .references(() => inventarios.id, { onDelete: 'cascade' }),
-  deviceId: varchar('device_id', { length: 100 }).notNull(),
-  nombre: varchar('nombre', { length: 100 }),
-  asignadoA: varchar('asignado_a', { length: 100 }),
-  ultimaActividad: timestamp('ultima_actividad'),
-})
-```
-
-### Component Boundaries
-
-| Component           | Responsibility                                       | Communicates With                                                              | Status                                          |
-| ------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------- |
-| `ArticulosModule`   | CRUD articulos, categories, search by codigo/barcode | DB only                                                                        | NEW -- replaces ProductsModule                  |
-| `DepositosModule`   | CRUD depositos (warehouses)                          | DB only                                                                        | NEW                                             |
-| `ExistenciasModule` | Stock per articulo per deposito, low-stock alerts    | ArticulosModule (lookup), DepositosModule (lookup)                             | NEW -- replaces InventoryModule                 |
-| `InventariosModule` | Physical count events lifecycle                      | ExistenciasModule (system qty), ArticulosModule (article list)                 | NEW                                             |
-| `OrdersModule`      | Orders + orderItems                                  | ArticulosModule (FK validation)                                                | MODIFIED -- FK from productId to articuloCodigo |
-| `SalesModule`       | Sales + saleItems                                    | ArticulosModule (FK validation)                                                | MODIFIED -- FK from productId to articuloCodigo |
-| `PurchasesModule`   | Purchases + purchaseItems                            | ArticulosModule (FK validation)                                                | MODIFIED -- FK from productId to articuloCodigo |
-| `DashboardModule`   | KPI aggregation                                      | ArticulosModule, ExistenciasModule, OrdersModule, SalesModule, PurchasesModule | MODIFIED -- swap injected services              |
-| `ProductsModule`    | DEPRECATED                                           | None                                                                           | REMOVED after migration                         |
-| `InventoryModule`   | DEPRECATED                                           | None                                                                           | REMOVED after migration                         |
+| Component         | Responsibility                                  | Communicates With                     | Status               |
+| ----------------- | ----------------------------------------------- | ------------------------------------- | -------------------- |
+| `ApiKeysModule`   | CRUD keys, hash/compare, prefix generation      | DB only                               | NEW                  |
+| `WebhooksModule`  | CRUD subscriptions, delivery queue, retry       | DB, ArticulosService (event emission) | NEW                  |
+| `ArticulosModule` | CRUD + file upload endpoints + webhook emission | DB, filesystem, WebhooksService       | MODIFIED             |
+| `SettingsModule`  | Business settings + column config               | DB                                    | MODIFIED (minor)     |
+| `JwtAuthGuard`    | JWT validation via Supabase JWKS                | Supabase JWKS endpoint                | MODIFIED (composite) |
 
 ### Data Flow
 
-**Articulo lifecycle:**
+**API Key Authentication:**
 
 ```
-Create articulo (codigo as PK)
-  --> auto-create existencias rows per active deposito (or on-demand)
-  --> articulo.codigo used as FK in orderItems, saleItems, purchaseItems
+Request with Bearer token
+  |
+  +-- CompositeAuthGuard (replaces JwtAuthGuard as global guard)
+       |
+       +-- Try JWT verification (Supabase JWKS)
+       |     |
+       |     +-- SUCCESS --> attach user { userId, email, role } from JWT
+       |     +-- FAIL --> continue to API key check
+       |
+       +-- Try API Key lookup
+       |     |
+       |     +-- Hash the token with SHA-256
+       |     +-- Query api_keys WHERE key_hash = hash AND activo = true
+       |     +-- Check expiry (expires_at is null OR > now)
+       |     +-- SUCCESS --> attach user { userId: 'api-key:<id>', email: '', role: key.role }
+       |     +-- Update last_used_at (fire-and-forget, no await)
+       |     +-- FAIL --> UnauthorizedException
+       |
+       +-- @Public() routes skip everything (unchanged)
 ```
 
-**Existencias query:**
+**Key design decision:** API key auth produces the same `AuthenticatedUser` shape on `request.user`. This means `@Roles()` guards work identically for both JWT and API key requests. Zero changes to existing role-protected endpoints.
+
+**File Upload for Articulos:**
 
 ```
-GET /api/existencias?deposito=1&search=...
-  --> Join existencias + articulos + depositos
-  --> Returns: { articulo: {...}, deposito: {...}, unidades, minimo, maximo }
+POST /api/articulos/:codigo/imagenes/:tipo (tipo = 'producto' | 'etiqueta')
+  |
+  +-- @UseInterceptors(FilesInterceptor('files', maxCount))
+  +-- ParseFilePipe: MaxSize 5MB, FileType image/*
+  +-- For each file:
+  |     +-- Generate filename: articulos/<codigo>/<tipo>-<timestamp>-<random>.<ext>
+  |     +-- writeFile to uploads/articulos/<codigo>/
+  +-- Read current jsonb array from articulo
+  +-- Append new filenames
+  +-- Update articulo record
+  +-- Return updated articulo
+
+DELETE /api/articulos/:codigo/imagenes/:tipo/:index
+  |
+  +-- Read current jsonb array
+  +-- Remove entry at index
+  +-- Delete file from filesystem
+  +-- Update articulo record
+  +-- Return updated articulo
 ```
 
-**Inventario (physical count) flow:**
+**Directory structure for uploaded images:**
 
 ```
-1. Create inventario for a deposito
-2. System populates inventarios_articulos with cantidad_sistema from existencias
-3. Mobile devices scan/count articles, update cantidad_fisica
-4. On close: calculate diferencia, optionally adjust existencias
+uploads/
+  logo-*.png              (existing -- settings logos)
+  articulos/
+    <codigo>/
+      producto-1710000000-123456789.jpg
+      producto-1710000001-987654321.png
+      etiqueta-1710000002-456789123.webp
 ```
 
-**Dashboard updated flow:**
+**Webhook Delivery Flow:**
 
 ```
-DashboardService injects:
-  - ArticulosService.getStats() (replaces ProductsService.getStats())
-  - ExistenciasService.getStats() (replaces InventoryService.getStats())
-  - Same: OrdersService, SalesService, PurchasesService
+1. ArticulosService.create/update/delete completes DB operation
+     |
+     +-- Returns articulo data
+     |
+     +-- Calls WebhooksService.emit('articulos', 'create', articuloData)
+           (fire-and-forget -- does NOT block the API response)
+
+2. WebhooksService.emit()
+     |
+     +-- Query webhook_subscriptions WHERE entidad='articulos'
+     |   AND eventos @> '["create"]' AND activo=true
+     |
+     +-- For each matching subscription:
+           +-- Insert webhook_deliveries row (status='pending')
+           +-- Schedule delivery (setTimeout or process.nextTick)
+
+3. WebhooksService.deliver(deliveryId)
+     |
+     +-- Read delivery + subscription
+     +-- Build payload: { evento, timestamp, data }
+     +-- Sign with HMAC-SHA256 using subscription.secret
+     +-- POST to subscription.url
+     |     Headers: X-Webhook-Signature, X-Webhook-Event, Content-Type: application/json
+     |
+     +-- SUCCESS (2xx):
+     |     Update delivery: status='success', status_code, delivered_at
+     |
+     +-- FAIL (non-2xx or network error):
+           Update delivery: status='failed', status_code, attempts++
+           If attempts < 3: set next_retry_at (exponential: 1min, 5min, 30min)
+           Schedule retry
 ```
+
+**v1.2 scope note:** No external queue (Bull/Redis). Use in-process `setTimeout` for retries. The scale (few webhooks, low volume) doesn't justify queue infrastructure. If v2.0 needs it, the `WebhooksService.emit()` interface stays the same -- only the delivery mechanism changes.
+
+**Column Configuration Flow:**
+
+```
+GET /api/settings/column-config/:tabla
+  --> Returns { tabla, columnas: [{ key, visible, order, width? }] }
+  --> If no config exists, return default columns for that tabla
+
+PATCH /api/settings/column-config/:tabla
+  --> Body: { columnas: [{ key, visible, order, width? }] }
+  --> Upsert column_configs row
+  --> Return updated config
+
+Frontend:
+  --> Articulos page fetches column config on mount
+  --> User toggles columns via dropdown (shadcn DropdownMenu)
+  --> Save to backend on change (debounced)
+  --> TanStack Table columnVisibility controlled by config
+```
+
+**Design decision: global config, not per-user.** Rationale: this is a small-team admin app (1-5 users). Per-user adds complexity (user ID tracking, preferences table, merge logic). Global config means the team agrees on a view. If per-user is needed later, the API shape (`/api/settings/column-config/:tabla`) stays the same -- just add a query param `?userId=...`.
 
 ---
 
 ## Integration Points -- Detailed Impact Analysis
 
-### 1. DB Schema (schema.ts)
+### 1. New Modules (Backend)
 
-**Files changed:** 1
-**Impact:** HIGH -- this is ground zero
+| Module              | Files to Create                                                                                                                 | Dependencies |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `modules/api-keys/` | `api-keys.module.ts`, `api-keys.controller.ts`, `api-keys.service.ts`, `dto/create-api-key.dto.ts`                              | DbModule     |
+| `modules/webhooks/` | `webhooks.module.ts`, `webhooks.controller.ts`, `webhooks.service.ts`, `dto/create-webhook.dto.ts`, `dto/update-webhook.dto.ts` | DbModule     |
 
-- DROP: `products`, `inventory` table definitions + type exports
-- ADD: `articulos`, `depositos`, `existencias`, `inventarios`, `inventariosArticulos`, `inventarioSectores`, `dispositivosMoviles`
-- MODIFY: `orderItems.productId` -> `articuloCodigo` (text), `saleItems.productId` -> `articuloCodigo`, `purchaseItems.productId` -> `articuloCodigo`
-- MODIFY: Remove `productName` and `sku` denormalized columns from item tables (articulo data joins on codigo now)
+### 2. Modified Modules (Backend)
 
-**Critical decision: PK type change (integer -> text)**
+| Module            | Changes                                                                   | Impact                                       |
+| ----------------- | ------------------------------------------------------------------------- | -------------------------------------------- |
+| `ArticulosModule` | Add upload endpoints (2 routes), inject WebhooksService, call emit on CUD | MEDIUM -- 3 service methods gain 1 line each |
+| `SettingsModule`  | Add column config endpoints (GET + PATCH per tabla)                       | LOW -- 2 new routes, straightforward CRUD    |
+| `app.module.ts`   | Import ApiKeysModule, WebhooksModule                                      | LOW                                          |
 
-The `productId integer` FK columns in orderItems/saleItems/purchaseItems become `articuloCodigo text`. This is NOT a simple ALTER -- it requires:
+### 3. Modified Guards (Backend)
 
-1. New column added
-2. Data migration (map old productId to new codigo)
-3. Old column dropped
-4. FK constraint added
+| File                | Change                                                                      | Impact                           |
+| ------------------- | --------------------------------------------------------------------------- | -------------------------------- |
+| `jwt-auth.guard.ts` | Rename to `auth.guard.ts`, add API key fallback logic                       | HIGH -- this is the global guard |
+| `roles.guard.ts`    | No changes needed -- works on `request.user.role` regardless of auth method | NONE                             |
 
-Since this is a v1.0 app with seed data (no production data yet), the cleaner approach is: drop all tables, recreate with new schema, re-seed. Use Drizzle `db:push` for development, generate a clean migration for production later.
+**Implementation approach for composite guard:**
 
-### 2. Backend Modules
+```typescript
+// auth.guard.ts (renamed from jwt-auth.guard.ts)
+@Injectable()
+export class AuthGuard implements CanActivate {
+  constructor(
+    private reflector: Reflector,
+    private apiKeysService: ApiKeysService // injected
+  ) {
+    /* ... */
+  }
 
-**Files changed:** ~20 (4 new modules x 4 files each + 4 modified modules)
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // 1. Check @Public()
+    if (isPublic) return true
 
-| Module                 | Action | Key Changes                                                                |
-| ---------------------- | ------ | -------------------------------------------------------------------------- |
-| `modules/articulos/`   | CREATE | Controller, service, module, DTOs. PK is `codigo` (string param in routes) |
-| `modules/depositos/`   | CREATE | Simple CRUD. Small module.                                                 |
-| `modules/existencias/` | CREATE | Joins articulos+depositos. Replaces inventory logic.                       |
-| `modules/inventarios/` | CREATE | Complex -- lifecycle management, mobile device tracking                    |
-| `modules/products/`    | DELETE | Entirely replaced by articulos                                             |
-| `modules/inventory/`   | DELETE | Entirely replaced by existencias                                           |
-| `modules/orders/`      | MODIFY | `orderItems` schema change, service queries updated                        |
-| `modules/sales/`       | MODIFY | `saleItems` schema change                                                  |
-| `modules/purchases/`   | MODIFY | `purchaseItems` schema change                                              |
-| `modules/dashboard/`   | MODIFY | Swap service injections, update KPI interface                              |
-| `app.module.ts`        | MODIFY | Remove old modules, add new ones                                           |
+    // 2. Extract Bearer token
+    const token = extractBearerToken(request)
 
-**Route design for text PK:**
+    // 3. Try JWT first (fast path -- most requests are JWT)
+    try {
+      const jwtUser = await this.verifyJwt(token)
+      request.user = jwtUser
+      return true
+    } catch {
+      /* not a valid JWT, try API key */
+    }
 
+    // 4. Try API key
+    const apiKeyUser = await this.apiKeysService.validateKey(token)
+    if (apiKeyUser) {
+      request.user = apiKeyUser
+      return true
+    }
+
+    throw new UnauthorizedException('Token invalido')
+  }
+}
 ```
-GET    /api/articulos              -- list (paginated)
-GET    /api/articulos/:codigo      -- by codigo (text param, URL-encoded if needed)
-POST   /api/articulos              -- create
-PATCH  /api/articulos/:codigo      -- update
-DELETE /api/articulos/:codigo      -- delete
 
-GET    /api/depositos              -- list
-POST   /api/depositos              -- create
-PATCH  /api/depositos/:id          -- update (numeric)
+**Problem: global guard instantiation.** Currently `main.ts` does `app.useGlobalGuards(new JwtAuthGuard(new Reflector()))` -- manual instantiation bypasses DI. The composite guard needs `ApiKeysService` injected, which requires DI.
 
-GET    /api/existencias            -- list (filterable by deposito, articulo)
-PATCH  /api/existencias/:id        -- update stock
+**Solution:** Switch to module-based global guard registration:
 
-GET    /api/inventarios            -- list
-POST   /api/inventarios            -- create new count event
-GET    /api/inventarios/:id        -- detail with articles + sectors
-PATCH  /api/inventarios/:id        -- update status/lifecycle
-POST   /api/inventarios/:id/cerrar -- close and reconcile
+```typescript
+// auth.module.ts
+@Module({
+  imports: [ApiKeysModule], // for ApiKeysService
+  providers: [
+    AuthGuard,
+    { provide: APP_GUARD, useClass: AuthGuard }, // replaces useGlobalGuards()
+  ],
+  exports: [AuthGuard],
+})
+export class AuthModule {}
 ```
 
-### 3. Web Frontend
+Remove `app.useGlobalGuards(...)` from `main.ts`. This is a cleaner NestJS pattern that enables DI for global guards.
 
-**Files changed:** ~12
+### 4. New DB Tables (Schema)
 
-| File/Dir                           | Action  | Changes                                                                                                    |
-| ---------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
-| `types/product.ts`                 | REPLACE | Becomes `types/articulo.ts` with text PK                                                                   |
-| `types/inventory.ts`               | REPLACE | Becomes `types/existencia.ts` with deposito info                                                           |
-| NEW `types/inventario.ts`          | CREATE  | Inventario event type                                                                                      |
-| NEW `types/deposito.ts`            | CREATE  | Deposito type                                                                                              |
-| `lib/api.ts`                       | MODIFY  | `fetchArticulos()`, `fetchExistencias()`, `fetchInventarios()`, `fetchDepositos()` replacing old functions |
-| `app/(dashboard)/articles/`        | MODIFY  | Update client component to use Articulo type, codigo as key                                                |
-| `app/(dashboard)/inventory/`       | MODIFY  | Becomes existencias view, add deposito filter                                                              |
-| NEW `app/(dashboard)/inventarios/` | CREATE  | Physical count management section                                                                          |
-| `app/(dashboard)/dashboard/`       | MODIFY  | Update KPI labels and types                                                                                |
-| `types/dashboard.ts`               | MODIFY  | Update interface for new stats shape                                                                       |
+Add to `schema.ts`:
 
-### 4. Mobile App
+```typescript
+// 4 new tables, ~60 lines total
+export const apiKeys = pgTable('api_keys', {
+  /* ... */
+})
+export const webhookSubscriptions = pgTable('webhook_subscriptions', {
+  /* ... */
+})
+export const webhookDeliveries = pgTable('webhook_deliveries', {
+  /* ... */
+})
+export const columnConfigs = pgTable('column_configs', {
+  /* ... */
+})
+```
 
-**Files changed:** ~6
+Plus type exports:
 
-| File                        | Action | Changes                                           |
-| --------------------------- | ------ | ------------------------------------------------- |
-| `pages/Articles.tsx`        | MODIFY | New API endpoint, new type                        |
-| `pages/Inventory.tsx`       | MODIFY | Becomes existencias view                          |
-| NEW `pages/Inventarios.tsx` | CREATE | Physical count screen (scanner integration later) |
-| Navigation config           | MODIFY | Add Inventarios tab/drawer item                   |
-| API hooks/fetchers          | MODIFY | New endpoints                                     |
+```typescript
+export type ApiKey = typeof apiKeys.$inferSelect
+export type NewApiKey = typeof apiKeys.$inferInsert
+export type WebhookSubscription = typeof webhookSubscriptions.$inferSelect
+// etc.
+```
 
-### 5. Shared Packages
+### 5. Frontend Changes (Web)
 
-**Files changed:** 2-3
+| Path                                             | Action        | What Changes                                                 |
+| ------------------------------------------------ | ------------- | ------------------------------------------------------------ |
+| `app/(dashboard)/settings/api-keys/page.tsx`     | NEW           | List keys, create dialog, revoke button                      |
+| `app/(dashboard)/settings/webhooks/page.tsx`     | NEW           | List subscriptions, create dialog, test button, delivery log |
+| `app/(dashboard)/settings/layout.tsx`            | MODIFY        | Add nav items for API Keys and Webhooks                      |
+| `app/(dashboard)/articulos/articulos-client.tsx` | MODIFY        | Add column config dropdown, image column, detail panel       |
+| `app/(dashboard)/articulos/[codigo]/page.tsx`    | NEW or MODIFY | Detail view with images, upload interface                    |
+| `app/(dashboard)/articulos/nuevo/page.tsx`       | MODIFY        | Image upload fields in create form                           |
 
-| Package           | Action | Changes                                                                                              |
-| ----------------- | ------ | ---------------------------------------------------------------------------------------------------- |
-| `packages/types/` | MODIFY | Add shared Articulo/Existencia/Inventario types if needed (currently product types live in web only) |
+### 6. Static File Serving
 
-### 6. Seed Data
+Already configured in `main.ts`:
 
-**Files changed:** ~6
+```typescript
+app.useStaticAssets(uploadsDir, { prefix: '/api/uploads/' })
+```
 
-| File                                     | Action                                    |
-| ---------------------------------------- | ----------------------------------------- |
-| `seed.ts`                                | REWRITE truncation + seeding order        |
-| `generators/product.generator.ts`        | REPLACE with `articulo.generator.ts`      |
-| `generators/inventory.generator.ts`      | REPLACE with `existencia.generator.ts`    |
-| NEW `generators/deposito.generator.ts`   | CREATE                                    |
-| NEW `generators/inventario.generator.ts` | CREATE                                    |
-| `generators/order.generator.ts`          | MODIFY -- use codigo instead of productId |
-| `generators/sale.generator.ts`           | MODIFY -- use codigo instead of productId |
-| `generators/purchase.generator.ts`       | MODIFY -- use codigo instead of productId |
+Images stored at `uploads/articulos/<codigo>/producto-*.jpg` will be served at `GET /api/uploads/articulos/<codigo>/producto-*.jpg`. No changes needed.
+
+The `uploads/articulos/` subdirectory must be created on first upload (use `mkdirSync({ recursive: true })`).
 
 ---
 
 ## Patterns to Follow
 
-### Pattern 1: Text PK in Drizzle Routes
+### Pattern 1: API Key Generation and Storage
 
-**What:** Use string params for articulo routes since PK is `codigo` (text).
-**When:** Any route that identifies an articulo.
+**What:** Generate cryptographically secure keys, store only the hash, show the key once.
+**When:** Creating a new API key.
 **Example:**
 
 ```typescript
-// articulos.controller.ts
-@Get(':codigo')
-async findOne(@Param('codigo') codigo: string) {
-  const articulo = await this.articulosService.findOne(codigo)
-  if (!articulo) throw new NotFoundException(`Articulo ${codigo} not found`)
+import { randomBytes, createHash } from 'crypto'
+
+// Generate key
+const rawKey = `obj_${randomBytes(32).toString('hex')}` // obj_64hexchars
+const prefix = rawKey.substring(0, 8) // obj_xxxx
+const hash = createHash('sha256').update(rawKey).digest('hex')
+
+// Store in DB: { key_hash: hash, key_prefix: prefix }
+// Return to user ONCE: { key: rawKey, prefix }
+// Never store rawKey. Never return it again.
+```
+
+**Why this way:** Same pattern as GitHub personal access tokens, Stripe API keys. Prefix allows identification without exposing the key. Hash means DB breach doesn't compromise keys.
+
+### Pattern 2: Webhook HMAC Signing
+
+**What:** Sign webhook payloads so receivers can verify authenticity.
+**When:** Every webhook delivery.
+**Example:**
+
+```typescript
+import { createHmac } from 'crypto'
+
+const payload = JSON.stringify({
+  evento: 'articulos.create',
+  timestamp: Date.now(),
+  data: articulo,
+})
+const signature = createHmac('sha256', subscription.secret).update(payload).digest('hex')
+
+// Send with headers:
+// X-Webhook-Signature: sha256=<signature>
+// X-Webhook-Event: articulos.create
+// X-Webhook-Delivery: <delivery-id>
+```
+
+### Pattern 3: Fire-and-Forget Webhook Emission
+
+**What:** Webhook emission must not block API responses.
+**When:** After any articulo CUD operation.
+**Example:**
+
+```typescript
+// articulos.service.ts
+async create(dto: CreateArticuloDto) {
+  const [articulo] = await this.drizzle.db.insert(articulos).values(dto).returning()
+
+  // Fire and forget -- do NOT await
+  this.webhooksService.emit('articulos', 'create', articulo).catch(err => {
+    console.error('Webhook emission failed:', err)
+  })
+
   return articulo
 }
 ```
 
-NestJS route params are strings by default, so no `ParseIntPipe` needed. This is simpler than the current numeric approach.
+### Pattern 4: Multi-File Upload with NestJS
 
-### Pattern 2: Composite Filtering for Existencias
-
-**What:** Existencias always need deposito context. Default to "all depositos" aggregated, filter by specific deposito.
-**When:** Any existencias query.
+**What:** Upload multiple images in a single request for articulos.
+**When:** Adding product or label images.
 **Example:**
 
 ```typescript
-// existencias.service.ts
-async findAll(query: ExistenciaQueryDto) {
-  let q = this.drizzle.db
-    .select({
-      id: existencias.id,
-      unidades: existencias.unidades,
-      minimo: existencias.minimo,
-      articulo: articulos,
-      deposito: depositos,
-    })
-    .from(existencias)
-    .innerJoin(articulos, eq(existencias.articuloCodigo, articulos.codigo))
-    .innerJoin(depositos, eq(existencias.depositoId, depositos.id))
-
-  if (query.depositoId) {
-    q = q.where(eq(existencias.depositoId, query.depositoId))
-  }
-  // ...
+@Post(':codigo/imagenes/:tipo')
+@UseInterceptors(FilesInterceptor('files', 6)) // max 6 files per request
+@UseGuards(RolesGuard)
+@Roles('admin')
+async uploadImages(
+  @Param('codigo') codigo: string,
+  @Param('tipo') tipo: 'producto' | 'etiqueta',
+  @UploadedFiles(new ParseFilePipe({
+    validators: [
+      new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+      new FileTypeValidator({ fileType: /^image\/(png|jpeg|webp)$/ }),
+    ],
+  }))
+  files: Express.Multer.File[]
+) {
+  return this.articulosService.addImages(codigo, tipo, files)
 }
 ```
 
-### Pattern 3: Denormalization Strategy for Item Tables
+### Pattern 5: Column Config as Controlled TanStack Table State
 
-**What:** Current item tables store `productName` and `sku` alongside `productId`. With the new model, `articuloCodigo` IS the identifier AND the human-readable code. Store `descripcion` snapshot at sale/order time.
-**When:** Writing orderItems, saleItems, purchaseItems.
+**What:** Column visibility driven by backend config, with local toggle UI.
+**When:** Articulos list page.
 **Example:**
 
 ```typescript
-// In schema:
-articuloCodigo: varchar('articulo_codigo', { length: 50 })
-  .notNull()
-  .references(() => articulos.codigo, { onDelete: 'restrict' }),
-articuloDescripcion: varchar('articulo_descripcion', { length: 255 }).notNull(),
-// Remove: productId, productName, sku -- codigo IS the SKU equivalent
-```
-
-**Rationale:** Keep description snapshot (it can change over time), but `codigo` is stable. No need for a separate `sku` column.
-
-### Pattern 4: Module Dependency via NestJS Standard Imports
-
-**What:** DashboardModule needs ArticulosModule and ExistenciasModule. Use standard NestJS module imports with exported services.
-**When:** Cross-module dependencies.
-**Example:**
-
-```typescript
-// dashboard.module.ts
-@Module({
-  imports: [ArticulosModule, ExistenciasModule, OrdersModule, SalesModule, PurchasesModule],
-  controllers: [DashboardController],
-  providers: [DashboardService],
+// Frontend: articulos-client.tsx
+const { data: columnConfig } = useQuery({
+  queryKey: ['column-config', 'articulos'],
+  queryFn: () => fetchColumnConfig('articulos'),
 })
-export class DashboardModule {}
 
-// articulos.module.ts -- must export the service
-@Module({
-  imports: [DbModule],
-  controllers: [ArticulosController],
-  providers: [ArticulosService],
-  exports: [ArticulosService], // Required for DashboardModule to inject
+const columnVisibility = useMemo(() => {
+  if (!columnConfig) return DEFAULT_VISIBILITY
+  return Object.fromEntries(columnConfig.columnas.map(c => [c.key, c.visible]))
+}, [columnConfig])
+
+const table = useReactTable({
+  state: { columnVisibility },
+  onColumnVisibilityChange: updater => {
+    // Update local state + debounced save to backend
+  },
 })
-export class ArticulosModule {}
 ```
 
 ---
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: Dual-Write Migration with Both Old and New Tables
+### Anti-Pattern 1: Storing Raw API Keys in the Database
 
-**What:** Keeping `products` and `articulos` tables simultaneously with sync logic.
-**Why bad:** v1.0 has no production users. Dual-write adds complexity for zero benefit. Sync bugs are inevitable.
-**Instead:** Clean cut -- drop old tables, create new ones, re-seed. Single Drizzle `db:push` or migration.
+**What:** Saving the full API key in plaintext.
+**Why bad:** Any DB access (backup, breach, admin panel) exposes all keys. Industry standard is hash-only.
+**Instead:** Store SHA-256 hash + 8-char prefix. Return raw key exactly once on creation.
 
-### Anti-Pattern 2: Surrogate ID + Natural Key Hybrid
+### Anti-Pattern 2: Synchronous Webhook Delivery
 
-**What:** Adding an `id serial` to `articulos` alongside `codigo` PK, using `id` internally.
-**Why bad:** Defeats the purpose of the business model. `codigo` IS the identifier used everywhere (labels, invoices, ERP). Adding a surrogate creates mapping confusion.
-**Instead:** Use `codigo text` as the true PK. It is stable, short, and meaningful.
+**What:** `await fetch(webhook.url)` inside the articulo create/update/delete handler.
+**Why bad:** Slow/unreachable webhook URLs block API responses. If 5 subscriptions exist and one times out (30s default), the API response takes 30+ seconds.
+**Instead:** Fire-and-forget with `.catch()`. Delivery happens asynchronously. Failures are logged in `webhook_deliveries`.
 
-### Anti-Pattern 3: Building Inventarios Before Existencias
+### Anti-Pattern 3: Separate Auth Guards (JWT OR ApiKey decorator per route)
 
-**What:** Implementing the physical count system before the basic stock model exists.
-**Why bad:** Inventarios reads from and writes to existencias. Without existencias, inventarios has nothing to count against.
-**Instead:** Build in dependency order: articulos -> depositos -> existencias -> inventarios.
+**What:** Creating `@UseGuards(ApiKeyGuard)` as an alternative decorator, requiring developers to choose per route.
+**Why bad:** Every route must be explicitly decorated. Easy to forget. Inconsistent behavior. Maintenance burden grows with routes.
+**Instead:** Single composite guard as global guard. Every authenticated route accepts either JWT or API key. Zero per-route changes.
 
-### Anti-Pattern 4: Keeping `productName`/`sku` Denormalization in Items
+### Anti-Pattern 4: Using Multer Disk Storage
 
-**What:** Storing `articuloDescripcion` + `articuloCodigo` + separate `sku` in item tables.
-**Why bad:** In the new model, `codigo` IS the SKU. Three fields for two concepts.
-**Instead:** Store `articuloCodigo` (the identifier) and `articuloDescripcion` (snapshot at transaction time). Two fields, clean.
+**What:** Configuring Multer's `diskStorage` for file handling.
+**Why bad:** Adds configuration complexity (destination function, filename function). The existing settings/logo pattern uses memory storage + manual `writeFile`, which is simpler and gives full control over directory structure and naming.
+**Instead:** Keep the existing pattern: `FileInterceptor` (memory storage) + manual `writeFile`. Consistent with the codebase.
 
-### Anti-Pattern 5: Incremental Schema Changes Instead of Clean Cut
+### Anti-Pattern 5: Per-User Column Config in v1.2
 
-**What:** Writing multiple ALTER TABLE migrations to gradually morph `products` into `articulos`.
-**Why bad:** No production data to preserve. Multiple migrations create fragile intermediate states. Drizzle schema drifts from actual DB.
-**Instead:** One clean schema definition. `db:push` to recreate. New seed. Done.
+**What:** Building a `user_preferences` table with per-user column visibility.
+**Why bad:** 1-5 users in this admin app. Per-user adds: user FK, merge defaults logic, migration when new columns are added, orphan cleanup. Way over-engineered.
+**Instead:** Global config in `column_configs` table. One row per `tabla`. Entire team shares the view.
+
+### Anti-Pattern 6: Bull/Redis Queue for Webhooks at This Scale
+
+**What:** Adding BullMQ + Redis for webhook delivery queue.
+**Why bad:** The app has 0 production users. Webhook volume will be single-digit per minute at most. Bull/Redis adds infrastructure dependency, Docker service, connection management, worker process.
+**Instead:** In-process delivery with `setTimeout` retries. If scale demands it in v2.0+, swap the delivery mechanism inside `WebhooksService` without changing the `emit()` interface.
 
 ---
 
 ## Suggested Build Order
 
-The dependency chain determines phase ordering. Each phase should produce a working (if incomplete) system.
-
-### Phase 1: Schema Foundation + Articulos Module
-
-**What:** New Drizzle schema for all tables. Backend ArticulosModule + DepositosModule. Drop products/inventory.
-**Why first:** Everything depends on the schema. Articulos is the central entity.
-**Includes:**
-
-1. Rewrite `schema.ts` with all new tables + modified item tables
-2. New type exports for all entities
-3. `db:push` to apply
-4. Backend `ArticulosModule` (controller, service, DTOs) -- full CRUD
-5. Backend `DepositosModule` -- simple CRUD
-6. Remove `ProductsModule` and `InventoryModule`
-7. Update `app.module.ts`
-8. New seed generators: `articulo.generator.ts`, `deposito.generator.ts`
-9. Update existing generators (order, sale, purchase) for `articuloCodigo`
-10. Rewrite `seed.ts` truncation order and seeding flow
-
-**Risk:** Breaks orders/sales/purchases/dashboard until Phase 3. Acceptable because all changes happen in one milestone.
-
-### Phase 2: Existencias Module
-
-**What:** Full-stack replacement of inventory with existencias.
-**Why second:** Depends on articulos + depositos. Needed before inventarios.
-**Includes:**
-
-1. Backend `ExistenciasModule` with deposito-aware joins
-2. Seed: `existencia.generator.ts`
-3. Web: `types/existencia.ts`, `types/deposito.ts`
-4. Web: Update `lib/api.ts` with `fetchArticulos()`, `fetchDepositos()`, `fetchExistencias()`
-5. Web: Update `articles/` page to use Articulo type + codigo PK
-6. Web: Update `inventory/` page to become existencias view with deposito filter
-7. Web: Update `types/articulo.ts`
-8. Mobile: Update `Articles.tsx` and `Inventory.tsx`
-
-### Phase 3: Update Downstream Modules
-
-**What:** Fix orders, sales, purchases, dashboard to use new schema.
-**Why third:** These modules depend on articulos being stable.
-**Includes:**
-
-1. Backend: Update OrdersService -- join on `articuloCodigo`, remove `productName`/`sku` denorm
-2. Backend: Update SalesService -- same pattern
-3. Backend: Update PurchasesService -- same pattern
-4. Backend: Update DashboardService -- swap injected services, update KPI interface
-5. Web: Update `types/order.ts`, `types/sale.ts`, `types/purchase.ts` -- `productId` -> `articuloCodigo`
-6. Web: Update `types/dashboard.ts` for new stats shape
-7. Web: Update dashboard page components
-8. Mobile: Update corresponding pages
-9. Final seed verification -- all generators produce consistent data
-
-### Phase 4: Inventarios Module
-
-**What:** Physical count event system. Entirely new domain.
-**Why last:** Depends on existencias. Most complex. Can be deferred without breaking core operations.
-**Includes:**
-
-1. Backend `InventariosModule` with lifecycle management (create -> en_progreso -> completado)
-2. Sub-tables: inventarios_articulos, inventario_sectores, dispositivos_moviles
-3. Close/reconcile endpoint that adjusts existencias
-4. Web: New `app/(dashboard)/inventarios/` section
-5. Web: Navigation update (sidebar)
-6. Mobile: New `Inventarios.tsx` page + navigation update
-7. Seed: `inventario.generator.ts`
-
-### Phase Dependency Chain
+The dependency chain determines phase ordering:
 
 ```
-Phase 1 (Schema + Articulos + Depositos)
-  |
-  +-- Phase 2 (Existencias + Frontend updates)
-  |     |
-  |     +-- Phase 4 (Inventarios)
-  |
-  +-- Phase 3 (Orders/Sales/Purchases/Dashboard update)
+Phase A: File Upload for Articulos
+  (independent -- no dependency on other v1.2 features)
+
+Phase B: API Keys (backend + frontend)
+  (independent -- no dependency on other v1.2 features)
+
+Phase C: Column Config (backend + frontend)
+  (independent -- no dependency on other v1.2 features)
+
+Phase D: Webhooks (backend + frontend)
+  (depends on articulos CUD methods existing -- they already exist from v1.1)
+  (benefits from API Keys existing -- external consumers need auth)
 ```
 
-Phases 2 and 3 can run in parallel if different developers. Phase 4 must wait for Phase 2.
+**Recommended order:** A -> B -> D -> C
+
+**Rationale:**
+
+1. **File Upload (A)** first because it completes the articulos CRUD story (v1.2's primary goal). The existing `FileInterceptor` pattern from settings/logo means low risk.
+2. **API Keys (B)** second because it's a clean new module with no existing code modification (except the global guard). Once done, external consumers can authenticate.
+3. **Webhooks (D)** third because it modifies ArticulosService (adds emit calls). Having API Keys done first means webhook consumers can authenticate to the API.
+4. **Column Config (C)** last because it's purely UI polish. The articulos list works fine with hardcoded columns; config just improves UX. Lowest priority.
+
+**Alternative:** If the articulos form/detail page is the main v1.2 deliverable, then the "Articulos CRUD completo" work (form groups, all ~30 fields, detail panel) should come before file upload. File upload is the last piece of the articulos form.
 
 ---
 
 ## Scalability Considerations
 
-| Concern                           | Current (seed data) | At 10K articulos                           | At 100K articulos                                  |
-| --------------------------------- | ------------------- | ------------------------------------------ | -------------------------------------------------- |
-| Text PK joins                     | Negligible          | Fine -- varchar(50) indexed joins are fast | Add GIN index on codigo if needed                  |
-| Existencias query (all depositos) | Simple              | Partition query by deposito, paginate      | Materialized view for total stock across depositos |
-| Inventario article list           | N/A                 | Load inventarios_articulos lazily          | Cursor-based pagination for count screens          |
-| Barcode lookup                    | Index scan          | Exact match on indexed column, fast        | Same -- B-tree handles this well                   |
+| Concern                  | Current (dev)             | At 1K articulos                    | At 10K+ articulos                      |
+| ------------------------ | ------------------------- | ---------------------------------- | -------------------------------------- |
+| File storage             | Filesystem, ~50MB         | Filesystem fine, ~500MB            | Consider S3/MinIO, serve via CDN       |
+| Webhook delivery         | In-process setTimeout     | Fine, <10 deliveries/min           | BullMQ + Redis, dedicated worker       |
+| API key validation       | DB query per request      | Add in-memory cache (5min TTL)     | Same cache approach, fine at any scale |
+| Column config            | DB query per page load    | Cache on frontend (React Query)    | Same, never a bottleneck               |
+| Webhook deliveries table | Grows with every delivery | Retention policy: delete > 30 days | Partition by month, archive old        |
 
-Text PKs with varchar(50) are well within PostgreSQL performance norms. The ERP-style `codigo` values are typically 6-20 characters -- shorter than many UUID PKs used in production systems.
+---
+
+## New API Endpoints Summary
+
+### API Keys
+
+```
+GET    /api/api-keys              -- List all keys (shows prefix, never full key)
+POST   /api/api-keys              -- Create key (returns full key ONCE)
+PATCH  /api/api-keys/:id          -- Update (name, active status, expiry)
+DELETE /api/api-keys/:id          -- Hard delete
+```
+
+### Webhooks
+
+```
+GET    /api/webhooks                    -- List subscriptions
+POST   /api/webhooks                    -- Create subscription
+PATCH  /api/webhooks/:id               -- Update subscription
+DELETE /api/webhooks/:id               -- Delete subscription
+POST   /api/webhooks/:id/test          -- Send test payload
+GET    /api/webhooks/:id/deliveries    -- List delivery history
+```
+
+### Articulo Images
+
+```
+POST   /api/articulos/:codigo/imagenes/:tipo    -- Upload images (multipart)
+DELETE /api/articulos/:codigo/imagenes/:tipo/:index -- Delete single image
+```
+
+### Column Config
+
+```
+GET    /api/settings/column-config/:tabla    -- Get config for a table
+PATCH  /api/settings/column-config/:tabla    -- Update config
+```
+
+All endpoints require authentication (JWT or API key). Write endpoints require `@Roles('admin')`.
 
 ---
 
 ## Sources
 
-- Direct codebase analysis of `apps/backend/src/db/schema.ts` (current schema with 8 table definitions)
-- Direct codebase analysis of all 7 backend service files (dependency mapping, query patterns)
-- Direct codebase analysis of `apps/web/src/lib/api.ts` (6 fetch functions) and `apps/web/src/types/` (7 type files)
-- Direct codebase analysis of `apps/mobile/src/pages/` (9 page components)
-- Direct codebase analysis of `apps/backend/src/db/seed.ts` and generator pattern
-- Drizzle ORM text PK and FK patterns -- HIGH confidence (well-documented, standard PostgreSQL feature)
-- NestJS module imports/exports pattern -- HIGH confidence (core NestJS feature)
-- PostgreSQL varchar PK performance -- HIGH confidence (established, benchmarked extensively in industry)
+- Direct codebase analysis: `apps/backend/src/main.ts` (global guard registration, static assets, CORS)
+- Direct codebase analysis: `apps/backend/src/common/guards/jwt-auth.guard.ts` (JWT verification flow)
+- Direct codebase analysis: `apps/backend/src/common/guards/roles.guard.ts` (role checking pattern)
+- Direct codebase analysis: `apps/backend/src/modules/settings/settings.controller.ts` (FileInterceptor + upload pattern)
+- Direct codebase analysis: `apps/backend/src/modules/articulos/articulos.service.ts` (CUD methods to add webhook emission)
+- Direct codebase analysis: `apps/backend/src/db/schema.ts` (existing tables, jsonb image arrays)
+- NestJS global guards via DI: `APP_GUARD` provider pattern -- HIGH confidence (core NestJS feature)
+- NestJS `FilesInterceptor` for multi-file upload -- HIGH confidence (documented in @nestjs/platform-express)
+- SHA-256 key hashing pattern: industry standard (GitHub, Stripe, AWS) -- HIGH confidence
+- HMAC webhook signing: industry standard (GitHub, Stripe, Shopify) -- HIGH confidence
+- PostgreSQL jsonb array operations for image lists -- HIGH confidence (well-documented)

@@ -1,8 +1,8 @@
 # Feature Landscape
 
-**Domain:** Commercial admin system -- articulos management, multi-warehouse stock (existencias), periodic physical inventory counting (inventarios)
-**Researched:** 2026-03-05
-**Scope:** v1.1 milestone features only (articulos, existencias, inventarios, depositos)
+**Domain:** Admin platform for commercial operations — full article CRUD, image management, API keys, webhooks
+**Researched:** 2026-03-10
+**Scope:** v1.2 milestone features only (articulos CRUD completo, imagenes, columnas configurables, API keys, webhooks)
 
 ---
 
@@ -10,197 +10,217 @@
 
 Features users expect. Missing = product feels incomplete.
 
-### Articulos (Product Master Data)
+### Articulos CRUD Completo
 
-| Feature                                                            | Why Expected                                                                                          | Complexity | Notes                                                                                                             |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
-| Full CRUD (create, read, update, soft-delete via `activo` flag)    | Basic data management -- every admin system needs this                                                | Low        | Replaces current products CRUD. PK is `codigo` (text), not numeric ID                                             |
-| Multiple code identifiers (sku, codigo, codigo_barras, erp_codigo) | ERP-aligned businesses always have multiple product codes                                             | Low        | Each must be independently searchable. `codigo` is PK, others are secondary lookups                               |
-| Search/filter by any code or name                                  | Users look up articles by whichever code they have in hand (barcode label, ERP printout, SKU sticker) | Med        | Multi-column search across codigo, sku, codigo_barras, erp_codigo, descripcion. Current v1.0 filters by name only |
-| Active/inactive toggle                                             | Products are retired, not deleted -- historical references (orders, sales) must remain valid          | Low        | `activo` boolean flag. Default list view shows active only, with toggle to show all                               |
-| Server-side pagination and filtering                               | Article catalogs grow to thousands; client-side filtering breaks down                                 | Med        | Current v1.0 fetches all products client-side. Must move to server-side for articulos                             |
-| Category/classification display                                    | Users need to group and browse by category                                                            | Low        | Existing `category` field maps to new model                                                                       |
-| Price and cost display                                             | Core commercial data -- margin visibility at a glance                                                 | Low        | `precio_venta`, `precio_costo` fields. Current v1.0 already shows price/cost                                      |
-| Detail view (sheet or drawer)                                      | Users need to see all fields for a single article without leaving the list                            | Low        | Current v1.0 uses side sheet (ProductSheet). Keep this pattern for consistency                                    |
+| Feature                                      | Why Expected                                                                                                            | Complexity | Notes                                                                                                                                                                              |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ruta de edicion `/articulos/[codigo]/editar` | El sheet de detalle ya tiene boton "Editar" que linkea ahi, pero la ruta no existe. CRUD sin Edit es incompleto.        | Low        | `ArticuloForm` ya acepta `mode: 'edit'`. Solo falta la page con fetch del articulo por codigo y pasarlo al form.                                                                   |
+| Soft-delete con confirmacion                 | El controller tiene `toggleActive` pero no hay accion de "eliminar" en la UI. Usuarios esperan poder retirar articulos. | Low        | Usar AlertDialog de confirmacion. No hacer hard delete — FKs con `onDelete: restrict` en orders/sales/purchases lo impiden. El toggle activo/inactivo ya es el mecanismo correcto. |
+| Feedback de exito/error en operaciones       | Toasts al crear/editar/eliminar. Ya implementado en `ArticuloForm` con `useToast`.                                      | Done       | Solo agregar toast para toggle activo.                                                                                                                                             |
+| Formulario agrupado en secciones             | Secciones logicas para ~30 campos: Identificacion, Propiedades, Precios, Imagenes, ERP, Origen, Estado.                 | Done       | Ya implementado con `SectionHeader` + grids de 2 columnas. Solo falta la seccion de imagenes funcional (actualmente placeholder).                                                  |
 
-### Existencias (Stock per Deposito)
+### Image Management
 
-| Feature                                  | Why Expected                                                                             | Complexity | Notes                                                                                        |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------- |
-| Stock quantity per article per deposito  | Core multi-warehouse concept -- "how many of X do I have in warehouse Y?"                | Med        | Replaces flat `inventory` table. Composite key: articulo_codigo + deposito_id                |
-| Total stock aggregation across depositos | Users need "total stock for article X across all locations"                              | Low        | Computed in API response or SQL aggregation                                                  |
-| Low stock alerts                         | Current v1.0 dashboard already has low stock alerts; removing them would be a regression | Med        | Must be recalculated per deposito against min_stock threshold, then aggregated for dashboard |
-| Stock list view filtered by deposito     | Warehouse managers work with one location at a time                                      | Med        | Dropdown or tab filter by deposito at top of existencias table                               |
-| Stock list view filtered by article      | "Show me where article X lives across all depositos" -- the inverse view                 | Low        | Both views (by deposito and by article) are essential for multi-warehouse                    |
-| Last restock date tracking               | Audit trail for when stock was last replenished                                          | Low        | `ultima_reposicion` timestamp field                                                          |
-| Min/max stock thresholds per existencia  | Define alerting thresholds per article-deposito combination                              | Low        | `stock_minimo`, `stock_maximo` fields. Current v1.0 already has min/max stock                |
+| Feature                                          | Why Expected                                                                                                                              | Complexity | Notes                                                                                                                              |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Upload de imagenes con preview                   | Todo admin de productos permite subir fotos. El form actual tiene un placeholder que dice "proximamente".                                 | Med        | Requiere: (1) endpoint backend de upload multipart, (2) servicio de archivos estaticos, (3) componente de upload en frontend.      |
+| Visualizacion de imagenes en el sheet de detalle | El `ArticuloSheet` muestra todos los campos pero no imagenes. Las fotos son lo primero que un usuario busca para identificar un articulo. | Low        | Agregar seccion de imagenes al sheet, renderizar thumbnails desde las URLs almacenadas en `imagenesProducto` e `imagenesEtiqueta`. |
+| Eliminar imagen individual                       | No se puede subir sin poder borrar. Error al subir la imagen equivocada necesita correccion.                                              | Low        | Boton de eliminar en cada thumbnail. Borrar archivo del filesystem + remover URL del array jsonb.                                  |
 
-### Depositos (Warehouses/Locations)
+### Columnas Configurables
 
-| Feature                           | Why Expected                                                                                 | Complexity | Notes                                                                            |
-| --------------------------------- | -------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------- |
-| CRUD for depositos                | Must be able to add/edit/deactivate warehouse locations                                      | Low        | Simple entity: nombre, direccion, activo. Few records (typically 2-10 locations) |
-| List depositos with stock summary | Quick view of total items and total distinct articles per warehouse                          | Low        | Aggregate count from existencias                                                 |
-| Prevent deletion when referenced  | Referential integrity -- can't remove a warehouse that has stock records or inventory events | Low        | Soft-delete via `activo` flag, or FK constraint with restrict                    |
+| Feature                                             | Why Expected                                                                                                                                              | Complexity | Notes                                                                                                                |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| UI para show/hide columnas en la lista de articulos | TanStack Table soporta column visibility nativamente. Ya existe `defaultColumnVisibility` que oculta 8 columnas por defecto. Falta el control de usuario. | Low        | Dropdown con checkboxes por columna. Patron standard: boton con icono Columns al lado del search.                    |
+| Persistencia de la configuracion                    | Si el usuario oculta columnas y recarga la pagina, debe mantener su eleccion.                                                                             | Low-Med    | Requirement dice "global" (aplica a todos los usuarios del negocio). Guardar en `businessSettings` como campo jsonb. |
 
-### Inventarios (Physical Count Events)
+### API Keys
 
-| Feature                                      | Why Expected                                                                                   | Complexity | Notes                                                                                                                                                                                     |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Create inventory count event                 | "We're doing a physical count on March 15 for Deposito Central"                                | Med        | Event entity with fecha, deposito_id, estado (pendiente / en_curso / finalizado / cancelado)                                                                                              |
-| Assign sectors/zones to a count event        | Physical counts are organized by warehouse zones, aisles, or shelving sections                 | Med        | Sectors subdivide a deposito for a specific count event. Each sector gets its own counting scope                                                                                          |
-| Record per-article counts within a sector    | The actual counting -- "I counted 47 units of article ABC in sector A3"                        | Med        | Detail table: inventario_id + articulo_codigo + sector + cantidad_contada                                                                                                                 |
-| View discrepancies (counted vs system stock) | The whole point of physical inventory -- finding mismatches between real and system quantities | High       | Compare inventario_detalle.cantidad_contada against existencias.cantidad for same articulo+deposito. Must handle articles found but not in system, and articles in system but not counted |
-| Finalize/close a count event                 | Lock the count so no more edits happen after the counting period ends                          | Med        | State transition: en_curso -> finalizado. After finalization, counts become read-only                                                                                                     |
-| Inventory event history                      | "Show me all past counts for Deposito Central"                                                 | Low        | Simple filtered list by deposito and/or date range                                                                                                                                        |
-| Status-based workflow                        | Clear visual progression: pendiente -> en_curso -> finalizado (or cancelado)                   | Low        | Status badges, prevent out-of-order transitions                                                                                                                                           |
+| Feature                              | Why Expected                                                                                                                        | Complexity | Notes                                                                                                                           |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Crear API key con nombre descriptivo | Patron universal: Stripe, GitHub, Vercel. El admin necesita tokens para integrar con sistemas externos sin pasar por Supabase Auth. | Med        | Dialog con campo nombre. Generar token aleatorio (crypto.randomBytes). Guardar hash en DB, mostrar token completo solo una vez. |
+| Lista de API keys con estado         | Tabla: nombre, prefijo truncado (`sk_...a3f2`), fecha creacion, ultimo uso, estado activa/revocada.                                 | Low        | Solo lectura + accion de revocar.                                                                                               |
+| Copiar key al portapapeles           | Al crear, el key se muestra en un campo readonly con boton "Copiar". Warning: "No se mostrara de nuevo".                            | Low        | `navigator.clipboard.writeText()`. Boton con feedback visual ("Copiado!").                                                      |
+| Revocar key con confirmacion         | La revocacion es irreversible. AlertDialog explicando que las integraciones que usan este key dejaran de funcionar.                 | Low        | PATCH al backend que marca como revocada. No se puede reactivar.                                                                |
+
+### Webhooks CRUD
+
+| Feature                                   | Why Expected                                                                                                                                                                     | Complexity | Notes                                                                                        |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------- |
+| Crear suscripcion: entidad + evento + URL | Todo sistema de webhooks tiene este formulario basico. Entidad = "Articulos" (unica en v1.2). Evento = "Creado" / "Actualizado" / "Eliminado" / "Todos". URL = endpoint destino. | Med        | Dialog con selects + input de URL. Validar que URL sea HTTPS (o HTTP para desarrollo local). |
+| Lista de suscripciones con estado         | Tabla: URL (truncada), entidad, evento, activo/inactivo, ultima entrega.                                                                                                         | Low        | Datos de `webhook_subscriptions` table.                                                      |
+| Editar suscripcion                        | Cambiar URL, evento, o toggle activo/inactivo.                                                                                                                                   | Low        | Mismo dialog que crear, precargado.                                                          |
+| Eliminar suscripcion con confirmacion     | AlertDialog. Irreversible.                                                                                                                                                       | Low        | Hard delete, no soft-delete. Las suscripciones no tienen dependencias criticas.              |
 
 ---
 
 ## Differentiators
 
-Features that set product apart. Not expected but valued.
+Features that set product apart. Not expected, but valued.
 
-| Feature                                                         | Value Proposition                                                                                                            | Complexity | Notes                                                                                                                                                                           |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Product images (foto_producto + foto_etiqueta arrays)           | Visual identification saves time -- warehouse staff recognize products by sight, label photos help with OCR and verification | Med        | Multiple images per article. Store as URL arrays (jsonb column). Image upload with preview in detail view. Depends on file storage strategy (local or S3-compatible)            |
-| Rich product properties (marca, modelo, talle, color, material) | Variant-aware catalog without a full variant/SKU matrix -- filter by brand, size, color in list view                         | Low        | Flat fields on articulos, not a separate variants table. Each filterable in the list. Avoids combinatorial variant explosion                                                    |
-| OCR data storage (datos_ocr jsonb)                              | Future-proofing for automated label scanning on mobile -- store raw OCR output alongside the article                         | Low        | JSON column, read-only display in article detail view. Input comes from mobile app or external process. No OCR processing in admin                                              |
-| Barcode scanner input on mobile (inventarios counting)          | Physical counts with barcode scanning are dramatically faster than manual code entry                                         | High       | Capacitor barcode plugin integration. Critical for inventarios UX on mobile. Can defer to later in v1.1 or to v1.2 without blocking core flow                                   |
-| Apply discrepancies to stock automatically                      | After physical count finalization, auto-adjust existencias quantities to match counted values                                | High       | "Apply adjustments" action on finalized inventory. Creates stock adjustment audit records. Dangerous operation requiring confirmation dialog, reason field, and audit log entry |
-| Mobile device assignment per inventario                         | Track which phones/tablets are assigned to which sectors during a count                                                      | Low        | `dispositivos_moviles` field on inventario entity. Informational/organizational, not enforced                                                                                   |
-| Bulk article import via CSV                                     | Catalogs with 500+ articles need bulk import during ERP migration, not one-by-one CRUD                                       | Med        | Parse CSV, validate code uniqueness, upsert. Common request when migrating from spreadsheets or ERP export                                                                      |
-| Print/export inventory count sheets                             | Generate PDF or printable view of articles to count per sector, for hybrid digital+paper counting teams                      | Med        | Useful for teams not fully mobile. Secondary to digital counting flow                                                                                                           |
+| Feature                                                          | Value Proposition                                                                                                                                                                                                                 | Complexity | Notes                                                                                                                                                                       |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Grid de imagenes con slots etiquetados (3 etiqueta + 6 producto) | En vez de un gallery generico tipo Shopify, tener slots visuales claros: "Etiqueta 1/2/3" y "Producto 1-6". El usuario entiende exactamente que imagen va donde. El schema ya distingue `imagenesEtiqueta` de `imagenesProducto`. | Med        | Grid de 3 columnas. Fila superior: 3 slots "Etiqueta". Filas inferiores: 6 slots "Producto". Cada slot: cuadrado, borde dashed si vacio, thumbnail con acciones si ocupado. |
+| Upload desde filesystem local (no cloud)                         | PROJECT.md dice "desde filesystem local". Las imagenes se guardan en el servidor backend. Para un comercio chico en red local: no depende de internet para ver fotos de articulos.                                                | Med        | NestJS sirve estaticos con `ServeStaticModule` o endpoint dedicado. URLs relativas: `/uploads/articulos/ART-001/producto-1.jpg`.                                            |
+| Secret de webhook con HMAC-SHA256                                | Cada suscripcion tiene un secret. El payload se firma. El receptor verifica autenticidad. Patron de Stripe/GitHub.                                                                                                                | Low        | Generar secret al crear, mostrarlo una vez (mismo patron que API key). Header: `X-Webhook-Signature: sha256=...`.                                                           |
+| Boton "Enviar test" en webhook                                   | Manda un payload de ejemplo al URL y muestra resultado inline (status code, response). Ahorra tiempo al integrador.                                                                                                               | Low        | No necesita crear un articulo real para verificar conectividad.                                                                                                             |
+| Log de entregas de webhook                                       | Cada entrega registrada: timestamp, status code, payload, response. El admin puede ver que webhooks fallaron y diagnosticar.                                                                                                      | Med        | Tabla `webhook_deliveries`. En la UI: expandir fila de suscripcion o sub-tabla con ultimas N entregas. Badges verde/rojo por status code.                                   |
+| Webhook delivery con retry basico                                | 3 intentos con delay incremental (1s, 10s, 60s) en caso de fallo (timeout o 5xx).                                                                                                                                                 | Med        | Implementar sincrono con setTimeout. No requiere cola de mensajes a esta escala. Registrar cada intento en deliveries.                                                      |
+| Columnas configurables como setting global del negocio           | La config de columnas aplica a todos los usuarios, no por usuario individual. Consistencia para equipos chicos.                                                                                                                   | Low-Med    | Guardar en `businessSettings` como jsonb. Cargar al montar la tabla. Un admin configura, todos ven lo mismo.                                                                |
+| Margen calculado en precios                                      | Mostrar margen (%) automaticamente cuando precio y costo estan presentes. Informacion util que no requiere campo adicional.                                                                                                       | Low        | Solo display, no se guarda. `((precio - costo) / costo * 100).toFixed(1)%` debajo de los campos de precio.                                                                  |
 
 ---
 
 ## Anti-Features
 
-Features to explicitly NOT build in v1.1.
+Features to explicitly NOT build in v1.2.
 
-| Anti-Feature                                          | Why Avoid                                                                                                                                                                                 | What to Do Instead                                                                                                                               |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Full variant/SKU matrix (size x color = N child SKUs) | Massive complexity for a commercial admin. Combinatorial explosion of variants. The flat properties approach (talle, color, material as fields on each articulo) covers the real use case | Keep properties as flat fields on articulos. Each unique combination is its own articulo with its own codigo. Simple and ERP-aligned             |
-| Automatic reorder/purchase generation from low stock  | Scope creep into procurement automation. v1.1 is about the data model migration, not workflow automation                                                                                  | Show low-stock alerts on dashboard. Manual purchase creation stays in the purchases module                                                       |
-| Real-time stock sync with external ERP                | Integration layer is out of scope. The `erp_codigo` field is for human reference, not live bidirectional sync                                                                             | Store erp_codigo for lookup. Bulk CSV import/export if migration needed                                                                          |
-| Lot/batch/serial number tracking                      | Adds significant per-unit tracking complexity. Not needed for general commercial operations at this scale                                                                                 | Track aggregate quantity per article per deposito, not individual units                                                                          |
-| Expiration date management                            | Only relevant for perishable goods. General commercial admin doesn't need this                                                                                                            | Omit entirely unless user explicitly requests later                                                                                              |
-| FIFO/LIFO/weighted average costing methods            | Accounting-level inventory valuation is a separate domain. The admin tracks operational quantities, not accounting valuations                                                             | Single cost price per article (precio_costo). Accounting valuation handled in external tools                                                     |
-| Barcode generation/printing                           | Generating and printing barcodes is a specialized tool. The admin reads/stores barcode values, it doesn't create them                                                                     | Store codigo_barras as text field. External label printing tools handle barcode generation                                                       |
-| Multi-currency pricing                                | Explicitly out of scope per PROJECT.md (single locale es-MX, single currency MXN)                                                                                                         | All prices in MXN. Period                                                                                                                        |
-| Stock transfer between depositos                      | Natural next step for multi-deposito but not in v1.1 explicit scope. Adds transfer workflow, audit trail, and partial-transfer edge cases                                                 | Defer to v1.2. For v1.1, stock adjustments are per-deposito only (manual increase/decrease)                                                      |
-| Inventory count on web (desktop counting)             | Physical counts happen on the warehouse floor with mobile devices, not at a desk                                                                                                          | Web admin creates/manages/reviews inventory events. Actual article-by-article counting is a mobile activity. Web shows results and discrepancies |
+| Anti-Feature                                  | Why Avoid                                                                                                                           | What to Do Instead                                                                                                                                                |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Crop/resize de imagenes en frontend           | Canvas API + aspect ratio UI + preview es un proyecto en si mismo. Las fotos de articulos se toman con celular y se suben tal cual. | Resize server-side al recibir upload con `sharp`. Generar thumbnail automaticamente (ej: 200x200 para tabla, 800px max para detalle).                             |
+| Drag-and-drop reorder de imagenes             | Con slots fijos (3 etiqueta + 6 producto), no hay que reordenar. Cada slot tiene posicion definida.                                 | Click en slot para subir/reemplazar. Eliminar para vaciar el slot.                                                                                                |
+| Bulk import de articulos via CSV              | Scope creep significativo: parseo, validacion linea por linea, preview de cambios, manejo de duplicados.                            | Dejar para v1.3+. La API REST con API keys soporta POST individual; un script externo puede automatizar imports.                                                  |
+| Rate limiting por API key                     | Ventanas deslizantes, quotas, throttling por key: es infraestructura de API gateway, no de la app.                                  | Rate limit basico a nivel de Nginx/reverse proxy si es necesario.                                                                                                 |
+| OAuth2 / token refresh para API keys          | API keys son Bearer tokens estaticos. No agregar refresh tokens ni OAuth flows.                                                     | `Authorization: Bearer sk_...`. Si se compromete, revocar y crear nueva. Simple y seguro.                                                                         |
+| Webhook fan-out (multiples URLs por evento)   | Un evento dispara N webhooks: complejidad de delivery, ordering, partial failures.                                                  | Una suscripcion = una URL. Multiples destinos = multiples suscripciones. Simple y transparente.                                                                   |
+| Editor WYSIWYG para observaciones             | Las observaciones son notas internas cortas. No justifican un editor rico con formatting.                                           | `<Textarea>` simple, como ya esta implementado.                                                                                                                   |
+| Gestion de imagenes desde mobile              | La app mobile es para consulta y conteo. Subir fotos es tarea del admin en desktop.                                                 | Mostrar imagenes en mobile como read-only. Upload solo desde web.                                                                                                 |
+| Webhook para entidades distintas de articulos | v1.2 scope es solo articulos. Extender a orders/sales/purchases agrega complejidad de payload, testing, y documentacion.            | Arquitectura extensible (campo `entidad` en la tabla), pero solo "articulos" habilitado. Agregar entidades en v1.3.                                               |
+| Permisos granulares por API key               | Scopes tipo "read:articulos write:articulos". Over-engineering para un admin de comercio chico.                                     | API key tiene acceso completo a todos los endpoints. El RBAC existente (admin/viewer del JWT) no aplica a API keys — las keys son de integracion, no de usuarios. |
+| Dashboard de uso de API keys                  | Graficas de requests/dia, endpoints mas usados, latencia. Es analytics, no admin.                                                   | Campo `ultimoUso` (timestamp) en la tabla de keys. Suficiente para saber si una key esta activa.                                                                  |
 
 ---
 
 ## Feature Dependencies
 
 ```
-Depositos CRUD ──> Existencias (existencias.deposito_id references depositos)
-Articulos CRUD ──> Existencias (existencias.articulo_codigo references articulos)
-Articulos CRUD ──> Inventario detalle (counts reference articulo_codigo)
-Depositos CRUD ──> Inventarios (each count event targets a deposito)
-Existencias data ──> Inventario discrepancies (comparison needs current stock)
-Articulos CRUD ──> FK migration (orders/sales/purchases must reference articulos.codigo)
+ArticuloForm (existente) ──> Image Upload Grid (nuevo, reemplaza placeholder)
+                         ──> Ruta /articulos/[codigo]/editar (nuevo, usa form existente)
 
-Recommended build order:
-  1. Depositos CRUD (no dependencies, simplest entity, unblocks existencias + inventarios)
-  2. Articulos CRUD (no dependencies on new tables, core entity, unblocks everything)
-  3. Existencias (depends on depositos + articulos being in place)
-  4. FK migration (orders/sales/purchases point to articulos.codigo instead of products.id)
-  5. Inventarios (depends on depositos + articulos + existencias for discrepancy calc)
-  6. Dashboard KPI updates (depends on new data model being fully in place)
-  7. Seed data rewrite (depends on all new tables existing)
+ArticuloSheet (existente) ──> Seccion de imagenes (agregar thumbnails)
+
+ServerDataTable (existente) ──> Column visibility dropdown (agregar control UI)
+                            ──> businessSettings extension (persistir preferencia)
+
+Settings Nav (existente) ──> API Keys page (nueva seccion)
+                         ──> Webhooks page (nueva seccion)
+
+Backend upload endpoint (nuevo) ──> Image Upload Grid (frontend necesita donde mandar archivos)
+Backend static serving (nuevo)  ──> Image display (frontend necesita URLs que resuelvan)
+
+api_keys table (nuevo)         ──> API Keys UI (CRUD)
+                               ──> JwtAuthGuard extension (aceptar Bearer api_key ademas de JWT)
+
+webhook_subscriptions (nuevo)  ──> Webhooks UI (CRUD)
+webhook_deliveries (nuevo)     ──> Delivery log UI
+ArticulosService events        ──> Webhook delivery engine (disparar POST en create/update/delete)
 ```
+
+Dependencias criticas:
+
+- **Image upload requiere backend work primero**: endpoint de upload multipart + static file serving. No existe nada de esto en el backend actual.
+- **API Keys requiere extension del auth guard**: el `JwtAuthGuard` actual solo valida JWTs de Supabase. Debe aceptar tambien `Bearer sk_...` tokens. Sin esto, los keys no sirven para nada.
+- **Webhooks requiere event emitting**: el `ArticulosService` necesita emitir eventos despues de create/update/delete. NestJS tiene `EventEmitter2` para esto. El webhook engine escucha y despacha.
+- **Columnas configurables requiere extension de businessSettings**: agregar campo jsonb para la configuracion. Endpoint GET/PATCH ya existe.
 
 ---
 
 ## MVP Recommendation
 
-### Build in v1.1 (required):
+Prioritize:
 
-1. **Depositos CRUD** -- simplest entity, unblocks existencias and inventarios. 2-3 API endpoints + simple list/form UI. Half a day of work.
-2. **Articulos CRUD with all code identifiers** -- core entity replacing products. Multi-code search is table stakes. Rich properties (marca, modelo, talle, color, material) included from day one since they're just columns.
-3. **Existencias per deposito** -- replaces flat inventory table. Two view modes: by deposito (warehouse manager view) and by article (product manager view). Low stock alerts feed the dashboard.
-4. **FK migration** -- orders/sales/purchases updated to reference articulos.codigo. Data migration script for existing seed data. Critical for referential integrity.
-5. **Inventarios with sector-based counting and discrepancy view** -- the genuinely new capability that didn't exist in v1.0. Web admin creates events, views results and discrepancies. Mobile counting input is a stretch goal.
-6. **Dashboard updates** -- low stock alerts and KPI stats cards updated to query new model (existencias instead of inventory, articulos instead of products).
+1. **Ruta editar + soft-delete en UI** — La base ya existe (form, controller, toggle endpoint). Solo falta wiring. Desbloquea CRUD completo sin imagenes. Maximo medio dia de trabajo.
+2. **Columnas configurables** — Dropdown con checkboxes + persistencia en businessSettings. TanStack Table ya lo soporta. Mejora inmediata en la lista existente.
+3. **Image upload backend** — Upload endpoint con multer, static serving, resize con sharp. Infraestructura necesaria antes del UI.
+4. **Image upload grid en ArticuloForm** — Componente de slots etiquetados. Reemplaza el placeholder. La feature mas visible para el usuario.
+5. **API Keys backend + UI** — Schema, modulo NestJS, guard extension, pagina en Settings. Independiente de webhooks.
+6. **Webhooks CRUD (backend + UI)** — Suscripciones en Settings. Independiente de delivery.
+7. **Webhook delivery engine + logs** — Lo mas complejo. Event emitting, HTTP dispatch, retry, tabla de deliveries, UI de logs.
 
-### Defer to v1.2+:
+Defer:
 
-- **Mobile barcode scanning for inventarios**: High complexity Capacitor plugin work. The counting flow works with manual code entry first.
-- **Apply discrepancies to stock**: Dangerous auto-adjustment operation. v1.1 shows discrepancies; humans adjust manually via existencias CRUD.
-- **Bulk CSV import**: Useful for real data migration but not blocking. Manual CRUD + seed data sufficient for v1.1 validation.
-- **Stock transfers between depositos**: Natural feature but explicitly out of v1.1 scope.
-- **Print/export count sheets**: Nice-to-have, not blocking core inventory flow.
-- **Image upload for articulos**: Can store URL fields from day one but defer actual upload UI/storage to later.
+- **Webhook retry con backoff**: Implementar delivery sincrono primero (fire-and-forget con log del resultado). Agregar retry asincrono si la escala lo justifica.
+- **API key usage tracking detallado**: Solo guardar `ultimoUso` timestamp. No analytics.
 
 ---
 
-## Existing Feature Impact
+## UX Patterns Recomendados
 
-v1.1 migration touches these existing v1.0 features:
+### Formulario de Articulo (~30 campos)
 
-| Existing Feature                       | Impact                | Action Needed                                                                                                          |
-| -------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Products list + detail (articles page) | **Replaced entirely** | Remove products table/endpoints/UI. Replace with articulos. Same route `/articles`                                     |
-| Inventory list (inventory page)        | **Replaced entirely** | Remove inventory table/endpoints/UI. Replace with existencias. Route changes to `/existencias` or stays `/inventory`   |
-| Dashboard low stock alerts             | **Modified**          | Query existencias instead of inventory. Aggregate across depositos for total low-stock view                            |
-| Dashboard stats cards                  | **Modified**          | "Total Products" becomes "Total Articulos". Stock value from existencias. Revenue metrics unchanged                    |
-| Orders + order items                   | **Modified**          | FK `product_id` (int) changes to `articulo_codigo` (text). Migration script needed                                     |
-| Sales + sale items                     | **Modified**          | FK `product_id` (int) changes to `articulo_codigo` (text). Migration script needed                                     |
-| Purchases + purchase items             | **Modified**          | FK `product_id` (int) changes to `articulo_codigo` (text). Migration script needed                                     |
-| Web type definitions                   | **Rewritten**         | New TypeScript interfaces for Articulo, Existencia, Inventario, Deposito replacing Product, Inventory                  |
-| Seed data                              | **Rewritten**         | New seed for articulos (with all code fields + properties), depositos, existencias, inventarios with sample counts     |
-| Backend modules (NestJS)               | **Replaced + new**    | Products module and inventory module replaced. New: articulos, existencias, depositos, inventarios modules             |
-| Navigation sidebar                     | **Modified**          | New nav items: Articulos, Existencias, Inventarios, Depositos (in settings or standalone). Remove: Products, Inventory |
+El form actual ya sigue las mejores practicas:
+
+- **Secciones con SectionHeader**: Identificacion, Propiedades, Precios, Imagenes, ERP, Origen. Scroll vertical continuo.
+- **Grids de 2 columnas** para campos cortos (codigo/nombre, marca/modelo, precio/costo).
+- **Campos full-width** para texto largo (observaciones).
+- **No migrar a tabs ni stepper**: el scroll vertical con secciones es el patron correcto para formularios de ~30 campos en desktop. Las secciones son scanneables y el usuario no pierde contexto.
+
+Agregar:
+
+- **Seccion de imagenes funcional** (reemplazar placeholder).
+- **Switch activo/inactivo** con confirmacion (ya existe el campo `activo` en el form schema).
+
+### Image Upload Grid
+
+- **Layout**: Grid de 3 columnas. Seccion "Etiquetas" (3 slots) arriba, seccion "Producto" (6 slots en 2 filas) abajo.
+- **Slot vacio**: Cuadrado con borde dashed, icono "+" centrado, texto "Etiqueta 1" o "Producto 3" como label. Click abre file picker.
+- **Slot ocupado**: Thumbnail de la imagen. Hover muestra overlay oscuro con icono de eliminar (trash) y reemplazar (refresh).
+- **Upload feedback**: Spinner dentro del slot durante upload. Toast de error si falla.
+- **Restricciones**: Aceptar solo imagenes (image/\*). Limite sugerido: 5MB por archivo. Validar client-side antes de enviar.
+- **No preview modal**: Para ver la imagen grande, abrir en nueva tab. No construir un lightbox.
+
+### API Keys Management
+
+- **Ubicacion**: Nueva entrada en Settings nav. Icono: Key (lucide). Titulo: "API Keys". Descripcion: "Gestiona tokens de acceso para integraciones".
+- **Lista**: Tabla con columnas: Nombre, Key (prefijo truncado `sk_...a3f2`), Creada (fecha relativa), Ultimo uso (fecha relativa o "Nunca"), Estado (badge Activa/Revocada). Accion: boton "Revocar" (solo si activa).
+- **Crear**: Boton "Nueva API Key" abre Dialog. Campo: nombre (obligatorio). Al confirmar, el dialog cambia a "Key creada" mostrando: campo readonly con el key completo, boton "Copiar" prominente, warning en rojo: "Guarda este key. No se mostrara de nuevo." Boton "Entendido, cerrar" solo se habilita despues de copiar o tras 5 segundos.
+- **Revocar**: AlertDialog: "Revocar API Key [nombre]? Las integraciones que usan este key dejaran de funcionar inmediatamente. Esta accion no se puede deshacer." Botones: Cancelar / Revocar (destructive).
+- **RBAC**: Solo usuarios con rol `admin` pueden ver y gestionar API keys.
+
+### Webhooks Management
+
+- **Ubicacion**: Nueva entrada en Settings nav. Icono: Globe o Webhook (lucide). Titulo: "Webhooks". Descripcion: "Configura notificaciones HTTP para eventos".
+- **Lista**: Tabla con columnas: URL (truncada con tooltip del full URL), Entidad (badge), Evento (badge), Estado (switch inline para activar/desactivar), Ultima entrega (timestamp + badge de status code). Acciones: Editar, Test, Eliminar.
+- **Crear/Editar**: Dialog con: Select "Entidad" (solo "Articulos" en v1.2), Select "Evento" (Creado / Actualizado / Eliminado / Todos), Input URL (validacion de formato URL), Switch activo. Al crear: mostrar secret generado (mismo patron que API key — una sola vez).
+- **Test**: Boton en cada fila. Al clickear, envia POST con payload de ejemplo. Muestra resultado inline o en toast: "200 OK" (verde) o "500 Internal Server Error" (rojo) con response body truncado.
+- **Secret**: Al crear, se muestra una vez. Boton "Regenerar secret" en edicion (con confirmacion, invalida el anterior). El receptor valida con `X-Webhook-Signature: sha256=hmac(secret, body)`.
+- **Log de entregas**: Expandir fila (accordion) o link a sub-pagina. Tabla: timestamp, evento, status code (badge), intentos, response truncada. Filtrable por estado (exitoso/fallido).
 
 ---
 
-## UX Patterns by Domain
+## Complexity Summary
 
-### Articulos UX
+| Feature                | Backend                                | Frontend                     | Total    |
+| ---------------------- | -------------------------------------- | ---------------------------- | -------- |
+| Ruta editar articulo   | None (endpoint existe)                 | Low (page + fetch)           | Low      |
+| Soft-delete UI         | None (endpoint existe)                 | Low (AlertDialog)            | Low      |
+| Columnas configurables | Low (extend settings)                  | Low-Med (dropdown + persist) | Low-Med  |
+| Image upload backend   | Med (multer + sharp + static)          | None                         | Med      |
+| Image upload grid UI   | None (usa endpoint)                    | Med (componente slots)       | Med      |
+| API Keys               | Med (schema + module + guard)          | Med (settings page)          | Med-High |
+| Webhooks CRUD          | Med (schema + module)                  | Med (settings page)          | Med      |
+| Webhook delivery       | Med-High (events + HTTP + retry + log) | Low (log display)            | Med-High |
 
-- **List view**: Dense table with columns for codigo, descripcion, marca, precio_venta, activo status badge. Row click opens detail sheet (current pattern).
-- **Multi-code search**: Single search input that queries across all code fields (codigo, sku, codigo_barras, erp_codigo, descripcion). Placeholder text: "Buscar por codigo, SKU, codigo de barras, nombre..."
-- **Detail sheet**: Tabs or sections grouping: Identificacion (all codes), Propiedades (marca/modelo/talle/color/material), Precios (venta/costo/margen), Imagenes (if available), Estado (activo toggle + timestamps).
-- **Active filter**: Toggle or chip filter defaulting to "Solo activos". Common pattern in ERP-style admin.
-
-### Existencias UX
-
-- **Primary view**: Table showing articulo_codigo, descripcion, deposito, cantidad, stock_minimo, estado badge (en_stock / bajo_stock / sin_stock). Filterable by deposito dropdown at top.
-- **Secondary view**: Article-centric -- select an article, see stock across all depositos as a small sub-table or card grid.
-- **Stock status badges**: Green (en_stock), yellow/amber (bajo_stock when cantidad <= stock_minimo), red (sin_stock when cantidad = 0).
-- **Inline edit**: Quantity adjustments should be quick -- either inline edit or a small modal with current quantity, adjustment (+/-), and reason field.
-
-### Inventarios UX
-
-- **Event list**: Table of inventory events with fecha, deposito name, estado badge, total articles counted, discrepancy count. Click to open detail.
-- **Event detail**: Header with event metadata + status controls. Below: tabs for "Sectores" (list of sectors with progress) and "Resultados" (full article-by-article comparison table).
-- **Discrepancy table**: Three columns that matter: articulo, cantidad_sistema, cantidad_contada, diferencia. Color-code diferencia (red for negative = missing stock, blue for positive = surplus). Sort by absolute difference descending.
-- **Status workflow**: Visual stepper or badge progression: Pendiente -> En Curso -> Finalizado. Cancel available from Pendiente or En Curso states only.
-- **Create event wizard**: Step 1 = select deposito + fecha. Step 2 = define sectors (names/descriptions for zones). Step 3 = confirm and create.
+Esfuerzo total estimado: **5-8 fases** de trabajo, dependiendo de granularidad.
 
 ---
 
 ## Sources
 
-- [NetSuite: What Is Item Master Data?](https://www.netsuite.com/portal/resource/articles/inventory-management/item-master-data.shtml)
-- [Verdantis: In-depth Guide to Item Master Data Management](https://www.verdantis.com/item-data-management/)
-- [Finale Inventory: Multi-Warehouse Inventory Management](https://www.finaleinventory.com/multi-warehouse-inventory-management)
-- [Kardex: Centralized Inventory Management for Multi-Warehouse Operations](https://www.kardex.com/en-us/blog/centralized-inventory-management)
-- [ScienceSoft: Custom Inventory Counting Software Features](https://www.scnsoft.com/scm/inventory-counting-software)
-- [Bitergo: Inventory Counting App](https://bitergo.com/wms-inventory)
-- [Count-Inventory: Physical Inventory Count Software](https://www.count-inventory.com/)
-- [POSNation: Cycle Counts Best Practices 2026](https://www.posnation.com/blog/cycle-counts-best-practices)
-- [SelectHub: What Is A Cycle Count?](https://www.selecthub.com/inventory-management/cycle-count/)
-- [Actualog: Product Identification Codes in ERP](https://blog.actualog.com/product-identification-codes-in-erp-pim-and-b2b-marketplaces/)
-- [Linnworks: SKU Numbers Best Practices](https://www.linnworks.com/blog/how-to-create-sku-numbers-for-your-inventory/)
-- [Dynamic Inventory: Warehouse & Multi Location Management](https://www.dynamicinventory.net/warehouse-location-management/)
-- [Veeqo: Multi-Warehouse Management Guide](https://www.veeqo.com/blog/multi-warehouse-management-guide)
+- [Adobe Commerce Image Uploader Pattern Library](https://developer.adobe.com/commerce/admin-developer/pattern-library/getting-user-input/image-uploader)
+- [Mastering UX for CRUD Operations (Medium)](https://medium.com/design-bootcamp/mastering-crud-operations-a-framework-for-seamless-product-design-2630affbc1e5)
+- [CRUD Beyond Grids: Modern UI Patterns 2026](https://copyprogramming.com/howto/what-is-the-best-ux-to-let-user-perform-crud-operations)
+- [API Key Management Best Practices 2025 (MultitaskAI)](https://multitaskai.com/blog/api-key-management-best-practices/)
+- [API Keys Complete 2025 Guide (DEV)](https://dev.to/hamd_writer_8c77d9c88c188/api-keys-the-complete-2025-guide-to-security-management-and-best-practices-3980)
+- [API Key Management Best Practices (OneUptime)](https://oneuptime.com/blog/post/2026-02-20-api-key-management-best-practices/view)
+- [Building Webhooks Best Practices (WorkOS)](https://workos.com/blog/building-webhooks-into-your-application-guidelines-and-best-practices)
+- [Managing Webhooks (Zendesk)](https://support.zendesk.com/hc/en-us/articles/4408836101146-Managing-webhooks)
+- [Svix - Webhooks as a Service](https://www.svix.com/)
+- [Data Table UX Patterns (Pencil & Paper)](https://www.pencilandpaper.io/articles/ux-pattern-analysis-enterprise-data-tables)
+- Codebase analysis: `articulo-form.tsx`, `articulo-sheet.tsx`, `articulos-columns.tsx`, `articulos-client.tsx`, `settings-nav.tsx`, `schema.ts`
 
 ---
 
-_Feature research for v1.1 milestone: Articulos + Existencias + Inventarios_
-_Researched: 2026-03-05_
-_Research confidence: HIGH (based on industry patterns, competitor analysis, current codebase analysis)_
+_Feature research for v1.2 milestone: Articulos CRUD completo + Imagenes + Columnas Configurables + API Keys + Webhooks_
+_Researched: 2026-03-10_
+_Research confidence: HIGH (based on codebase analysis, industry patterns, established UX conventions)_
