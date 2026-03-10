@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A reusable admin platform for commercial applications with full-stack authentication, operational dashboards, and cross-platform apps. Serves small to mid-sized commercial operations (store owners, internal staff) with mobile apps (iOS/Android), web app, and NestJS backend — all sharing Supabase authentication with a separate PostgreSQL database for business data. Covers core business workflows: dashboard KPIs, product management, purchase/sale tracking, orders, inventory, and business settings.
+A reusable admin platform for commercial applications with full-stack authentication, operational dashboards, and cross-platform apps. Serves small to mid-sized commercial operations (store owners, internal staff) with mobile apps (iOS/Android), web app, and NestJS backend — all sharing Supabase authentication with a separate PostgreSQL database for business data. Covers core business workflows: dashboard KPIs, articulo management with ERP-aligned schema, multi-deposito stock tracking, physical inventory counts, purchase/sale tracking, orders, and business settings.
 
 ## Core Value
 
@@ -26,21 +26,18 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 - ✓ Shared packages (types, ui, utils) with design tokens — v1.0
 - ✓ Documentation covers installation, environment setup, and running all apps — v1.0
 - ✓ RBAC system (admin/viewer roles) enforced on write endpoints — v1.0
+- ✓ Articulos full CRUD with text PK (codigo) and ~30 fields including ERP sync — v1.1
+- ✓ Depositos CRUD for multi-location warehouse management — v1.1
+- ✓ Existencias: stock per articulo per deposito with low-stock alerts, inline editing, dual views — v1.1
+- ✓ Inventarios: physical count events with sectors, dispositivos, status workflow, discrepancy view — v1.1
+- ✓ FK migration: orders/sales/purchases reference articuloCodigo (text FK) — v1.1
+- ✓ Dashboard KPIs rewired to articulos/existencias model — v1.1
+- ✓ Navigation web + mobile updated to new Spanish model names — v1.1
+- ✓ Settings RBAC gap fixed, web type drift resolved, mobile labels localized — v1.1
 
 ### Active
 
-#### Current Milestone: v1.1 — Modelo Articulos + Inventario
-
-**Goal:** Replace products/inventory models with articulos/existencias/inventarios to align with the real business data model.
-
-**Target features:**
-
-- Articulos: full CRUD with the real business schema (PK: codigo), replacing products
-- Existencias: stock per article per deposito, replacing inventory
-- Inventarios: periodic physical count events with sectors and mobile devices
-- Depositos: warehouse/location management
-- FK migration: orders/sales/purchases updated to reference articulos.codigo
-- UI: 3 new sections (Articulos, Existencias, Inventarios) replacing 2 old ones
+(None — defining v1.2 requirements next)
 
 ### Out of Scope
 
@@ -51,10 +48,15 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 - Advanced inventory forecasting (ML) — simple stock alerts sufficient
 - Mobile POS app — admin focus, not cashier UX
 - Multi-currency/multi-language — single locale (es-MX/MXN) initially
+- Full variant/SKU matrix (size x color = N child SKUs) — flat properties covers real use case
+- Automatic reorder/purchase generation from low stock — scope creep into procurement
+- Real-time stock sync with external ERP — erp_codigo for reference, not live sync
+- Lot/batch/serial number tracking — not needed for general commercial operations
+- FIFO/LIFO/weighted average costing — accounting-level valuation is separate domain
 
 ## Context
 
-**Current state:** Shipped v1.0 with 12,650 LOC TypeScript across 377 files. Starting v1.1 data model migration.
+**Current state:** Shipped v1.1 with ~32,000 LOC TypeScript across 412+ files. Full data model migration complete.
 
 **Tech stack:**
 
@@ -63,16 +65,15 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 - Backend: NestJS, Drizzle ORM, PostgreSQL, jose (JWT validation)
 - Shared: pnpm workspaces, Turborepo, @objetiva/{types,ui,utils}
 - Auth: Supabase (auth only — JWT validation via JWKS)
-- DB: PostgreSQL with Drizzle ORM (8 tables, 500+ seed products)
+- DB: PostgreSQL with Drizzle ORM (articulos, depositos, existencias, inventarios, orders, sales, purchases, settings + related tables)
 
 **Target users:** Store owners and internal staff managing daily commercial operations.
 
-**Known tech debt from v1.0:**
+**Known tech debt:**
 
-- Settings RBAC gap (high) — PATCH/POST/DELETE /api/settings missing @Roles('admin')
-- Web type drift (medium) — 3 type interfaces missing fields from DB schema
-- Mobile labels not localized to Spanish (low)
-- Unused shared package exports (low)
+- POST /api/existencias (upsert) has no frontend consumer (low)
+- Placeholder comment in header.tsx (low)
+- doublePrecision for monetary fields — may need numeric() for precision (medium, deferred)
 
 ## Constraints
 
@@ -86,23 +87,23 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ## Key Decisions
 
-| Decision                                             | Rationale                                                                                   | Outcome                                                               |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Supabase for auth only, separate PostgreSQL for data | Clean separation of concerns — auth is a commodity, business data has specific requirements | ✓ Good — clean auth/data boundary, easy to swap either side           |
-| pnpm + Turborepo over Nx                             | Simpler mental model, less abstraction                                                      | ✓ Good — fast builds, minimal config overhead                         |
-| Platform-specific UI with shared design language     | Avoid cross-platform abstractions that hurt DX/UX                                           | ✓ Good — each platform feels native while staying cohesive            |
-| Backend serves mock data → replaced by real DB       | Validates contract early, then seamless DB migration                                        | ✓ Good — frontend required zero changes when DB replaced mocks        |
-| Bottom tabs + drawer pattern for mobile              | Tabs for high-frequency sections, drawer for secondary admin                                | ✓ Good — clear navigation mental model                                |
-| HashRouter for Capacitor mobile                      | Capacitor native uses file:// protocol where BrowserRouter fails                            | ✓ Good — works on iOS/Android native without config                   |
-| Drizzle ORM over TypeORM/Prisma                      | Lightweight, SQL-like query builder, good TypeScript inference                              | ✓ Good — clean migrations, fast queries, small bundle                 |
-| jose for JWT validation                              | Async JWKS validation, no Supabase SDK dependency on backend                                | ✓ Good — lightweight, secure, handles key rotation                    |
-| Global JWT guard with @Public() opt-out              | Deny-by-default — all new routes auto-protected                                             | ✓ Good — prevented auth gaps as features were added                   |
-| doublePrecision for monetary fields                  | Returns JS numbers directly, no string parsing needed                                       | ⚠️ Revisit — may need numeric() for precision in financial operations |
-
-| PK articulos is `codigo` (text), not numeric ID | Real business model uses ERP codes as identifiers, not surrogate keys | — Pending |
-| Existencias split from articulos | Multi-deposito support requires separate stock table per location | — Pending |
-| Inventarios = periodic physical counts | Distinct from stock/existencias — events with sectors and mobile devices | — Pending |
+| Decision                                             | Rationale                                             | Outcome                                                 |
+| ---------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------- |
+| Supabase for auth only, separate PostgreSQL for data | Clean separation of concerns                          | ✓ Good — clean auth/data boundary                       |
+| pnpm + Turborepo over Nx                             | Simpler mental model, less abstraction                | ✓ Good — fast builds, minimal config                    |
+| Platform-specific UI with shared design language     | Avoid cross-platform abstractions                     | ✓ Good — each platform feels native                     |
+| Backend serves mock data → replaced by real DB       | Validates contract early                              | ✓ Good — frontend required zero changes                 |
+| Bottom tabs + drawer pattern for mobile              | Tabs for high-frequency, drawer for secondary         | ✓ Good — clear nav mental model                         |
+| HashRouter for Capacitor mobile                      | file:// protocol where BrowserRouter fails            | ✓ Good — works on iOS/Android native                    |
+| Drizzle ORM over TypeORM/Prisma                      | Lightweight, SQL-like, good TS inference              | ✓ Good — clean migrations, fast queries                 |
+| jose for JWT validation                              | Async JWKS, no Supabase SDK dependency                | ✓ Good — lightweight, handles key rotation              |
+| Global JWT guard with @Public() opt-out              | Deny-by-default auth                                  | ✓ Good — prevented auth gaps                            |
+| PK articulos is `codigo` (text), not numeric ID      | Real business model uses ERP codes as identifiers     | ✓ Good — natural alignment with ERP data                |
+| Existencias split from articulos                     | Multi-deposito support requires separate stock table  | ✓ Good — clean per-location stock tracking              |
+| Inventarios = periodic physical counts               | Distinct from stock/existencias — events with sectors | ✓ Good — clear domain separation                        |
+| doublePrecision for monetary fields                  | Returns JS numbers, no string parsing                 | ⚠️ Revisit — may need numeric() for financial precision |
+| Clean-cut migration (db:push + re-seed)              | No production data to preserve in dev                 | ✓ Good — fast iteration without migration complexity    |
 
 ---
 
-_Last updated: 2026-03-05 after v1.1 milestone start_
+_Last updated: 2026-03-10 after v1.1 milestone_

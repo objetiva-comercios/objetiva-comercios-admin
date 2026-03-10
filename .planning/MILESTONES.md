@@ -1,5 +1,41 @@
 # Milestones
 
+## v1.1 Modelo Articulos + Inventario (Shipped: 2026-03-10)
+
+**Phases completed:** 5 phases, 18 plans
+**Timeline:** 3 days (2026-03-04 → 2026-03-06)
+**Commits:** 95 | **Files:** 412 | **Lines:** +25,066 / -5,732
+**Requirements:** 49/49 satisfied
+
+**Key accomplishments:**
+
+1. Migración completa del modelo de datos: products → articulos con PK texto (codigo), depositos multi-ubicación
+2. Sistema de existencias con stock por articulo/deposito, alertas de bajo stock, edición inline, vistas dual (por deposito / por articulo)
+3. Inventarios de conteo físico con sectores, dispositivos móviles, workflow de estados (pendiente → en_curso → finalizado), vista de discrepancias
+4. Migración downstream de FK en orders/sales/purchases + dashboard KPIs rewired al nuevo modelo
+5. Navegación web y mobile actualizada al nuevo modelo en español, dead code cleanup
+
+### Known Gaps
+
+Tech debt menor aceptado:
+
+| #   | Item                                                                  | Severity |
+| --- | --------------------------------------------------------------------- | -------- |
+| 1   | INT-ORPHAN-01: POST /api/existencias (upsert) sin consumidor frontend | Low      |
+| 2   | Frontmatter incompleto en 14-01-SUMMARY.md                            | Low      |
+| 3   | Comentario placeholder en header.tsx:20                               | Low      |
+
+### v1.0 Gaps Resolved
+
+| #   | v1.0 Gap                                            | Resolution                     |
+| --- | --------------------------------------------------- | ------------------------------ |
+| 1   | INT-SETTINGS-RBAC: Settings missing @Roles('admin') | Fixed in Phase 14 (DEBT-01)    |
+| 2   | INT-WEB-TYPE-DRIFT: Web types missing DB fields     | Resolved in Phase 15 (DEBT-02) |
+| 3   | INT-MOBILE-LABELS: Mobile nav not in Spanish        | Fixed in Phase 16 (DEBT-03)    |
+| 4   | Unused @objetiva/types exports                      | Cleaned in Phase 14 (DEBT-04)  |
+
+---
+
 ## v1.0 MVP (Shipped: 2026-03-04)
 
 **Phases completed:** 13 phases, 42 plans
