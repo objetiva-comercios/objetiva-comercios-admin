@@ -29,7 +29,15 @@ export class ArticulosService {
           ilike(articulos.nombre, pattern),
           ilike(articulos.sku, pattern),
           ilike(articulos.codigoBarras, pattern),
-          ilike(articulos.erpCodigo, pattern)
+          ilike(articulos.erpCodigo, pattern),
+          ilike(articulos.marca, pattern),
+          ilike(articulos.modelo, pattern),
+          ilike(articulos.talle, pattern),
+          ilike(articulos.color, pattern),
+          ilike(articulos.material, pattern),
+          ilike(articulos.presentacion, pattern),
+          ilike(articulos.medida, pattern),
+          ilike(articulos.observaciones, pattern)
         )
       )
     }
