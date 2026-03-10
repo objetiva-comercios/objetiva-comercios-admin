@@ -37,7 +37,12 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ### Active
 
-(None — defining v1.2 requirements next)
+- [ ] Artículos CRUD completo con todos los ~30 campos, formulario agrupado eficientemente — v1.2
+- [ ] Upload y gestión de imágenes de artículos (3 etiquetas + 6 producto) desde filesystem local — v1.2
+- [ ] Vista lista de artículos con columnas configurables globalmente (default: codigo, nombre, modelo, medida, presentacion, precio, unidades, objeto) — v1.2
+- [ ] Vista detalle de artículo en panel lateral con todos los campos e imágenes — v1.2
+- [ ] API Keys: sección en Configuración para crear/revocar tokens Bearer independientes de Supabase Auth — v1.2
+- [ ] Webhooks: sistema centralizado (entidad + evento + URL), v1.2 solo artículos (create/update/delete), arquitectura extensible — v1.2
 
 ### Out of Scope
 
@@ -56,7 +61,7 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ## Context
 
-**Current state:** Shipped v1.1 with ~32,000 LOC TypeScript across 412+ files. Full data model migration complete.
+**Current state:** Shipped v1.1 with ~32,000 LOC TypeScript across 412+ files. Full data model migration complete. Starting v1.2: Artículos CRUD + API Keys + Webhooks.
 
 **Tech stack:**
 
@@ -106,4 +111,4 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ---
 
-_Last updated: 2026-03-10 after v1.1 milestone_
+_Last updated: 2026-03-10 after v1.2 milestone start_
