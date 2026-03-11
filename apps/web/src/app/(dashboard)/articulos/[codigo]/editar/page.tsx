@@ -3,13 +3,22 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 import type { Articulo } from '@/types/articulo'
 import { fetchArticuloByCodigoClient, toggleArticuloActivo } from '@/lib/api.client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArticuloForm } from '@/components/articulos/articulo-form'
 import { useToast } from '@/hooks/use-toast'
@@ -23,7 +32,7 @@ export default function EditarArticuloPage() {
   const [articulo, setArticulo] = useState<Articulo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [toggling, setToggling] = useState(false)
+  const [showToggleDialog, setShowToggleDialog] = useState(false)
 
   const loadArticulo = useCallback(async () => {
     try {
@@ -40,9 +49,9 @@ export default function EditarArticuloPage() {
     loadArticulo()
   }, [loadArticulo])
 
-  async function handleToggle() {
+  async function handleConfirmToggle() {
     if (!articulo) return
-    setToggling(true)
+    setShowToggleDialog(false)
     try {
       const updated = await toggleArticuloActivo(articulo.codigo)
       setArticulo(updated)
@@ -56,8 +65,6 @@ export default function EditarArticuloPage() {
         description: err instanceof Error ? err.message : 'Error desconocido',
         variant: 'destructive',
       })
-    } finally {
-      setToggling(false)
     }
   }
 
@@ -99,34 +106,65 @@ export default function EditarArticuloPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/articulos">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Volver
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Editar Articulo: {articulo.nombre}
-          </h1>
-        </div>
+    <>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/articulos">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Volver
+              </Link>
+            </Button>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Editar Articulo: {articulo.nombre}
+            </h1>
+          </div>
 
-        <div className="flex items-center gap-3">
-          <Badge variant={articulo.activo ? 'default' : 'secondary'}>
-            {articulo.activo ? 'Activo' : 'Inactivo'}
-          </Badge>
-          <div className="flex items-center gap-2">
-            {toggling && <Loader2 className="h-4 w-4 animate-spin" />}
-            <Switch checked={articulo.activo} onCheckedChange={handleToggle} disabled={toggling} />
+          <div className="flex items-center gap-3">
+            <Badge variant={articulo.activo ? 'default' : 'secondary'}>
+              {articulo.activo ? 'Activo' : 'Inactivo'}
+            </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-sm"
+              onClick={() => setShowToggleDialog(true)}
+            >
+              {articulo.activo ? 'Desactivar' : 'Reactivar'}
+            </Button>
           </div>
         </div>
+
+        <div className="mx-auto max-w-2xl">
+          <ArticuloForm
+            mode="edit"
+            articulo={articulo}
+            onSuccess={() => router.push('/articulos')}
+          />
+        </div>
       </div>
 
-      <div className="mx-auto max-w-2xl">
-        <ArticuloForm mode="edit" articulo={articulo} onSuccess={() => router.push('/articulos')} />
-      </div>
-    </div>
+      <AlertDialog open={showToggleDialog} onOpenChange={setShowToggleDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {articulo.activo ? '¿Desactivar articulo?' : '¿Reactivar articulo?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {articulo.activo
+                ? `"${articulo.nombre}" no aparecera en la lista principal.`
+                : `"${articulo.nombre}" volvera a aparecer en la lista.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmToggle}>
+              {articulo.activo ? 'Desactivar' : 'Reactivar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

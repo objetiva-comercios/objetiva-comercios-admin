@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
-import { PencilIcon } from 'lucide-react'
+import { ChevronRight, PencilIcon } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -14,6 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrency } from '@objetiva/utils'
 import { fetchExistenciasByArticuloClient } from '@/lib/api.client'
@@ -293,6 +294,54 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                   <FieldRow label="Sincronizado" value={formatDate(articulo.originSyncedAt)} />
                 </div>
               </div>
+            </>
+          )}
+
+          {/* Etiquetas OCR (conditional) */}
+          {articulo.etiquetasOcr && articulo.etiquetasOcr.length > 0 && (
+            <>
+              <Separator />
+              <div>
+                <SectionHeader title="Etiquetas OCR" />
+                <div className="flex flex-wrap">
+                  {articulo.etiquetasOcr.map((tag, i) => (
+                    <Badge key={i} variant="outline" className="text-xs mr-1 mb-1">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Datos crudos (conditional, collapsible) */}
+          {(articulo.erpDatos != null || articulo.jsonArticulo != null) && (
+            <>
+              <Separator />
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-90">
+                  <ChevronRight className="h-4 w-4 transition-transform" />
+                  Datos crudos
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2 space-y-3">
+                  {articulo.erpDatos != null && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">ERP Datos</p>
+                      <pre className="rounded-sm bg-muted p-3 text-xs overflow-x-auto max-h-48 overflow-y-auto">
+                        {JSON.stringify(articulo.erpDatos, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                  {articulo.jsonArticulo != null && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">JSON Articulo</p>
+                      <pre className="rounded-sm bg-muted p-3 text-xs overflow-x-auto max-h-48 overflow-y-auto">
+                        {JSON.stringify(articulo.jsonArticulo, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
             </>
           )}
         </div>
