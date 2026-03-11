@@ -1,19 +1,31 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { PlusIcon, SearchIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { ServerDataTable } from '@/components/tables/server-data-table'
-import { columns, defaultColumnVisibility } from '@/components/articulos/articulos-columns'
+import { getColumns, defaultColumnVisibility } from '@/components/articulos/articulos-columns'
 import {
   ArticuloStatusFilter,
   type StatusFilterValue,
 } from '@/components/articulos/articulo-status-filter'
 import { ArticuloSheet } from '@/components/articulos/articulo-sheet'
-import { fetchArticulosClient } from '@/lib/api.client'
+import { fetchArticulosClient, toggleArticuloActivo } from '@/lib/api.client'
+import { useToast } from '@/hooks/use-toast'
 import type { Articulo } from '@/types/articulo'
 
 interface PaginatedResponse<T> {
@@ -31,6 +43,8 @@ interface ArticulosClientProps {
 }
 
 export function ArticulosClient({ initialData }: ArticulosClientProps) {
+  const router = useRouter()
+  const { toast } = useToast()
   const [data, setData] = useState(initialData.data)
   const [meta, setMeta] = useState(initialData.meta)
   const [page, setPage] = useState(initialData.meta.page)
@@ -39,6 +53,7 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   const [selectedArticulo, setSelectedArticulo] = useState<Articulo | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [toggleTarget, setToggleTarget] = useState<Articulo | null>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchData = useCallback(
@@ -97,6 +112,54 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
     setSheetOpen(true)
   }
 
+  const handleEdit = useCallback(
+    (articulo: Articulo) => {
+      router.push(`/articulos/${encodeURIComponent(articulo.codigo)}/editar`)
+    },
+    [router]
+  )
+
+  const handleToggleRequest = useCallback((articulo: Articulo) => {
+    setToggleTarget(articulo)
+  }, [])
+
+  const tableColumns = useMemo(
+    () => getColumns({ onEdit: handleEdit, onToggle: handleToggleRequest }),
+    [handleEdit, handleToggleRequest]
+  )
+
+  const handleConfirmToggle = async () => {
+    const target = toggleTarget
+    if (!target) return
+    setToggleTarget(null)
+
+    const previousData = [...data]
+
+    // Optimistic update: remove row if filtered view would hide it
+    if (statusFilter === 'active' && target.activo) {
+      setData(prev => prev.filter(a => a.codigo !== target.codigo))
+    } else if (statusFilter === 'inactive' && !target.activo) {
+      setData(prev => prev.filter(a => a.codigo !== target.codigo))
+    }
+
+    try {
+      await toggleArticuloActivo(target.codigo)
+      toast({
+        title: target.activo ? 'Articulo desactivado' : 'Articulo activado',
+        description: `"${target.nombre}" fue ${target.activo ? 'desactivado' : 'activado'} correctamente.`,
+      })
+      // Refresh to update totals
+      fetchData(page, search, statusFilter)
+    } catch {
+      setData(previousData)
+      toast({
+        title: 'Error',
+        description: 'No se pudo cambiar el estado del articulo.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   return (
     <>
       {/* Toolbar: filter, search, new button */}
@@ -106,7 +169,7 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
           <div className="relative">
             <SearchIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Buscar por codigo, nombre, SKU..."
+              placeholder="Buscar articulos..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="h-8 w-[200px] pl-8 text-sm lg:w-[300px]"
@@ -123,7 +186,7 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
 
       {/* Table */}
       <ServerDataTable
-        columns={columns}
+        columns={tableColumns}
         data={data}
         pageCount={meta.totalPages}
         currentPage={page}
@@ -135,6 +198,28 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
 
       {/* Detail sheet */}
       <ArticuloSheet articulo={selectedArticulo} open={sheetOpen} onOpenChange={setSheetOpen} />
+
+      {/* Toggle confirmation dialog */}
+      <AlertDialog open={!!toggleTarget} onOpenChange={open => !open && setToggleTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {toggleTarget?.activo ? '¿Desactivar articulo?' : '¿Reactivar articulo?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {toggleTarget?.activo
+                ? `"${toggleTarget.nombre}" no aparecera en la lista principal.`
+                : `"${toggleTarget?.nombre}" volvera a aparecer en la lista.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmToggle}>
+              {toggleTarget?.activo ? 'Desactivar' : 'Reactivar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
