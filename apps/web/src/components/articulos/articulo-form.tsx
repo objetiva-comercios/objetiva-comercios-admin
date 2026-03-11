@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Loader2 } from 'lucide-react'
+import { ChevronRight, Loader2 } from 'lucide-react'
 
 import type { Articulo } from '@/types/articulo'
 import { createArticulo, updateArticulo } from '@/lib/api.client'
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   Form,
   FormControl,
@@ -57,20 +57,31 @@ interface ArticuloFormProps {
   articulo?: Articulo
   onSuccess?: () => void
   mode: 'create' | 'edit'
+  showSubmitButton?: boolean
+  onLoadingChange?: (loading: boolean) => void
+  formId?: string
 }
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">{title}</h3>
-      <Separator />
-    </div>
+    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</h3>
   )
 }
 
-export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
+export function ArticuloForm({
+  articulo,
+  onSuccess,
+  mode,
+  showSubmitButton = true,
+  onLoadingChange,
+  formId,
+}: ArticuloFormProps) {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    onLoadingChange?.(isLoading)
+  }, [isLoading, onLoadingChange])
 
   const form = useForm<ArticuloFormValues>({
     resolver: zodResolver(articuloFormSchema),
@@ -132,12 +143,12 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Section 1 — Identificacion */}
-        <div className="space-y-4">
+      <form id={formId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Identificacion */}
+        <div className="border rounded-sm p-4 space-y-3">
           <SectionHeader title="Identificacion" />
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="codigo"
@@ -145,7 +156,25 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Codigo *</FormLabel>
                   <FormControl>
-                    <Input placeholder="ART-001" disabled={mode === 'edit'} {...field} />
+                    <Input
+                      placeholder="ART-001"
+                      disabled={mode === 'edit'}
+                      className="h-9"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sku"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SKU</FormLabel>
+                  <FormControl>
+                    <Input placeholder="SKU (opcional)" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -160,55 +189,21 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
               <FormItem>
                 <FormLabel>Nombre *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nombre del articulo" {...field} />
+                  <Input placeholder="Nombre del articulo" className="h-9" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="sku"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SKU</FormLabel>
-                  <FormControl>
-                    <Input placeholder="SKU (opcional)" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="codigoBarras"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Codigo de barras</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Codigo de barras (opcional)" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
           <FormField
             control={form.control}
-            name="observaciones"
+            name="codigoBarras"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Observaciones</FormLabel>
+                <FormLabel>Codigo de barras</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Observaciones o notas adicionales"
-                    className="resize-none"
-                    rows={3}
-                    {...field}
-                  />
+                  <Input placeholder="Codigo de barras (opcional)" className="h-9" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -216,11 +211,11 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
           />
         </div>
 
-        {/* Section 2 — Propiedades */}
-        <div className="space-y-4">
+        {/* Propiedades */}
+        <div className="border rounded-sm p-4 space-y-3">
           <SectionHeader title="Propiedades" />
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="marca"
@@ -228,7 +223,7 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Marca</FormLabel>
                   <FormControl>
-                    <Input placeholder="Marca (opcional)" {...field} />
+                    <Input placeholder="Marca" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -241,15 +236,12 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Modelo</FormLabel>
                   <FormControl>
-                    <Input placeholder="Modelo (opcional)" {...field} />
+                    <Input placeholder="Modelo" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="talle"
@@ -257,7 +249,7 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Talle</FormLabel>
                   <FormControl>
-                    <Input placeholder="Talle (opcional)" {...field} />
+                    <Input placeholder="Talle" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -270,15 +262,12 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Color</FormLabel>
                   <FormControl>
-                    <Input placeholder="Color (opcional)" {...field} />
+                    <Input placeholder="Color" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="material"
@@ -286,7 +275,7 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Material</FormLabel>
                   <FormControl>
-                    <Input placeholder="Material (opcional)" {...field} />
+                    <Input placeholder="Material" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -299,7 +288,7 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Presentacion</FormLabel>
                   <FormControl>
-                    <Input placeholder="Presentacion (opcional)" {...field} />
+                    <Input placeholder="Presentacion" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -314,7 +303,7 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
               <FormItem>
                 <FormLabel>Medida</FormLabel>
                 <FormControl>
-                  <Input placeholder="Medida (opcional)" {...field} />
+                  <Input placeholder="Medida" className="h-9" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -322,11 +311,11 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
           />
         </div>
 
-        {/* Section 3 — Precios */}
-        <div className="space-y-4">
+        {/* Precios */}
+        <div className="border rounded-sm p-4 space-y-3">
           <SectionHeader title="Precios" />
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="precio"
@@ -334,7 +323,13 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Precio</FormLabel>
                   <FormControl>
-                    <Input type="text" inputMode="decimal" placeholder="0.00" {...field} />
+                    <Input
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0.00"
+                      className="h-9"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -347,7 +342,13 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
                 <FormItem>
                   <FormLabel>Costo</FormLabel>
                   <FormControl>
-                    <Input type="text" inputMode="decimal" placeholder="0.00" {...field} />
+                    <Input
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0.00"
+                      className="h-9"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -357,170 +358,207 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
           <p className="text-xs text-muted-foreground">Los precios se guardan con 2 decimales</p>
         </div>
 
-        {/* Section 4 — Imagenes */}
-        <div className="space-y-4">
-          <SectionHeader title="Imagenes" />
-          <p className="text-sm text-muted-foreground">
-            La gestion de imagenes estara disponible proximamente
-          </p>
+        {/* Observaciones */}
+        <div className="border rounded-sm p-4 space-y-3">
+          <SectionHeader title="Observaciones" />
+          <FormField
+            control={form.control}
+            name="observaciones"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    placeholder="Observaciones o notas adicionales"
+                    className="resize-none"
+                    rows={3}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        {/* Section 5 — ERP */}
-        <div className="space-y-4">
-          <SectionHeader title="ERP" />
+        {/* ERP + Origen collapsibles */}
+        <div className="flex gap-2">
+          <Collapsible className="flex-1 border rounded-sm">
+            <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
+              <ChevronRight className="h-4 w-4 transition-transform" />
+              ERP
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4 space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="erpId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ERP ID</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ID en ERP" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="erpCodigo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ERP Codigo</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Codigo en ERP" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="erpId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ERP ID</FormLabel>
-                  <FormControl>
-                    <Input placeholder="ID en ERP" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="erpCodigo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ERP Codigo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Codigo en ERP" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+              <FormField
+                control={form.control}
+                name="erpNombre"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ERP Nombre</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nombre en ERP" className="h-9" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="erpNombre"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>ERP Nombre</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nombre en ERP" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="erpPrecio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ERP Precio</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="0.00"
+                          className="h-9"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="erpCosto"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ERP Costo</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="0.00"
+                          className="h-9"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="erpPrecio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ERP Precio</FormLabel>
-                  <FormControl>
-                    <Input type="text" inputMode="decimal" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="erpCosto"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ERP Costo</FormLabel>
-                  <FormControl>
-                    <Input type="text" inputMode="decimal" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+              <FormField
+                control={form.control}
+                name="erpUnidades"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ERP Unidades</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" className="h-9" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="erpUnidades"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>ERP Unidades</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="erpSincronizado"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-sm border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Sincronizado con ERP</FormLabel>
+                      <FormDescription>
+                        Indica si este articulo esta sincronizado con el sistema ERP
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CollapsibleContent>
+          </Collapsible>
 
-          <FormField
-            control={form.control}
-            name="erpSincronizado"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                <div className="space-y-0.5">
-                  <FormLabel>Sincronizado con ERP</FormLabel>
-                  <FormDescription>
-                    Indica si este articulo esta sincronizado con el sistema ERP
-                  </FormDescription>
+          <Collapsible className="flex-1 border rounded-sm">
+            <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
+              <ChevronRight className="h-4 w-4 transition-transform" />
+              Origen
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4 space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="originSource"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fuente de origen</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Fuente" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="originSyncId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ID de sincronizacion</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Sync ID" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {mode === 'edit' && articulo?.originSyncedAt && (
+                <div className="text-sm text-muted-foreground">
+                  Ultima sincronizacion: {new Date(articulo.originSyncedAt).toLocaleString('es-MX')}
                 </div>
-                <FormControl>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </div>
 
-        {/* Section 6 — Origen */}
-        <div className="space-y-4">
-          <SectionHeader title="Origen" />
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="originSource"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fuente de origen</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Fuente (opcional)" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="originSyncId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ID de sincronizacion</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Sync ID (opcional)" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Submit — only if showSubmitButton is true */}
+        {showSubmitButton && (
+          <div className="flex justify-end pt-2">
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {mode === 'create' ? 'Crear articulo' : 'Guardar cambios'}
+            </Button>
           </div>
-
-          {mode === 'edit' && articulo?.originSyncedAt && (
-            <div className="text-sm text-muted-foreground">
-              Ultima sincronizacion: {new Date(articulo.originSyncedAt).toLocaleString('es-MX')}
-            </div>
-          )}
-        </div>
-
-        {/* Submit */}
-        <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {mode === 'create' ? 'Crear articulo' : 'Guardar cambios'}
-          </Button>
-        </div>
+        )}
       </form>
     </Form>
   )

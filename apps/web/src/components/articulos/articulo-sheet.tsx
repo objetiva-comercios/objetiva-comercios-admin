@@ -32,21 +32,44 @@ function FieldRow({ label, value }: { label: string; value: string | null | unde
   return (
     <div className="flex justify-between gap-4">
       <span className="text-sm text-muted-foreground shrink-0">{label}</span>
-      <span className="text-sm text-right">{value ?? '-'}</span>
+      <span className="text-sm text-right">{value ?? '—'}</span>
     </div>
   )
 }
 
 function SectionHeader({ title }: { title: string }) {
-  return <h3 className="text-sm font-medium mb-2">{title}</h3>
+  return (
+    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</h3>
+  )
+}
+
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex-1 bg-muted rounded-sm p-3">
+      <p className="text-xs text-muted-foreground uppercase">{label}</p>
+      <p className="text-xl font-semibold tabular-nums">{value}</p>
+    </div>
+  )
+}
+
+function CollapsibleSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Collapsible>
+      <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-90">
+        <ChevronRight className="h-4 w-4 transition-transform" />
+        {title}
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-2">{children}</CollapsibleContent>
+    </Collapsible>
+  )
 }
 
 function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '-'
+  if (!dateStr) return '—'
   try {
     return format(new Date(dateStr), 'dd/MM/yyyy HH:mm')
   } catch {
-    return '-'
+    return '—'
   }
 }
 
@@ -113,36 +136,45 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
           <div className="flex items-center justify-between pr-2">
             <div>
               <SheetTitle>{articulo.nombre}</SheetTitle>
-              <SheetDescription>Codigo: {articulo.codigo}</SheetDescription>
+              <SheetDescription>
+                {articulo.codigo}
+                {articulo.sku ? ` · SKU: ${articulo.sku}` : ''}
+              </SheetDescription>
             </div>
-            <Button asChild variant="outline" size="sm" className="h-8 text-sm">
-              <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
-                <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
-                Editar
-              </Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Badge variant={articulo.activo ? 'default' : 'secondary'}>
+                {articulo.activo ? 'Activo' : 'Inactivo'}
+              </Badge>
+              <Button asChild variant="outline" size="sm" className="h-8 text-sm">
+                <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
+                  <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
+                  Editar
+                </Link>
+              </Button>
+            </div>
           </div>
         </SheetHeader>
 
-        <div className="mt-6 space-y-5">
-          {/* Identificacion */}
-          <div>
-            <SectionHeader title="Identificacion" />
-            <div className="space-y-1.5">
-              <FieldRow label="Codigo" value={articulo.codigo} />
-              <FieldRow label="Nombre" value={articulo.nombre} />
-              <FieldRow label="SKU" value={articulo.sku} />
-              <FieldRow label="Cod. Barras" value={articulo.codigoBarras} />
-              <FieldRow label="Observaciones" value={articulo.observaciones} />
-            </div>
+        <div className="mt-4 space-y-4">
+          {/* Hero stat cards */}
+          <div className="flex gap-2">
+            <StatCard
+              label="Precio"
+              value={articulo.precio ? formatCurrency(parseFloat(articulo.precio)) : '—'}
+            />
+            <StatCard
+              label="Costo"
+              value={articulo.costo ? formatCurrency(parseFloat(articulo.costo)) : '—'}
+            />
+            <StatCard label="Stock" value={stockLoading ? '...' : totalStock.toString()} />
           </div>
 
           <Separator />
 
-          {/* Propiedades */}
+          {/* Properties grid 2-col */}
           <div>
             <SectionHeader title="Propiedades" />
-            <div className="space-y-1.5">
+            <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
               <FieldRow label="Marca" value={articulo.marca} />
               <FieldRow label="Modelo" value={articulo.modelo} />
               <FieldRow label="Talle" value={articulo.talle} />
@@ -151,23 +183,16 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               <FieldRow label="Presentacion" value={articulo.presentacion} />
               <FieldRow label="Medida" value={articulo.medida} />
             </div>
-          </div>
-
-          <Separator />
-
-          {/* Precios */}
-          <div>
-            <SectionHeader title="Precios" />
-            <div className="space-y-1.5">
-              <FieldRow
-                label="Precio"
-                value={articulo.precio ? formatCurrency(parseFloat(articulo.precio)) : null}
-              />
-              <FieldRow
-                label="Costo"
-                value={articulo.costo ? formatCurrency(parseFloat(articulo.costo)) : null}
-              />
-            </div>
+            {(articulo.codigoBarras || articulo.observaciones) && (
+              <div className="mt-2 space-y-1">
+                {articulo.codigoBarras && (
+                  <FieldRow label="Cod. Barras" value={articulo.codigoBarras} />
+                )}
+                {articulo.observaciones && (
+                  <FieldRow label="Observaciones" value={articulo.observaciones} />
+                )}
+              </div>
+            )}
           </div>
 
           <Separator />
@@ -175,24 +200,30 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
           {/* Stock por Deposito */}
           <div>
             <SectionHeader title="Stock por Deposito" />
-            {stockLoading ? (
-              <div className="space-y-2">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className="h-8 w-full" />
-                ))}
-              </div>
-            ) : existencias.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sin stock registrado</p>
-            ) : (
-              <div>
+            <div className="mt-2 border rounded-sm">
+              {stockLoading ? (
+                <div className="p-3 space-y-2">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-7 w-full" />
+                  ))}
+                </div>
+              ) : existencias.length === 0 ? (
+                <p className="p-3 text-sm text-muted-foreground">Sin stock registrado</p>
+              ) : (
                 <table className="w-full text-sm">
                   <thead>
                     <tr>
-                      <th className="h-8 text-left font-medium text-muted-foreground">Deposito</th>
-                      <th className="h-8 text-right font-medium text-muted-foreground">Cantidad</th>
-                      <th className="h-8 text-right font-medium text-muted-foreground">Min</th>
-                      <th className="h-8 text-right font-medium text-muted-foreground">Max</th>
-                      <th className="h-8 text-right font-medium text-muted-foreground">Estado</th>
+                      <th className="h-8 px-3 text-left font-medium text-muted-foreground">
+                        Deposito
+                      </th>
+                      <th className="h-8 px-3 text-right font-medium text-muted-foreground">
+                        Cant.
+                      </th>
+                      <th className="h-8 px-3 text-right font-medium text-muted-foreground">Min</th>
+                      <th className="h-8 px-3 text-right font-medium text-muted-foreground">Max</th>
+                      <th className="h-8 px-3 text-right font-medium text-muted-foreground">
+                        Estado
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -201,15 +232,15 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                       const config = stockStatusConfig[status]
                       return (
                         <tr key={`${e.articuloCodigo}-${e.depositoId}`} className="border-t">
-                          <td className="h-8">{e.depositoNombre ?? `Dep. ${e.depositoId}`}</td>
-                          <td className="h-8 text-right tabular-nums">{e.cantidad}</td>
-                          <td className="h-8 text-right tabular-nums text-muted-foreground">
+                          <td className="h-8 px-3">{e.depositoNombre ?? `Dep. ${e.depositoId}`}</td>
+                          <td className="h-8 px-3 text-right tabular-nums">{e.cantidad}</td>
+                          <td className="h-8 px-3 text-right tabular-nums text-muted-foreground">
                             {e.stockMinimo}
                           </td>
-                          <td className="h-8 text-right tabular-nums text-muted-foreground">
+                          <td className="h-8 px-3 text-right tabular-nums text-muted-foreground">
                             {e.stockMaximo}
                           </td>
-                          <td className="h-8 text-right">
+                          <td className="h-8 px-3 text-right">
                             <Badge variant={config.variant} className="text-xs">
                               {config.label}
                             </Badge>
@@ -218,39 +249,33 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                       )
                     })}
                     <tr className="border-t">
-                      <td className="h-8 font-semibold">Total</td>
-                      <td className="h-8 text-right font-semibold tabular-nums">{totalStock}</td>
+                      <td className="h-8 px-3 font-semibold">Total</td>
+                      <td className="h-8 px-3 text-right font-semibold tabular-nums">
+                        {totalStock}
+                      </td>
                       <td colSpan={3} />
                     </tr>
                   </tbody>
                 </table>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           <Separator />
 
-          {/* Estado */}
-          <div>
-            <SectionHeader title="Estado" />
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Estado</span>
-                <Badge variant={articulo.activo ? 'default' : 'secondary'}>
-                  {articulo.activo ? 'Activo' : 'Inactivo'}
-                </Badge>
-              </div>
-              <FieldRow label="Creado" value={formatDate(articulo.createdAt)} />
-              <FieldRow label="Actualizado" value={formatDate(articulo.updatedAt)} />
-            </div>
+          {/* Estado — compact single line */}
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Creado</span>
+            <span>{formatDate(articulo.createdAt)}</span>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-muted-foreground">Actualizado</span>
+            <span>{formatDate(articulo.updatedAt)}</span>
           </div>
 
-          {/* ERP (conditional) */}
-          {hasAnyErpField(articulo) && (
-            <>
-              <Separator />
-              <div>
-                <SectionHeader title="ERP" />
+          {/* Collapsible sections — always closed */}
+          <div className="space-y-2">
+            {hasAnyErpField(articulo) && (
+              <CollapsibleSection title="ERP">
                 <div className="space-y-1.5">
                   <FieldRow label="ERP ID" value={articulo.erpId} />
                   <FieldRow label="ERP Codigo" value={articulo.erpCodigo} />
@@ -278,52 +303,34 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                   />
                   <FieldRow label="Fecha Sync" value={formatDate(articulo.erpFechaSync)} />
                 </div>
-              </div>
-            </>
-          )}
+              </CollapsibleSection>
+            )}
 
-          {/* Origen (conditional) */}
-          {hasAnyOriginField(articulo) && (
-            <>
-              <Separator />
-              <div>
-                <SectionHeader title="Origen" />
+            {hasAnyOriginField(articulo) && (
+              <CollapsibleSection title="Origen">
                 <div className="space-y-1.5">
                   <FieldRow label="Fuente" value={articulo.originSource} />
                   <FieldRow label="Sync ID" value={articulo.originSyncId} />
                   <FieldRow label="Sincronizado" value={formatDate(articulo.originSyncedAt)} />
                 </div>
-              </div>
-            </>
-          )}
+              </CollapsibleSection>
+            )}
 
-          {/* Etiquetas OCR (conditional) */}
-          {articulo.etiquetasOcr && articulo.etiquetasOcr.length > 0 && (
-            <>
-              <Separator />
-              <div>
-                <SectionHeader title="Etiquetas OCR" />
-                <div className="flex flex-wrap">
+            {articulo.etiquetasOcr && articulo.etiquetasOcr.length > 0 && (
+              <CollapsibleSection title="Etiquetas OCR">
+                <div className="flex flex-wrap gap-1">
                   {articulo.etiquetasOcr.map((tag, i) => (
-                    <Badge key={i} variant="outline" className="text-xs mr-1 mb-1">
+                    <Badge key={i} variant="outline" className="text-xs">
                       {tag}
                     </Badge>
                   ))}
                 </div>
-              </div>
-            </>
-          )}
+              </CollapsibleSection>
+            )}
 
-          {/* Datos crudos (conditional, collapsible) */}
-          {(articulo.erpDatos != null || articulo.jsonArticulo != null) && (
-            <>
-              <Separator />
-              <Collapsible>
-                <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-90">
-                  <ChevronRight className="h-4 w-4 transition-transform" />
-                  Datos crudos
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-2 space-y-3">
+            {(articulo.erpDatos != null || articulo.jsonArticulo != null) && (
+              <CollapsibleSection title="Datos crudos">
+                <div className="space-y-3">
                   {articulo.erpDatos != null && (
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">ERP Datos</p>
@@ -340,10 +347,10 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                       </pre>
                     </div>
                   )}
-                </CollapsibleContent>
-              </Collapsible>
-            </>
-          )}
+                </div>
+              </CollapsibleSection>
+            )}
+          </div>
         </div>
       </SheetContent>
     </Sheet>
