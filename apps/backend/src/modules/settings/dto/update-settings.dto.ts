@@ -1,4 +1,34 @@
-import { IsOptional, IsString, MinLength, MaxLength } from 'class-validator'
+import {
+  IsOptional,
+  IsString,
+  MinLength,
+  MaxLength,
+  IsBoolean,
+  ValidateNested,
+} from 'class-validator'
+import { Type } from 'class-transformer'
+
+class CamposVisiblesDto {
+  @IsBoolean() marca!: boolean
+  @IsBoolean() modelo!: boolean
+  @IsBoolean() talle!: boolean
+  @IsBoolean() color!: boolean
+  @IsBoolean() material!: boolean
+  @IsBoolean() presentacion!: boolean
+  @IsBoolean() medida!: boolean
+  @IsBoolean() sku!: boolean
+  @IsBoolean() codigoBarras!: boolean
+  @IsBoolean() costo!: boolean
+  @IsBoolean() observaciones!: boolean
+  @IsBoolean() erp!: boolean
+  @IsBoolean() origen!: boolean
+}
+
+class ArticulosConfigDto {
+  @ValidateNested()
+  @Type(() => CamposVisiblesDto)
+  camposVisibles!: CamposVisiblesDto
+}
 
 export class UpdateSettingsDto {
   @IsOptional()
@@ -16,4 +46,9 @@ export class UpdateSettingsDto {
   @IsString()
   @MaxLength(30)
   taxId?: string
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ArticulosConfigDto)
+  articulosConfig?: ArticulosConfigDto
 }
