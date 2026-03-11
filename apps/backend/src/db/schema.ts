@@ -13,6 +13,8 @@ import {
   jsonb,
   primaryKey,
 } from 'drizzle-orm/pg-core'
+import { DEFAULT_ARTICULOS_CONFIG } from '../modules/settings/articulos-config'
+import type { ArticulosConfig } from '../modules/settings/articulos-config'
 
 // ─── Orders ──────────────────────────────────────────────────────────────────
 
@@ -162,6 +164,9 @@ export const businessSettings = pgTable('business_settings', {
   taxId: varchar('tax_id', { length: 30 }),
   logoSquare: text('logo_square'),
   logoRectangular: text('logo_rectangular'),
+  articulosConfig: jsonb('articulos_config')
+    .$type<ArticulosConfig>()
+    .default(DEFAULT_ARTICULOS_CONFIG),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
@@ -217,8 +222,8 @@ export const articulos = pgTable(
 
     // State
     activo: boolean('activo').notNull().default(true),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    createdAt: timestamp('creado').notNull().defaultNow(),
+    updatedAt: timestamp('actualizado').notNull().defaultNow(),
   },
   table => [
     index('articulos_nombre_idx').on(table.nombre),
