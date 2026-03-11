@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@objetiva/ui'
-import { User, Building2, Palette, Warehouse, Smartphone } from 'lucide-react'
+import { User, Building2, Palette, Warehouse, Smartphone, Package } from 'lucide-react'
 
 const settingsNavItems = [
   {
@@ -17,6 +17,12 @@ const settingsNavItems = [
     href: '/settings/business',
     icon: Building2,
     description: 'Configurá los datos del negocio',
+  },
+  {
+    title: 'Artículos',
+    href: '/settings/articulos',
+    icon: Package,
+    description: 'Configurá qué campos de artículos se muestran',
   },
   {
     title: 'Depositos',
