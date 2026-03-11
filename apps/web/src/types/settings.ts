@@ -1,3 +1,5 @@
+import type { ArticulosConfig } from './articulos-config'
+
 export interface BusinessSettings {
   id: number
   companyName: string
@@ -5,4 +7,5 @@ export interface BusinessSettings {
   taxId: string | null
   logoSquare: string | null
   logoRectangular: string | null
+  articulosConfig: ArticulosConfig | null
 }
