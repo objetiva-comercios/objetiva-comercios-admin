@@ -21,6 +21,7 @@ import { fetchExistenciasByArticuloClient } from '@/lib/api.client'
 import { getStockStatus } from '@/types/existencia'
 import type { Articulo } from '@/types/articulo'
 import type { Existencia } from '@/types/existencia'
+import { useArticulosConfig } from '@/hooks/use-articulos-config'
 
 interface ArticuloSheetProps {
   articulo: Articulo | null
@@ -101,6 +102,7 @@ const stockStatusConfig: Record<
 export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetProps) {
   const [existencias, setExistencias] = useState<Existencia[]>([])
   const [stockLoading, setStockLoading] = useState(false)
+  const { isCampoVisible } = useArticulosConfig()
 
   useEffect(() => {
     if (!articulo?.codigo || !open) {
@@ -138,7 +140,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               <SheetTitle>{articulo.nombre}</SheetTitle>
               <SheetDescription>
                 {articulo.codigo}
-                {articulo.sku ? ` · SKU: ${articulo.sku}` : ''}
+                {isCampoVisible('sku') && articulo.sku ? ` · SKU: ${articulo.sku}` : ''}
               </SheetDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -162,10 +164,12 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               label="Precio"
               value={articulo.precio ? formatCurrency(parseFloat(articulo.precio)) : '—'}
             />
-            <StatCard
-              label="Costo"
-              value={articulo.costo ? formatCurrency(parseFloat(articulo.costo)) : '—'}
-            />
+            {isCampoVisible('costo') && (
+              <StatCard
+                label="Costo"
+                value={articulo.costo ? formatCurrency(parseFloat(articulo.costo)) : '—'}
+              />
+            )}
             <StatCard label="Stock" value={stockLoading ? '...' : totalStock.toString()} />
           </div>
 
@@ -175,20 +179,25 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
           <div>
             <SectionHeader title="Propiedades" />
             <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
-              <FieldRow label="Marca" value={articulo.marca} />
-              <FieldRow label="Modelo" value={articulo.modelo} />
-              <FieldRow label="Talle" value={articulo.talle} />
-              <FieldRow label="Color" value={articulo.color} />
-              <FieldRow label="Material" value={articulo.material} />
-              <FieldRow label="Presentacion" value={articulo.presentacion} />
-              <FieldRow label="Medida" value={articulo.medida} />
+              {isCampoVisible('marca') && <FieldRow label="Marca" value={articulo.marca} />}
+              {isCampoVisible('modelo') && <FieldRow label="Modelo" value={articulo.modelo} />}
+              {isCampoVisible('talle') && <FieldRow label="Talle" value={articulo.talle} />}
+              {isCampoVisible('color') && <FieldRow label="Color" value={articulo.color} />}
+              {isCampoVisible('material') && (
+                <FieldRow label="Material" value={articulo.material} />
+              )}
+              {isCampoVisible('presentacion') && (
+                <FieldRow label="Presentacion" value={articulo.presentacion} />
+              )}
+              {isCampoVisible('medida') && <FieldRow label="Medida" value={articulo.medida} />}
             </div>
-            {(articulo.codigoBarras || articulo.observaciones) && (
+            {((isCampoVisible('codigoBarras') && articulo.codigoBarras) ||
+              (isCampoVisible('observaciones') && articulo.observaciones)) && (
               <div className="mt-2 space-y-1">
-                {articulo.codigoBarras && (
+                {isCampoVisible('codigoBarras') && articulo.codigoBarras && (
                   <FieldRow label="Cod. Barras" value={articulo.codigoBarras} />
                 )}
-                {articulo.observaciones && (
+                {isCampoVisible('observaciones') && articulo.observaciones && (
                   <FieldRow label="Observaciones" value={articulo.observaciones} />
                 )}
               </div>
@@ -274,7 +283,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
           {/* Collapsible sections — always closed */}
           <div className="space-y-2">
-            {hasAnyErpField(articulo) && (
+            {isCampoVisible('erp') && hasAnyErpField(articulo) && (
               <CollapsibleSection title="ERP">
                 <div className="space-y-1.5">
                   <FieldRow label="ERP ID" value={articulo.erpId} />
@@ -306,7 +315,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               </CollapsibleSection>
             )}
 
-            {hasAnyOriginField(articulo) && (
+            {isCampoVisible('origen') && hasAnyOriginField(articulo) && (
               <CollapsibleSection title="Origen">
                 <div className="space-y-1.5">
                   <FieldRow label="Fuente" value={articulo.originSource} />

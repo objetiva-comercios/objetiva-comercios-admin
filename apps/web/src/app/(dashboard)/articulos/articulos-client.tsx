@@ -27,6 +27,7 @@ import { ArticuloSheet } from '@/components/articulos/articulo-sheet'
 import { fetchArticulosClient, toggleArticuloActivo } from '@/lib/api.client'
 import { useToast } from '@/hooks/use-toast'
 import type { Articulo } from '@/types/articulo'
+import { useArticulosConfig } from '@/hooks/use-articulos-config'
 
 interface PaginatedResponse<T> {
   data: T[]
@@ -54,6 +55,7 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [toggleTarget, setToggleTarget] = useState<Articulo | null>(null)
+  const { camposVisibles } = useArticulosConfig()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchData = useCallback(
@@ -124,8 +126,8 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   }, [])
 
   const tableColumns = useMemo(
-    () => getColumns({ onEdit: handleEdit, onToggle: handleToggleRequest }),
-    [handleEdit, handleToggleRequest]
+    () => getColumns({ onEdit: handleEdit, onToggle: handleToggleRequest }, camposVisibles),
+    [handleEdit, handleToggleRequest, camposVisibles]
   )
 
   const handleConfirmToggle = async () => {

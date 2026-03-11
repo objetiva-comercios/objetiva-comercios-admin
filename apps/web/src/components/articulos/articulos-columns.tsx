@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { formatCurrency } from '@objetiva/utils'
 import type { Articulo } from '@/types/articulo'
+import type { CamposVisibles } from '@/types/articulos-config'
 
 interface ColumnHandlers {
   onEdit: (articulo: Articulo) => void
@@ -50,8 +51,11 @@ function RowActions({ articulo, handlers }: { articulo: Articulo; handlers: Colu
   )
 }
 
-export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
-  return [
+export function getColumns(
+  handlers: ColumnHandlers,
+  camposVisibles?: CamposVisibles
+): ColumnDef<Articulo>[] {
+  const allColumns: ColumnDef<Articulo>[] = [
     {
       accessorKey: 'codigo',
       header: 'Codigo',
@@ -165,6 +169,26 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
       cell: ({ row }) => <RowActions articulo={row.original} handlers={handlers} />,
     },
   ]
+
+  if (!camposVisibles) return allColumns
+
+  const columnConfigMap: Record<string, keyof CamposVisibles> = {
+    marca: 'marca',
+    modelo: 'modelo',
+    talle: 'talle',
+    color: 'color',
+    material: 'material',
+    sku: 'sku',
+    codigoBarras: 'codigoBarras',
+    costo: 'costo',
+    erpCodigo: 'erp',
+  }
+
+  return allColumns.filter(col => {
+    const key = (col as { accessorKey?: string }).accessorKey
+    if (!key || !(key in columnConfigMap)) return true
+    return camposVisibles[columnConfigMap[key]]
+  })
 }
 
 /** Default column visibility — hides secondary columns */

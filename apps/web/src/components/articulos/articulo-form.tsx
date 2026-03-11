@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
+import { useArticulosConfig } from '@/hooks/use-articulos-config'
 
 const articuloFormSchema = z.object({
   codigo: z.string().min(1, 'El codigo es obligatorio').max(50),
@@ -78,6 +79,7 @@ export function ArticuloForm({
 }: ArticuloFormProps) {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const { isCampoVisible } = useArticulosConfig()
 
   useEffect(() => {
     onLoadingChange?.(isLoading)
@@ -167,19 +169,21 @@ export function ArticuloForm({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="sku"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SKU</FormLabel>
-                  <FormControl>
-                    <Input placeholder="SKU (opcional)" className="h-9" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {isCampoVisible('sku') && (
+              <FormField
+                control={form.control}
+                name="sku"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>SKU</FormLabel>
+                    <FormControl>
+                      <Input placeholder="SKU (opcional)" className="h-9" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           <FormField
@@ -196,120 +200,144 @@ export function ArticuloForm({
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="codigoBarras"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Codigo de barras</FormLabel>
-                <FormControl>
-                  <Input placeholder="Codigo de barras (opcional)" className="h-9" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {isCampoVisible('codigoBarras') && (
+            <FormField
+              control={form.control}
+              name="codigoBarras"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Codigo de barras</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Codigo de barras (opcional)" className="h-9" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
 
         {/* Propiedades */}
-        <div className="border rounded-sm p-4 space-y-3">
-          <SectionHeader title="Propiedades" />
+        {(isCampoVisible('marca') ||
+          isCampoVisible('modelo') ||
+          isCampoVisible('talle') ||
+          isCampoVisible('color') ||
+          isCampoVisible('material') ||
+          isCampoVisible('presentacion') ||
+          isCampoVisible('medida')) && (
+          <div className="border rounded-sm p-4 space-y-3">
+            <SectionHeader title="Propiedades" />
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="marca"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Marca</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Marca" className="h-9" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {isCampoVisible('marca') && (
+                <FormField
+                  control={form.control}
+                  name="marca"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Marca</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Marca" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-            <FormField
-              control={form.control}
-              name="modelo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Modelo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Modelo" className="h-9" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {isCampoVisible('modelo') && (
+                <FormField
+                  control={form.control}
+                  name="modelo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Modelo</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Modelo" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-            <FormField
-              control={form.control}
-              name="talle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Talle</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Talle" className="h-9" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {isCampoVisible('talle') && (
+                <FormField
+                  control={form.control}
+                  name="talle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Talle</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Talle" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Color</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Color" className="h-9" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {isCampoVisible('color') && (
+                <FormField
+                  control={form.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Color</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Color" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-            <FormField
-              control={form.control}
-              name="material"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Material</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Material" className="h-9" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {isCampoVisible('material') && (
+                <FormField
+                  control={form.control}
+                  name="material"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Material</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Material" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-            <FormField
-              control={form.control}
-              name="presentacion"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Presentacion</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Presentacion" className="h-9" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {isCampoVisible('presentacion') && (
+                <FormField
+                  control={form.control}
+                  name="presentacion"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Presentacion</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Presentacion" className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-          </div>
+            </div>
 
-          <FormField
-            control={form.control}
-            name="medida"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Medida</FormLabel>
-                <FormControl>
-                  <Input placeholder="Medida" className="h-9" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            {isCampoVisible('medida') && (
+              <FormField
+                control={form.control}
+                name="medida"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Medida</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Medida" className="h-9" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
-          />
-        </div>
+          </div>
+        )}
 
         {/* Precios */}
         <div className="border rounded-sm p-4 space-y-3">
@@ -335,18 +363,45 @@ export function ArticuloForm({
                 </FormItem>
               )}
             />
+            {isCampoVisible('costo') && (
+              <FormField
+                control={form.control}
+                name="costo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Costo</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0.00"
+                        className="h-9"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">Los precios se guardan con 2 decimales</p>
+        </div>
+
+        {/* Observaciones */}
+        {isCampoVisible('observaciones') && (
+          <div className="border rounded-sm p-4 space-y-3">
+            <SectionHeader title="Observaciones" />
             <FormField
               control={form.control}
-              name="costo"
+              name="observaciones"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Costo</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      className="h-9"
+                    <Textarea
+                      placeholder="Observaciones o notas adicionales"
+                      className="resize-none"
+                      rows={3}
                       {...field}
                     />
                   </FormControl>
@@ -355,200 +410,184 @@ export function ArticuloForm({
               )}
             />
           </div>
-          <p className="text-xs text-muted-foreground">Los precios se guardan con 2 decimales</p>
-        </div>
-
-        {/* Observaciones */}
-        <div className="border rounded-sm p-4 space-y-3">
-          <SectionHeader title="Observaciones" />
-          <FormField
-            control={form.control}
-            name="observaciones"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea
-                    placeholder="Observaciones o notas adicionales"
-                    className="resize-none"
-                    rows={3}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        )}
 
         {/* ERP + Origen collapsibles */}
-        <div className="flex gap-2">
-          <Collapsible className="flex-1 border rounded-sm">
-            <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
-              <ChevronRight className="h-4 w-4 transition-transform" />
-              ERP
-            </CollapsibleTrigger>
-            <CollapsibleContent className="px-4 pb-4 space-y-3">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="erpId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ERP ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="ID en ERP" className="h-9" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="erpCodigo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ERP Codigo</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Codigo en ERP" className="h-9" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+        {(isCampoVisible('erp') || isCampoVisible('origen')) && (
+          <div className="flex gap-2">
+            {isCampoVisible('erp') && (
+              <Collapsible className="flex-1 border rounded-sm">
+                <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
+                  <ChevronRight className="h-4 w-4 transition-transform" />
+                  ERP
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4 pb-4 space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="erpId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ERP ID</FormLabel>
+                          <FormControl>
+                            <Input placeholder="ID en ERP" className="h-9" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="erpCodigo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ERP Codigo</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Codigo en ERP" className="h-9" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-              <FormField
-                control={form.control}
-                name="erpNombre"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ERP Nombre</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nombre en ERP" className="h-9" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={form.control}
+                    name="erpNombre"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ERP Nombre</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Nombre en ERP" className="h-9" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="erpPrecio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ERP Precio</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          placeholder="0.00"
-                          className="h-9"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="erpCosto"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ERP Costo</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          placeholder="0.00"
-                          className="h-9"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="erpPrecio"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ERP Precio</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0.00"
+                              className="h-9"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="erpCosto"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ERP Costo</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0.00"
+                              className="h-9"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-              <FormField
-                control={form.control}
-                name="erpUnidades"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ERP Unidades</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="0" className="h-9" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={form.control}
+                    name="erpUnidades"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ERP Unidades</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0" className="h-9" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="erpSincronizado"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-sm border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Sincronizado con ERP</FormLabel>
-                      <FormDescription>
-                        Indica si este articulo esta sincronizado con el sistema ERP
-                      </FormDescription>
+                  <FormField
+                    control={form.control}
+                    name="erpSincronizado"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-sm border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>Sincronizado con ERP</FormLabel>
+                          <FormDescription>
+                            Indica si este articulo esta sincronizado con el sistema ERP
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+
+            {isCampoVisible('origen') && (
+              <Collapsible className="flex-1 border rounded-sm">
+                <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
+                  <ChevronRight className="h-4 w-4 transition-transform" />
+                  Origen
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4 pb-4 space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="originSource"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Fuente de origen</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Fuente" className="h-9" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="originSyncId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ID de sincronizacion</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Sync ID" className="h-9" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {mode === 'edit' && articulo?.originSyncedAt && (
+                    <div className="text-sm text-muted-foreground">
+                      Ultima sincronizacion:{' '}
+                      {new Date(articulo.originSyncedAt).toLocaleString('es-MX')}
                     </div>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </CollapsibleContent>
-          </Collapsible>
-
-          <Collapsible className="flex-1 border rounded-sm">
-            <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
-              <ChevronRight className="h-4 w-4 transition-transform" />
-              Origen
-            </CollapsibleTrigger>
-            <CollapsibleContent className="px-4 pb-4 space-y-3">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="originSource"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fuente de origen</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Fuente" className="h-9" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
                   )}
-                />
-                <FormField
-                  control={form.control}
-                  name="originSyncId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ID de sincronizacion</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Sync ID" className="h-9" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {mode === 'edit' && articulo?.originSyncedAt && (
-                <div className="text-sm text-muted-foreground">
-                  Ultima sincronizacion: {new Date(articulo.originSyncedAt).toLocaleString('es-MX')}
-                </div>
-              )}
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </div>
+        )}
 
         {/* Submit — only if showSubmitButton is true */}
         {showSubmitButton && (
