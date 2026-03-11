@@ -4,6 +4,7 @@ import type { Articulo } from '@/types/articulo'
 import type { Deposito } from '@/types/deposito'
 import type { Existencia, ExistenciasKpi, ExistenciaMatrixRow } from '@/types/existencia'
 import type { BusinessSettings } from '@/types/settings'
+import type { ArticulosConfig } from '@/types/articulos-config'
 import type {
   Inventario,
   InventarioArticulo,
@@ -46,8 +47,16 @@ async function throwIfError(response: Response): Promise<void> {
   throw new Error(detail)
 }
 
+export async function fetchSettingsClient(): Promise<BusinessSettings> {
+  const response = await fetch(`${API_BASE_URL}/api/settings`)
+  await throwIfError(response)
+  return response.json()
+}
+
 export async function updateSettings(
-  data: Partial<Pick<BusinessSettings, 'companyName' | 'address' | 'taxId'>>
+  data: Partial<Pick<BusinessSettings, 'companyName' | 'address' | 'taxId'>> & {
+    articulosConfig?: ArticulosConfig
+  }
 ): Promise<BusinessSettings> {
   const headers = await getAuthHeaders()
   const response = await fetch(`${API_BASE_URL}/api/settings`, {
