@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Phase 22 context gathered
-last_updated: '2026-03-12T02:50:20.042Z'
+stopped_at: Completed 22-01-PLAN.md
+last_updated: '2026-03-12T04:06:56.104Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 8
+  completed_plans: 7
 ---
 
 # Project State
@@ -49,6 +49,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 20-image-upload-backend P01          | 3      | 2 tasks | 7 files     |
 | Phase 21-image-upload-frontend-detalle P01 | 15     | 2 tasks | 5 files     |
 | Phase 21-image-upload-frontend-detalle P02 | 4      | 2 tasks | 3 files     |
+| Phase 22 P01                               | 25     | 2 tasks | 9 files     |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Progress (v1.2): [██████████] 100%
 - [Phase 21-image-upload-frontend-detalle]: SLOT_LABELS map hardcoded for both tipos to avoid runtime string generation
 - [Phase 21-image-upload-frontend-detalle]: Lightbox navigation scoped by type (etiqueta vs producto) — parent filters images array before passing
 - [Phase 21-image-upload-frontend-detalle]: sr-only class used for visually-hidden DialogTitle instead of missing @radix-ui/react-visually-hidden package
+- [Phase 22]: DB-driven TanStack VisibilityState via useMemo derivation from camposVisibles, optimistic updates in ArticulosClient with revert-on-error pattern
+- [Phase 22]: Settings/Articulos: immediate-persist per toggle, no Save button — aligns with table dropdown UX
 
 ### Pending Todos
 
@@ -83,8 +86,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T02:50:20.036Z
-Stopped at: Phase 22 context gathered
+Last session: 2026-03-12T04:06:56.101Z
+Stopped at: Completed 22-01-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
