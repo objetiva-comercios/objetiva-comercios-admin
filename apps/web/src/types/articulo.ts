@@ -18,8 +18,8 @@ export interface Articulo {
   medida: string | null
   precio: string | null // numeric → string, use parseFloat() for display
   costo: string | null // numeric → string, use parseFloat() for display
-  imagenesProducto: string[]
-  imagenesEtiqueta: string[]
+  imagenesProducto: (string | null)[]
+  imagenesEtiqueta: (string | null)[]
   etiquetasOcr: string[]
   jsonArticulo: unknown | null
   erpId: string | null

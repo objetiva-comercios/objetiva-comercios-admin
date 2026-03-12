@@ -166,6 +166,46 @@ export async function toggleArticuloActivo(codigo: string): Promise<Articulo> {
   return response.json()
 }
 
+export async function uploadArticuloImagen(
+  codigo: string,
+  tipo: 'etiqueta' | 'producto',
+  slot: number,
+  file: File
+): Promise<Articulo> {
+  const headers = await getAuthHeaders()
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('tipo', tipo)
+  formData.append('slot', slot.toString())
+  const response = await fetch(
+    `${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}/imagenes`,
+    {
+      method: 'POST',
+      headers,
+      body: formData,
+    }
+  )
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function deleteArticuloImagen(
+  codigo: string,
+  tipo: 'etiqueta' | 'producto',
+  slot: number
+): Promise<Articulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}/imagenes/${tipo}/${slot}`,
+    {
+      method: 'DELETE',
+      headers,
+    }
+  )
+  await throwIfError(response)
+  return response.json()
+}
+
 export async function fetchDepositosClient(): Promise<Deposito[]> {
   const headers = await getAuthHeaders()
   const response = await fetch(`${API_BASE_URL}/api/depositos`, {
