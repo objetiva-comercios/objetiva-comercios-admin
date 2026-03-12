@@ -22,6 +22,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArticuloForm } from '@/components/articulos/articulo-form'
 import { ImagenSlotGrid } from '@/components/articulos/imagen-slot-grid'
+import { ImagenLightbox } from '@/components/articulos/imagen-lightbox'
 import { useToast } from '@/hooks/use-toast'
 
 export default function EditarArticuloPage() {
@@ -35,6 +36,7 @@ export default function EditarArticuloPage() {
   const [error, setError] = useState<string | null>(null)
   const [showToggleDialog, setShowToggleDialog] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
+  const [lightbox, setLightbox] = useState<{ images: string[]; initialIndex: number } | null>(null)
 
   const loadArticulo = useCallback(async () => {
     try {
@@ -68,6 +70,16 @@ export default function EditarArticuloPage() {
         variant: 'destructive',
       })
     }
+  }
+
+  function openLightbox(tipo: 'etiqueta' | 'producto', slotIndex: number) {
+    if (!articulo) return
+    const urls = tipo === 'producto' ? articulo.imagenesProducto : articulo.imagenesEtiqueta
+    const nonNullUrls = urls.filter((u): u is string => u != null)
+    const url = urls[slotIndex]
+    if (!url) return
+    const indexInFiltered = nonNullUrls.indexOf(url)
+    setLightbox({ images: nonNullUrls, initialIndex: Math.max(0, indexInFiltered) })
   }
 
   if (loading) {
@@ -175,21 +187,26 @@ export default function EditarArticuloPage() {
             urls={articulo.imagenesProducto}
             articuloCodigo={articulo.codigo}
             onUpdated={setArticulo}
-            onPreview={_index => {
-              /* noop for now — lightbox in Plan 02 */
-            }}
+            onPreview={index => openLightbox('producto', index)}
           />
           <ImagenSlotGrid
             tipo="etiqueta"
             urls={articulo.imagenesEtiqueta}
             articuloCodigo={articulo.codigo}
             onUpdated={setArticulo}
-            onPreview={_index => {
-              /* noop for now — lightbox in Plan 02 */
-            }}
+            onPreview={index => openLightbox('etiqueta', index)}
           />
         </div>
       </div>
+
+      <ImagenLightbox
+        images={lightbox?.images ?? []}
+        initialIndex={lightbox?.initialIndex ?? 0}
+        open={lightbox !== null}
+        onOpenChange={open => {
+          if (!open) setLightbox(null)
+        }}
+      />
 
       <AlertDialog open={showToggleDialog} onOpenChange={setShowToggleDialog}>
         <AlertDialogContent>
