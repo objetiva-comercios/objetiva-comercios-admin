@@ -655,6 +655,75 @@ export async function revokeWebhook(id: number): Promise<void> {
   await throwIfError(res)
 }
 
+export interface WebhookDeliveryItem {
+  id: number
+  webhookId: number
+  deliveryId: string
+  eventName: string
+  payload: unknown
+  attempt: number
+  success: boolean
+  httpStatus: number | null
+  responseBody: string | null
+  isTest: boolean
+  createdAt: string
+}
+
+export interface PingResult {
+  success: boolean
+  httpStatus: number | null
+  durationMs: number
+  error?: string
+}
+
+export async function fetchWebhookDeliveries(
+  webhookId: number,
+  page = 1
+): Promise<{
+  data: WebhookDeliveryItem[]
+  meta: { total: number; page: number; limit: number; totalPages: number }
+}> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(
+    `${API_BASE_URL}/api/webhooks/${webhookId}/deliveries?page=${page}&limit=20`,
+    { headers: { 'Content-Type': 'application/json', ...headers } }
+  )
+  await throwIfError(res)
+  return res.json()
+}
+
+export async function pingWebhook(id: number): Promise<PingResult> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/webhooks/${id}/ping`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(res)
+  return res.json()
+}
+
+export async function resendWebhookDelivery(webhookId: number, deliveryId: string): Promise<void> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(
+    `${API_BASE_URL}/api/webhooks/${webhookId}/deliveries/${deliveryId}/resend`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+    }
+  )
+  await throwIfError(res)
+}
+
+export async function regenerateWebhookSecret(id: number): Promise<{ fullSecret: string }> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/webhooks/${id}/regenerate-secret`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(res)
+  return res.json()
+}
+
 export async function fetchOrderById(id: number): Promise<Order> {
   const supabase = createBrowserSupabaseClient()
   const {
