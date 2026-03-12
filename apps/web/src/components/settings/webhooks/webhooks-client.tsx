@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Webhook, Copy, Check } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { WebhookDetail } from './webhook-detail'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -61,6 +62,7 @@ export function WebhooksClient() {
   const { toast } = useToast()
   const [webhooks, setWebhooks] = useState<WebhookItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedWebhook, setSelectedWebhook] = useState<WebhookItem | null>(null)
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -82,6 +84,12 @@ export function WebhooksClient() {
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<WebhookItem | null>(null)
   const [deleting, setDeleting] = useState(false)
+
+  const reloadWebhooks = useCallback(() => {
+    fetchWebhooks()
+      .then(setWebhooks)
+      .catch(() => toast({ variant: 'destructive', title: 'Error al cargar webhooks' }))
+  }, [toast])
 
   useEffect(() => {
     fetchWebhooks()
@@ -245,6 +253,18 @@ export function WebhooksClient() {
     }
   }, [deleteTarget])
 
+  if (selectedWebhook) {
+    return (
+      <WebhookDetail
+        webhook={selectedWebhook}
+        onBack={() => {
+          setSelectedWebhook(null)
+          reloadWebhooks()
+        }}
+      />
+    )
+  }
+
   if (loading) {
     return <p className="text-sm text-muted-foreground">Cargando webhooks...</p>
   }
@@ -281,7 +301,11 @@ export function WebhooksClient() {
               </thead>
               <tbody>
                 {webhooks.map(webhook => (
-                  <tr key={webhook.id} className="border-b last:border-0">
+                  <tr
+                    key={webhook.id}
+                    className="border-b last:border-0 hover:bg-muted/30 cursor-pointer"
+                    onClick={() => setSelectedWebhook(webhook)}
+                  >
                     <td className="py-3 px-4">{webhook.name}</td>
                     <td className="py-3 px-4">
                       <span className="truncate max-w-[200px] block text-muted-foreground font-mono text-xs">
@@ -297,7 +321,7 @@ export function WebhooksClient() {
                         ))}
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4" onClick={e => e.stopPropagation()}>
                       <Badge
                         variant="secondary"
                         className={`text-xs cursor-pointer select-none ${
@@ -310,7 +334,7 @@ export function WebhooksClient() {
                         {webhook.active ? 'Activo' : 'Pausa'}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4" onClick={e => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
