@@ -4,6 +4,7 @@ import * as React from 'react'
 import {
   ColumnDef,
   VisibilityState,
+  SortingState,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -42,6 +43,9 @@ interface ServerDataTableProps<TData, TValue> {
   onColumnVisibilityChange?: (columnId: string, visible: boolean) => void
   onRowClick?: (row: TData) => void
   isLoading?: boolean
+  sortBy?: string | null
+  sortOrder?: 'asc' | 'desc'
+  onSortChange?: (sortBy: string | null, sortOrder: 'asc' | 'desc') => void
 }
 
 export function ServerDataTable<TData, TValue>({
@@ -54,11 +58,19 @@ export function ServerDataTable<TData, TValue>({
   onColumnVisibilityChange,
   onRowClick,
   isLoading = false,
+  sortBy,
+  sortOrder,
+  onSortChange,
 }: ServerDataTableProps<TData, TValue>) {
   const memoizedData = React.useMemo(() => data, [data])
   const memoizedColumns = React.useMemo(() => columns, [columns])
 
   const controlledVisibility = columnVisibilityProp ?? {}
+
+  const sorting = React.useMemo<SortingState>(
+    () => (sortBy ? [{ id: sortBy, desc: sortOrder === 'desc' }] : []),
+    [sortBy, sortOrder]
+  )
 
   const table = useReactTable({
     data: memoizedData,
@@ -68,6 +80,7 @@ export function ServerDataTable<TData, TValue>({
     manualPagination: true,
     manualFiltering: true,
     manualSorting: true,
+    enableSortingRemoval: true,
     onColumnVisibilityChange: updaterOrValue => {
       const newState =
         typeof updaterOrValue === 'function' ? updaterOrValue(controlledVisibility) : updaterOrValue
@@ -81,8 +94,18 @@ export function ServerDataTable<TData, TValue>({
         }
       }
     },
+    onSortingChange: updater => {
+      if (!onSortChange) return
+      const newSorting = typeof updater === 'function' ? updater(sorting) : updater
+      if (newSorting.length === 0) {
+        onSortChange(null, 'desc')
+      } else {
+        onSortChange(newSorting[0].id, newSorting[0].desc ? 'desc' : 'asc')
+      }
+    },
     state: {
       columnVisibility: controlledVisibility,
+      sorting,
       pagination: {
         pageIndex: currentPage - 1,
         pageSize: data.length || 20,

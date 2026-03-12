@@ -1,7 +1,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontal, PencilIcon } from 'lucide-react'
+import { MoreHorizontal, PencilIcon, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -54,16 +54,54 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
   return [
     {
       accessorKey: 'codigo',
-      header: 'Codigo',
+      header: ({ column }) => {
+        const sorted = column.getIsSorted()
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 text-sm font-medium"
+            onClick={() => column.toggleSorting(sorted === 'asc')}
+          >
+            Codigo
+            {sorted === 'asc' ? (
+              <ArrowUp className="ml-1.5 h-3.5 w-3.5" />
+            ) : sorted === 'desc' ? (
+              <ArrowDown className="ml-1.5 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-muted-foreground" />
+            )}
+          </Button>
+        )
+      },
       enableHiding: false,
-      enableSorting: false,
+      enableSorting: true,
       cell: ({ row }) => <div className="font-mono text-sm">{row.getValue('codigo')}</div>,
     },
     {
       accessorKey: 'nombre',
-      header: 'Nombre',
+      header: ({ column }) => {
+        const sorted = column.getIsSorted()
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 text-sm font-medium"
+            onClick={() => column.toggleSorting(sorted === 'asc')}
+          >
+            Nombre
+            {sorted === 'asc' ? (
+              <ArrowUp className="ml-1.5 h-3.5 w-3.5" />
+            ) : sorted === 'desc' ? (
+              <ArrowDown className="ml-1.5 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-muted-foreground" />
+            )}
+          </Button>
+        )
+      },
       enableHiding: false,
-      enableSorting: false,
+      enableSorting: true,
       cell: ({ row }) => <div className="font-medium">{row.getValue('nombre')}</div>,
     },
     {
@@ -126,8 +164,27 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
     },
     {
       accessorKey: 'precio',
-      header: 'Precio',
-      enableSorting: false,
+      header: ({ column }) => {
+        const sorted = column.getIsSorted()
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 text-sm font-medium"
+            onClick={() => column.toggleSorting(sorted === 'asc')}
+          >
+            Precio
+            {sorted === 'asc' ? (
+              <ArrowUp className="ml-1.5 h-3.5 w-3.5" />
+            ) : sorted === 'desc' ? (
+              <ArrowDown className="ml-1.5 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-muted-foreground" />
+            )}
+          </Button>
+        )
+      },
+      enableSorting: true,
       cell: ({ row }) => {
         const precio = row.getValue('precio') as string | null
         if (!precio) return <div className="text-right text-sm text-muted-foreground">-</div>
@@ -195,8 +252,27 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
     },
     {
       accessorKey: 'costo',
-      header: 'Costo',
-      enableSorting: false,
+      header: ({ column }) => {
+        const sorted = column.getIsSorted()
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 text-sm font-medium"
+            onClick={() => column.toggleSorting(sorted === 'asc')}
+          >
+            Costo
+            {sorted === 'asc' ? (
+              <ArrowUp className="ml-1.5 h-3.5 w-3.5" />
+            ) : sorted === 'desc' ? (
+              <ArrowDown className="ml-1.5 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-muted-foreground" />
+            )}
+          </Button>
+        )
+      },
+      enableSorting: true,
       cell: ({ row }) => {
         const costo = row.getValue('costo') as string | null
         if (!costo) return <div className="text-right text-sm text-muted-foreground">-</div>
