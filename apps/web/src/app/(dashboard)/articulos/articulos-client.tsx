@@ -57,6 +57,8 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [toggleTarget, setToggleTarget] = useState<Articulo | null>(null)
+  const [sortBy, setSortBy] = useState<string | null>(null)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const { camposVisibles: camposVisiblesFromHook } = useArticulosConfig()
   const [camposVisibles, setCamposVisibles] = useState<CamposVisibles | null>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -69,7 +71,13 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   const effectiveCamposVisibles = camposVisibles ?? camposVisiblesFromHook
 
   const fetchData = useCallback(
-    async (fetchPage: number, fetchSearch: string, fetchStatus: StatusFilterValue) => {
+    async (
+      fetchPage: number,
+      fetchSearch: string,
+      fetchStatus: StatusFilterValue,
+      fetchSortBy?: string | null,
+      fetchSortOrder?: 'asc' | 'desc'
+    ) => {
       setIsLoading(true)
       try {
         const activo = fetchStatus === 'active' ? true : fetchStatus === 'inactive' ? false : null
@@ -78,6 +86,8 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
           limit: 20,
           search: fetchSearch || undefined,
           activo,
+          sortBy: fetchSortBy || undefined,
+          sortOrder: fetchSortBy ? fetchSortOrder : undefined,
         })
         setData(response.data)
         setMeta(response.meta)
@@ -97,7 +107,7 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
     }
     searchTimeoutRef.current = setTimeout(() => {
       setPage(1)
-      fetchData(1, search, statusFilter)
+      fetchData(1, search, statusFilter, sortBy, sortOrder)
     }, 300)
 
     return () => {
@@ -111,13 +121,23 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   const handleStatusChange = (value: StatusFilterValue) => {
     setStatusFilter(value)
     setPage(1)
-    fetchData(1, search, value)
+    fetchData(1, search, value, sortBy, sortOrder)
   }
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
-    fetchData(newPage, search, statusFilter)
+    fetchData(newPage, search, statusFilter, sortBy, sortOrder)
   }
+
+  const handleSortChange = useCallback(
+    (newSortBy: string | null, newSortOrder: 'asc' | 'desc') => {
+      setSortBy(newSortBy)
+      setSortOrder(newSortOrder)
+      setPage(1)
+      fetchData(1, search, statusFilter, newSortBy, newSortOrder)
+    },
+    [search, statusFilter, fetchData]
+  )
 
   const handleRowClick = (articulo: Articulo) => {
     setSelectedArticulo(articulo)
@@ -222,7 +242,7 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
         description: `"${target.nombre}" fue ${target.activo ? 'desactivado' : 'activado'} correctamente.`,
       })
       // Refresh to update totals
-      fetchData(page, search, statusFilter)
+      fetchData(page, search, statusFilter, sortBy, sortOrder)
     } catch {
       setData(previousData)
       toast({
@@ -268,6 +288,9 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
         onColumnVisibilityChange={handleColumnVisibilityChange}
         onRowClick={handleRowClick}
         isLoading={isLoading}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={handleSortChange}
       />
 
       {/* Detail sheet */}

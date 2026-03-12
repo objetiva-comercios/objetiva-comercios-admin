@@ -99,6 +99,8 @@ export async function fetchArticulosClient(params?: {
   limit?: number
   search?: string
   activo?: boolean | null
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }): Promise<PaginatedResponse<Articulo>> {
   const headers = await getAuthHeaders()
   const searchParams = new URLSearchParams()
@@ -108,6 +110,8 @@ export async function fetchArticulosClient(params?: {
   if (params?.search) searchParams.set('search', params.search)
   if (params?.activo !== undefined && params?.activo !== null)
     searchParams.set('activo', params.activo.toString())
+  if (params?.sortBy) searchParams.set('sortBy', params.sortBy)
+  if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder)
 
   const queryString = searchParams.toString()
   const url = `${API_BASE_URL}/api/articulos${queryString ? `?${queryString}` : ''}`
