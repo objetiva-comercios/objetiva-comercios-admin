@@ -97,12 +97,12 @@ Plans:
 2. User can see uploaded images as thumbnails and remove individual images from their slots
 3. User can drag and drop image files into the corresponding slot
 4. User can click an articulo row and see a lateral panel/sheet showing all fields and uploaded images
-   **Plans**: TBD
+   **Plans:** 2 plans
 
 Plans:
 
-- [ ] 21-01: TBD
-- [ ] 21-02: TBD
+- [ ] 21-01-PLAN.md — API client functions + ImagenSlot/ImagenSlotGrid components + edit page integration
+- [ ] 21-02-PLAN.md — ImagenLightbox component + images section in ArticuloSheet
 
 ### Phase 22: Vista Lista Configurable
 
@@ -185,8 +185,8 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 17. Inventarios                        | v1.1      | 5/5            | Complete    | 2026-03-06 |
 | 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete    | 2026-03-06 |
 | 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
-| 20. Image Upload Backend               | 1/1       | Complete       | 2026-03-12  | -          |
-| 21. Image Upload Frontend + Detalle    | v1.2      | 0/?            | Not started | -          |
+| 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
+| 21. Image Upload Frontend + Detalle    | v1.2      | 0/2            | Not started | -          |
 | 22. Vista Lista Configurable           | v1.2      | 0/?            | Not started | -          |
 | 23. API Keys                           | v1.2      | 0/?            | Not started | -          |
 | 24. Webhooks                           | v1.2      | 0/?            | Not started | -          |
@@ -194,4 +194,4 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-12 (Phase 20 planned — 1 plan)_
+_Last updated: 2026-03-12 (Phase 21 planned — 2 plans)_
