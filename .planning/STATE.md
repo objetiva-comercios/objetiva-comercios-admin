@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Completed 23-api-keys 23-01-PLAN.md
-last_updated: '2026-03-12T12:38:14.073Z'
+stopped_at: Completed 23-api-keys 23-02-PLAN.md
+last_updated: '2026-03-12T12:45:03.123Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -52,6 +52,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 22 P01                               | 25     | 2 tasks | 9 files     |
 | Phase 22 P02                               | 4      | 2 tasks | 4 files     |
 | Phase 23-api-keys P01                      | 8      | 2 tasks | 8 files     |
+| Phase 23-api-keys P02                      | 5      | 2 tasks | 5 files     |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Progress (v1.2): [██████████] 100%
 - [Phase 22-02]: Sortable columns limited to 4 visible columns (codigo, nombre, precio, costo); enableSortingRemoval:true for tri-state cycling; sortBy=null uses backend default sort
 - [Phase 23-api-keys]: APP_GUARD pattern required for guards needing DI injection (not useGlobalGuards)
 - [Phase 23-api-keys]: CompositeAuthGuard: JWT first, fallback to API key SHA-256 lookup; userId='apikey:{name}' for API key auth
+- [Phase 23-api-keys]: Two-step create dialog: onOpenChange blocked during reveal step to prevent accidental key loss before copy
+- [Phase 23-api-keys]: notFound() for viewer on /settings/api-keys (not redirect) — correct HTTP semantics for unauthorized resource
 
 ### Pending Todos
 
@@ -91,8 +94,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T12:38:14.070Z
-Stopped at: Completed 23-api-keys 23-01-PLAN.md
+Last session: 2026-03-12T12:45:03.116Z
+Stopped at: Completed 23-api-keys 23-02-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---

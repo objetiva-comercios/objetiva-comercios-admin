@@ -46,7 +46,7 @@
 - [x] **Phase 20: Image Upload Backend** - Infraestructura de upload, procesamiento con sharp, serving estatico (completed 2026-03-12)
 - [x] **Phase 21: Image Upload Frontend + Detalle** - Grid de slots con upload/preview/drag-drop + panel lateral de detalle (completed 2026-03-12)
 - [x] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas (completed 2026-03-12)
-- [ ] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings
+- [x] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings (completed 2026-03-12)
 - [ ] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas
 
 ## Phase Details
@@ -132,7 +132,7 @@ Plans:
 2. Admin can see a list of active API keys (name, prefix, creation date, last used) and revoke any key
 3. An external system can call any authenticated endpoint using a Bearer token (API key) without Supabase JWT
 4. The system records the last usage timestamp each time an API key is used to authenticate a request
-   **Plans:** 1/2 plans executed
+   **Plans:** 2/2 plans complete
 
 Plans:
 
@@ -189,7 +189,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
 | 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12  | -          |
 | 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12  | -          |
-| 23. API Keys                           | 1/2       | In Progress    |             | -          |
+| 23. API Keys                           | 2/2       | Complete       | 2026-03-12  | -          |
 | 24. Webhooks                           | v1.2      | 0/?            | Not started | -          |
 
 ---
