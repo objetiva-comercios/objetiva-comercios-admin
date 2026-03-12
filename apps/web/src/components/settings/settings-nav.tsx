@@ -3,7 +3,16 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@objetiva/ui'
-import { User, Building2, Palette, Warehouse, Smartphone, Package, Key } from 'lucide-react'
+import {
+  User,
+  Building2,
+  Palette,
+  Warehouse,
+  Smartphone,
+  Package,
+  Key,
+  Webhook,
+} from 'lucide-react'
 
 const settingsNavItems = [
   {
@@ -48,13 +57,20 @@ const settingsNavItems = [
     icon: Key,
     description: 'Gestioná las keys de acceso para sistemas externos',
   },
+  {
+    title: 'Webhooks',
+    href: '/settings/webhooks',
+    icon: Webhook,
+    description: 'Configurá las notificaciones a URLs externas',
+  },
 ]
 
 export function SettingsNav({ userRole }: { userRole: string }) {
   const pathname = usePathname()
 
+  const adminOnlyHrefs = ['/settings/api-keys', '/settings/webhooks']
   const visibleItems = settingsNavItems.filter(
-    item => item.href !== '/settings/api-keys' || userRole === 'admin'
+    item => !adminOnlyHrefs.includes(item.href) || userRole === 'admin'
   )
 
   return (

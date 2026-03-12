@@ -581,6 +581,80 @@ export async function revokeApiKey(id: number): Promise<void> {
   if (!res.ok) throw new Error('Error al revocar API key')
 }
 
+// --- Webhooks ---
+
+export interface WebhookItem {
+  id: number
+  name: string
+  url: string
+  entity: string
+  events: string[]
+  active: boolean
+  createdAt: string
+  revokedAt: string | null
+}
+
+export interface WebhookCreated extends WebhookItem {
+  fullSecret: string
+}
+
+export async function fetchWebhooks(): Promise<WebhookItem[]> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/webhooks`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(res)
+  return res.json()
+}
+
+export async function createWebhook(data: {
+  name: string
+  url: string
+  events: string[]
+}): Promise<WebhookCreated> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/webhooks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(res)
+  return res.json()
+}
+
+export async function updateWebhook(
+  id: number,
+  data: Partial<{ name: string; url: string; events: string[] }>
+): Promise<WebhookItem> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/webhooks/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(res)
+  return res.json()
+}
+
+export async function toggleWebhook(id: number): Promise<WebhookItem> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/webhooks/${id}/toggle`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(res)
+  return res.json()
+}
+
+export async function revokeWebhook(id: number): Promise<void> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/webhooks/${id}`, {
+    method: 'DELETE',
+    headers: { ...headers },
+  })
+  await throwIfError(res)
+}
+
 export async function fetchOrderById(id: number): Promise<Order> {
   const supabase = createBrowserSupabaseClient()
   const {
