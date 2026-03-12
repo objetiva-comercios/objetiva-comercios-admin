@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
 stopped_at: Completed 25-01-PLAN.md
-last_updated: '2026-03-12T21:29:25.791Z'
+last_updated: '2026-03-12T21:31:42.474Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 8
