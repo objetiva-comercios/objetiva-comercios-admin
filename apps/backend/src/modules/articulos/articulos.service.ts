@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { eq, ilike, or, and, desc, asc, count, sql, Column } from 'drizzle-orm'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 import { DrizzleService } from '../../db/index'
 import { articulos } from '../../db/schema'
 import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
@@ -9,7 +10,10 @@ import { UpdateArticuloDto } from './dto/update-articulo.dto'
 
 @Injectable()
 export class ArticulosService {
-  constructor(private readonly drizzle: DrizzleService) {}
+  constructor(
+    private readonly drizzle: DrizzleService,
+    private readonly eventEmitter: EventEmitter2
+  ) {}
 
   async findAll(
     query: ArticuloQueryDto
@@ -95,7 +99,10 @@ export class ArticulosService {
       .values(dto as typeof articulos.$inferInsert)
       .returning()
 
-    return rows[0]
+    const articulo = rows[0]
+    // Fire and forget — non-blocking
+    this.eventEmitter.emit('articulo.created', { articulo })
+    return articulo
   }
 
   async update(codigo: string, dto: UpdateArticuloDto) {
@@ -109,6 +116,8 @@ export class ArticulosService {
       throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
     }
 
+    // Fire and forget — non-blocking
+    this.eventEmitter.emit('articulo.updated', { articulo: rows[0] })
     return rows[0]
   }
 
@@ -124,7 +133,10 @@ export class ArticulosService {
       .where(eq(articulos.codigo, codigo))
       .returning()
 
-    return rows[0]
+    const result = rows[0]
+    // Toggle is a field change — emit updated (fire and forget, non-blocking)
+    this.eventEmitter.emit('articulo.updated', { articulo: result })
+    return result
   }
 
   async getStats() {
