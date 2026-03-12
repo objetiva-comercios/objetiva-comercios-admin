@@ -114,11 +114,12 @@ Plans:
 1. User can open a column visibility dropdown and toggle which columns appear in the articulos table
 2. Column visibility preference is persisted globally in the database and restored on page reload
 3. User can click any column header to sort the list ascending/descending
-   **Plans**: TBD
+   **Plans:** 2 plans
 
 Plans:
 
-- [ ] 22-01: TBD
+- [ ] 22-01-PLAN.md — Schema objeto + types + 4 new columns + DB-driven column visibility + Settings immediate-persist
+- [ ] 22-02-PLAN.md — Server-side sorting via clickable column headers with tri-state indicators
 
 ### Phase 23: API Keys
 
@@ -187,11 +188,11 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
 | 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
 | 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12  | -          |
-| 22. Vista Lista Configurable           | v1.2      | 0/?            | Not started | -          |
+| 22. Vista Lista Configurable           | v1.2      | 0/2            | Not started | -          |
 | 23. API Keys                           | v1.2      | 0/?            | Not started | -          |
 | 24. Webhooks                           | v1.2      | 0/?            | Not started | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-12 (Phase 21 planned — 2 plans)_
+_Last updated: 2026-03-12 (Phase 22 planned — 2 plans)_
