@@ -151,7 +151,7 @@ Plans:
 3. When an articulo is created, updated, or deleted, subscribed webhooks receive the payload asynchronously with up to 3 retries
 4. Admin can view a delivery log showing status (ok/fail), HTTP response code, and timestamp for each delivery attempt
 5. Admin can send a test ping to a webhook URL to verify connectivity before relying on it
-   **Plans:** 1/3 plans executed
+   **Plans:** 2/3 plans executed
 
 Plans:
 
@@ -190,7 +190,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12 | -          |
 | 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12 | -          |
 | 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
-| 24. Webhooks                           | 1/3       | In Progress    |            | -          |
+| 24. Webhooks                           | 2/3       | In Progress    |            | -          |
 
 ---
 

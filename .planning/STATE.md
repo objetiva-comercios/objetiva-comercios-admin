@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Completed 24-webhooks-01-PLAN.md
-last_updated: '2026-03-12T15:40:05.326Z'
+stopped_at: Completed 24-webhooks-02-PLAN.md
+last_updated: '2026-03-12T15:48:56.895Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -54,6 +54,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 23-api-keys P01                      | 8      | 2 tasks | 8 files     |
 | Phase 23-api-keys P02                      | 5      | 2 tasks | 5 files     |
 | Phase 24-webhooks P01                      | 7      | 2 tasks | 9 files     |
+| Phase 24-webhooks P02                      | 7      | 2 tasks | 4 files     |
 
 ## Accumulated Context
 
@@ -85,6 +86,8 @@ Progress (v1.2): [██████████] 100%
 - [Phase 24-webhooks]: @nestjs/event-emitter with explicit @OnEvent handlers in WebhooksListener (no wildcard) — avoids silent miss risk
 - [Phase 24-webhooks]: Webhook secrets stored plaintext in DB — required for HMAC computation on every delivery
 - [Phase 24-webhooks]: In-memory filter for webhook event matching — avoids Drizzle text[] array containment driver quirks, correct for <= 50 webhooks
+- [Phase 24-webhooks]: useToast hook (not sonner) for toasts in webhooks UI — project uses @/hooks/use-toast pattern
+- [Phase 24-webhooks]: Toggle-button event selector (not Checkbox component) in webhooks UI — no checkbox in ui/ components
 
 ### Pending Todos
 
@@ -98,8 +101,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T15:40:05.323Z
-Stopped at: Completed 24-webhooks-01-PLAN.md
+Last session: 2026-03-12T15:48:56.891Z
+Stopped at: Completed 24-webhooks-02-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
