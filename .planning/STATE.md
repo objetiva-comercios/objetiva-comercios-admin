@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Completed 24-webhooks-03-PLAN.md
-last_updated: '2026-03-12T15:55:24.959Z'
+stopped_at: Completed 24-webhooks-04-PLAN.md
+last_updated: '2026-03-12T19:26:06.773Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 6
   completed_phases: 6
-  total_plans: 13
-  completed_plans: 13
+  total_plans: 14
+  completed_plans: 14
 ---
 
 # Project State
@@ -56,6 +56,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 24-webhooks P01                      | 7      | 2 tasks | 9 files     |
 | Phase 24-webhooks P02                      | 7      | 2 tasks | 4 files     |
 | Phase 24-webhooks P03                      | 4      | 2 tasks | 3 files     |
+| Phase 24-webhooks P04                      | 1      | 2 tasks | 2 files     |
 
 ## Accumulated Context
 
@@ -90,6 +91,7 @@ Progress (v1.2): [██████████] 100%
 - [Phase 24-webhooks]: useToast hook (not sonner) for toasts in webhooks UI — project uses @/hooks/use-toast pattern
 - [Phase 24-webhooks]: Toggle-button event selector (not Checkbox component) in webhooks UI — no checkbox in ui/ components
 - [Phase 24-webhooks]: WebhookDetail: DeliveryRow sub-component isolates per-row expand/resend state; stopPropagation on badge and actions cells prevents row-click navigation
+- [Phase 24-webhooks]: softDelete always sets activo=false and emits articulo.deleted (distinct from toggleActive which emits articulo.updated)
 
 ### Pending Todos
 
@@ -103,8 +105,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T15:55:24.955Z
-Stopped at: Completed 24-webhooks-03-PLAN.md
+Last session: 2026-03-12T19:26:06.769Z
+Stopped at: Completed 24-webhooks-04-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
