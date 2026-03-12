@@ -43,7 +43,7 @@
 **Milestone Goal:** Completar el CRUD de articulos con imagenes, agregar columnas configurables, habilitar integraciones externas via API keys, y notificar eventos via webhooks.
 
 - [x] **Phase 19: Articulos CRUD Completo** - Wiring de crear/editar/soft-delete + busqueda en lista + config visibilidad campos
-- [ ] **Phase 20: Image Upload Backend** - Infraestructura de upload, procesamiento con sharp, serving estatico
+- [x] **Phase 20: Image Upload Backend** - Infraestructura de upload, procesamiento con sharp, serving estatico (completed 2026-03-12)
 - [ ] **Phase 21: Image Upload Frontend + Detalle** - Grid de slots con upload/preview/drag-drop + panel lateral de detalle
 - [ ] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas
 - [ ] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings
@@ -80,7 +80,7 @@ Plans:
 1. Backend accepts image uploads via POST endpoint with file validation (type, size, magic bytes)
 2. Uploaded images are automatically converted to WebP and resized (200x200 thumbnail, 1000px max detail)
 3. Images are served as static files accessible via URL from the frontend
-   **Plans:** 1 plan
+   **Plans:** 1/1 plans complete
 
 Plans:
 
@@ -185,7 +185,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 17. Inventarios                        | v1.1      | 5/5            | Complete    | 2026-03-06 |
 | 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete    | 2026-03-06 |
 | 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
-| 20. Image Upload Backend               | v1.2      | 0/1            | Planning    | -          |
+| 20. Image Upload Backend               | 1/1       | Complete       | 2026-03-12  | -          |
 | 21. Image Upload Frontend + Detalle    | v1.2      | 0/?            | Not started | -          |
 | 22. Vista Lista Configurable           | v1.2      | 0/?            | Not started | -          |
 | 23. API Keys                           | v1.2      | 0/?            | Not started | -          |

@@ -18,7 +18,7 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 
 - [ ] **IMG-01**: User can upload images to labeled slots (3 etiqueta + 6 producto) stored on filesystem
 - [ ] **IMG-02**: User can preview uploaded images as thumbnails and remove individual images
-- [ ] **IMG-03**: System generates automatic thumbnails (200x200 for list, 800px max for detail) via sharp
+- [x] **IMG-03**: System generates automatic thumbnails (200x200 for list, 800px max for detail) via sharp
 - [ ] **IMG-04**: User can drag & drop images into the corresponding slot in the form
 
 ### Vista Lista & Detalle
@@ -71,30 +71,30 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 
 ## Traceability
 
-| Requirement | Phase    | Status  |
-| ----------- | -------- | ------- |
-| ART-01      | Phase 19 | Pending |
-| ART-02      | Phase 19 | Pending |
-| ART-03      | Phase 19 | Pending |
-| ART-04      | Phase 19 | Pending |
-| IMG-01      | Phase 21 | Pending |
-| IMG-02      | Phase 21 | Pending |
-| IMG-03      | Phase 20 | Pending |
-| IMG-04      | Phase 21 | Pending |
-| VIEW-01     | Phase 22 | Pending |
-| VIEW-02     | Phase 21 | Pending |
-| VIEW-03     | Phase 22 | Pending |
-| APIKEY-01   | Phase 23 | Pending |
-| APIKEY-02   | Phase 23 | Pending |
-| APIKEY-03   | Phase 23 | Pending |
-| APIKEY-04   | Phase 23 | Pending |
-| HOOK-01     | Phase 24 | Pending |
-| HOOK-02     | Phase 24 | Pending |
-| HOOK-03     | Phase 24 | Pending |
-| HOOK-04     | Phase 24 | Pending |
-| HOOK-05     | Phase 24 | Pending |
-| HOOK-06     | Phase 24 | Pending |
-| HOOK-07     | Phase 24 | Pending |
+| Requirement | Phase    | Status   |
+| ----------- | -------- | -------- |
+| ART-01      | Phase 19 | Pending  |
+| ART-02      | Phase 19 | Pending  |
+| ART-03      | Phase 19 | Pending  |
+| ART-04      | Phase 19 | Pending  |
+| IMG-01      | Phase 21 | Pending  |
+| IMG-02      | Phase 21 | Pending  |
+| IMG-03      | Phase 20 | Complete |
+| IMG-04      | Phase 21 | Pending  |
+| VIEW-01     | Phase 22 | Pending  |
+| VIEW-02     | Phase 21 | Pending  |
+| VIEW-03     | Phase 22 | Pending  |
+| APIKEY-01   | Phase 23 | Pending  |
+| APIKEY-02   | Phase 23 | Pending  |
+| APIKEY-03   | Phase 23 | Pending  |
+| APIKEY-04   | Phase 23 | Pending  |
+| HOOK-01     | Phase 24 | Pending  |
+| HOOK-02     | Phase 24 | Pending  |
+| HOOK-03     | Phase 24 | Pending  |
+| HOOK-04     | Phase 24 | Pending  |
+| HOOK-05     | Phase 24 | Pending  |
+| HOOK-06     | Phase 24 | Pending  |
+| HOOK-07     | Phase 24 | Pending  |
 
 **Coverage:**
 

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: planning
-stopped_at: Phase 20 context gathered
-last_updated: '2026-03-12T00:28:50.058Z'
+stopped_at: Completed 20-image-upload-backend-01-PLAN.md
+last_updated: '2026-03-12T01:17:55.002Z'
 last_activity: 2026-03-11 — Phase 19 completed (3 plans)
 progress:
   total_phases: 6
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  completed_phases: 2
+  total_plans: 4
+  completed_plans: 4
 ---
 
 # Project State
@@ -41,11 +41,12 @@ Progress (v1.2): [█░░░░░░░░░] 17%
 
 **By Milestone:**
 
-| Milestone | Phases | Plans | Shipped     |
-| --------- | ------ | ----- | ----------- |
-| v1.0      | 13     | 42    | 2026-03-04  |
-| v1.1      | 5      | 18    | 2026-03-10  |
-| v1.2      | 6      | 3+    | In progress |
+| Milestone                         | Phases | Plans   | Shipped     |
+| --------------------------------- | ------ | ------- | ----------- |
+| v1.0                              | 13     | 42      | 2026-03-04  |
+| v1.1                              | 5      | 18      | 2026-03-10  |
+| v1.2                              | 6      | 3+      | In progress |
+| Phase 20-image-upload-backend P01 | 3      | 2 tasks | 7 files     |
 
 ## Accumulated Context
 
@@ -60,6 +61,9 @@ Progress (v1.2): [█░░░░░░░░░] 17%
 - Field visibility config stored as JSONB in business_settings (not separate table)
 - Hiding fields only affects UI, never deletes data
 - Module-level cache for useArticulosConfig (no SWR dependency)
+- [Phase 20-image-upload-backend]: memoryStorage for Multer — process buffer in-memory with sharp before writing final WebP, avoids temp disk files
+- [Phase 20-image-upload-backend]: Only detail URL stored in DB JSONB; thumb URL derived by string convention (\_detail.webp → \_thumb.webp) at read time
+- [Phase 20-image-upload-backend]: MulterError added to @Catch decorator on global HttpExceptionFilter — single filter handles both HTTP and Multer errors
 
 ### Pending Todos
 
@@ -73,8 +77,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T00:28:50.052Z
-Stopped at: Phase 20 context gathered
+Last session: 2026-03-12T01:17:54.999Z
+Stopped at: Completed 20-image-upload-backend-01-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
