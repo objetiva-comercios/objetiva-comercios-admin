@@ -78,13 +78,13 @@ Plans:
 **Success Criteria** (what must be TRUE):
 
 1. Backend accepts image uploads via POST endpoint with file validation (type, size, magic bytes)
-2. Uploaded images are automatically converted to WebP and resized (200x200 thumbnail, 800px max detail)
+2. Uploaded images are automatically converted to WebP and resized (200x200 thumbnail, 1000px max detail)
 3. Images are served as static files accessible via URL from the frontend
-   **Plans**: TBD
+   **Plans:** 1 plan
 
 Plans:
 
-- [ ] 20-01: TBD
+- [ ] 20-01-PLAN.md — Install sharp, image processing service (upload/delete), controller con Multer + MulterError filter
 
 ### Phase 21: Image Upload Frontend + Detalle
 
@@ -185,7 +185,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 17. Inventarios                        | v1.1      | 5/5            | Complete    | 2026-03-06 |
 | 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete    | 2026-03-06 |
 | 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
-| 20. Image Upload Backend               | v1.2      | 0/?            | Not started | -          |
+| 20. Image Upload Backend               | v1.2      | 0/1            | Planning    | -          |
 | 21. Image Upload Frontend + Detalle    | v1.2      | 0/?            | Not started | -          |
 | 22. Vista Lista Configurable           | v1.2      | 0/?            | Not started | -          |
 | 23. API Keys                           | v1.2      | 0/?            | Not started | -          |
@@ -194,4 +194,4 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-11 (Phase 19 complete — 3 plans)_
+_Last updated: 2026-03-12 (Phase 20 planned — 1 plan)_
