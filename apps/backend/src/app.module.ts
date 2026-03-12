@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { APP_GUARD } from '@nestjs/core'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { DbModule } from './db.module'
@@ -15,10 +16,12 @@ import { ExistenciasModule } from './modules/existencias/existencias.module'
 import { InventariosModule } from './modules/inventarios/inventarios.module'
 import { DispositivosModule } from './modules/dispositivos/dispositivos.module'
 import { ApiKeysModule } from './modules/api-keys/api-keys.module'
+import { WebhooksModule } from './modules/webhooks/webhooks.module'
 import { CompositeAuthGuard } from './common/guards/composite-auth.guard'
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot({ wildcard: true }),
     DbModule,
     AuthModule,
     OrdersModule,
@@ -32,6 +35,7 @@ import { CompositeAuthGuard } from './common/guards/composite-auth.guard'
     InventariosModule,
     DispositivosModule,
     ApiKeysModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [

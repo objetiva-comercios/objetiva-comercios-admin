@@ -384,6 +384,53 @@ export const apiKeys = pgTable(
   ]
 )
 
+// ─── Webhooks ────────────────────────────────────────────────────────────────
+
+export const webhooks = pgTable(
+  'webhooks',
+  {
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: 100 }).notNull(),
+    url: text('url').notNull(),
+    secret: text('secret').notNull(), // plaintext — needed for HMAC
+    entity: varchar('entity', { length: 50 }).notNull().default('articulo'),
+    events: text('events').array().notNull(), // ['created', 'updated', 'deleted']
+    active: boolean('active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    revokedAt: timestamp('revoked_at'), // soft-delete
+  },
+  table => [
+    index('webhooks_active_idx').on(table.active),
+    index('webhooks_revoked_at_idx').on(table.revokedAt),
+    index('webhooks_entity_idx').on(table.entity),
+  ]
+)
+
+export const webhookDeliveries = pgTable(
+  'webhook_deliveries',
+  {
+    id: serial('id').primaryKey(),
+    webhookId: integer('webhook_id')
+      .notNull()
+      .references(() => webhooks.id, { onDelete: 'cascade' }),
+    deliveryId: varchar('delivery_id', { length: 36 }).notNull(), // UUID
+    eventName: varchar('event_name', { length: 50 }).notNull(), // 'articulo.created'
+    payload: jsonb('payload').notNull(),
+    attempt: integer('attempt').notNull().default(1), // 1, 2, or 3
+    success: boolean('success').notNull(),
+    httpStatus: integer('http_status'), // null on network error
+    responseBody: text('response_body'), // error body / null
+    isTest: boolean('is_test').notNull().default(false), // test ping tag
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  table => [
+    index('wh_deliveries_webhook_id_idx').on(table.webhookId),
+    index('wh_deliveries_delivery_id_idx').on(table.deliveryId),
+    index('wh_deliveries_created_at_idx').on(table.createdAt),
+    index('wh_deliveries_success_idx').on(table.success),
+  ]
+)
+
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 
 export type Order = typeof orders.$inferSelect
@@ -430,3 +477,9 @@ export type NewDispositivoMovil = typeof dispositivosMoviles.$inferInsert
 
 export type ApiKey = typeof apiKeys.$inferSelect
 export type NewApiKey = typeof apiKeys.$inferInsert
+
+export type Webhook = typeof webhooks.$inferSelect
+export type NewWebhook = typeof webhooks.$inferInsert
+
+export type WebhookDelivery = typeof webhookDeliveries.$inferSelect
+export type NewWebhookDelivery = typeof webhookDeliveries.$inferInsert
