@@ -3,6 +3,9 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
+  HttpCode,
+  HttpStatus,
   Query,
   Param,
   Body,
@@ -53,5 +56,13 @@ export class ArticulosController {
   @Patch(':codigo/toggle')
   toggleActive(@Param('codigo') codigo: string) {
     return this.articulosService.toggleActive(codigo)
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Delete(':codigo')
+  @HttpCode(HttpStatus.OK)
+  softDelete(@Param('codigo') codigo: string) {
+    return this.articulosService.softDelete(codigo)
   }
 }
