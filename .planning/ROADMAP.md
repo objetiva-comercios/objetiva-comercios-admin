@@ -49,7 +49,7 @@
 - [x] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings (completed 2026-03-12)
 - [x] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas (completed 2026-03-12)
 - [x] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure) (completed 2026-03-12)
-- [ ] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure)
+- [x] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure) (completed 2026-03-12)
 
 ## Phase Details
 
@@ -194,7 +194,7 @@ Plans:
 3. webhooks.service revoke/delete checks already-revoked state before updating
 4. Webhook event dispatch has type-safe mapping between emitted events and DB event strings
 
-**Plans:** 1 plans
+**Plans:** 1/1 plans complete
 
 Plans:
 
@@ -233,7 +233,7 @@ Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
 | 24. Webhooks                           | 4/4       | Complete       | 2026-03-12 | -          |
 | 25. Wire Frontend Soft-Delete + Verify | 1/1       | Complete       | 2026-03-12 | -          |
-| 26. Tech Debt Cleanup v1.2             | v1.2      | 0/1            | Planned    | -          |
+| 26. Tech Debt Cleanup v1.2             | 1/1       | Complete       | 2026-03-12 | -          |
 
 ---
 

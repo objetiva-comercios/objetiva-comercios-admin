@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Phase 26 context gathered
-last_updated: '2026-03-12T22:47:46.395Z'
+stopped_at: Completed 26-01-PLAN.md
+last_updated: '2026-03-12T23:10:44.847Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 8
-  completed_phases: 7
-  total_plans: 15
-  completed_plans: 15
+  completed_phases: 8
+  total_plans: 16
+  completed_plans: 16
 ---
 
 # Project State
@@ -58,6 +58,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 24-webhooks P03                         | 4      | 2 tasks | 3 files     |
 | Phase 24-webhooks P04                         | 1      | 2 tasks | 2 files     |
 | Phase 25-wire-frontend-soft-delete-verify P01 | 3      | 2 tasks | 4 files     |
+| Phase 26 P01                                  | 8      | 2 tasks | 5 files     |
 
 ## Accumulated Context
 
@@ -95,6 +96,9 @@ Progress (v1.2): [██████████] 100%
 - [Phase 24-webhooks]: softDelete always sets activo=false and emits articulo.deleted (distinct from toggleActive which emits articulo.updated)
 - [Phase 25-wire-frontend-soft-delete-verify]: deleteArticulo() via DELETE endpoint (not PATCH toggle) for deactivation — ensures articulo.deleted event fires for webhook delivery, distinct from toggleActive which emits articulo.updated
 - [Phase 25-wire-frontend-soft-delete-verify]: Toast fires before router.push('/articulos') in editar/page.tsx — Next.js App Router may unmount component on navigation, toast must fire first
+- [Phase 26-tech-debt-cleanup-v12]: EVENT_TO_DB map used instead of split('.')[1] — explicit compile-time verified mapping for webhook events
+- [Phase 26-tech-debt-cleanup-v12]: findOneAny() private method added to WebhooksService — revoke needs to find already-revoked webhooks without breaking 404 semantics for other callers
+- [Phase 26-tech-debt-cleanup-v12]: Idempotency guard pattern: NotFoundException if missing, ConflictException (409) if already revoked — used in both api-keys and webhooks revoke
 
 ### Pending Todos
 
@@ -108,8 +112,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T22:47:46.392Z
-Stopped at: Phase 26 context gathered
+Last session: 2026-03-12T23:10:34.695Z
+Stopped at: Completed 26-01-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
