@@ -170,6 +170,16 @@ export async function toggleArticuloActivo(codigo: string): Promise<Articulo> {
   return response.json()
 }
 
+export async function deleteArticulo(codigo: string): Promise<Articulo> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}`, {
+    method: 'DELETE',
+    headers,
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
 export async function uploadArticuloImagen(
   codigo: string,
   tipo: 'etiqueta' | 'producto',

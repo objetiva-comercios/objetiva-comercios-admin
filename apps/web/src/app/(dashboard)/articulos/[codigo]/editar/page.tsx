@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 
 import type { Articulo } from '@/types/articulo'
-import { fetchArticuloByCodigoClient, toggleArticuloActivo } from '@/lib/api.client'
+import { fetchArticuloByCodigoClient, toggleArticuloActivo, deleteArticulo } from '@/lib/api.client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -57,12 +57,18 @@ export default function EditarArticuloPage() {
     if (!articulo) return
     setShowToggleDialog(false)
     try {
-      const updated = await toggleArticuloActivo(articulo.codigo)
-      setArticulo(updated)
-      toast({
-        title: updated.activo ? 'Articulo activado' : 'Articulo desactivado',
-        description: `"${updated.nombre}" ahora esta ${updated.activo ? 'activo' : 'inactivo'}.`,
-      })
+      if (articulo.activo) {
+        await deleteArticulo(articulo.codigo)
+        toast({
+          title: 'Articulo desactivado',
+          description: `"${articulo.nombre}" fue desactivado.`,
+        })
+        router.push('/articulos')
+      } else {
+        const updated = await toggleArticuloActivo(articulo.codigo)
+        setArticulo(updated)
+        toast({ title: 'Articulo reactivado', description: `"${articulo.nombre}" fue reactivado.` })
+      }
     } catch (err) {
       toast({
         title: 'Error al cambiar el estado',

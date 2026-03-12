@@ -24,7 +24,12 @@ import {
   type StatusFilterValue,
 } from '@/components/articulos/articulo-status-filter'
 import { ArticuloSheet } from '@/components/articulos/articulo-sheet'
-import { fetchArticulosClient, toggleArticuloActivo, updateSettings } from '@/lib/api.client'
+import {
+  fetchArticulosClient,
+  toggleArticuloActivo,
+  deleteArticulo,
+  updateSettings,
+} from '@/lib/api.client'
 import { useToast } from '@/hooks/use-toast'
 import type { Articulo } from '@/types/articulo'
 import { useArticulosConfig, invalidateArticulosConfig } from '@/hooks/use-articulos-config'
@@ -236,7 +241,11 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
     }
 
     try {
-      await toggleArticuloActivo(target.codigo)
+      if (target.activo) {
+        await deleteArticulo(target.codigo) // DELETE — emits articulo.deleted
+      } else {
+        await toggleArticuloActivo(target.codigo) // PATCH toggle — emits articulo.updated
+      }
       toast({
         title: target.activo ? 'Articulo desactivado' : 'Articulo activado',
         description: `"${target.nombre}" fue ${target.activo ? 'desactivado' : 'activado'} correctamente.`,
