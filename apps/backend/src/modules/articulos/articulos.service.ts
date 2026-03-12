@@ -139,6 +139,24 @@ export class ArticulosService {
     return result
   }
 
+  async softDelete(codigo: string) {
+    const existing = await this.findOne(codigo)
+    if (!existing) {
+      throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
+    }
+
+    const rows = await this.drizzle.db
+      .update(articulos)
+      .set({ activo: false, updatedAt: new Date() })
+      .where(eq(articulos.codigo, codigo))
+      .returning()
+
+    const articulo = rows[0]
+    // Emit deleted event (distinct from toggleActive which emits updated)
+    this.eventEmitter.emit('articulo.deleted', { articulo })
+    return articulo
+  }
+
   async getStats() {
     const [result] = await this.drizzle.db
       .select({
