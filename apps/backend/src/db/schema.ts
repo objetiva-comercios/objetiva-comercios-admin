@@ -365,6 +365,25 @@ export const inventariosArticulos = pgTable(
   ]
 )
 
+// ─── API Keys ────────────────────────────────────────────────────────────────
+
+export const apiKeys = pgTable(
+  'api_keys',
+  {
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: 100 }).notNull(),
+    keyHash: varchar('key_hash', { length: 64 }).notNull().unique(),
+    prefix: varchar('prefix', { length: 20 }).notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    lastUsedAt: timestamp('last_used_at'),
+    revokedAt: timestamp('revoked_at'),
+  },
+  table => [
+    uniqueIndex('api_keys_key_hash_idx').on(table.keyHash),
+    index('api_keys_revoked_at_idx').on(table.revokedAt),
+  ]
+)
+
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 
 export type Order = typeof orders.$inferSelect
@@ -408,3 +427,6 @@ export type NewInventarioSector = typeof inventarioSectores.$inferInsert
 
 export type DispositivoMovil = typeof dispositivosMoviles.$inferSelect
 export type NewDispositivoMovil = typeof dispositivosMoviles.$inferInsert
+
+export type ApiKey = typeof apiKeys.$inferSelect
+export type NewApiKey = typeof apiKeys.$inferInsert
