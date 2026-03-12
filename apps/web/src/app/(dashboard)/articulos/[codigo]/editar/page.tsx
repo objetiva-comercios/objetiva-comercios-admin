@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, ImagePlus, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 
 import type { Articulo } from '@/types/articulo'
 import { fetchArticuloByCodigoClient, toggleArticuloActivo } from '@/lib/api.client'
@@ -21,37 +21,8 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArticuloForm } from '@/components/articulos/articulo-form'
+import { ImagenSlotGrid } from '@/components/articulos/imagen-slot-grid'
 import { useToast } from '@/hooks/use-toast'
-
-function ImagePlaceholderGrid({ title, count }: { title: string; count: number }) {
-  return (
-    <div className="border rounded-sm p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          {title}
-        </h3>
-        <Button variant="ghost" size="sm" className="h-7 text-xs" disabled>
-          <ImagePlus className="mr-1 h-3.5 w-3.5" />
-          Subir
-        </Button>
-      </div>
-      <div className="grid grid-cols-3 gap-2">
-        {Array.from({ length: count }).map((_, i) => (
-          <div
-            key={i}
-            className="aspect-square rounded-sm bg-muted flex items-center justify-center"
-          >
-            <ImagePlus className="h-6 w-6 text-muted-foreground/40" />
-          </div>
-        ))}
-      </div>
-      <div className="border-2 border-dashed rounded-sm p-4 text-center">
-        <p className="text-xs text-muted-foreground">Arrastra imagenes o hace click para subir</p>
-        <p className="text-xs text-muted-foreground/60 mt-1">Disponible proximamente</p>
-      </div>
-    </div>
-  )
-}
 
 export default function EditarArticuloPage() {
   const params = useParams<{ codigo: string }>()
@@ -197,10 +168,26 @@ export default function EditarArticuloPage() {
           />
         </div>
 
-        {/* Right: Image placeholders */}
+        {/* Right: Image grids */}
         <div className="space-y-4">
-          <ImagePlaceholderGrid title="Imagenes Producto" count={6} />
-          <ImagePlaceholderGrid title="Imagenes Etiquetas" count={3} />
+          <ImagenSlotGrid
+            tipo="producto"
+            urls={articulo.imagenesProducto}
+            articuloCodigo={articulo.codigo}
+            onUpdated={setArticulo}
+            onPreview={_index => {
+              /* noop for now — lightbox in Plan 02 */
+            }}
+          />
+          <ImagenSlotGrid
+            tipo="etiqueta"
+            urls={articulo.imagenesEtiqueta}
+            articuloCodigo={articulo.codigo}
+            onUpdated={setArticulo}
+            onPreview={_index => {
+              /* noop for now — lightbox in Plan 02 */
+            }}
+          />
         </div>
       </div>
 
