@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: planning
 stopped_at: Completed 20-image-upload-backend-01-PLAN.md
-last_updated: '2026-03-12T01:17:55.002Z'
+last_updated: '2026-03-12T01:20:26.920Z'
 last_activity: 2026-03-11 — Phase 19 completed (3 plans)
 progress:
   total_phases: 6
