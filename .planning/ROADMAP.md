@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 MVP** — Phases 1-13 (shipped 2026-03-04) — [Full details](milestones/v1.0-ROADMAP.md)
 - ✅ **v1.1 Modelo Articulos + Inventario** — Phases 14-18 (shipped 2026-03-10) — [Full details](milestones/v1.1-ROADMAP.md)
-- 🚧 **v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks** — Phases 19-26 (in progress)
+- 🚧 **v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks** — Phases 19-27 (in progress)
 
 ## Phases
 
@@ -38,7 +38,7 @@
 
 </details>
 
-### 🚧 v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks (In Progress)
+### 🚧 v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks (Phases 19-27)
 
 **Milestone Goal:** Completar el CRUD de articulos con imagenes, agregar columnas configurables, habilitar integraciones externas via API keys, y notificar eventos via webhooks.
 
@@ -50,6 +50,7 @@
 - [x] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas (completed 2026-03-12)
 - [x] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure) (completed 2026-03-12)
 - [x] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure) (completed 2026-03-12)
+- [ ] **Phase 27: Add objeto Field to ArticuloForm** - Back-port objeto field to create/edit form Zod schema + FormField (gap closure)
 
 ## Phase Details
 
@@ -200,6 +201,23 @@ Plans:
 
 - [ ] 26-01-PLAN.md — Type-safe webhook events + re-revoke idempotency guards (API keys + webhooks)
 
+### Phase 27: Add objeto Field to ArticuloForm
+
+**Goal**: El campo `objeto` (agregado en Phase 22) es editable en el formulario de crear/editar articulos
+**Depends on**: Phase 22
+**Requirements**: None (integration gap closure — objeto was not in original ART-01/ART-02 scope)
+**Gap Closure:** Closes INT-01 from v1.2 audit
+**Success Criteria** (what must be TRUE):
+
+1. ArticuloForm Zod schema includes `objeto` as optional string field
+2. ArticuloForm renders an `objeto` FormField in the Propiedades section (visible when `isCampoVisible('objeto')`)
+3. Default value populates from existing articulo data in edit mode
+   **Plans:** 0/1
+
+Plans:
+
+- [ ] 27-01-PLAN.md — Add objeto to ArticuloForm Zod schema + FormField + defaultValue
+
 ## Progress
 
 **Execution Order:**
@@ -234,8 +252,9 @@ Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 24. Webhooks                           | 4/4       | Complete       | 2026-03-12 | -          |
 | 25. Wire Frontend Soft-Delete + Verify | 1/1       | Complete       | 2026-03-12 | -          |
 | 26. Tech Debt Cleanup v1.2             | 1/1       | Complete       | 2026-03-12 | -          |
+| 27. Add objeto to ArticuloForm         | v1.2      | 0/1            | Planned    | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-12 (Phase 26 planned: 1 plan)_
+_Last updated: 2026-03-12 (Phase 27 added: gap closure for INT-01 objeto field)_
