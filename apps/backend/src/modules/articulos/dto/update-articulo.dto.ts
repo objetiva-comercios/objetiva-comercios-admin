@@ -57,6 +57,11 @@ export class UpdateArticuloDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
+  objeto?: string
+
+  @IsOptional()
+  @IsString()
   precio?: string
 
   @IsOptional()

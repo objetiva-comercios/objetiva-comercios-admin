@@ -193,6 +193,7 @@ export const articulos = pgTable(
     material: varchar('material', { length: 100 }),
     presentacion: varchar('presentacion', { length: 100 }),
     medida: varchar('medida', { length: 50 }),
+    objeto: text('objeto'),
 
     // Prices
     precio: numeric('precio', { precision: 10, scale: 2 }),

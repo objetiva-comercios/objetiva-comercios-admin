@@ -21,7 +21,9 @@ class CamposVisiblesDto {
   @IsBoolean() costo!: boolean
   @IsBoolean() observaciones!: boolean
   @IsBoolean() erp!: boolean
+  @IsBoolean() erpUnidades!: boolean
   @IsBoolean() origen!: boolean
+  @IsBoolean() objeto!: boolean
 }
 
 class ArticulosConfigDto {

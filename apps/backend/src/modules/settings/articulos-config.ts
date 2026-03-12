@@ -11,7 +11,9 @@ export interface CamposVisibles {
   costo: boolean
   observaciones: boolean
   erp: boolean
+  erpUnidades: boolean
   origen: boolean
+  objeto: boolean
 }
 
 export interface ArticulosConfig {
@@ -27,11 +29,13 @@ export const DEFAULT_ARTICULOS_CONFIG: ArticulosConfig = {
     material: false,
     presentacion: true,
     medida: true,
-    sku: true,
-    codigoBarras: true,
-    costo: true,
+    sku: false,
+    codigoBarras: false,
+    costo: false,
     observaciones: true,
     erp: true,
+    erpUnidades: true,
     origen: true,
+    objeto: true,
   },
 }
