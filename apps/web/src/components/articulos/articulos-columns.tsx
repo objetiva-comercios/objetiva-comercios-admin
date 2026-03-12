@@ -164,6 +164,7 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
     },
     {
       accessorKey: 'precio',
+      enableHiding: false,
       header: ({ column }) => {
         const sorted = column.getIsSorted()
         return (
