@@ -194,7 +194,11 @@ Plans:
 3. webhooks.service revoke/delete checks already-revoked state before updating
 4. Webhook event dispatch has type-safe mapping between emitted events and DB event strings
 
-Plans: pending
+**Plans:** 1 plans
+
+Plans:
+
+- [ ] 26-01-PLAN.md — Type-safe webhook events + re-revoke idempotency guards (API keys + webhooks)
 
 ## Progress
 
@@ -229,9 +233,9 @@ Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
 | 24. Webhooks                           | 4/4       | Complete       | 2026-03-12 | -          |
 | 25. Wire Frontend Soft-Delete + Verify | 1/1       | Complete       | 2026-03-12 | -          |
-| 26. Tech Debt Cleanup v1.2             | v1.2      | 0/0            | Planned    | -          |
+| 26. Tech Debt Cleanup v1.2             | v1.2      | 0/1            | Planned    | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-12 (Phase 25 planned: 1 plan)_
+_Last updated: 2026-03-12 (Phase 26 planned: 1 plan)_
