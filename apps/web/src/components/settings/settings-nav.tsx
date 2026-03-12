@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@objetiva/ui'
-import { User, Building2, Palette, Warehouse, Smartphone, Package } from 'lucide-react'
+import { User, Building2, Palette, Warehouse, Smartphone, Package, Key } from 'lucide-react'
 
 const settingsNavItems = [
   {
@@ -42,14 +42,24 @@ const settingsNavItems = [
     icon: Palette,
     description: 'Personalizá el tema y la visualización',
   },
+  {
+    title: 'API Keys',
+    href: '/settings/api-keys',
+    icon: Key,
+    description: 'Gestioná las keys de acceso para sistemas externos',
+  },
 ]
 
-export function SettingsNav() {
+export function SettingsNav({ userRole }: { userRole: string }) {
   const pathname = usePathname()
+
+  const visibleItems = settingsNavItems.filter(
+    item => item.href !== '/settings/api-keys' || userRole === 'admin'
+  )
 
   return (
     <nav className="space-y-1">
-      {settingsNavItems.map(item => {
+      {visibleItems.map(item => {
         const isActive = pathname === item.href
         const Icon = item.icon
 

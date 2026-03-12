@@ -538,6 +538,49 @@ export async function fetchInventarioArticulosClient(
   return response.json()
 }
 
+// --- API Keys ---
+
+export interface ApiKeyItem {
+  id: number
+  name: string
+  prefix: string
+  createdAt: string
+  lastUsedAt: string | null
+}
+
+export interface ApiKeyCreated extends ApiKeyItem {
+  fullKey: string
+}
+
+export async function fetchApiKeys(): Promise<ApiKeyItem[]> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/api-keys`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  if (!res.ok) throw new Error('Error al cargar API keys')
+  return res.json()
+}
+
+export async function createApiKey(name: string): Promise<ApiKeyCreated> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/api-keys`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify({ name }),
+  })
+  if (!res.ok) throw new Error('Error al crear API key')
+  return res.json()
+}
+
+export async function revokeApiKey(id: number): Promise<void> {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${API_BASE_URL}/api/api-keys/${id}`, {
+    method: 'DELETE',
+    headers: { ...headers },
+  })
+  if (!res.ok) throw new Error('Error al revocar API key')
+}
+
 export async function fetchOrderById(id: number): Promise<Order> {
   const supabase = createBrowserSupabaseClient()
   const {
