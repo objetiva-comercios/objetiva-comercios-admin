@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
-import { ChevronRight, PencilIcon } from 'lucide-react'
+import { ChevronRight, ImageIcon, PencilIcon } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -22,6 +22,13 @@ import { getStockStatus } from '@/types/existencia'
 import type { Articulo } from '@/types/articulo'
 import type { Existencia } from '@/types/existencia'
 import { useArticulosConfig } from '@/hooks/use-articulos-config'
+import { ImagenLightbox } from './imagen-lightbox'
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
+function getThumbUrl(detailUrl: string): string {
+  return detailUrl.replace('_detail.webp', '_thumb.webp')
+}
 
 interface ArticuloSheetProps {
   articulo: Articulo | null
@@ -103,6 +110,15 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
   const [existencias, setExistencias] = useState<Existencia[]>([])
   const [stockLoading, setStockLoading] = useState(false)
   const { isCampoVisible } = useArticulosConfig()
+  const [lightbox, setLightbox] = useState<{ images: string[]; initialIndex: number } | null>(null)
+
+  function openLightboxForType(tipo: 'etiqueta' | 'producto', clickedUrl: string) {
+    if (!articulo) return
+    const urls = tipo === 'producto' ? articulo.imagenesProducto : articulo.imagenesEtiqueta
+    const nonNullUrls = urls.filter((u): u is string => u != null)
+    const indexInFiltered = nonNullUrls.indexOf(clickedUrl)
+    setLightbox({ images: nonNullUrls, initialIndex: Math.max(0, indexInFiltered) })
+  }
 
   useEffect(() => {
     if (!articulo?.codigo || !open) {
@@ -172,6 +188,82 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
             )}
             <StatCard label="Stock" value={stockLoading ? '...' : totalStock.toString()} />
           </div>
+
+          <Separator />
+
+          {/* Images section */}
+          {(() => {
+            const hasEtiquetas = articulo.imagenesEtiqueta.some(u => u != null)
+            const hasProductos = articulo.imagenesProducto.some(u => u != null)
+            const hasAnyImages = hasEtiquetas || hasProductos
+
+            if (!hasAnyImages) {
+              return (
+                <div>
+                  <SectionHeader title="Sin imagenes" />
+                  <div className="mt-2 flex gap-1.5">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-10 h-10 rounded-sm bg-muted flex items-center justify-center"
+                      >
+                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            }
+
+            return (
+              <div className="space-y-3">
+                {hasEtiquetas && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1.5">Etiquetas</p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {articulo.imagenesEtiqueta
+                        .filter((u): u is string => u != null)
+                        .map((url, i) => (
+                          <button
+                            key={i}
+                            onClick={() => openLightboxForType('etiqueta', url)}
+                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                          >
+                            <img
+                              src={API_BASE_URL + getThumbUrl(url)}
+                              className="w-full h-full object-cover"
+                              alt=""
+                            />
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+                {hasProductos && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1.5">Productos</p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {articulo.imagenesProducto
+                        .filter((u): u is string => u != null)
+                        .map((url, i) => (
+                          <button
+                            key={i}
+                            onClick={() => openLightboxForType('producto', url)}
+                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                          >
+                            <img
+                              src={API_BASE_URL + getThumbUrl(url)}
+                              className="w-full h-full object-cover"
+                              alt=""
+                            />
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
 
           <Separator />
 
@@ -361,6 +453,15 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
             )}
           </div>
         </div>
+
+        <ImagenLightbox
+          images={lightbox?.images ?? []}
+          initialIndex={lightbox?.initialIndex ?? 0}
+          open={lightbox !== null}
+          onOpenChange={open => {
+            if (!open) setLightbox(null)
+          }}
+        />
       </SheetContent>
     </Sheet>
   )
