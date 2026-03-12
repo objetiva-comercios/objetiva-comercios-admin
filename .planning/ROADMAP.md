@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 MVP** — Phases 1-13 (shipped 2026-03-04) — [Full details](milestones/v1.0-ROADMAP.md)
 - ✅ **v1.1 Modelo Articulos + Inventario** — Phases 14-18 (shipped 2026-03-10) — [Full details](milestones/v1.1-ROADMAP.md)
-- 🚧 **v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks** — Phases 19-24 (in progress)
+- 🚧 **v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks** — Phases 19-26 (in progress)
 
 ## Phases
 
@@ -48,6 +48,8 @@
 - [x] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas (completed 2026-03-12)
 - [x] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings (completed 2026-03-12)
 - [x] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas (completed 2026-03-12)
+- [ ] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificación independiente Phase 19 (gap closure)
+- [ ] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure)
 
 ## Phase Details
 
@@ -160,6 +162,36 @@ Plans:
 - [x] 24-03-PLAN.md — Webhook detail view con delivery log, test ping, resend, regenerate secret
 - [ ] 24-04-PLAN.md — Gap closure: Add DELETE endpoint + softDelete to ArticulosService for articulo.deleted event
 
+### Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD
+
+**Goal**: El frontend puede ejecutar soft-delete de artículos via DELETE endpoint y todos los requisitos ART-\* tienen verificación independiente
+**Depends on**: Phase 24
+**Requirements**: ART-01, ART-02, ART-03, ART-04
+**Gap Closure:** Closes gaps from audit (4 requirements, 1 integration, 1 flow)
+**Success Criteria** (what must be TRUE):
+
+1. Frontend has deleteArticulo() function in api.client.ts that calls DELETE /api/articulos/:codigo
+2. User can trigger soft-delete from the UI via a confirmation dialog that calls the DELETE endpoint
+3. Soft-delete triggers articulo.deleted webhook event end-to-end
+4. Phase 19 has independent VERIFICATION.md confirming ART-01 through ART-04
+
+Plans: pending
+
+### Phase 26: Tech Debt Cleanup v1.2
+
+**Goal**: Corregir defectos UX, idempotency bugs, y acoplamiento implícito identificados en el audit
+**Depends on**: Phase 24
+**Requirements**: None (tech debt)
+**Gap Closure:** Closes tech debt from audit (phases 22, 23, 24)
+**Success Criteria** (what must be TRUE):
+
+1. precio column in articulos-columns.tsx has enableHiding: false (no longer appears in Columnas dropdown)
+2. api-keys.service revoke() checks revokedAt IS NULL before updating
+3. webhooks.service revoke/delete checks already-revoked state before updating
+4. Webhook event dispatch has type-safe mapping between emitted events and DB event strings
+
+Plans: pending
+
 ## Progress
 
 **Execution Order:**
@@ -192,8 +224,10 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12 | -          |
 | 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
 | 24. Webhooks                           | 4/4       | Complete       | 2026-03-12 | -          |
+| 25. Wire Frontend Soft-Delete + Verify | v1.2      | 0/0            | Planned    | -          |
+| 26. Tech Debt Cleanup v1.2             | v1.2      | 0/0            | Planned    | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-12 (Phase 24 gap closure — 4 plans)_
+_Last updated: 2026-03-12 (gap closure phases 25-26 added)_
