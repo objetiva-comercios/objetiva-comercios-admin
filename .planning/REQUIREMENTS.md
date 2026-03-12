@@ -25,7 +25,7 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 
 - [x] **VIEW-01**: User can configure which columns are visible in the articulos list (global setting persisted in DB)
 - [x] **VIEW-02**: User can view articulo detail in a lateral panel/sheet showing all fields and images
-- [ ] **VIEW-03**: User can sort the articulos list by clicking column headers (asc/desc)
+- [x] **VIEW-03**: User can sort the articulos list by clicking column headers (asc/desc)
 
 ### API Keys
 
@@ -83,7 +83,7 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 | IMG-04      | Phase 21 | Complete |
 | VIEW-01     | Phase 22 | Complete |
 | VIEW-02     | Phase 21 | Complete |
-| VIEW-03     | Phase 22 | Pending  |
+| VIEW-03     | Phase 22 | Complete |
 | APIKEY-01   | Phase 23 | Pending  |
 | APIKEY-02   | Phase 23 | Pending  |
 | APIKEY-03   | Phase 23 | Pending  |

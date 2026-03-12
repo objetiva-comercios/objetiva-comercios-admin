@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Completed 22-01-PLAN.md
-last_updated: '2026-03-12T04:06:56.104Z'
+stopped_at: Completed 22-02-PLAN.md
+last_updated: '2026-03-12T04:12:29.262Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -50,6 +50,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 21-image-upload-frontend-detalle P01 | 15     | 2 tasks | 5 files     |
 | Phase 21-image-upload-frontend-detalle P02 | 4      | 2 tasks | 3 files     |
 | Phase 22 P01                               | 25     | 2 tasks | 9 files     |
+| Phase 22 P02                               | 4      | 2 tasks | 4 files     |
 
 ## Accumulated Context
 
@@ -73,6 +74,7 @@ Progress (v1.2): [██████████] 100%
 - [Phase 21-image-upload-frontend-detalle]: sr-only class used for visually-hidden DialogTitle instead of missing @radix-ui/react-visually-hidden package
 - [Phase 22]: DB-driven TanStack VisibilityState via useMemo derivation from camposVisibles, optimistic updates in ArticulosClient with revert-on-error pattern
 - [Phase 22]: Settings/Articulos: immediate-persist per toggle, no Save button — aligns with table dropdown UX
+- [Phase 22-02]: Sortable columns limited to 4 visible columns (codigo, nombre, precio, costo); enableSortingRemoval:true for tri-state cycling; sortBy=null uses backend default sort
 
 ### Pending Todos
 
@@ -86,8 +88,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T04:06:56.101Z
-Stopped at: Completed 22-01-PLAN.md
+Last session: 2026-03-12T04:12:29.259Z
+Stopped at: Completed 22-02-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---

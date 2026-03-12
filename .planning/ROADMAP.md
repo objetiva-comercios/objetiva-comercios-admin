@@ -45,7 +45,7 @@
 - [x] **Phase 19: Articulos CRUD Completo** - Wiring de crear/editar/soft-delete + busqueda en lista + config visibilidad campos
 - [x] **Phase 20: Image Upload Backend** - Infraestructura de upload, procesamiento con sharp, serving estatico (completed 2026-03-12)
 - [x] **Phase 21: Image Upload Frontend + Detalle** - Grid de slots con upload/preview/drag-drop + panel lateral de detalle (completed 2026-03-12)
-- [ ] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas
+- [x] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas (completed 2026-03-12)
 - [ ] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings
 - [ ] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas
 
@@ -114,7 +114,7 @@ Plans:
 1. User can open a column visibility dropdown and toggle which columns appear in the articulos table
 2. Column visibility preference is persisted globally in the database and restored on page reload
 3. User can click any column header to sort the list ascending/descending
-   **Plans:** 1/2 plans executed
+   **Plans:** 2/2 plans complete
 
 Plans:
 
@@ -188,7 +188,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
 | 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
 | 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12  | -          |
-| 22. Vista Lista Configurable           | 1/2       | In Progress    |             | -          |
+| 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12  | -          |
 | 23. API Keys                           | v1.2      | 0/?            | Not started | -          |
 | 24. Webhooks                           | v1.2      | 0/?            | Not started | -          |
 
