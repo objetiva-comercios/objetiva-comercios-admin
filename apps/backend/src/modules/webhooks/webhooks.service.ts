@@ -5,6 +5,7 @@ import { DrizzleService } from '../../db/index'
 import { webhooks, webhookDeliveries } from '../../db/schema'
 import { CreateWebhookDto } from './dto/create-webhook.dto'
 import { UpdateWebhookDto } from './dto/update-webhook.dto'
+import { WebhookEvent, EVENT_TO_DB } from './webhook-events'
 
 @Injectable()
 export class WebhooksService {
@@ -276,8 +277,8 @@ export class WebhooksService {
     return { deliveryId: newDeliveryId, message: 'Reenvío iniciado' }
   }
 
-  async dispatchEvent(eventName: string, payload: unknown): Promise<void> {
-    const eventShortName = eventName.split('.')[1] // 'created' from 'articulo.created'
+  async dispatchEvent(eventName: WebhookEvent, payload: unknown): Promise<void> {
+    const eventShortName = EVENT_TO_DB[eventName]
 
     const allWebhooks = await this.drizzle.db
       .select()

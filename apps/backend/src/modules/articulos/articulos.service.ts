@@ -7,6 +7,7 @@ import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
 import { ArticuloQueryDto } from './dto/articulo-query.dto'
 import { CreateArticuloDto } from './dto/create-articulo.dto'
 import { UpdateArticuloDto } from './dto/update-articulo.dto'
+import { WEBHOOK_EVENTS } from '../webhooks/webhook-events'
 
 @Injectable()
 export class ArticulosService {
@@ -101,7 +102,7 @@ export class ArticulosService {
 
     const articulo = rows[0]
     // Fire and forget — non-blocking
-    this.eventEmitter.emit('articulo.created', { articulo })
+    this.eventEmitter.emit(WEBHOOK_EVENTS.ARTICULO_CREATED, { articulo })
     return articulo
   }
 
@@ -117,7 +118,7 @@ export class ArticulosService {
     }
 
     // Fire and forget — non-blocking
-    this.eventEmitter.emit('articulo.updated', { articulo: rows[0] })
+    this.eventEmitter.emit(WEBHOOK_EVENTS.ARTICULO_UPDATED, { articulo: rows[0] })
     return rows[0]
   }
 
@@ -135,7 +136,7 @@ export class ArticulosService {
 
     const result = rows[0]
     // Toggle is a field change — emit updated (fire and forget, non-blocking)
-    this.eventEmitter.emit('articulo.updated', { articulo: result })
+    this.eventEmitter.emit(WEBHOOK_EVENTS.ARTICULO_UPDATED, { articulo: result })
     return result
   }
 
@@ -153,7 +154,7 @@ export class ArticulosService {
 
     const articulo = rows[0]
     // Emit deleted event (distinct from toggleActive which emits updated)
-    this.eventEmitter.emit('articulo.deleted', { articulo })
+    this.eventEmitter.emit(WEBHOOK_EVENTS.ARTICULO_DELETED, { articulo })
     return articulo
   }
 
