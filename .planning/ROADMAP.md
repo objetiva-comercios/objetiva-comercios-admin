@@ -48,7 +48,7 @@
 - [x] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas (completed 2026-03-12)
 - [x] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings (completed 2026-03-12)
 - [x] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas (completed 2026-03-12)
-- [ ] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificación independiente Phase 19 (gap closure)
+- [ ] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure)
 - [ ] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure)
 
 ## Phase Details
@@ -164,7 +164,7 @@ Plans:
 
 ### Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD
 
-**Goal**: El frontend puede ejecutar soft-delete de artículos via DELETE endpoint y todos los requisitos ART-\* tienen verificación independiente
+**Goal**: El frontend puede ejecutar soft-delete de articulos via DELETE endpoint y todos los requisitos ART-\* tienen verificacion independiente
 **Depends on**: Phase 24
 **Requirements**: ART-01, ART-02, ART-03, ART-04
 **Gap Closure:** Closes gaps from audit (4 requirements, 1 integration, 1 flow)
@@ -175,11 +175,15 @@ Plans:
 3. Soft-delete triggers articulo.deleted webhook event end-to-end
 4. Phase 19 has independent VERIFICATION.md confirming ART-01 through ART-04
 
-Plans: pending
+**Plans:** 1 plan
+
+Plans:
+
+- [ ] 25-01-PLAN.md — Wire deleteArticulo en frontend + VERIFICATION.md de Phase 19
 
 ### Phase 26: Tech Debt Cleanup v1.2
 
-**Goal**: Corregir defectos UX, idempotency bugs, y acoplamiento implícito identificados en el audit
+**Goal**: Corregir defectos UX, idempotency bugs, y acoplamiento implicito identificados en el audit
 **Depends on**: Phase 24
 **Requirements**: None (tech debt)
 **Gap Closure:** Closes tech debt from audit (phases 22, 23, 24)
@@ -195,8 +199,8 @@ Plans: pending
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
-(Phases 22 and 23 depend only on 19, not on each other — can be parallelized if needed)
+Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
+(Phases 22 and 23 depend only on 19, not on each other -- can be parallelized if needed)
 
 | Phase                                  | Milestone | Plans Complete | Status     | Completed  |
 | -------------------------------------- | --------- | -------------- | ---------- | ---------- |
@@ -224,10 +228,10 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12 | -          |
 | 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
 | 24. Webhooks                           | 4/4       | Complete       | 2026-03-12 | -          |
-| 25. Wire Frontend Soft-Delete + Verify | v1.2      | 0/0            | Planned    | -          |
+| 25. Wire Frontend Soft-Delete + Verify | v1.2      | 0/1            | Planned    | -          |
 | 26. Tech Debt Cleanup v1.2             | v1.2      | 0/0            | Planned    | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-12 (gap closure phases 25-26 added)_
+_Last updated: 2026-03-12 (Phase 25 planned: 1 plan)_
