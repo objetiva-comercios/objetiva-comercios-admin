@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: planning
-stopped_at: Completed 21-01-PLAN.md
-last_updated: '2026-03-12T02:05:35.922Z'
+stopped_at: Completed 21-02-PLAN.md
+last_updated: '2026-03-12T02:11:41.217Z'
 last_activity: 2026-03-11 — Phase 19 completed (3 plans)
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
 ---
 
 # Project State
@@ -24,12 +24,12 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Current Position
 
-Phase: 20 — second of 6 in v1.2 (Image Upload Backend)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-03-11 — Phase 19 completed (3 plans)
+Phase: 21 — third of 6 in v1.2 (Image Upload Frontend — Detalle)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-12 — Phase 21 completed (2 plans)
 
-Progress (v1.2): [█░░░░░░░░░] 17%
+Progress (v1.2): [██████████] 100%
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Progress (v1.2): [█░░░░░░░░░] 17%
 | v1.2                                       | 6      | 3+      | In progress |
 | Phase 20-image-upload-backend P01          | 3      | 2 tasks | 7 files     |
 | Phase 21-image-upload-frontend-detalle P01 | 15     | 2 tasks | 5 files     |
+| Phase 21-image-upload-frontend-detalle P02 | 4      | 2 tasks | 3 files     |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Progress (v1.2): [█░░░░░░░░░] 17%
 - [Phase 20-image-upload-backend]: MulterError added to @Catch decorator on global HttpExceptionFilter — single filter handles both HTTP and Multer errors
 - [Phase 21-image-upload-frontend-detalle]: onPreview wired as noop in edit page - lightbox deferred to Plan 02
 - [Phase 21-image-upload-frontend-detalle]: SLOT_LABELS map hardcoded for both tipos to avoid runtime string generation
+- [Phase 21-image-upload-frontend-detalle]: Lightbox navigation scoped by type (etiqueta vs producto) — parent filters images array before passing
+- [Phase 21-image-upload-frontend-detalle]: sr-only class used for visually-hidden DialogTitle instead of missing @radix-ui/react-visually-hidden package
 
 ### Pending Todos
 
@@ -80,8 +83,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T02:05:35.918Z
-Stopped at: Completed 21-01-PLAN.md
+Last session: 2026-03-12T02:11:41.214Z
+Stopped at: Completed 21-02-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---

@@ -44,7 +44,7 @@
 
 - [x] **Phase 19: Articulos CRUD Completo** - Wiring de crear/editar/soft-delete + busqueda en lista + config visibilidad campos
 - [x] **Phase 20: Image Upload Backend** - Infraestructura de upload, procesamiento con sharp, serving estatico (completed 2026-03-12)
-- [ ] **Phase 21: Image Upload Frontend + Detalle** - Grid de slots con upload/preview/drag-drop + panel lateral de detalle
+- [x] **Phase 21: Image Upload Frontend + Detalle** - Grid de slots con upload/preview/drag-drop + panel lateral de detalle (completed 2026-03-12)
 - [ ] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas
 - [ ] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings
 - [ ] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas
@@ -97,7 +97,7 @@ Plans:
 2. User can see uploaded images as thumbnails and remove individual images from their slots
 3. User can drag and drop image files into the corresponding slot
 4. User can click an articulo row and see a lateral panel/sheet showing all fields and uploaded images
-   **Plans:** 1/2 plans executed
+   **Plans:** 2/2 plans complete
 
 Plans:
 
@@ -186,7 +186,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete    | 2026-03-06 |
 | 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
 | 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 21. Image Upload Frontend + Detalle    | 1/2       | In Progress    |             | -          |
+| 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12  | -          |
 | 22. Vista Lista Configurable           | v1.2      | 0/?            | Not started | -          |
 | 23. API Keys                           | v1.2      | 0/?            | Not started | -          |
 | 24. Webhooks                           | v1.2      | 0/?            | Not started | -          |
