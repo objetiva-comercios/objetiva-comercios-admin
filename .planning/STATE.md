@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Completed 24-webhooks-02-PLAN.md
-last_updated: '2026-03-12T15:48:56.895Z'
+stopped_at: Completed 24-webhooks-03-PLAN.md
+last_updated: '2026-03-12T15:55:24.959Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -55,6 +55,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 23-api-keys P02                      | 5      | 2 tasks | 5 files     |
 | Phase 24-webhooks P01                      | 7      | 2 tasks | 9 files     |
 | Phase 24-webhooks P02                      | 7      | 2 tasks | 4 files     |
+| Phase 24-webhooks P03                      | 4      | 2 tasks | 3 files     |
 
 ## Accumulated Context
 
@@ -88,6 +89,7 @@ Progress (v1.2): [██████████] 100%
 - [Phase 24-webhooks]: In-memory filter for webhook event matching — avoids Drizzle text[] array containment driver quirks, correct for <= 50 webhooks
 - [Phase 24-webhooks]: useToast hook (not sonner) for toasts in webhooks UI — project uses @/hooks/use-toast pattern
 - [Phase 24-webhooks]: Toggle-button event selector (not Checkbox component) in webhooks UI — no checkbox in ui/ components
+- [Phase 24-webhooks]: WebhookDetail: DeliveryRow sub-component isolates per-row expand/resend state; stopPropagation on badge and actions cells prevents row-click navigation
 
 ### Pending Todos
 
@@ -101,8 +103,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T15:48:56.891Z
-Stopped at: Completed 24-webhooks-02-PLAN.md
+Last session: 2026-03-12T15:55:24.955Z
+Stopped at: Completed 24-webhooks-03-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---

@@ -47,7 +47,7 @@
 - [x] **Phase 21: Image Upload Frontend + Detalle** - Grid de slots con upload/preview/drag-drop + panel lateral de detalle (completed 2026-03-12)
 - [x] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas (completed 2026-03-12)
 - [x] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings (completed 2026-03-12)
-- [ ] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas
+- [x] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas (completed 2026-03-12)
 
 ## Phase Details
 
@@ -151,7 +151,7 @@ Plans:
 3. When an articulo is created, updated, or deleted, subscribed webhooks receive the payload asynchronously with up to 3 retries
 4. Admin can view a delivery log showing status (ok/fail), HTTP response code, and timestamp for each delivery attempt
 5. Admin can send a test ping to a webhook URL to verify connectivity before relying on it
-   **Plans:** 2/3 plans executed
+   **Plans:** 3/3 plans complete
 
 Plans:
 
@@ -190,7 +190,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12 | -          |
 | 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12 | -          |
 | 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
-| 24. Webhooks                           | 2/3       | In Progress    |            | -          |
+| 24. Webhooks                           | 3/3       | Complete       | 2026-03-12 | -          |
 
 ---
 
