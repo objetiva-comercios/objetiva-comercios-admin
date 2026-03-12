@@ -26,6 +26,7 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "jose": "^5.0.0",
+    "multer": "^2.1.1",
     "postgres": "^3.4.8",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",

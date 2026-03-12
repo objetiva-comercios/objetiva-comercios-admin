@@ -3,10 +3,8 @@ import { join } from 'path'
 import { mkdirSync } from 'fs'
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
 import type { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard'
 import { HttpExceptionFilter } from './common/filters/http-exception.filter'
 
 async function bootstrap() {
@@ -28,9 +26,6 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Throw error on unknown properties
     })
   )
-
-  // Configure global JWT authentication guard
-  app.useGlobalGuards(new JwtAuthGuard(new Reflector()))
 
   // Configure global exception filter
   app.useGlobalFilters(new HttpExceptionFilter())

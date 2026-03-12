@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { APP_GUARD } from '@nestjs/core'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { DbModule } from './db.module'
@@ -13,6 +14,8 @@ import { DepositosModule } from './modules/depositos/depositos.module'
 import { ExistenciasModule } from './modules/existencias/existencias.module'
 import { InventariosModule } from './modules/inventarios/inventarios.module'
 import { DispositivosModule } from './modules/dispositivos/dispositivos.module'
+import { ApiKeysModule } from './modules/api-keys/api-keys.module'
+import { CompositeAuthGuard } from './common/guards/composite-auth.guard'
 
 @Module({
   imports: [
@@ -28,8 +31,15 @@ import { DispositivosModule } from './modules/dispositivos/dispositivos.module'
     ExistenciasModule,
     InventariosModule,
     DispositivosModule,
+    ApiKeysModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: CompositeAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
