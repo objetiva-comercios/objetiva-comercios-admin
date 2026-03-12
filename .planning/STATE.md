@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Phase 25 context gathered
-last_updated: '2026-03-12T20:48:07.926Z'
+stopped_at: Completed 25-01-PLAN.md
+last_updated: '2026-03-12T21:29:25.791Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 8
-  completed_phases: 6
-  total_plans: 14
-  completed_plans: 14
+  completed_phases: 7
+  total_plans: 15
+  completed_plans: 15
 ---
 
 # Project State
@@ -41,22 +41,23 @@ Progress (v1.2): [██████████] 100%
 
 **By Milestone:**
 
-| Milestone                                  | Phases | Plans   | Shipped     |
-| ------------------------------------------ | ------ | ------- | ----------- |
-| v1.0                                       | 13     | 42      | 2026-03-04  |
-| v1.1                                       | 5      | 18      | 2026-03-10  |
-| v1.2                                       | 6      | 3+      | In progress |
-| Phase 20-image-upload-backend P01          | 3      | 2 tasks | 7 files     |
-| Phase 21-image-upload-frontend-detalle P01 | 15     | 2 tasks | 5 files     |
-| Phase 21-image-upload-frontend-detalle P02 | 4      | 2 tasks | 3 files     |
-| Phase 22 P01                               | 25     | 2 tasks | 9 files     |
-| Phase 22 P02                               | 4      | 2 tasks | 4 files     |
-| Phase 23-api-keys P01                      | 8      | 2 tasks | 8 files     |
-| Phase 23-api-keys P02                      | 5      | 2 tasks | 5 files     |
-| Phase 24-webhooks P01                      | 7      | 2 tasks | 9 files     |
-| Phase 24-webhooks P02                      | 7      | 2 tasks | 4 files     |
-| Phase 24-webhooks P03                      | 4      | 2 tasks | 3 files     |
-| Phase 24-webhooks P04                      | 1      | 2 tasks | 2 files     |
+| Milestone                                     | Phases | Plans   | Shipped     |
+| --------------------------------------------- | ------ | ------- | ----------- |
+| v1.0                                          | 13     | 42      | 2026-03-04  |
+| v1.1                                          | 5      | 18      | 2026-03-10  |
+| v1.2                                          | 6      | 3+      | In progress |
+| Phase 20-image-upload-backend P01             | 3      | 2 tasks | 7 files     |
+| Phase 21-image-upload-frontend-detalle P01    | 15     | 2 tasks | 5 files     |
+| Phase 21-image-upload-frontend-detalle P02    | 4      | 2 tasks | 3 files     |
+| Phase 22 P01                                  | 25     | 2 tasks | 9 files     |
+| Phase 22 P02                                  | 4      | 2 tasks | 4 files     |
+| Phase 23-api-keys P01                         | 8      | 2 tasks | 8 files     |
+| Phase 23-api-keys P02                         | 5      | 2 tasks | 5 files     |
+| Phase 24-webhooks P01                         | 7      | 2 tasks | 9 files     |
+| Phase 24-webhooks P02                         | 7      | 2 tasks | 4 files     |
+| Phase 24-webhooks P03                         | 4      | 2 tasks | 3 files     |
+| Phase 24-webhooks P04                         | 1      | 2 tasks | 2 files     |
+| Phase 25-wire-frontend-soft-delete-verify P01 | 3      | 2 tasks | 4 files     |
 
 ## Accumulated Context
 
@@ -92,6 +93,8 @@ Progress (v1.2): [██████████] 100%
 - [Phase 24-webhooks]: Toggle-button event selector (not Checkbox component) in webhooks UI — no checkbox in ui/ components
 - [Phase 24-webhooks]: WebhookDetail: DeliveryRow sub-component isolates per-row expand/resend state; stopPropagation on badge and actions cells prevents row-click navigation
 - [Phase 24-webhooks]: softDelete always sets activo=false and emits articulo.deleted (distinct from toggleActive which emits articulo.updated)
+- [Phase 25-wire-frontend-soft-delete-verify]: deleteArticulo() via DELETE endpoint (not PATCH toggle) for deactivation — ensures articulo.deleted event fires for webhook delivery, distinct from toggleActive which emits articulo.updated
+- [Phase 25-wire-frontend-soft-delete-verify]: Toast fires before router.push('/articulos') in editar/page.tsx — Next.js App Router may unmount component on navigation, toast must fire first
 
 ### Pending Todos
 
@@ -105,8 +108,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T20:48:07.921Z
-Stopped at: Phase 25 context gathered
+Last session: 2026-03-12T21:29:18.477Z
+Stopped at: Completed 25-01-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---

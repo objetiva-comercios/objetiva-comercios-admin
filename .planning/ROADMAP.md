@@ -48,7 +48,7 @@
 - [x] **Phase 22: Vista Lista Configurable** - Columnas show/hide persistidas + sort por columnas (completed 2026-03-12)
 - [x] **Phase 23: API Keys** - CRUD de keys, CompositeAuthGuard (JWT + Bearer), UI en Settings (completed 2026-03-12)
 - [x] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas (completed 2026-03-12)
-- [ ] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure)
+- [x] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure) (completed 2026-03-12)
 - [ ] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure)
 
 ## Phase Details
@@ -175,7 +175,7 @@ Plans:
 3. Soft-delete triggers articulo.deleted webhook event end-to-end
 4. Phase 19 has independent VERIFICATION.md confirming ART-01 through ART-04
 
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 
@@ -228,7 +228,7 @@ Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12 | -          |
 | 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
 | 24. Webhooks                           | 4/4       | Complete       | 2026-03-12 | -          |
-| 25. Wire Frontend Soft-Delete + Verify | v1.2      | 0/1            | Planned    | -          |
+| 25. Wire Frontend Soft-Delete + Verify | 1/1       | Complete       | 2026-03-12 | -          |
 | 26. Tech Debt Cleanup v1.2             | v1.2      | 0/0            | Planned    | -          |
 
 ---

@@ -9,10 +9,10 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 
 ### Articulos CRUD
 
-- [ ] **ART-01**: User can create a new articulo filling all ~30 fields grouped efficiently (frequent fields on top)
-- [ ] **ART-02**: User can edit an existing articulo with the same form, pre-populated with current data
-- [ ] **ART-03**: User can soft-delete an articulo (toggle activo/inactivo) with confirmation dialog
-- [ ] **ART-04**: User can search/filter articulos in the list with debounce (real-time as they type)
+- [x] **ART-01**: User can create a new articulo filling all ~30 fields grouped efficiently (frequent fields on top)
+- [x] **ART-02**: User can edit an existing articulo with the same form, pre-populated with current data
+- [x] **ART-03**: User can soft-delete an articulo (toggle activo/inactivo) with confirmation dialog
+- [x] **ART-04**: User can search/filter articulos in the list with debounce (real-time as they type)
 
 ### Imagenes
 
@@ -73,10 +73,10 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 
 | Requirement | Phase    | Status   |
 | ----------- | -------- | -------- |
-| ART-01      | Phase 25 | Pending  |
-| ART-02      | Phase 25 | Pending  |
-| ART-03      | Phase 25 | Pending  |
-| ART-04      | Phase 25 | Pending  |
+| ART-01      | Phase 25 | Complete |
+| ART-02      | Phase 25 | Complete |
+| ART-03      | Phase 25 | Complete |
+| ART-04      | Phase 25 | Complete |
 | IMG-01      | Phase 21 | Complete |
 | IMG-02      | Phase 21 | Complete |
 | IMG-03      | Phase 20 | Complete |
