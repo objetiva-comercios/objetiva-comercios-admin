@@ -39,7 +39,7 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 - [x] **HOOK-01**: Admin can create webhook subscriptions selecting entity + event + destination URL
 - [x] **HOOK-02**: Admin can edit and delete webhook subscriptions
 - [x] **HOOK-03**: System delivers webhook payloads asynchronously with 3 retries and exponential backoff
-- [ ] **HOOK-04**: Admin can view delivery log with status (ok/fail), HTTP response code, and timestamp
+- [x] **HOOK-04**: Admin can view delivery log with status (ok/fail), HTTP response code, and timestamp
 - [x] **HOOK-05**: Admin can send a test ping to a webhook URL to verify connectivity
 - [x] **HOOK-06**: System signs webhook payloads with HMAC-SHA256, included in X-Signature header
 - [x] **HOOK-07**: v1.2 supports articulos entity events (create/update/delete), architecture supports adding more entities
@@ -91,7 +91,7 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 | HOOK-01     | Phase 24 | Complete |
 | HOOK-02     | Phase 24 | Complete |
 | HOOK-03     | Phase 24 | Complete |
-| HOOK-04     | Phase 24 | Pending  |
+| HOOK-04     | Phase 24 | Complete |
 | HOOK-05     | Phase 24 | Complete |
 | HOOK-06     | Phase 24 | Complete |
 | HOOK-07     | Phase 24 | Complete |
