@@ -16,10 +16,10 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 
 ### Imagenes
 
-- [ ] **IMG-01**: User can upload images to labeled slots (3 etiqueta + 6 producto) stored on filesystem
-- [ ] **IMG-02**: User can preview uploaded images as thumbnails and remove individual images
+- [x] **IMG-01**: User can upload images to labeled slots (3 etiqueta + 6 producto) stored on filesystem
+- [x] **IMG-02**: User can preview uploaded images as thumbnails and remove individual images
 - [x] **IMG-03**: System generates automatic thumbnails (200x200 for list, 800px max for detail) via sharp
-- [ ] **IMG-04**: User can drag & drop images into the corresponding slot in the form
+- [x] **IMG-04**: User can drag & drop images into the corresponding slot in the form
 
 ### Vista Lista & Detalle
 
@@ -77,10 +77,10 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 | ART-02      | Phase 19 | Pending  |
 | ART-03      | Phase 19 | Pending  |
 | ART-04      | Phase 19 | Pending  |
-| IMG-01      | Phase 21 | Pending  |
-| IMG-02      | Phase 21 | Pending  |
+| IMG-01      | Phase 21 | Complete |
+| IMG-02      | Phase 21 | Complete |
 | IMG-03      | Phase 20 | Complete |
-| IMG-04      | Phase 21 | Pending  |
+| IMG-04      | Phase 21 | Complete |
 | VIEW-01     | Phase 22 | Pending  |
 | VIEW-02     | Phase 21 | Pending  |
 | VIEW-03     | Phase 22 | Pending  |

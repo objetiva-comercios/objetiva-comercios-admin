@@ -97,7 +97,7 @@ Plans:
 2. User can see uploaded images as thumbnails and remove individual images from their slots
 3. User can drag and drop image files into the corresponding slot
 4. User can click an articulo row and see a lateral panel/sheet showing all fields and uploaded images
-   **Plans:** 2 plans
+   **Plans:** 1/2 plans executed
 
 Plans:
 
@@ -186,7 +186,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete    | 2026-03-06 |
 | 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
 | 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 21. Image Upload Frontend + Detalle    | v1.2      | 0/2            | Not started | -          |
+| 21. Image Upload Frontend + Detalle    | 1/2       | In Progress    |             | -          |
 | 22. Vista Lista Configurable           | v1.2      | 0/?            | Not started | -          |
 | 23. API Keys                           | v1.2      | 0/?            | Not started | -          |
 | 24. Webhooks                           | v1.2      | 0/?            | Not started | -          |

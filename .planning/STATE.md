@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: planning
-stopped_at: Phase 21 context gathered
-last_updated: '2026-03-12T01:47:31.523Z'
+stopped_at: Completed 21-01-PLAN.md
+last_updated: '2026-03-12T02:05:35.922Z'
 last_activity: 2026-03-11 — Phase 19 completed (3 plans)
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 6
+  completed_plans: 5
 ---
 
 # Project State
@@ -41,12 +41,13 @@ Progress (v1.2): [█░░░░░░░░░] 17%
 
 **By Milestone:**
 
-| Milestone                         | Phases | Plans   | Shipped     |
-| --------------------------------- | ------ | ------- | ----------- |
-| v1.0                              | 13     | 42      | 2026-03-04  |
-| v1.1                              | 5      | 18      | 2026-03-10  |
-| v1.2                              | 6      | 3+      | In progress |
-| Phase 20-image-upload-backend P01 | 3      | 2 tasks | 7 files     |
+| Milestone                                  | Phases | Plans   | Shipped     |
+| ------------------------------------------ | ------ | ------- | ----------- |
+| v1.0                                       | 13     | 42      | 2026-03-04  |
+| v1.1                                       | 5      | 18      | 2026-03-10  |
+| v1.2                                       | 6      | 3+      | In progress |
+| Phase 20-image-upload-backend P01          | 3      | 2 tasks | 7 files     |
+| Phase 21-image-upload-frontend-detalle P01 | 15     | 2 tasks | 5 files     |
 
 ## Accumulated Context
 
@@ -64,6 +65,8 @@ Progress (v1.2): [█░░░░░░░░░] 17%
 - [Phase 20-image-upload-backend]: memoryStorage for Multer — process buffer in-memory with sharp before writing final WebP, avoids temp disk files
 - [Phase 20-image-upload-backend]: Only detail URL stored in DB JSONB; thumb URL derived by string convention (\_detail.webp → \_thumb.webp) at read time
 - [Phase 20-image-upload-backend]: MulterError added to @Catch decorator on global HttpExceptionFilter — single filter handles both HTTP and Multer errors
+- [Phase 21-image-upload-frontend-detalle]: onPreview wired as noop in edit page - lightbox deferred to Plan 02
+- [Phase 21-image-upload-frontend-detalle]: SLOT_LABELS map hardcoded for both tipos to avoid runtime string generation
 
 ### Pending Todos
 
@@ -77,8 +80,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T01:47:31.518Z
-Stopped at: Phase 21 context gathered
+Last session: 2026-03-12T02:05:35.918Z
+Stopped at: Completed 21-01-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
