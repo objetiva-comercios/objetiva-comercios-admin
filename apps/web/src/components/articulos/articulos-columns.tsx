@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { formatCurrency } from '@objetiva/utils'
 import type { Articulo } from '@/types/articulo'
-import type { CamposVisibles } from '@/types/articulos-config'
 
 interface ColumnHandlers {
   onEdit: (articulo: Articulo) => void
@@ -51,32 +50,84 @@ function RowActions({ articulo, handlers }: { articulo: Articulo; handlers: Colu
   )
 }
 
-export function getColumns(
-  handlers: ColumnHandlers,
-  camposVisibles?: CamposVisibles
-): ColumnDef<Articulo>[] {
-  const allColumns: ColumnDef<Articulo>[] = [
+export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
+  return [
     {
       accessorKey: 'codigo',
       header: 'Codigo',
+      enableHiding: false,
+      enableSorting: false,
       cell: ({ row }) => <div className="font-mono text-sm">{row.getValue('codigo')}</div>,
     },
     {
       accessorKey: 'nombre',
       header: 'Nombre',
+      enableHiding: false,
+      enableSorting: false,
       cell: ({ row }) => <div className="font-medium">{row.getValue('nombre')}</div>,
     },
     {
       accessorKey: 'marca',
       header: 'Marca',
+      enableSorting: false,
       cell: ({ row }) => {
         const marca = row.getValue('marca') as string | null
         return <div className="text-sm">{marca ?? '-'}</div>
       },
     },
     {
+      accessorKey: 'modelo',
+      header: 'Modelo',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const modelo = row.getValue('modelo') as string | null
+        return <div className="text-sm">{modelo ?? '-'}</div>
+      },
+    },
+    {
+      accessorKey: 'medida',
+      header: 'Medida',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const medida = row.getValue('medida') as string | null
+        return <div className="text-sm">{medida ?? '-'}</div>
+      },
+    },
+    {
+      accessorKey: 'presentacion',
+      header: 'Presentacion',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const presentacion = row.getValue('presentacion') as string | null
+        return <div className="text-sm">{presentacion ?? '-'}</div>
+      },
+    },
+    {
+      accessorKey: 'erpUnidades',
+      header: 'Unidades',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const unidades = row.getValue('erpUnidades') as number | null
+        return (
+          <div className="text-sm">
+            {unidades !== null && unidades !== undefined ? unidades : '-'}
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: 'objeto',
+      header: 'Objeto',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const objeto = row.getValue('objeto') as string | null
+        return <div className="text-sm">{objeto ?? '-'}</div>
+      },
+    },
+    {
       accessorKey: 'precio',
       header: 'Precio',
+      enableSorting: false,
       cell: ({ row }) => {
         const precio = row.getValue('precio') as string | null
         if (!precio) return <div className="text-right text-sm text-muted-foreground">-</div>
@@ -88,6 +139,8 @@ export function getColumns(
     {
       accessorKey: 'activo',
       header: 'Estado',
+      enableHiding: false,
+      enableSorting: false,
       cell: ({ row }) => {
         const activo = row.getValue('activo') as boolean
         return (
@@ -95,10 +148,10 @@ export function getColumns(
         )
       },
     },
-    // Hidden by default columns
     {
       accessorKey: 'sku',
       header: 'SKU',
+      enableSorting: false,
       cell: ({ row }) => {
         const sku = row.getValue('sku') as string | null
         return <div className="font-mono text-sm">{sku ?? '-'}</div>
@@ -107,22 +160,16 @@ export function getColumns(
     {
       accessorKey: 'codigoBarras',
       header: 'Cod. Barras',
+      enableSorting: false,
       cell: ({ row }) => {
         const cb = row.getValue('codigoBarras') as string | null
         return <div className="font-mono text-sm">{cb ?? '-'}</div>
       },
     },
     {
-      accessorKey: 'modelo',
-      header: 'Modelo',
-      cell: ({ row }) => {
-        const modelo = row.getValue('modelo') as string | null
-        return <div className="text-sm">{modelo ?? '-'}</div>
-      },
-    },
-    {
       accessorKey: 'talle',
       header: 'Talle',
+      enableSorting: false,
       cell: ({ row }) => {
         const talle = row.getValue('talle') as string | null
         return <div className="text-sm">{talle ?? '-'}</div>
@@ -131,6 +178,7 @@ export function getColumns(
     {
       accessorKey: 'color',
       header: 'Color',
+      enableSorting: false,
       cell: ({ row }) => {
         const color = row.getValue('color') as string | null
         return <div className="text-sm">{color ?? '-'}</div>
@@ -139,6 +187,7 @@ export function getColumns(
     {
       accessorKey: 'material',
       header: 'Material',
+      enableSorting: false,
       cell: ({ row }) => {
         const material = row.getValue('material') as string | null
         return <div className="text-sm">{material ?? '-'}</div>
@@ -147,6 +196,7 @@ export function getColumns(
     {
       accessorKey: 'costo',
       header: 'Costo',
+      enableSorting: false,
       cell: ({ row }) => {
         const costo = row.getValue('costo') as string | null
         if (!costo) return <div className="text-right text-sm text-muted-foreground">-</div>
@@ -158,6 +208,7 @@ export function getColumns(
     {
       accessorKey: 'erpCodigo',
       header: 'ERP Codigo',
+      enableSorting: false,
       cell: ({ row }) => {
         const erp = row.getValue('erpCodigo') as string | null
         return <div className="font-mono text-sm">{erp ?? '-'}</div>
@@ -166,39 +217,8 @@ export function getColumns(
     {
       id: 'actions',
       enableHiding: false,
+      enableSorting: false,
       cell: ({ row }) => <RowActions articulo={row.original} handlers={handlers} />,
     },
   ]
-
-  if (!camposVisibles) return allColumns
-
-  const columnConfigMap: Record<string, keyof CamposVisibles> = {
-    marca: 'marca',
-    modelo: 'modelo',
-    talle: 'talle',
-    color: 'color',
-    material: 'material',
-    sku: 'sku',
-    codigoBarras: 'codigoBarras',
-    costo: 'costo',
-    erpCodigo: 'erp',
-  }
-
-  return allColumns.filter(col => {
-    const key = (col as { accessorKey?: string }).accessorKey
-    if (!key || !(key in columnConfigMap)) return true
-    return camposVisibles[columnConfigMap[key]]
-  })
-}
-
-/** Default column visibility — hides secondary columns */
-export const defaultColumnVisibility = {
-  sku: false,
-  codigoBarras: false,
-  modelo: false,
-  talle: false,
-  color: false,
-  material: false,
-  costo: false,
-  erpCodigo: false,
 }
