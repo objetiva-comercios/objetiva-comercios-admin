@@ -75,7 +75,7 @@ export function ExistenciasPorDeposito({
       pageCount={meta.totalPages}
       currentPage={page}
       onPageChange={onPageChange}
-      defaultColumnVisibility={defaultColumnVisibility}
+      columnVisibility={defaultColumnVisibility}
       isLoading={isLoading}
     />
   )

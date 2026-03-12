@@ -18,16 +18,18 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { ServerDataTable } from '@/components/tables/server-data-table'
-import { getColumns, defaultColumnVisibility } from '@/components/articulos/articulos-columns'
+import { getColumns } from '@/components/articulos/articulos-columns'
 import {
   ArticuloStatusFilter,
   type StatusFilterValue,
 } from '@/components/articulos/articulo-status-filter'
 import { ArticuloSheet } from '@/components/articulos/articulo-sheet'
-import { fetchArticulosClient, toggleArticuloActivo } from '@/lib/api.client'
+import { fetchArticulosClient, toggleArticuloActivo, updateSettings } from '@/lib/api.client'
 import { useToast } from '@/hooks/use-toast'
 import type { Articulo } from '@/types/articulo'
-import { useArticulosConfig } from '@/hooks/use-articulos-config'
+import { useArticulosConfig, invalidateArticulosConfig } from '@/hooks/use-articulos-config'
+import type { CamposVisibles } from '@/types/articulos-config'
+import type { VisibilityState } from '@tanstack/react-table'
 
 interface PaginatedResponse<T> {
   data: T[]
@@ -55,8 +57,16 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [toggleTarget, setToggleTarget] = useState<Articulo | null>(null)
-  const { camposVisibles } = useArticulosConfig()
+  const { camposVisibles: camposVisiblesFromHook } = useArticulosConfig()
+  const [camposVisibles, setCamposVisibles] = useState<CamposVisibles | null>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Sync from hook when it loads (only if we haven't set a local override yet)
+  useEffect(() => {
+    setCamposVisibles(camposVisiblesFromHook)
+  }, [camposVisiblesFromHook])
+
+  const effectiveCamposVisibles = camposVisibles ?? camposVisiblesFromHook
 
   const fetchData = useCallback(
     async (fetchPage: number, fetchSearch: string, fetchStatus: StatusFilterValue) => {
@@ -126,8 +136,69 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
   }, [])
 
   const tableColumns = useMemo(
-    () => getColumns({ onEdit: handleEdit, onToggle: handleToggleRequest }, camposVisibles),
-    [handleEdit, handleToggleRequest, camposVisibles]
+    () => getColumns({ onEdit: handleEdit, onToggle: handleToggleRequest }),
+    [handleEdit, handleToggleRequest]
+  )
+
+  const columnVisibility = useMemo<VisibilityState>(
+    () => ({
+      marca: effectiveCamposVisibles.marca,
+      modelo: effectiveCamposVisibles.modelo,
+      medida: effectiveCamposVisibles.medida,
+      presentacion: effectiveCamposVisibles.presentacion,
+      erpUnidades: effectiveCamposVisibles.erpUnidades,
+      objeto: effectiveCamposVisibles.objeto,
+      sku: effectiveCamposVisibles.sku,
+      codigoBarras: effectiveCamposVisibles.codigoBarras,
+      talle: effectiveCamposVisibles.talle,
+      color: effectiveCamposVisibles.color,
+      material: effectiveCamposVisibles.material,
+      costo: effectiveCamposVisibles.costo,
+      erpCodigo: effectiveCamposVisibles.erp,
+    }),
+    [effectiveCamposVisibles]
+  )
+
+  // Map from column ID to CamposVisibles key
+  const columnIdToCampoKey: Record<string, keyof CamposVisibles> = {
+    marca: 'marca',
+    modelo: 'modelo',
+    medida: 'medida',
+    presentacion: 'presentacion',
+    erpUnidades: 'erpUnidades',
+    objeto: 'objeto',
+    sku: 'sku',
+    codigoBarras: 'codigoBarras',
+    talle: 'talle',
+    color: 'color',
+    material: 'material',
+    costo: 'costo',
+    erpCodigo: 'erp',
+  }
+
+  const handleColumnVisibilityChange = useCallback(
+    async (columnId: string, visible: boolean) => {
+      const campoKey = columnIdToCampoKey[columnId]
+      if (!campoKey) return
+
+      // Optimistic update
+      const updated = { ...effectiveCamposVisibles, [campoKey]: visible }
+      setCamposVisibles(updated)
+
+      try {
+        await updateSettings({ articulosConfig: { camposVisibles: updated } })
+        invalidateArticulosConfig()
+      } catch {
+        // Revert on error
+        setCamposVisibles(effectiveCamposVisibles)
+        toast({
+          title: 'Error al guardar configuracion',
+          variant: 'destructive',
+        })
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [effectiveCamposVisibles, toast]
   )
 
   const handleConfirmToggle = async () => {
@@ -193,7 +264,8 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
         pageCount={meta.totalPages}
         currentPage={page}
         onPageChange={handlePageChange}
-        defaultColumnVisibility={defaultColumnVisibility}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={handleColumnVisibilityChange}
         onRowClick={handleRowClick}
         isLoading={isLoading}
       />

@@ -38,7 +38,8 @@ interface ServerDataTableProps<TData, TValue> {
   pageCount: number
   currentPage: number
   onPageChange: (page: number) => void
-  defaultColumnVisibility?: VisibilityState
+  columnVisibility?: VisibilityState
+  onColumnVisibilityChange?: (columnId: string, visible: boolean) => void
   onRowClick?: (row: TData) => void
   isLoading?: boolean
 }
@@ -49,16 +50,15 @@ export function ServerDataTable<TData, TValue>({
   pageCount,
   currentPage,
   onPageChange,
-  defaultColumnVisibility,
+  columnVisibility: columnVisibilityProp,
+  onColumnVisibilityChange,
   onRowClick,
   isLoading = false,
 }: ServerDataTableProps<TData, TValue>) {
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
-    defaultColumnVisibility ?? {}
-  )
-
   const memoizedData = React.useMemo(() => data, [data])
   const memoizedColumns = React.useMemo(() => columns, [columns])
+
+  const controlledVisibility = columnVisibilityProp ?? {}
 
   const table = useReactTable({
     data: memoizedData,
@@ -68,9 +68,21 @@ export function ServerDataTable<TData, TValue>({
     manualPagination: true,
     manualFiltering: true,
     manualSorting: true,
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange: updaterOrValue => {
+      const newState =
+        typeof updaterOrValue === 'function' ? updaterOrValue(controlledVisibility) : updaterOrValue
+      // Find which column changed and call the callback
+      if (onColumnVisibilityChange) {
+        const allKeys = new Set([...Object.keys(controlledVisibility), ...Object.keys(newState)])
+        for (const key of allKeys) {
+          if (controlledVisibility[key] !== newState[key]) {
+            onColumnVisibilityChange(key, newState[key] ?? true)
+          }
+        }
+      }
+    },
     state: {
-      columnVisibility,
+      columnVisibility: controlledVisibility,
       pagination: {
         pageIndex: currentPage - 1,
         pageSize: data.length || 20,
@@ -95,17 +107,21 @@ export function ServerDataTable<TData, TValue>({
           <DropdownMenuContent align="end" className="w-[180px]">
             {table
               .getAllColumns()
-              .filter(column => typeof column.accessorFn !== 'undefined' && column.getCanHide())
-              .map(column => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize text-sm"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={value => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              ))}
+              .filter(column => column.getCanHide())
+              .map(column => {
+                const header = column.columnDef.header
+                const label = typeof header === 'string' ? header : column.id
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="text-sm"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={value => column.toggleVisibility(!!value)}
+                  >
+                    {label}
+                  </DropdownMenuCheckboxItem>
+                )
+              })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

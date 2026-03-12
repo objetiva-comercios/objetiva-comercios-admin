@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
@@ -47,7 +46,6 @@ function ToggleGroup({ title, description, campos, values, onChange }: ToggleGro
 export default function ArticulosSettingsPage() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
   const [config, setConfig] = useState<CamposVisibles>(DEFAULT_ARTICULOS_CONFIG.camposVisibles)
 
   useEffect(() => {
@@ -66,25 +64,23 @@ export default function ArticulosSettingsPage() {
       .finally(() => setLoading(false))
   }, [toast])
 
-  function handleChange(campo: keyof CamposVisibles, value: boolean) {
-    setConfig(prev => ({ ...prev, [campo]: value }))
-  }
+  async function handleToggle(campo: keyof CamposVisibles, value: boolean) {
+    const previous = config
+    const updated = { ...config, [campo]: value }
 
-  async function handleSave() {
-    setSaving(true)
+    // Optimistic update
+    setConfig(updated)
+
     try {
-      await updateSettings({
-        articulosConfig: { camposVisibles: config },
-      })
+      await updateSettings({ articulosConfig: { camposVisibles: updated } })
       invalidateArticulosConfig()
-      toast({ title: 'Configuración guardada' })
     } catch {
+      // Revert on error
+      setConfig(previous)
       toast({
         title: 'Error al guardar',
         variant: 'destructive',
       })
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -109,9 +105,18 @@ export default function ArticulosSettingsPage() {
         <ToggleGroup
           title="Propiedades físicas"
           description="Características del producto"
-          campos={['marca', 'modelo', 'talle', 'color', 'material', 'presentacion', 'medida']}
+          campos={[
+            'marca',
+            'modelo',
+            'talle',
+            'color',
+            'material',
+            'presentacion',
+            'medida',
+            'objeto',
+          ]}
           values={config}
-          onChange={handleChange}
+          onChange={handleToggle}
         />
 
         <ToggleGroup
@@ -119,7 +124,7 @@ export default function ArticulosSettingsPage() {
           description="Códigos opcionales de identificación"
           campos={['sku', 'codigoBarras']}
           values={config}
-          onChange={handleChange}
+          onChange={handleToggle}
         />
 
         <ToggleGroup
@@ -127,23 +132,16 @@ export default function ArticulosSettingsPage() {
           description="El precio de venta siempre se muestra"
           campos={['costo']}
           values={config}
-          onChange={handleChange}
+          onChange={handleToggle}
         />
 
         <ToggleGroup
           title="Secciones"
           description="Secciones completas del módulo de artículos"
-          campos={['observaciones', 'erp', 'origen']}
+          campos={['observaciones', 'erp', 'erpUnidades', 'origen']}
           values={config}
-          onChange={handleChange}
+          onChange={handleToggle}
         />
-      </div>
-
-      <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={saving}>
-          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Guardar cambios
-        </Button>
       </div>
     </div>
   )
