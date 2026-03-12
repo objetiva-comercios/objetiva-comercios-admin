@@ -151,7 +151,7 @@ Plans:
 3. When an articulo is created, updated, or deleted, subscribed webhooks receive the payload asynchronously with up to 3 retries
 4. Admin can view a delivery log showing status (ok/fail), HTTP response code, and timestamp for each delivery attempt
 5. Admin can send a test ping to a webhook URL to verify connectivity before relying on it
-   **Plans:** 3 plans
+   **Plans:** 1/3 plans executed
 
 Plans:
 
@@ -165,32 +165,32 @@ Plans:
 Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 (Phases 22 and 23 depend only on 19, not on each other — can be parallelized if needed)
 
-| Phase                                  | Milestone | Plans Complete | Status      | Completed  |
-| -------------------------------------- | --------- | -------------- | ----------- | ---------- |
-| 1. Foundation & Monorepo               | v1.0      | 4/4            | Complete    | 2026-01-24 |
-| 2. Backend API with Mock Data          | v1.0      | 5/5            | Complete    | 2026-03-01 |
-| 3. Web Application                     | v1.0      | 8/8            | Complete    | 2026-01-26 |
-| 4. Mobile Application                  | v1.0      | 4/4            | Complete    | 2026-03-02 |
-| 5. Database Integration                | v1.0      | 3/3            | Complete    | 2026-03-02 |
-| 6. Polish & Production                 | v1.0      | 4/4            | Complete    | 2026-03-02 |
-| 7. Fix Integration Bugs                | v1.0      | 2/2            | Complete    | 2026-03-02 |
-| 8. Verify & Close Phases 3+4           | v1.0      | 3/3            | Complete    | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs    | v1.0      | 2/2            | Complete    | 2026-03-02 |
-| 10. Code Quality & Type Safety Cleanup | v1.0      | 4/4            | Complete    | 2026-03-03 |
-| 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete    | 2026-03-05 |
-| 15. Existencias                        | v1.1      | 3/3            | Complete    | 2026-03-05 |
-| 16. Downstream + Dashboard + Nav       | v1.1      | 4/4            | Complete    | 2026-03-05 |
-| 17. Inventarios                        | v1.1      | 5/5            | Complete    | 2026-03-06 |
-| 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete    | 2026-03-06 |
-| 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete    | 2026-03-11 |
-| 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12  | -          |
-| 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12  | -          |
-| 23. API Keys                           | 2/2       | Complete       | 2026-03-12  | -          |
-| 24. Webhooks                           | v1.2      | 0/3            | Not started | -          |
+| Phase                                  | Milestone | Plans Complete | Status     | Completed  |
+| -------------------------------------- | --------- | -------------- | ---------- | ---------- |
+| 1. Foundation & Monorepo               | v1.0      | 4/4            | Complete   | 2026-01-24 |
+| 2. Backend API with Mock Data          | v1.0      | 5/5            | Complete   | 2026-03-01 |
+| 3. Web Application                     | v1.0      | 8/8            | Complete   | 2026-01-26 |
+| 4. Mobile Application                  | v1.0      | 4/4            | Complete   | 2026-03-02 |
+| 5. Database Integration                | v1.0      | 3/3            | Complete   | 2026-03-02 |
+| 6. Polish & Production                 | v1.0      | 4/4            | Complete   | 2026-03-02 |
+| 7. Fix Integration Bugs                | v1.0      | 2/2            | Complete   | 2026-03-02 |
+| 8. Verify & Close Phases 3+4           | v1.0      | 3/3            | Complete   | 2026-03-02 |
+| 9. Fix Mobile Purchase & Login Bugs    | v1.0      | 2/2            | Complete   | 2026-03-02 |
+| 10. Code Quality & Type Safety Cleanup | v1.0      | 4/4            | Complete   | 2026-03-03 |
+| 11. Fix Sales Detail View Crash        | v1.0      | 1/1            | Complete   | 2026-03-03 |
+| 12. Fix Dashboard Links & Doc Sync     | v1.0      | 1/1            | Complete   | 2026-03-03 |
+| 13. Tech Debt Cleanup                  | v1.0      | 1/1            | Complete   | 2026-03-03 |
+| 14. Schema + Articulos + Depositos     | v1.1      | 5/5            | Complete   | 2026-03-05 |
+| 15. Existencias                        | v1.1      | 3/3            | Complete   | 2026-03-05 |
+| 16. Downstream + Dashboard + Nav       | v1.1      | 4/4            | Complete   | 2026-03-05 |
+| 17. Inventarios                        | v1.1      | 5/5            | Complete   | 2026-03-06 |
+| 18. Fix Inventarios Article Count      | v1.1      | 1/1            | Complete   | 2026-03-06 |
+| 19. Articulos CRUD Completo            | v1.2      | 3/3            | Complete   | 2026-03-11 |
+| 20. Image Upload Backend               | v1.2      | 1/1            | Complete   | 2026-03-12 |
+| 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12 | -          |
+| 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12 | -          |
+| 23. API Keys                           | 2/2       | Complete       | 2026-03-12 | -          |
+| 24. Webhooks                           | 1/3       | In Progress    |            | -          |
 
 ---
 

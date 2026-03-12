@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Phase 24 context gathered
-last_updated: '2026-03-12T15:12:17.373Z'
+stopped_at: Completed 24-webhooks-01-PLAN.md
+last_updated: '2026-03-12T15:40:05.326Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 13
+  completed_plans: 11
 ---
 
 # Project State
@@ -53,6 +53,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 22 P02                               | 4      | 2 tasks | 4 files     |
 | Phase 23-api-keys P01                      | 8      | 2 tasks | 8 files     |
 | Phase 23-api-keys P02                      | 5      | 2 tasks | 5 files     |
+| Phase 24-webhooks P01                      | 7      | 2 tasks | 9 files     |
 
 ## Accumulated Context
 
@@ -81,6 +82,9 @@ Progress (v1.2): [██████████] 100%
 - [Phase 23-api-keys]: CompositeAuthGuard: JWT first, fallback to API key SHA-256 lookup; userId='apikey:{name}' for API key auth
 - [Phase 23-api-keys]: Two-step create dialog: onOpenChange blocked during reveal step to prevent accidental key loss before copy
 - [Phase 23-api-keys]: notFound() for viewer on /settings/api-keys (not redirect) — correct HTTP semantics for unauthorized resource
+- [Phase 24-webhooks]: @nestjs/event-emitter with explicit @OnEvent handlers in WebhooksListener (no wildcard) — avoids silent miss risk
+- [Phase 24-webhooks]: Webhook secrets stored plaintext in DB — required for HMAC computation on every delivery
+- [Phase 24-webhooks]: In-memory filter for webhook event matching — avoids Drizzle text[] array containment driver quirks, correct for <= 50 webhooks
 
 ### Pending Todos
 
@@ -94,8 +98,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T15:12:17.369Z
-Stopped at: Phase 24 context gathered
+Last session: 2026-03-12T15:40:05.323Z
+Stopped at: Completed 24-webhooks-01-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
