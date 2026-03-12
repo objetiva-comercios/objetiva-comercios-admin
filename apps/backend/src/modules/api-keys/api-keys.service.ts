@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException, ConflictException } from '@nestjs/common'
 import { createHash, randomBytes } from 'crypto'
 import { eq, isNull } from 'drizzle-orm'
 import { DrizzleService } from '../../db'
@@ -33,6 +33,16 @@ export class ApiKeysService {
   }
 
   async revoke(id: number) {
+    const rows = await this.drizzle.db.select().from(apiKeys).where(eq(apiKeys.id, id)).limit(1)
+
+    const existing = rows[0]
+    if (!existing) {
+      throw new NotFoundException('API key no encontrada')
+    }
+    if (existing.revokedAt !== null) {
+      throw new ConflictException('API key ya fue revocada')
+    }
+
     await this.drizzle.db.update(apiKeys).set({ revokedAt: new Date() }).where(eq(apiKeys.id, id))
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException, ConflictException } from '@nestjs/common'
 import { createHmac, randomBytes, randomUUID } from 'crypto'
 import { eq, and, isNull, desc, count } from 'drizzle-orm'
 import { DrizzleService } from '../../db/index'
@@ -62,6 +62,12 @@ export class WebhooksService {
     return rows[0] ?? null
   }
 
+  private async findOneAny(id: number) {
+    const rows = await this.drizzle.db.select().from(webhooks).where(eq(webhooks.id, id)).limit(1)
+
+    return rows[0] ?? null
+  }
+
   async update(id: number, dto: UpdateWebhookDto) {
     const existing = await this.findOne(id)
     if (!existing) {
@@ -116,9 +122,12 @@ export class WebhooksService {
   }
 
   async revoke(id: number) {
-    const existing = await this.findOne(id)
+    const existing = await this.findOneAny(id)
     if (!existing) {
-      throw new NotFoundException(`Webhook ${id} no encontrado`)
+      throw new NotFoundException('Webhook no encontrado')
+    }
+    if (existing.revokedAt !== null) {
+      throw new ConflictException('Webhook ya fue revocado')
     }
 
     await this.drizzle.db.update(webhooks).set({ revokedAt: new Date() }).where(eq(webhooks.id, id))
