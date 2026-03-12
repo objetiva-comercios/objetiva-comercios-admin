@@ -29,10 +29,10 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 
 ### API Keys
 
-- [ ] **APIKEY-01**: Admin can create a new API key with a descriptive name, key is shown once and copyable
-- [ ] **APIKEY-02**: Admin can list active API keys (showing name, prefix, creation date, last used) and revoke them
-- [ ] **APIKEY-03**: External systems can authenticate via Bearer token (API key) independent of Supabase Auth
-- [ ] **APIKEY-04**: System tracks last usage timestamp for each API key
+- [x] **APIKEY-01**: Admin can create a new API key with a descriptive name, key is shown once and copyable
+- [x] **APIKEY-02**: Admin can list active API keys (showing name, prefix, creation date, last used) and revoke them
+- [x] **APIKEY-03**: External systems can authenticate via Bearer token (API key) independent of Supabase Auth
+- [x] **APIKEY-04**: System tracks last usage timestamp for each API key
 
 ### Webhooks
 
@@ -84,10 +84,10 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 | VIEW-01     | Phase 22 | Complete |
 | VIEW-02     | Phase 21 | Complete |
 | VIEW-03     | Phase 22 | Complete |
-| APIKEY-01   | Phase 23 | Pending  |
-| APIKEY-02   | Phase 23 | Pending  |
-| APIKEY-03   | Phase 23 | Pending  |
-| APIKEY-04   | Phase 23 | Pending  |
+| APIKEY-01   | Phase 23 | Complete |
+| APIKEY-02   | Phase 23 | Complete |
+| APIKEY-03   | Phase 23 | Complete |
+| APIKEY-04   | Phase 23 | Complete |
 | HOOK-01     | Phase 24 | Pending  |
 | HOOK-02     | Phase 24 | Pending  |
 | HOOK-03     | Phase 24 | Pending  |

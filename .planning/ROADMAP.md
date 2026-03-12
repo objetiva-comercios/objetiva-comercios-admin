@@ -132,7 +132,7 @@ Plans:
 2. Admin can see a list of active API keys (name, prefix, creation date, last used) and revoke any key
 3. An external system can call any authenticated endpoint using a Bearer token (API key) without Supabase JWT
 4. The system records the last usage timestamp each time an API key is used to authenticate a request
-   **Plans:** 2 plans
+   **Plans:** 1/2 plans executed
 
 Plans:
 
@@ -189,7 +189,7 @@ Phases execute in numeric order: 19 → 20 → 21 → 22 → 23 → 24
 | 20. Image Upload Backend               | v1.2      | 1/1            | Complete    | 2026-03-12 |
 | 21. Image Upload Frontend + Detalle    | 2/2       | Complete       | 2026-03-12  | -          |
 | 22. Vista Lista Configurable           | 2/2       | Complete       | 2026-03-12  | -          |
-| 23. API Keys                           | v1.2      | 0/2            | Planned     | -          |
+| 23. API Keys                           | 1/2       | In Progress    |             | -          |
 | 24. Webhooks                           | v1.2      | 0/?            | Not started | -          |
 
 ---
