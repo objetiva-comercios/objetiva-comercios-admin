@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A reusable admin platform for commercial applications with full-stack authentication, operational dashboards, and cross-platform apps. Serves small to mid-sized commercial operations (store owners, internal staff) with mobile apps (iOS/Android), web app, and NestJS backend — all sharing Supabase authentication with a separate PostgreSQL database for business data. Covers core business workflows: dashboard KPIs, articulo management with ERP-aligned schema, multi-deposito stock tracking, physical inventory counts, purchase/sale tracking, orders, and business settings.
+A reusable admin platform for commercial applications with full-stack authentication, operational dashboards, and cross-platform apps. Serves small to mid-sized commercial operations (store owners, internal staff) with mobile apps (iOS/Android), web app, and NestJS backend — all sharing Supabase authentication with a separate PostgreSQL database for business data. Covers core business workflows: dashboard KPIs, articulo management with ERP-aligned schema (~30 fields, image upload, configurable columns), multi-deposito stock tracking, physical inventory counts, purchase/sale tracking, orders, business settings, API key management for external integrations, and webhook notifications for articulo events.
 
 ## Core Value
 
@@ -34,15 +34,16 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 - ✓ Dashboard KPIs rewired to articulos/existencias model — v1.1
 - ✓ Navigation web + mobile updated to new Spanish model names — v1.1
 - ✓ Settings RBAC gap fixed, web type drift resolved, mobile labels localized — v1.1
+- ✓ Artículos CRUD completo con ~30 campos, formulario agrupado, búsqueda real-time, soft-delete — v1.2
+- ✓ Upload y gestión de imágenes (3 etiqueta + 6 producto) con sharp WebP, DnD, lightbox — v1.2
+- ✓ Vista lista configurable con columnas show/hide persistidas en DB + sorting por columnas — v1.2
+- ✓ Vista detalle en panel lateral (ArticuloSheet) con todos los campos e imágenes — v1.2
+- ✓ API Keys: CompositeAuthGuard (JWT + Bearer), CRUD en Settings, SHA-256 hashing — v1.2
+- ✓ Webhooks: CRUD + HMAC-SHA256 + retry backoff + delivery log + test ping, artículos events — v1.2
 
 ### Active
 
-- [ ] Artículos CRUD completo con todos los ~30 campos, formulario agrupado eficientemente — v1.2
-- [ ] Upload y gestión de imágenes de artículos (3 etiquetas + 6 producto) desde filesystem local — v1.2
-- [ ] Vista lista de artículos con columnas configurables globalmente (default: codigo, nombre, modelo, medida, presentacion, precio, unidades, objeto) — v1.2
-- [ ] Vista detalle de artículo en panel lateral con todos los campos e imágenes — v1.2
-- [ ] API Keys: sección en Configuración para crear/revocar tokens Bearer independientes de Supabase Auth — v1.2
-- [ ] Webhooks: sistema centralizado (entidad + evento + URL), v1.2 solo artículos (create/update/delete), arquitectura extensible — v1.2
+(None — planning next milestone)
 
 ### Out of Scope
 
@@ -61,24 +62,25 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ## Context
 
-**Current state:** Shipped v1.1 with ~32,000 LOC TypeScript across 412+ files. Full data model migration complete. Starting v1.2: Artículos CRUD + API Keys + Webhooks.
+**Current state:** Shipped v1.2 with ~23,600 LOC TypeScript across 128+ modified files. Full artículos CRUD with images, API keys for external integrations, and webhook notifications for articulo events.
 
 **Tech stack:**
 
 - Web: Next.js 14 (App Router), shadcn/ui, Tailwind CSS, TanStack Table
 - Mobile: React + Vite + Capacitor (iOS/Android), TanStack Query
-- Backend: NestJS, Drizzle ORM, PostgreSQL, jose (JWT validation)
+- Backend: NestJS, Drizzle ORM, PostgreSQL, jose (JWT validation), sharp (image processing), @nestjs/event-emitter (webhooks)
 - Shared: pnpm workspaces, Turborepo, @objetiva/{types,ui,utils}
-- Auth: Supabase (auth only — JWT validation via JWKS)
-- DB: PostgreSQL with Drizzle ORM (articulos, depositos, existencias, inventarios, orders, sales, purchases, settings + related tables)
+- Auth: Supabase (auth only — JWT validation via JWKS) + API Keys (CompositeAuthGuard)
+- DB: PostgreSQL with Drizzle ORM (articulos, depositos, existencias, inventarios, orders, sales, purchases, settings, api_keys, webhooks, webhook_deliveries + related tables)
 
-**Target users:** Store owners and internal staff managing daily commercial operations.
+**Target users:** Store owners and internal staff managing daily commercial operations, plus external systems via API keys and webhooks.
 
 **Known tech debt:**
 
 - POST /api/existencias (upsert) has no frontend consumer (low)
 - Placeholder comment in header.tsx (low)
 - doublePrecision for monetary fields — may need numeric() for precision (medium, deferred)
+- HOOK-03, HOOK-06 missing from SUMMARY frontmatter (info-level documentation gap)
 
 ## Constraints
 
@@ -108,7 +110,14 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 | Inventarios = periodic physical counts               | Distinct from stock/existencias — events with sectors | ✓ Good — clear domain separation                        |
 | doublePrecision for monetary fields                  | Returns JS numbers, no string parsing                 | ⚠️ Revisit — may need numeric() for financial precision |
 | Clean-cut migration (db:push + re-seed)              | No production data to preserve in dev                 | ✓ Good — fast iteration without migration complexity    |
+| Filesystem local for article images                  | Simple, no CDN/cloud needed at current scale          | ✓ Good — zero external dependencies                     |
+| sharp for image processing (WebP + resize)           | Quality thumbnails, single dependency                 | ✓ Good — fast in-memory pipeline                        |
+| CompositeAuthGuard (JWT + API key)                   | External systems need auth without Supabase           | ✓ Good — clean fallback chain                           |
+| @nestjs/event-emitter for webhook dispatch           | Lightweight, in-process, no message queue needed      | ✓ Good — adequate for 10-50 webhooks/day                |
+| HMAC-SHA256 for webhook signatures                   | Industry standard, verifiable by consumers            | ✓ Good — secure payload verification                    |
+| DB-driven column visibility (JSONB in settings)      | Global config, no per-user tables                     | ✓ Good — simple, immediate-persist UX                   |
+| objeto field as plain Input (no Select/Combobox)     | Parameter table integration deferred                  | ✓ Good — pragmatic, extensible later                    |
 
 ---
 
-_Last updated: 2026-03-10 after v1.2 milestone start_
+_Last updated: 2026-03-13 after v1.2 milestone_

@@ -2,6 +2,62 @@
 
 _A living document updated after each milestone. Lessons feed forward into future planning._
 
+## Milestone: v1.2 — Articulos CRUD + Imagenes + API Keys + Webhooks
+
+**Shipped:** 2026-03-13
+**Phases:** 10 | **Plans:** 18
+**Timeline:** 3 days (2026-03-11 → 2026-03-13)
+**Commits:** 118 | **LOC:** +21,018 / -757
+
+### What Was Built
+
+- Full artículos CRUD with ~30 fields, grouped form, real-time search, soft-delete via DELETE endpoint
+- Image pipeline: DnD upload to labeled slots (3 etiqueta + 6 producto), sharp WebP processing (thumb + detail), lightbox viewer
+- Configurable column visibility (DB-driven, immediate-persist) + sortable column headers with tri-state
+- API Keys system: CompositeAuthGuard (JWT fallback to SHA-256 Bearer), CRUD UI in Settings, last-used tracking
+- Webhooks: centralized CRUD, @nestjs/event-emitter dispatch, HMAC-SHA256 signatures, retry with backoff, delivery log, test ping, resend
+- Gap closure phases (25-28): soft-delete wiring, idempotency guards, type-safe events, objeto field end-to-end
+
+### What Worked
+
+- **Audit-driven gap closure** — milestone audit identified 7 gaps + 4 tech debt items, all resolved via targeted phases (25-28) before shipping
+- **Event-driven webhook architecture** — @nestjs/event-emitter + listener pattern cleanly separated concerns, adding new entity events requires only new @OnEvent handlers
+- **CompositeAuthGuard design** — clean JWT-first fallback chain, zero disruption to existing Supabase auth flows
+- **Sharp in-memory pipeline** — buffer → WebP → filesystem without temp files, fast and clean
+- **Immediate-persist UX for settings** — toggle → PATCH → revalidate pattern felt instant, no Save button needed
+- **HMAC-SHA256 webhook signing** — industry-standard, easy for consumers to verify
+
+### What Was Inefficient
+
+- **4 gap closure phases** (25-28) — integration gaps (objeto missing from form/sheet, frontend soft-delete not wired) could have been caught during phase implementation if checklist included "verify new field appears in ALL consumers"
+- **SUMMARY frontmatter incomplete** — HOOK-03/HOOK-06 missing from requirements_completed, automated extraction failed. SUMMARY writing needs stricter field validation.
+- **Phase 19 not independently verified** — required Phase 25 to create VERIFICATION.md retroactively. Verification should happen during phase execution.
+
+### Patterns Established
+
+- CompositeAuthGuard pattern: APP_GUARD with JWT → API key fallback chain
+- Webhook dispatch pattern: EventEmitter2 + @OnEvent listener → in-memory filter → deliverWithRetry with HMAC
+- Image slot pattern: labeled slots (tipo + slot number) with separate etiqueta/producto grids
+- Idempotency guard pattern: NotFoundException if missing, ConflictException (409) if already acted upon
+- Type-safe event constants: WEBHOOK_EVENTS object + WebhookEvent union type + EVENT_TO_DB map
+- Column visibility pattern: DB JSONB → useMemo derivation → TanStack VisibilityState
+- Two-step create dialog: block onOpenChange during reveal step to prevent accidental loss
+
+### Key Lessons
+
+1. **Verify new fields in ALL consumers at creation time** — objeto was added to schema/columns in Phase 22 but missing from form (Phase 27) and sheet (Phase 28). Checklist item needed: "Does this field appear in form, sheet, columns, settings, and search?"
+2. **Wire frontend actions to backend endpoints during the same phase** — soft-delete endpoint existed in Phase 24 but frontend didn't call it until Phase 25. E2E verification should be a phase exit criterion.
+3. **Automated SUMMARY extraction requires strict frontmatter** — one_liner and requirements_completed fields must be validated. Consider a gsd-tools lint command.
+4. **Phase verification should not be deferred** — Phase 19 had no VERIFICATION.md until Phase 25 forced it. Inline verification prevents deferred discovery.
+
+### Cost Observations
+
+- Model mix: ~85% opus, ~15% sonnet
+- Sessions: ~8 execution sessions across 3 days
+- Notable: Gap closure phases (25-28) averaged ~10 min per plan — surgical fixes are fast when audit clearly identifies the gap
+
+---
+
 ## Milestone: v1.1 — Modelo Articulos + Inventario
 
 **Shipped:** 2026-03-10
@@ -118,15 +174,17 @@ _A living document updated after each milestone. Lessons feed forward into futur
 
 ### Process Evolution
 
-| Milestone | Phases | Plans | Bugfix Phases | Key Change                                         |
-| --------- | ------ | ----- | ------------- | -------------------------------------------------- |
-| v1.0      | 13     | 42    | 7 (54%)       | Established audit-before-archive pattern           |
-| v1.1      | 5      | 18    | 1 (20%)       | Pattern reuse + better verification reduced rework |
+| Milestone | Phases | Plans | Bugfix/Gap Phases | Key Change                                         |
+| --------- | ------ | ----- | ----------------- | -------------------------------------------------- |
+| v1.0      | 13     | 42    | 7 (54%)           | Established audit-before-archive pattern           |
+| v1.1      | 5      | 18    | 1 (20%)           | Pattern reuse + better verification reduced rework |
+| v1.2      | 10     | 18    | 4 (40%)           | Audit-driven gap closure + type-safe patterns      |
 
 ### Top Lessons (Verified Across Milestones)
 
-1. **Integration testing at phase boundaries prevents bugfix phases** — v1.0 had 54% bugfix phases, v1.1 dropped to 20%
-2. **Type alignment between backend and frontend must be verified explicitly** — type drift in v1.0, field name mismatch in v1.1
-3. **Reusing established UI patterns dramatically accelerates later phases** — v1.1 completed 18 plans in 3 days by reusing v1.0 patterns
-4. **Mock-first backend validates contracts early** — proven in v1.0, reinforced in v1.1
-5. **Shared utilities should be established early** — consolidation is more expensive than upfront design
+1. **Integration testing at phase boundaries prevents gap phases** — v1.0: 54% bugfix, v1.1: 20%, v1.2: 40% (gap closure). New fields and endpoints need E2E verification at creation time.
+2. **Type alignment between backend and frontend must be verified explicitly** — type drift (v1.0), field name mismatch (v1.1), missing field in consumers (v1.2). Recurring theme.
+3. **Reusing established UI patterns dramatically accelerates later phases** — v1.1 in 3 days, v1.2 in 3 days (double the features) by reusing v1.0+v1.1 patterns
+4. **Audit-before-archive is non-negotiable** — catches real gaps every milestone. v1.2 audit found 7 integration gaps + 4 tech debt items that became phases 25-28.
+5. **SUMMARY frontmatter must be validated** — incomplete metadata breaks automated extraction. Need lint/validation tooling.
+6. **Phase verification should not be deferred** — retroactive verification (v1.0 Phase 8, v1.2 Phase 25) is more expensive than inline verification.

@@ -1,5 +1,32 @@
 # Milestones
 
+## v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks (Shipped: 2026-03-13)
+
+**Phases completed:** 10 phases, 18 plans
+**Timeline:** 3 days (2026-03-11 → 2026-03-13)
+**Commits:** 118 | **Files:** 128 | **Lines:** +21,018 / -757 | **LOC:** ~23,600 TypeScript
+**Requirements:** 22/22 satisfied
+**Git range:** feat(19-01) → feat(28-01)
+
+**Key accomplishments:**
+
+1. CRUD completo de artículos (~30 campos) con búsqueda en tiempo real, formulario agrupado y soft-delete via DELETE endpoint
+2. Pipeline de imágenes: upload con DnD, procesamiento sharp (WebP thumb+detail), serving estático, lightbox
+3. Vista lista configurable con columnas show/hide persistidas en DB + sorting por columnas con tri-state
+4. Sistema de API Keys con CompositeAuthGuard (JWT + Bearer token) independiente de Supabase Auth
+5. Webhooks centralizados: CRUD + HMAC-SHA256 + retry con backoff + delivery log + test ping + resend
+6. Gap closure: objeto end-to-end (form + sheet), idempotency guards, type-safe webhook events
+
+### Known Gaps
+
+Tech debt menor aceptado:
+
+| #   | Item                                                                   | Severity |
+| --- | ---------------------------------------------------------------------- | -------- |
+| 1   | HOOK-03, HOOK-06 missing from SUMMARY frontmatter (documentation only) | Info     |
+
+---
+
 ## v1.1 Modelo Articulos + Inventario (Shipped: 2026-03-10)
 
 **Phases completed:** 5 phases, 18 plans
