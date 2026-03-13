@@ -212,7 +212,7 @@ Plans:
 1. ArticuloForm Zod schema includes `objeto` as optional string field
 2. ArticuloForm renders an `objeto` FormField in the Propiedades section (visible when `isCampoVisible('objeto')`)
 3. Default value populates from existing articulo data in edit mode
-   **Plans:** 0/1
+   **Plans:** 1 plan
 
 Plans:
 
