@@ -271,6 +271,9 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
           <div>
             <SectionHeader title="Propiedades" />
             <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
+              {isCampoVisible('objeto') && (
+                <FieldRow label="Tipo / Objeto" value={articulo.objeto} />
+              )}
               {isCampoVisible('marca') && <FieldRow label="Marca" value={articulo.marca} />}
               {isCampoVisible('modelo') && <FieldRow label="Modelo" value={articulo.modelo} />}
               {isCampoVisible('talle') && <FieldRow label="Talle" value={articulo.talle} />}
