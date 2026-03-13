@@ -31,6 +31,7 @@ const articuloFormSchema = z.object({
   sku: z.string().optional().or(z.literal('')),
   codigoBarras: z.string().optional().or(z.literal('')),
   observaciones: z.string().optional().or(z.literal('')),
+  objeto: z.string().optional().or(z.literal('')),
   marca: z.string().optional().or(z.literal('')),
   modelo: z.string().optional().or(z.literal('')),
   talle: z.string().optional().or(z.literal('')),
@@ -93,6 +94,7 @@ export function ArticuloForm({
       sku: articulo?.sku ?? '',
       codigoBarras: articulo?.codigoBarras ?? '',
       observaciones: articulo?.observaciones ?? '',
+      objeto: articulo?.objeto ?? '',
       marca: articulo?.marca ?? '',
       modelo: articulo?.modelo ?? '',
       talle: articulo?.talle ?? '',
@@ -218,7 +220,8 @@ export function ArticuloForm({
         </div>
 
         {/* Propiedades */}
-        {(isCampoVisible('marca') ||
+        {(isCampoVisible('objeto') ||
+          isCampoVisible('marca') ||
           isCampoVisible('modelo') ||
           isCampoVisible('talle') ||
           isCampoVisible('color') ||
@@ -229,6 +232,21 @@ export function ArticuloForm({
             <SectionHeader title="Propiedades" />
 
             <div className="grid gap-3 sm:grid-cols-2">
+              {isCampoVisible('objeto') && (
+                <FormField
+                  control={form.control}
+                  name="objeto"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo / Objeto</FormLabel>
+                      <FormControl>
+                        <Input className="h-9" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               {isCampoVisible('marca') && (
                 <FormField
                   control={form.control}
