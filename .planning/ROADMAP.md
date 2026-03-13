@@ -51,7 +51,7 @@
 - [x] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure) (completed 2026-03-12)
 - [x] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure) (completed 2026-03-12)
 - [x] **Phase 27: Add objeto Field to ArticuloForm** - Back-port objeto field to create/edit form Zod schema + FormField (gap closure) (completed 2026-03-13)
-- [ ] **Phase 28: Add objeto to ArticuloSheet** - Show objeto field in ArticuloSheet Propiedades grid (gap closure for INT-02)
+- [x] **Phase 28: Add objeto to ArticuloSheet** - Show objeto field in ArticuloSheet Propiedades grid (gap closure for INT-02) (completed 2026-03-13)
 
 ## Phase Details
 
@@ -269,7 +269,7 @@ Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 25. Wire Frontend Soft-Delete + Verify | 1/1       | Complete       | 2026-03-12 | -          |
 | 26. Tech Debt Cleanup v1.2             | 1/1       | Complete       | 2026-03-12 | -          |
 | 27. Add objeto to ArticuloForm         | 1/1       | Complete       | 2026-03-13 | -          |
-| 28. Add objeto to ArticuloSheet        | v1.2      | 0/1            | Planned    | -          |
+| 28. Add objeto to ArticuloSheet        | 1/1       | Complete       | 2026-03-13 | -          |
 
 ---
 

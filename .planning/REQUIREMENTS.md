@@ -82,7 +82,7 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 | IMG-03      | Phase 20 | Complete |
 | IMG-04      | Phase 21 | Complete |
 | VIEW-01     | Phase 22 | Complete |
-| VIEW-02     | Phase 28 | Pending  |
+| VIEW-02     | Phase 28 | Complete |
 | VIEW-03     | Phase 22 | Complete |
 | APIKEY-01   | Phase 23 | Complete |
 | APIKEY-02   | Phase 23 | Complete |
