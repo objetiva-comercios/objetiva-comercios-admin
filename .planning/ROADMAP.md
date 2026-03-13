@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 MVP** — Phases 1-13 (shipped 2026-03-04) — [Full details](milestones/v1.0-ROADMAP.md)
 - ✅ **v1.1 Modelo Articulos + Inventario** — Phases 14-18 (shipped 2026-03-10) — [Full details](milestones/v1.1-ROADMAP.md)
-- 🚧 **v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks** — Phases 19-27 (in progress)
+- 🚧 **v1.2 Articulos CRUD + Imagenes + API Keys + Webhooks** — Phases 19-28 (in progress)
 
 ## Phases
 
@@ -51,6 +51,7 @@
 - [x] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure) (completed 2026-03-12)
 - [x] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure) (completed 2026-03-12)
 - [x] **Phase 27: Add objeto Field to ArticuloForm** - Back-port objeto field to create/edit form Zod schema + FormField (gap closure) (completed 2026-03-13)
+- [ ] **Phase 28: Add objeto to ArticuloSheet** - Show objeto field in ArticuloSheet Propiedades grid (gap closure for INT-02)
 
 ## Phase Details
 
@@ -218,6 +219,21 @@ Plans:
 
 - [ ] 27-01-PLAN.md — Add objeto to ArticuloForm Zod schema + FormField + defaultValue
 
+### Phase 28: Add objeto to ArticuloSheet
+
+**Goal**: El campo `objeto` se muestra en el panel lateral de detalle (ArticuloSheet) en la sección Propiedades
+**Depends on**: Phase 27
+**Requirements**: VIEW-02
+**Gap Closure:** Closes INT-02 from v1.2 audit
+**Success Criteria** (what must be TRUE):
+
+1. ArticuloSheet Propiedades grid includes objeto FieldRow (visible when `isCampoVisible('objeto')`)
+2. The field displays with label "Tipo / Objeto" and the articulo's objeto value
+
+Plans:
+
+- [ ] 28-01-PLAN.md — Add objeto FieldRow to ArticuloSheet Propiedades section
+
 ## Progress
 
 **Execution Order:**
@@ -253,8 +269,9 @@ Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 25. Wire Frontend Soft-Delete + Verify | 1/1       | Complete       | 2026-03-12 | -          |
 | 26. Tech Debt Cleanup v1.2             | 1/1       | Complete       | 2026-03-12 | -          |
 | 27. Add objeto to ArticuloForm         | 1/1       | Complete       | 2026-03-13 | -          |
+| 28. Add objeto to ArticuloSheet        | v1.2      | 0/1            | Planned    | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-03-12 (Phase 27 added: gap closure for INT-01 objeto field)_
+_Last updated: 2026-03-13 (Phase 28 added: gap closure for INT-02 objeto in ArticuloSheet)_

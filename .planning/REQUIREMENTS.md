@@ -82,7 +82,7 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 | IMG-03      | Phase 20 | Complete |
 | IMG-04      | Phase 21 | Complete |
 | VIEW-01     | Phase 22 | Complete |
-| VIEW-02     | Phase 21 | Complete |
+| VIEW-02     | Phase 28 | Pending  |
 | VIEW-03     | Phase 22 | Complete |
 | APIKEY-01   | Phase 23 | Complete |
 | APIKEY-02   | Phase 23 | Complete |
@@ -105,4 +105,4 @@ Requirements for milestone v1.2: Articulos CRUD + Imagenes + API Keys + Webhooks
 ---
 
 _Requirements defined: 2026-03-10_
-_Last updated: 2026-03-12 gap closure phases 25-26 assigned_
+_Last updated: 2026-03-13 Phase 28 gap closure for INT-02 (VIEW-02 reassigned)_
