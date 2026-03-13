@@ -50,7 +50,7 @@
 - [x] **Phase 24: Webhooks** - Suscripciones CRUD, entrega asincrona con retry, firma HMAC, log de entregas (completed 2026-03-12)
 - [x] **Phase 25: Wire Frontend Soft-Delete + Verify Articulos CRUD** - Wiring deleteArticulo en frontend + verificacion independiente Phase 19 (gap closure) (completed 2026-03-12)
 - [x] **Phase 26: Tech Debt Cleanup v1.2** - Fix precio enableHiding, re-revoke idempotency, event name type safety (gap closure) (completed 2026-03-12)
-- [ ] **Phase 27: Add objeto Field to ArticuloForm** - Back-port objeto field to create/edit form Zod schema + FormField (gap closure)
+- [x] **Phase 27: Add objeto Field to ArticuloForm** - Back-port objeto field to create/edit form Zod schema + FormField (gap closure) (completed 2026-03-13)
 
 ## Phase Details
 
@@ -212,7 +212,7 @@ Plans:
 1. ArticuloForm Zod schema includes `objeto` as optional string field
 2. ArticuloForm renders an `objeto` FormField in the Propiedades section (visible when `isCampoVisible('objeto')`)
 3. Default value populates from existing articulo data in edit mode
-   **Plans:** 1 plan
+   **Plans:** 1/1 plans complete
 
 Plans:
 
@@ -252,7 +252,7 @@ Phases execute in numeric order: 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 24. Webhooks                           | 4/4       | Complete       | 2026-03-12 | -          |
 | 25. Wire Frontend Soft-Delete + Verify | 1/1       | Complete       | 2026-03-12 | -          |
 | 26. Tech Debt Cleanup v1.2             | 1/1       | Complete       | 2026-03-12 | -          |
-| 27. Add objeto to ArticuloForm         | v1.2      | 0/1            | Planned    | -          |
+| 27. Add objeto to ArticuloForm         | 1/1       | Complete       | 2026-03-13 | -          |
 
 ---
 

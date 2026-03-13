@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: completed
-stopped_at: Phase 27 context gathered
-last_updated: '2026-03-13T00:10:47.438Z'
+stopped_at: Completed 27-01-PLAN.md
+last_updated: '2026-03-13T00:21:01.151Z'
 last_activity: 2026-03-12 — Phase 21 completed (2 plans)
 progress:
   total_phases: 9
-  completed_phases: 8
-  total_plans: 16
-  completed_plans: 16
+  completed_phases: 9
+  total_plans: 17
+  completed_plans: 17
 ---
 
 # Project State
@@ -59,6 +59,7 @@ Progress (v1.2): [██████████] 100%
 | Phase 24-webhooks P04                         | 1      | 2 tasks | 2 files     |
 | Phase 25-wire-frontend-soft-delete-verify P01 | 3      | 2 tasks | 4 files     |
 | Phase 26 P01                                  | 8      | 2 tasks | 5 files     |
+| Phase 27-add-objeto-to-form P01               | 5      | 1 tasks | 1 files     |
 
 ## Accumulated Context
 
@@ -99,6 +100,7 @@ Progress (v1.2): [██████████] 100%
 - [Phase 26-tech-debt-cleanup-v12]: EVENT_TO_DB map used instead of split('.')[1] — explicit compile-time verified mapping for webhook events
 - [Phase 26-tech-debt-cleanup-v12]: findOneAny() private method added to WebhooksService — revoke needs to find already-revoked webhooks without breaking 404 semantics for other callers
 - [Phase 26-tech-debt-cleanup-v12]: Idempotency guard pattern: NotFoundException if missing, ConflictException (409) if already revoked — used in both api-keys and webhooks revoke
+- [Phase 27-add-objeto-to-form]: objeto field rendered as plain Input (no Select/Combobox) — parameter table integration deferred to future phase
 
 ### Pending Todos
 
@@ -112,8 +114,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-13T00:10:47.434Z
-Stopped at: Phase 27 context gathered
+Last session: 2026-03-13T00:21:01.148Z
+Stopped at: Completed 27-01-PLAN.md
 Next action: `/gsd:plan-phase 20`
 
 ---
