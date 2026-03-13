@@ -1,0 +1,1240 @@
+diff --git a/.planning/v1.1-MILESTONE-AUDIT.md b/.planning/v1.1-MILESTONE-AUDIT.md
+index 251ad2a..d09ee5f 100644
+--- a/.planning/v1.1-MILESTONE-AUDIT.md
++++ b/.planning/v1.1-MILESTONE-AUDIT.md
+@@ -1,6 +1,6 @@
+ ---
+ milestone: v1.1
+-audited: 2026-03-06T17:00:00Z
++audited: 2026-03-10
+ status: tech_debt
+ scores:
+   requirements: 49/49
+@@ -29,182 +29,82 @@ tech_debt:
+     items: []
+   - phase: 18-fix-inventarios-article-count
+     items: []
++uncommitted_changes:
++  status: "in_progress_refactoring"
++  warning: "17 files with uncommitted changes represent a schema refactoring (PK codigo→erpCodigo, new fields, type changes). Services NOT yet updated to match new PK. DO NOT commit/deploy in current state."
++  files_changed: 17
++  insertions: 309
++  deletions: 140
++  breaking_issues:
++    - "Schema PK changed from articulos.codigo to articulos.erpCodigo but all service JOINs still use articulos.codigo"
++    - "FK constraints removed from orderItems/saleItems/purchaseItems without replacement"
++    - "Timestamp fields renamed (createdAt→creado, updatedAt→actualizado) but only articulos.service.ts updated"
+ nyquist:
+   compliant_phases: []
+   partial_phases: [14, 15, 17]
+   missing_phases: [16, 18]
+   overall: partial
+-previous_audit:
+-  date: 2026-03-06T12:30:00Z
+-  status: tech_debt
+-  issues_found: ['INT-01 field name mismatch', 'INT-02 missing list aggregation']
+-  resolved_by: 'Phase 18 (commits 705da6f, caeaa31)'
++previous_audits:
++  - date: 2026-03-06T17:00:00Z
++    status: tech_debt
++    resolved_issues: ['INT-01 field name mismatch', 'INT-02 missing list aggregation']
++    resolved_by: 'Phase 18 (commits 705da6f, caeaa31)'
++  - date: 2026-03-06T12:30:00Z
++    status: tech_debt
++    issues_found: ['INT-01', 'INT-02']
+ ---
+ 
+ # Milestone v1.1 Audit Report — Modelo Articulos + Inventario
+ 
+-**Audited:** 2026-03-06 (re-audit after Phase 18 gap closure)
+-**Status:** TECH DEBT (all requirements met, no blockers, accumulated deferred items)
+-**Previous Audit:** 2026-03-06T12:30:00Z — INT-01 and INT-02 resolved by Phase 18
+-
+-## Scores
+-
+-| Category     | Score | Status                        |
+-| ------------ | ----- | ----------------------------- |
+-| Requirements | 49/49 | All satisfied                 |
+-| Phases       | 5/5   | All passed verification       |
+-| Integration  | 38/38 | All cross-phase exports wired |
+-| E2E Flows    | 8/8   | All complete without breaks   |
+-
+-## Phase Verifications
+-
+-| Phase | Name                                          | Status | Score | Verified   |
+-| ----- | --------------------------------------------- | ------ | ----- | ---------- |
+-| 14    | Schema Foundation + Articulos + Depositos     | passed | 5/5   | 2026-03-05 |
+-| 15    | Existencias                                   | passed | 4/4   | 2026-03-05 |
+-| 16    | Downstream Migration + Dashboard + Navigation | passed | 4/4   | 2026-03-05 |
+-| 17    | Inventarios                                   | passed | 5/5   | 2026-03-06 |
+-| 18    | Fix Inventarios Article Count                 | passed | 2/2   | 2026-03-06 |
+-
+-All phases verified with no critical gaps. No anti-patterns found.
+-
+-## Requirements Coverage (3-Source Cross-Reference)
+-
+-### Fully Satisfied (39/49) — All 3 sources aligned
+-
+-| REQ-ID  | VERIFICATION        | SUMMARY Frontmatter | REQUIREMENTS.md | Final     |
+-| ------- | ------------------- | ------------------- | --------------- | --------- |
+-| ART-01  | SATISFIED (P14)     | 14-02, 14-03        | [x]             | satisfied |
+-| ART-02  | SATISFIED (P14)     | 14-02, 14-03        | [x]             | satisfied |
+-| ART-03  | SATISFIED (P14)     | 14-04               | [x]             | satisfied |
+-| ART-04  | SATISFIED (P14)     | 14-04               | [x]             | satisfied |
+-| ART-05  | SATISFIED (P14)     | 14-02, 14-04        | [x]             | satisfied |
+-| ART-06  | SATISFIED (P14)     | 14-03               | [x]             | satisfied |
+-| ART-07  | SATISFIED (P14)     | 14-02, 14-03        | [x]             | satisfied |
+-| DEP-01  | SATISFIED (P14)     | 14-02, 14-05        | [x]             | satisfied |
+-| DEP-02  | SATISFIED (P14)     | 14-02, 14-05        | [x]             | satisfied |
+-| DEP-03  | SATISFIED (P14)     | 14-02, 14-05        | [x]             | satisfied |
+-| DEP-04  | SATISFIED (P14)     | 14-02, 14-05        | [x]             | satisfied |
+-| MIG-06  | SATISFIED (P14)     | 14-05               | [x]             | satisfied |
+-| EXI-01  | SATISFIED (P15)     | 15-01, 15-02        | [x]             | satisfied |
+-| EXI-02  | SATISFIED (P15)     | 15-01, 15-02        | [x]             | satisfied |
+-| EXI-03  | SATISFIED (P15)     | 15-01, 15-03        | [x]             | satisfied |
+-| EXI-04  | SATISFIED (P15)     | 15-01, 15-03        | [x]             | satisfied |
+-| EXI-05  | SATISFIED (P15)     | 15-01, 15-02, 15-03 | [x]             | satisfied |
+-| EXI-06  | SATISFIED (P15)     | 15-01, 15-02        | [x]             | satisfied |
+-| EXI-07  | SATISFIED (P15)     | 15-01, 15-02        | [x]             | satisfied |
+-| MIG-02  | SATISFIED (P15)     | 15-01               | [x]             | satisfied |
+-| DEBT-02 | SATISFIED (P15)     | 15-01               | [x]             | satisfied |
+-| MIG-03  | SATISFIED (P16)     | 16-01, 16-04        | [x]             | satisfied |
+-| DASH-01 | SATISFIED (P16)     | 16-02               | [x]             | satisfied |
+-| DASH-02 | SATISFIED (P16)     | 16-02               | [x]             | satisfied |
+-| DASH-03 | SATISFIED (P16)     | 16-02               | [x]             | satisfied |
+-| NAV-01  | SATISFIED (P16)     | 16-03               | [x]             | satisfied |
+-| NAV-02  | SATISFIED (P16)     | 16-03               | [x]             | satisfied |
+-| NAV-03  | SATISFIED (P16)     | 16-03               | [x]             | satisfied |
+-| DEBT-03 | SATISFIED (P16)     | 16-03               | [x]             | satisfied |
+-| MIG-05  | SATISFIED (P17)     | 17-01               | [x]             | satisfied |
+-| INV-01  | SATISFIED (P17+P18) | 17-02, 17-04, 18-01 | [x]             | satisfied |
+-| INV-02  | SATISFIED (P17)     | 17-02, 17-03        | [x]             | satisfied |
+-| INV-03  | SATISFIED (P17)     | 17-02, 17-05        | [x]             | satisfied |
+-| INV-04  | SATISFIED (P17+P18) | 17-02, 17-05, 18-01 | [x]             | satisfied |
+-| INV-05  | SATISFIED (P17)     | 17-02, 17-04        | [x]             | satisfied |
+-| INV-06  | SATISFIED (P17)     | 17-04               | [x]             | satisfied |
+-| INV-07  | SATISFIED (P17)     | 17-02, 17-04        | [x]             | satisfied |
+-| INV-08  | SATISFIED (P17)     | 17-02, 17-03        | [x]             | satisfied |
+-| INV-09  | SATISFIED (P17)     | 17-02, 17-05        | [x]             | satisfied |
+-
+-### Partial (10/49) — Missing from SUMMARY frontmatter only
+-
+-All from Plan 14-01 (schema + seed) which did not populate `requirements_completed`. VERIFICATION.md confirms all implemented.
+-
+-| REQ-ID  | VERIFICATION    | SUMMARY         | REQUIREMENTS.md | Final             |
+-| ------- | --------------- | --------------- | --------------- | ----------------- |
+-| ART-08  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| ART-09  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| ART-10  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| ART-11  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| ART-12  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| MIG-01  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| MIG-04  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| MIG-07  | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| DEBT-01 | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-| DEBT-04 | SATISFIED (P14) | missing (14-01) | [x]             | partial (doc gap) |
+-
+-**Unsatisfied:** 0 | **Orphaned:** 0
+-
+-## Cross-Phase Integration
+-
+-### Wiring: 38/38 exports connected
+-
+-All cross-phase exports consumed by downstream phases:
+-
+-| Wiring Point                                    | From    | To  | Status |
+-| ----------------------------------------------- | ------- | --- | ------ |
+-| existencias FK -> articulos.codigo              | P14     | P15 | WIRED  |
+-| existencias FK -> depositos.id                  | P14     | P15 | WIRED  |
+-| Dashboard -> ArticulosService.getStats()        | P14     | P16 | WIRED  |
+-| Dashboard -> ExistenciasService.getLowStock\*() | P15     | P16 | WIRED  |
+-| orderItems FK -> articulos.codigo               | P14     | P16 | WIRED  |
+-| saleItems FK -> articulos.codigo                | P14     | P16 | WIRED  |
+-| purchaseItems FK -> articulos.codigo            | P14     | P16 | WIRED  |
+-| inventarios FK -> depositos.id                  | P14     | P17 | WIRED  |
+-| inventariosArticulos FK -> articulos.codigo     | P14     | P17 | WIRED  |
+-| Counting discrepancy LEFT JOIN existencias      | P15     | P17 | WIRED  |
+-| inventarioSectores FK -> depositos.id           | P14     | P17 | WIRED  |
+-| Web nav tabs include Inventarios                | P16     | P17 | WIRED  |
+-| Settings nav includes Dispositivos              | P14     | P17 | WIRED  |
+-| DashboardModule imports Articulos+Existencias   | P14+P15 | P16 | WIRED  |
+-| AppModule imports all new modules               | P14-P17 | All | WIRED  |
+-| P18 fixes totalArticulos field alignment        | P17     | P18 | WIRED  |
+-
+-### Orphaned Endpoints: 1 (low priority)
+-
+-POST /api/existencias (upsert) — no frontend consumer. UI uses PATCH for inline edits. Available for future bulk operations.
+-
+-## E2E Flows: 8/8 complete
+-
+-1. **Articulos CRUD** — list -> search -> filter -> detail sheet -> create -> edit -> toggle
+-2. **Existencias view/edit** — tab nav -> deposito filter -> por-deposito table -> por-articulo matrix -> KPI cards -> inline edit
+-3. **Dashboard KPIs** — ArticulosService.getStats() + ExistenciasService.getLowStock\*()
+-4. **Inventarios lifecycle** — create -> status transitions -> conteo -> finalize -> read-only
+-5. **Inventarios discrepancy** — conteo -> LEFT JOIN existencias -> COALESCE -> color-coded badges
+-6. **Depositos + Sectores settings** — depositos CRUD -> expandable sectores -> dispositivos CRUD
+-7. **Seed data integrity** — correct FK cascade order, resolved IDs across all tables
+-8. **Navigation consistency** — web sidebar + articulos tabs + settings nav + mobile tabs/drawer
+-
+-## Previous Audit Issues — Resolved
+-
+-| ID     | Issue                                                         | Resolved By               | Evidence                                                          |
+-| ------ | ------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------- |
+-| INT-01 | Backend `totalArticulosContados` vs frontend `totalArticulos` | Phase 18 (commit 705da6f) | findOne returns `totalArticulos`, 0 occurrences of old field name |
+-| INT-02 | findAll() missing article count aggregation                   | Phase 18 (commit caeaa31) | findAll includes groupBy aggregation with Map-merge pattern       |
+-
+-## Tech Debt Summary
+-
+-| #   | Phase | Item                                                               | Severity      |
+-| --- | ----- | ------------------------------------------------------------------ | ------------- |
+-| 1   | 14    | Plan 14-01 SUMMARY.md missing `requirements_completed` for 10 reqs | Low (doc gap) |
+-| 2   | 14    | Pre-existing "placeholder for now" comment in header.tsx:20        | Info          |
+-| 3   | All   | POST /api/existencias upsert unused by frontend                    | Low           |
+-| 4   | All   | Nyquist validation incomplete across all phases                    | Medium        |
+-
+-**Total:** 4 items, 0 blockers
++**Audited:** 2026-03-10 (re-audit)
++**Status:** TECH DEBT (committed code: all requirements met, no blockers)
+ 
+-## Nyquist Compliance
++## Scores (Committed Codebase)
++
++| Category | Score | Status |
++|----------|-------|--------|
++| Requirements | 49/49 | All satisfied |
++| Phases | 5/5 | All passed |
++| Integration | 38/38 | All cross-phase exports wired |
++| E2E Flows | 8/8 | All complete |
++
++## ⚠ Uncommitted Changes Warning
++
++**17 files modified (+309/-140)** — an in-progress schema refactoring that is NOT complete:
++
++| Issue | Severity | Detail |
++|-------|----------|--------|
++| PK change | CRITICAL | `articulos.codigo` (text PK) → `articulos.erpCodigo` (text PK). All service JOINs still use `articulos.codigo`. |
++| FK constraints removed | HIGH | orderItems/saleItems/purchaseItems lost FK references to articulos |
++| Timestamps renamed | MEDIUM | `createdAt`→`creado`, `updatedAt`→`actualizado` only partially updated |
++| New fields added | LOW | Classification, aux properties, ERP sync — schema only, no service/UI changes |
++
++**Recommendation:** Either complete the refactoring as a new milestone (v1.2) or revert the uncommitted changes before closing v1.1.
+ 
+-| Phase | VALIDATION.md | nyquist_compliant | Action                   |
+-| ----- | ------------- | ----------------- | ------------------------ |
+-| 14    | exists        | false             | `/gsd:validate-phase 14` |
+-| 15    | exists        | false             | `/gsd:validate-phase 15` |
+-| 16    | missing       | --                | `/gsd:validate-phase 16` |
+-| 17    | exists        | false             | `/gsd:validate-phase 17` |
+-| 18    | missing       | --                | `/gsd:validate-phase 18` |
++## Requirements Coverage
++
++All 49 requirements satisfied in committed codebase. 10 requirements (ART-08..12, MIG-01, MIG-04, MIG-07, DEBT-01, DEBT-04) have doc gaps (missing from SUMMARY frontmatter) but are verified implemented.
++
++## Tech Debt
++
++| # | Phase | Item | Severity |
++|---|-------|------|----------|
++| 1 | 14 | Plan 14-01 SUMMARY.md missing `requirements_completed` for 10 reqs | Low |
++| 2 | 14 | Pre-existing "placeholder for now" comment in header.tsx:20 | Info |
++| 3 | All | POST /api/existencias upsert unused by frontend | Low |
++| 4 | All | Nyquist validation incomplete across all phases | Medium |
++
++## Nyquist Compliance
+ 
+-**Overall:** 0 compliant, 3 partial, 2 missing
++| Phase | VALIDATION.md | Compliant | Action |
++|-------|---------------|-----------|--------|
++| 14 | exists | false (draft) | `/gsd:validate-phase 14` |
++| 15 | exists | false (draft) | `/gsd:validate-phase 15` |
++| 16 | missing | -- | `/gsd:validate-phase 16` |
++| 17 | exists | false (draft) | `/gsd:validate-phase 17` |
++| 18 | missing | -- | `/gsd:validate-phase 18` |
+ 
+ ---
+ 
+-_Audited: 2026-03-06T17:00:00Z_
+-_Auditor: Claude (gsd-audit-milestone)_
+-_Re-audit after Phase 18 gap closure_
++_Audited: 2026-03-10_
++_Re-audit #2 after integration checker review_
+diff --git a/apps/backend/src/db/generators/articulo.generator.ts b/apps/backend/src/db/generators/articulo.generator.ts
+index d2a4cc7..99ccb75 100644
+--- a/apps/backend/src/db/generators/articulo.generator.ts
++++ b/apps/backend/src/db/generators/articulo.generator.ts
+@@ -51,11 +51,21 @@ const TALLES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '28', '30', '32', '34', '36',
+ const MEDIDAS = ['Chico', 'Mediano', 'Grande', '500ml', '1L', '250g', '500g', '1kg', null]
+ 
+ export interface GeneratedArticulo {
+-  codigo: string
+-  nombre: string
++  erpCodigo: string
++  erpNombre: string
++  codigo: string | null
++  nombre: string | null
+   sku: string | null
+   codigoBarras: string | null
++  codigoEquivalencia: string | null
++  nombreCorto: string | null
++  descripcion: string | null
++  descripcionWeb: string | null
+   observaciones: string | null
++  rubro: string | null
++  subrubro: string | null
++  objeto: string | null
++  adjetivo: string | null
+   marca: string | null
+   modelo: string | null
+   talle: string | null
+@@ -63,19 +73,25 @@ export interface GeneratedArticulo {
+   material: string | null
+   presentacion: string | null
+   medida: string | null
++  propAux1: string | null
++  propAux2: string | null
++  propAux3: string | null
++  propAux4: string | null
++  propAux5: string | null
+   precio: string | null
+   costo: string | null
++  unidades: number
+   imagenesProducto: string[]
+   imagenesEtiqueta: string[]
+   etiquetasOcr: string[]
+   jsonArticulo: null
+   erpId: string | null
+-  erpCodigo: string | null
+-  erpNombre: string | null
+   erpPrecio: string | null
+   erpCosto: string | null
+-  erpUnidades: number | null
++  erpUnidades: number
+   erpDatos: null
++  erpCreado: Date | null
++  erpActualizado: Date | null
+   erpSincronizado: boolean
+   erpFechaSync: Date | null
+   originSource: string | null
+@@ -91,20 +107,30 @@ function maybeNull<T>(value: T, populatedChance = 0.6): T | null {
+ export function generateArticulo(index: number): GeneratedArticulo {
+   faker.seed(index + 10000)
+ 
+-  const codigo = `ART-${String(index).padStart(3, '0')}`
++  const erpCodigo = `ERP-${String(index).padStart(5, '0')}`
++  const nombre = faker.commerce.productName()
+   const precio = faker.number.float({ min: 10, max: 9999.99, fractionDigits: 2 })
+   const costoMultiplier = faker.number.float({ min: 0.6, max: 0.8 })
+   const costo = parseFloat((precio * costoMultiplier).toFixed(2))
+ 
+-  const hasErp = faker.number.float({ min: 0, max: 1 }) < 0.2
+   const hasOrigin = faker.number.float({ min: 0, max: 1 }) < 0.1
+ 
+   return {
+-    codigo,
+-    nombre: faker.commerce.productName(),
++    erpCodigo,
++    erpNombre: nombre,
++    codigo: maybeNull(`ART-${String(index).padStart(3, '0')}`),
++    nombre: maybeNull(nombre),
+     sku: maybeNull(faker.string.alphanumeric(8).toUpperCase()),
+     codigoBarras: maybeNull(faker.string.numeric(13)),
++    codigoEquivalencia: maybeNull(faker.string.alphanumeric(10).toUpperCase(), 0.2),
++    nombreCorto: maybeNull(nombre.substring(0, 20)),
++    descripcion: maybeNull(faker.commerce.productDescription()),
++    descripcionWeb: maybeNull(faker.commerce.productDescription(), 0.3),
+     observaciones: maybeNull(faker.lorem.sentence()),
++    rubro: maybeNull(faker.commerce.department()),
++    subrubro: maybeNull(faker.commerce.department(), 0.4),
++    objeto: maybeNull(faker.commerce.product(), 0.3),
++    adjetivo: maybeNull(faker.commerce.productAdjective(), 0.3),
+     marca: faker.helpers.arrayElement(MARCAS),
+     modelo: maybeNull(faker.commerce.product()),
+     talle: faker.helpers.arrayElement(TALLES),
+@@ -112,21 +138,27 @@ export function generateArticulo(index: number): GeneratedArticulo {
+     material: faker.helpers.arrayElement(MATERIALES),
+     presentacion: faker.helpers.arrayElement(PRESENTACIONES),
+     medida: faker.helpers.arrayElement(MEDIDAS),
++    propAux1: null,
++    propAux2: null,
++    propAux3: null,
++    propAux4: null,
++    propAux5: null,
+     precio: precio.toFixed(2),
+     costo: costo.toFixed(2),
++    unidades: faker.number.int({ min: 0, max: 200 }),
+     imagenesProducto: [],
+     imagenesEtiqueta: [],
+     etiquetasOcr: [],
+     jsonArticulo: null,
+-    erpId: hasErp ? faker.string.uuid() : null,
+-    erpCodigo: hasErp ? `ERP-${faker.string.alphanumeric(6).toUpperCase()}` : null,
+-    erpNombre: hasErp ? faker.commerce.productName() : null,
+-    erpPrecio: hasErp ? precio.toFixed(2) : null,
+-    erpCosto: hasErp ? costo.toFixed(2) : null,
+-    erpUnidades: hasErp ? faker.number.int({ min: 1, max: 100 }) : null,
++    erpId: maybeNull(faker.string.uuid(), 0.2),
++    erpPrecio: precio.toFixed(2),
++    erpCosto: costo.toFixed(2),
++    erpUnidades: faker.number.int({ min: 0, max: 100 }),
+     erpDatos: null,
+-    erpSincronizado: hasErp,
+-    erpFechaSync: hasErp ? faker.date.recent({ days: 30 }) : null,
++    erpCreado: maybeNull(faker.date.past({ years: 1 }), 0.5),
++    erpActualizado: maybeNull(faker.date.recent({ days: 30 }), 0.5),
++    erpSincronizado: faker.number.float({ min: 0, max: 1 }) < 0.2,
++    erpFechaSync: maybeNull(faker.date.recent({ days: 30 }), 0.2),
+     originSource: hasOrigin ? faker.helpers.arrayElement(['csv', 'api', 'manual']) : null,
+     originSyncId: hasOrigin ? faker.string.uuid() : null,
+     originSyncedAt: hasOrigin ? faker.date.recent({ days: 60 }) : null,
+diff --git a/apps/backend/src/db/generators/order.generator.ts b/apps/backend/src/db/generators/order.generator.ts
+index d94ff7a..9b6f82f 100644
+--- a/apps/backend/src/db/generators/order.generator.ts
++++ b/apps/backend/src/db/generators/order.generator.ts
+@@ -1,6 +1,6 @@
+ import { faker } from '@faker-js/faker'
+ 
+-type ArticuloRef = { codigo: string; nombre: string; sku: string | null }
++type ArticuloRef = { erpCodigo: string; erpNombre: string; sku: string | null }
+ 
+ const ORDER_STATUSES = [
+   { value: 'delivered' as const, weight: 50 },
+@@ -49,8 +49,8 @@ export function generateOrder(id: number, articulos: ArticuloRef[]): GeneratedOr
+     const subtotal = parseFloat((quantity * price).toFixed(2))
+ 
+     items.push({
+-      articuloCodigo: articulo.codigo,
+-      articuloNombre: articulo.nombre,
++      articuloCodigo: articulo.erpCodigo,
++      articuloNombre: articulo.erpNombre,
+       sku: articulo.sku ?? '',
+       quantity,
+       price,
+diff --git a/apps/backend/src/db/generators/purchase.generator.ts b/apps/backend/src/db/generators/purchase.generator.ts
+index e4b63c5..f85b42b 100644
+--- a/apps/backend/src/db/generators/purchase.generator.ts
++++ b/apps/backend/src/db/generators/purchase.generator.ts
+@@ -1,6 +1,6 @@
+ import { faker } from '@faker-js/faker'
+ 
+-type ArticuloRef = { codigo: string; nombre: string; sku: string | null }
++type ArticuloRef = { erpCodigo: string; erpNombre: string; sku: string | null }
+ 
+ const PURCHASE_STATUSES = [
+   { value: 'received' as const, weight: 60 },
+@@ -51,8 +51,8 @@ export function generatePurchase(id: number, articulos: ArticuloRef[]): Generate
+     const subtotal = parseFloat((quantity * unitCost).toFixed(2))
+ 
+     items.push({
+-      articuloCodigo: articulo.codigo,
+-      articuloNombre: articulo.nombre,
++      articuloCodigo: articulo.erpCodigo,
++      articuloNombre: articulo.erpNombre,
+       sku: articulo.sku ?? '',
+       quantity,
+       unitCost,
+diff --git a/apps/backend/src/db/generators/sale.generator.ts b/apps/backend/src/db/generators/sale.generator.ts
+index 368ac04..3b06858 100644
+--- a/apps/backend/src/db/generators/sale.generator.ts
++++ b/apps/backend/src/db/generators/sale.generator.ts
+@@ -1,6 +1,6 @@
+ import { faker } from '@faker-js/faker'
+ 
+-type ArticuloRef = { codigo: string; nombre: string; sku: string | null }
++type ArticuloRef = { erpCodigo: string; erpNombre: string; sku: string | null }
+ 
+ const SALE_STATUSES = [
+   { value: 'completed' as const, weight: 90 },
+@@ -49,8 +49,8 @@ export function generateSale(id: number, articulos: ArticuloRef[]): GeneratedSal
+     const subtotal = parseFloat((quantity * price).toFixed(2))
+ 
+     items.push({
+-      articuloCodigo: articulo.codigo,
+-      articuloNombre: articulo.nombre,
++      articuloCodigo: articulo.erpCodigo,
++      articuloNombre: articulo.erpNombre,
+       sku: articulo.sku ?? '',
+       quantity,
+       price,
+diff --git a/apps/backend/src/db/schema.ts b/apps/backend/src/db/schema.ts
+index 1d1ea6f..2cc2b1a 100644
+--- a/apps/backend/src/db/schema.ts
++++ b/apps/backend/src/db/schema.ts
+@@ -47,9 +47,7 @@ export const orderItems = pgTable(
+     orderId: integer('order_id')
+       .notNull()
+       .references(() => orders.id, { onDelete: 'cascade' }),
+-    articuloCodigo: text('articulo_codigo')
+-      .notNull()
+-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
++    articuloCodigo: text('articulo_codigo').notNull(),
+     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
+     sku: varchar('sku', { length: 20 }).notNull(),
+     quantity: integer('quantity').notNull(),
+@@ -93,9 +91,7 @@ export const saleItems = pgTable(
+     saleId: integer('sale_id')
+       .notNull()
+       .references(() => sales.id, { onDelete: 'cascade' }),
+-    articuloCodigo: text('articulo_codigo')
+-      .notNull()
+-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
++    articuloCodigo: text('articulo_codigo').notNull(),
+     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
+     sku: varchar('sku', { length: 20 }).notNull(),
+     quantity: integer('quantity').notNull(),
+@@ -141,9 +137,7 @@ export const purchaseItems = pgTable(
+     purchaseId: integer('purchase_id')
+       .notNull()
+       .references(() => purchases.id, { onDelete: 'cascade' }),
+-    articuloCodigo: text('articulo_codigo')
+-      .notNull()
+-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
++    articuloCodigo: text('articulo_codigo').notNull(),
+     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
+     sku: varchar('sku', { length: 20 }).notNull(),
+     quantity: integer('quantity').notNull(),
+@@ -172,53 +166,71 @@ export const articulos = pgTable(
+   'articulos',
+   {
+     // PK
+-    codigo: text('codigo').primaryKey(),
++    erpCodigo: text('erp_codigo').primaryKey().notNull(),
+ 
+     // Identification
+-    nombre: varchar('nombre', { length: 255 }).notNull(),
+-    sku: varchar('sku', { length: 50 }),
+-    codigoBarras: varchar('codigo_barras', { length: 50 }),
++    sku: text('sku'),
++    codigo: text('codigo'),
++    codigoBarras: text('codigo_barras'),
++    codigoEquivalencia: text('codigo_equivalencia'),
++    nombre: text('nombre'),
++    nombreCorto: text('nombre_corto'),
++    descripcion: text('descripcion'),
++    descripcionWeb: text('descripcion_web'),
+     observaciones: text('observaciones'),
+ 
++    // Classification
++    rubro: text('rubro'),
++    subrubro: text('subrubro'),
++    objeto: text('objeto'),
++    adjetivo: text('adjetivo'),
++
+     // Properties
+-    marca: varchar('marca', { length: 100 }),
+-    modelo: varchar('modelo', { length: 100 }),
+-    talle: varchar('talle', { length: 50 }),
+-    color: varchar('color', { length: 50 }),
+-    material: varchar('material', { length: 100 }),
+-    presentacion: varchar('presentacion', { length: 100 }),
+-    medida: varchar('medida', { length: 50 }),
+-
+-    // Prices
++    marca: text('marca'),
++    modelo: text('modelo'),
++    talle: text('talle'),
++    color: text('color'),
++    material: text('material'),
++    presentacion: text('presentacion'),
++    medida: text('medida'),
++    propAux1: text('prop_aux_1'),
++    propAux2: text('prop_aux_2'),
++    propAux3: text('prop_aux_3'),
++    propAux4: text('prop_aux_4'),
++    propAux5: text('prop_aux_5'),
++
++    // Prices & units
+     precio: numeric('precio', { precision: 10, scale: 2 }),
+     costo: numeric('costo', { precision: 10, scale: 2 }),
++    unidades: integer('unidades').default(0),
+ 
+-    // Images
+-    imagenesProducto: jsonb('imagenes_producto').$type<string[]>().default([]),
+-    imagenesEtiqueta: jsonb('imagenes_etiqueta').$type<string[]>().default([]),
+-    etiquetasOcr: jsonb('etiquetas_ocr').$type<string[]>().default([]),
+-    jsonArticulo: jsonb('json_articulo'),
++    // Images & data
++    imagenesProducto: text('imagenes_producto').array().default([]),
++    imagenesEtiqueta: text('imagenes_etiqueta').array().default([]),
++    etiquetasOcr: text('etiquetas_ocr').array().default([]),
++    jsonArticulo: jsonb('json_articulo').default({}),
+ 
+     // ERP
+-    erpId: varchar('erp_id', { length: 50 }),
+-    erpCodigo: varchar('erp_codigo', { length: 50 }),
+-    erpNombre: varchar('erp_nombre', { length: 255 }),
++    erpId: text('erp_id'),
++    erpNombre: text('erp_nombre').notNull(),
+     erpPrecio: numeric('erp_precio', { precision: 10, scale: 2 }),
+     erpCosto: numeric('erp_costo', { precision: 10, scale: 2 }),
+-    erpUnidades: integer('erp_unidades'),
+-    erpDatos: jsonb('erp_datos'),
++    erpUnidades: integer('erp_unidades').default(0),
++    erpDatos: jsonb('erp_datos').default({}),
++    erpCreado: timestamp('erp_creado', { precision: 6 }),
++    erpActualizado: timestamp('erp_actualizado', { precision: 6 }),
+     erpSincronizado: boolean('erp_sincronizado').default(false),
+     erpFechaSync: timestamp('erp_fecha_sync'),
+ 
+     // Origin
+-    originSource: varchar('origin_source', { length: 50 }),
+-    originSyncId: varchar('origin_sync_id', { length: 100 }),
+-    originSyncedAt: timestamp('origin_synced_at'),
++    originSource: text('origin_source'),
++    originSyncId: text('origin_sync_id'),
++    originSyncedAt: timestamp('origin_synced_at', { precision: 6 }),
+ 
+     // State
+-    activo: boolean('activo').notNull().default(true),
+-    createdAt: timestamp('created_at').notNull().defaultNow(),
+-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
++    activo: boolean('activo').default(true),
++    creado: timestamp('creado').defaultNow(),
++    actualizado: timestamp('actualizado').defaultNow(),
+   },
+   table => [
+     index('articulos_nombre_idx').on(table.nombre),
+@@ -251,9 +263,7 @@ export const depositos = pgTable(
+ export const existencias = pgTable(
+   'existencias',
+   {
+-    articuloCodigo: text('articulo_codigo')
+-      .notNull()
+-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
++    articuloCodigo: text('articulo_codigo').notNull(),
+     depositoId: integer('deposito_id')
+       .notNull()
+       .references(() => depositos.id, { onDelete: 'restrict' }),
+@@ -337,9 +347,7 @@ export const inventariosArticulos = pgTable(
+     inventarioId: integer('inventario_id')
+       .notNull()
+       .references(() => inventarios.id, { onDelete: 'cascade' }),
+-    articuloCodigo: text('articulo_codigo')
+-      .notNull()
+-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
++    articuloCodigo: text('articulo_codigo').notNull(),
+     cantidadContada: integer('cantidad_contada').notNull().default(0),
+     dispositivoId: integer('dispositivo_id').references(() => dispositivosMoviles.id, {
+       onDelete: 'set null',
+diff --git a/apps/backend/src/db/seed.ts b/apps/backend/src/db/seed.ts
+index 62391b7..46c3a53 100644
+--- a/apps/backend/src/db/seed.ts
++++ b/apps/backend/src/db/seed.ts
+@@ -50,11 +50,21 @@ async function seed() {
+     const batch = articulosData.slice(i, i + 100)
+     await db.insert(schema.articulos).values(
+       batch.map(a => ({
++        erpCodigo: a.erpCodigo,
++        erpNombre: a.erpNombre,
+         codigo: a.codigo,
+         nombre: a.nombre,
+         sku: a.sku,
+         codigoBarras: a.codigoBarras,
++        codigoEquivalencia: a.codigoEquivalencia,
++        nombreCorto: a.nombreCorto,
++        descripcion: a.descripcion,
++        descripcionWeb: a.descripcionWeb,
+         observaciones: a.observaciones,
++        rubro: a.rubro,
++        subrubro: a.subrubro,
++        objeto: a.objeto,
++        adjetivo: a.adjetivo,
+         marca: a.marca,
+         modelo: a.modelo,
+         talle: a.talle,
+@@ -64,17 +74,18 @@ async function seed() {
+         medida: a.medida,
+         precio: a.precio,
+         costo: a.costo,
++        unidades: a.unidades,
+         imagenesProducto: a.imagenesProducto,
+         imagenesEtiqueta: a.imagenesEtiqueta,
+         etiquetasOcr: a.etiquetasOcr,
+         jsonArticulo: a.jsonArticulo,
+         erpId: a.erpId,
+-        erpCodigo: a.erpCodigo,
+-        erpNombre: a.erpNombre,
+         erpPrecio: a.erpPrecio,
+         erpCosto: a.erpCosto,
+         erpUnidades: a.erpUnidades,
+         erpDatos: a.erpDatos,
++        erpCreado: a.erpCreado,
++        erpActualizado: a.erpActualizado,
+         erpSincronizado: a.erpSincronizado,
+         erpFechaSync: a.erpFechaSync,
+         originSource: a.originSource,
+@@ -90,7 +101,7 @@ async function seed() {
+   // Get inserted deposito IDs
+   const insertedDepositos = await db.select({ id: schema.depositos.id }).from(schema.depositos)
+   const depositoIds = insertedDepositos.map(d => d.id)
+-  const articuloCodigos = articulosData.map(a => a.codigo)
++  const articuloCodigos = articulosData.map(a => a.erpCodigo)
+ 
+   const existenciasData = generateExistencias(articuloCodigos, depositoIds)
+   console.log(`Seeding ${existenciasData.length} existencias...`)
+diff --git a/apps/backend/src/modules/articulos/articulos.service.ts b/apps/backend/src/modules/articulos/articulos.service.ts
+index 6f59be3..3511637 100644
+--- a/apps/backend/src/modules/articulos/articulos.service.ts
++++ b/apps/backend/src/modules/articulos/articulos.service.ts
+@@ -52,13 +52,13 @@ export class ArticulosService {
+       nombre: articulos.nombre,
+       precio: articulos.precio,
+       costo: articulos.costo,
+-      createdAt: articulos.createdAt,
+-      updatedAt: articulos.updatedAt,
++      creado: articulos.creado,
++      actualizado: articulos.actualizado,
+     }
+ 
+-    const sortField = query.sortBy ?? 'createdAt'
++    const sortField = query.sortBy ?? 'creado'
+     const sortDir = query.sortOrder ?? 'desc'
+-    const col = colMap[sortField] ?? articulos.createdAt
++    const col = colMap[sortField] ?? articulos.creado
+     const orderBy = sortDir === 'asc' ? asc(col) : desc(col)
+ 
+     // Data query
+@@ -93,7 +93,7 @@ export class ArticulosService {
+   async update(codigo: string, dto: UpdateArticuloDto) {
+     const rows = await this.drizzle.db
+       .update(articulos)
+-      .set({ ...(dto as Partial<typeof articulos.$inferInsert>), updatedAt: new Date() })
++      .set({ ...(dto as Partial<typeof articulos.$inferInsert>), actualizado: new Date() })
+       .where(eq(articulos.codigo, codigo))
+       .returning()
+ 
+@@ -112,7 +112,7 @@ export class ArticulosService {
+ 
+     const rows = await this.drizzle.db
+       .update(articulos)
+-      .set({ activo: !existing.activo, updatedAt: new Date() })
++      .set({ activo: !existing.activo, actualizado: new Date() })
+       .where(eq(articulos.codigo, codigo))
+       .returning()
+ 
+diff --git a/apps/backend/src/modules/articulos/dto/articulo-query.dto.ts b/apps/backend/src/modules/articulos/dto/articulo-query.dto.ts
+index c0253b4..725437c 100644
+--- a/apps/backend/src/modules/articulos/dto/articulo-query.dto.ts
++++ b/apps/backend/src/modules/articulos/dto/articulo-query.dto.ts
+@@ -13,8 +13,8 @@ export class ArticuloQueryDto extends QueryDto {
+ 
+   @IsOptional()
+   @IsString()
+-  @IsIn(['createdAt', 'nombre', 'codigo', 'precio', 'costo', 'updatedAt'])
+-  sortBy?: string = 'createdAt'
++  @IsIn(['creado', 'nombre', 'codigo', 'precio', 'costo', 'actualizado'])
++  sortBy?: string = 'creado'
+ 
+   @IsOptional()
+   @IsString()
+diff --git a/apps/backend/src/modules/articulos/dto/create-articulo.dto.ts b/apps/backend/src/modules/articulos/dto/create-articulo.dto.ts
+index 024533f..1778399 100644
+--- a/apps/backend/src/modules/articulos/dto/create-articulo.dto.ts
++++ b/apps/backend/src/modules/articulos/dto/create-articulo.dto.ts
+@@ -1,63 +1,112 @@
+-import { IsString, IsOptional, MaxLength, IsArray, IsBoolean, IsInt } from 'class-validator'
++import { IsString, IsOptional, IsArray, IsBoolean, IsInt, IsDateString } from 'class-validator'
+ 
+ export class CreateArticuloDto {
+   @IsString()
+-  @MaxLength(50)
+-  codigo!: string
++  erpCodigo!: string
+ 
+   @IsString()
+-  @MaxLength(255)
+-  nombre!: string
++  erpNombre!: string
++
++  @IsOptional()
++  @IsString()
++  codigo?: string
++
++  @IsOptional()
++  @IsString()
++  nombre?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   sku?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   codigoBarras?: string
+ 
++  @IsOptional()
++  @IsString()
++  codigoEquivalencia?: string
++
++  @IsOptional()
++  @IsString()
++  nombreCorto?: string
++
++  @IsOptional()
++  @IsString()
++  descripcion?: string
++
++  @IsOptional()
++  @IsString()
++  descripcionWeb?: string
++
+   @IsOptional()
+   @IsString()
+   observaciones?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
++  rubro?: string
++
++  @IsOptional()
++  @IsString()
++  subrubro?: string
++
++  @IsOptional()
++  @IsString()
++  objeto?: string
++
++  @IsOptional()
++  @IsString()
++  adjetivo?: string
++
++  @IsOptional()
++  @IsString()
+   marca?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   modelo?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   talle?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   color?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   material?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   presentacion?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   medida?: string
+ 
++  @IsOptional()
++  @IsString()
++  propAux1?: string
++
++  @IsOptional()
++  @IsString()
++  propAux2?: string
++
++  @IsOptional()
++  @IsString()
++  propAux3?: string
++
++  @IsOptional()
++  @IsString()
++  propAux4?: string
++
++  @IsOptional()
++  @IsString()
++  propAux5?: string
++
+   @IsOptional()
+   @IsString()
+   precio?: string
+@@ -66,6 +115,10 @@ export class CreateArticuloDto {
+   @IsString()
+   costo?: string
+ 
++  @IsOptional()
++  @IsInt()
++  unidades?: number
++
+   @IsOptional()
+   @IsArray()
+   imagenesProducto?: string[]
+@@ -83,19 +136,8 @@ export class CreateArticuloDto {
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   erpId?: string
+ 
+-  @IsOptional()
+-  @IsString()
+-  @MaxLength(50)
+-  erpCodigo?: string
+-
+-  @IsOptional()
+-  @IsString()
+-  @MaxLength(255)
+-  erpNombre?: string
+-
+   @IsOptional()
+   @IsString()
+   erpPrecio?: string
+@@ -111,18 +153,24 @@ export class CreateArticuloDto {
+   @IsOptional()
+   erpDatos?: unknown
+ 
++  @IsOptional()
++  @IsDateString()
++  erpCreado?: string
++
++  @IsOptional()
++  @IsDateString()
++  erpActualizado?: string
++
+   @IsOptional()
+   @IsBoolean()
+   erpSincronizado?: boolean
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   originSource?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   originSyncId?: string
+ 
+   @IsOptional()
+diff --git a/apps/backend/src/modules/articulos/dto/update-articulo.dto.ts b/apps/backend/src/modules/articulos/dto/update-articulo.dto.ts
+index 31fba9f..544a108 100644
+--- a/apps/backend/src/modules/articulos/dto/update-articulo.dto.ts
++++ b/apps/backend/src/modules/articulos/dto/update-articulo.dto.ts
+@@ -1,60 +1,106 @@
+-import { IsString, IsOptional, MaxLength, IsArray, IsBoolean, IsInt } from 'class-validator'
++import { IsString, IsOptional, IsArray, IsBoolean, IsInt, IsDateString } from 'class-validator'
+ 
+ export class UpdateArticuloDto {
+   @IsOptional()
+   @IsString()
+-  @MaxLength(255)
++  codigo?: string
++
++  @IsOptional()
++  @IsString()
+   nombre?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   sku?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   codigoBarras?: string
+ 
++  @IsOptional()
++  @IsString()
++  codigoEquivalencia?: string
++
++  @IsOptional()
++  @IsString()
++  nombreCorto?: string
++
++  @IsOptional()
++  @IsString()
++  descripcion?: string
++
++  @IsOptional()
++  @IsString()
++  descripcionWeb?: string
++
+   @IsOptional()
+   @IsString()
+   observaciones?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
++  rubro?: string
++
++  @IsOptional()
++  @IsString()
++  subrubro?: string
++
++  @IsOptional()
++  @IsString()
++  objeto?: string
++
++  @IsOptional()
++  @IsString()
++  adjetivo?: string
++
++  @IsOptional()
++  @IsString()
+   marca?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   modelo?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   talle?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   color?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   material?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   presentacion?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   medida?: string
+ 
++  @IsOptional()
++  @IsString()
++  propAux1?: string
++
++  @IsOptional()
++  @IsString()
++  propAux2?: string
++
++  @IsOptional()
++  @IsString()
++  propAux3?: string
++
++  @IsOptional()
++  @IsString()
++  propAux4?: string
++
++  @IsOptional()
++  @IsString()
++  propAux5?: string
++
+   @IsOptional()
+   @IsString()
+   precio?: string
+@@ -63,6 +109,10 @@ export class UpdateArticuloDto {
+   @IsString()
+   costo?: string
+ 
++  @IsOptional()
++  @IsInt()
++  unidades?: number
++
+   @IsOptional()
+   @IsArray()
+   imagenesProducto?: string[]
+@@ -80,17 +130,14 @@ export class UpdateArticuloDto {
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   erpId?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   erpCodigo?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(255)
+   erpNombre?: string
+ 
+   @IsOptional()
+@@ -108,18 +155,24 @@ export class UpdateArticuloDto {
+   @IsOptional()
+   erpDatos?: unknown
+ 
++  @IsOptional()
++  @IsDateString()
++  erpCreado?: string
++
++  @IsOptional()
++  @IsDateString()
++  erpActualizado?: string
++
+   @IsOptional()
+   @IsBoolean()
+   erpSincronizado?: boolean
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(50)
+   originSource?: string
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(100)
+   originSyncId?: string
+ 
+   @IsOptional()
+diff --git a/apps/backend/src/modules/dashboard/dashboard.service.ts b/apps/backend/src/modules/dashboard/dashboard.service.ts
+index 50834e8..1f96d13 100644
+--- a/apps/backend/src/modules/dashboard/dashboard.service.ts
++++ b/apps/backend/src/modules/dashboard/dashboard.service.ts
+@@ -21,7 +21,7 @@ interface DashboardStats {
+ 
+ interface LowStockItem {
+   articuloCodigo: string
+-  articuloNombre: string
++  articuloNombre: string | null
+   totalCantidad: number
+   minStockMinimo: number
+ }
+diff --git a/apps/web/src/app/(dashboard)/articulos/[codigo]/editar/page.tsx b/apps/web/src/app/(dashboard)/articulos/[codigo]/editar/page.tsx
+index 02cbc94..01a1002 100644
+--- a/apps/web/src/app/(dashboard)/articulos/[codigo]/editar/page.tsx
++++ b/apps/web/src/app/(dashboard)/articulos/[codigo]/editar/page.tsx
+@@ -119,7 +119,7 @@ export default function EditarArticuloPage() {
+           </Badge>
+           <div className="flex items-center gap-2">
+             {toggling && <Loader2 className="h-4 w-4 animate-spin" />}
+-            <Switch checked={articulo.activo} onCheckedChange={handleToggle} disabled={toggling} />
++            <Switch checked={articulo.activo === true} onCheckedChange={handleToggle} disabled={toggling} />
+           </div>
+         </div>
+       </div>
+diff --git a/apps/web/src/components/articulos/articulo-form.tsx b/apps/web/src/components/articulos/articulo-form.tsx
+index c843baf..c503e1f 100644
+--- a/apps/web/src/components/articulos/articulo-form.tsx
++++ b/apps/web/src/components/articulos/articulo-form.tsx
+@@ -98,7 +98,7 @@ export function ArticuloForm({ articulo, onSuccess, mode }: ArticuloFormProps) {
+       erpSincronizado: articulo?.erpSincronizado ?? false,
+       originSource: articulo?.originSource ?? '',
+       originSyncId: articulo?.originSyncId ?? '',
+-      activo: articulo?.activo ?? true,
++      activo: articulo?.activo === true,
+     },
+   })
+ 
+diff --git a/apps/web/src/components/articulos/articulo-sheet.tsx b/apps/web/src/components/articulos/articulo-sheet.tsx
+index f0a45f4..55a683e 100644
+--- a/apps/web/src/components/articulos/articulo-sheet.tsx
++++ b/apps/web/src/components/articulos/articulo-sheet.tsx
+@@ -235,12 +235,12 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
+             <div className="space-y-2">
+               <div className="flex justify-between items-center">
+                 <span className="text-sm text-muted-foreground">Estado</span>
+-                <Badge variant={articulo.activo ? 'default' : 'secondary'}>
+-                  {articulo.activo ? 'Activo' : 'Inactivo'}
++                <Badge variant={articulo.activo === true ? 'default' : 'secondary'}>
++                  {articulo.activo === true ? 'Activo' : 'Inactivo'}
+                 </Badge>
+               </div>
+-              <FieldRow label="Creado" value={formatDate(articulo.createdAt)} />
+-              <FieldRow label="Actualizado" value={formatDate(articulo.updatedAt)} />
++              <FieldRow label="Creado" value={formatDate(articulo.creado)} />
++              <FieldRow label="Actualizado" value={formatDate(articulo.actualizado)} />
+             </div>
+           </div>
+ 
+diff --git a/apps/web/src/components/articulos/articulos-columns.tsx b/apps/web/src/components/articulos/articulos-columns.tsx
+index bd646b1..a19d533 100644
+--- a/apps/web/src/components/articulos/articulos-columns.tsx
++++ b/apps/web/src/components/articulos/articulos-columns.tsx
+@@ -39,7 +39,7 @@ export const columns: ColumnDef<Articulo>[] = [
+     accessorKey: 'activo',
+     header: 'Estado',
+     cell: ({ row }) => {
+-      const activo = row.getValue('activo') as boolean
++      const activo = row.getValue('activo') as boolean | null
+       return (
+         <Badge variant={activo ? 'default' : 'secondary'}>{activo ? 'Activo' : 'Inactivo'}</Badge>
+       )
+diff --git a/apps/web/src/lib/api.ts b/apps/web/src/lib/api.ts
+index edb5413..b78ccf4 100644
+--- a/apps/web/src/lib/api.ts
++++ b/apps/web/src/lib/api.ts
+@@ -48,6 +48,7 @@ async function fetchWithAuth<T>(endpoint: string): Promise<T> {
+   const response = await fetch(url, {
+     credentials: 'include',
+     headers,
++    cache: 'no-store',
+   })
+ 
+   if (!response.ok) {
+diff --git a/apps/web/src/types/articulo.ts b/apps/web/src/types/articulo.ts
+index 63bbb8a..66e91a0 100644
+--- a/apps/web/src/types/articulo.ts
++++ b/apps/web/src/types/articulo.ts
+@@ -8,6 +8,14 @@ export interface Articulo {
+   nombre: string
+   sku: string | null
+   codigoBarras: string | null
++  codigoEquivalencia: string | null
++  nombreCorto: string | null
++  descripcion: string | null
++  descripcionWeb: string | null
++  rubro: string | null
++  subrubro: string | null
++  objeto: string | null
++  adjetivo: string | null
+   observaciones: string | null
+   marca: string | null
+   modelo: string | null
+@@ -16,25 +24,33 @@ export interface Articulo {
+   material: string | null
+   presentacion: string | null
+   medida: string | null
++  propAux1: string | null
++  propAux2: string | null
++  propAux3: string | null
++  propAux4: string | null
++  propAux5: string | null
+   precio: string | null // numeric → string, use parseFloat() for display
+   costo: string | null // numeric → string, use parseFloat() for display
+-  imagenesProducto: string[]
+-  imagenesEtiqueta: string[]
+-  etiquetasOcr: string[]
++  unidades: number | null
++  imagenesProducto: string[] | null
++  imagenesEtiqueta: string[] | null
++  etiquetasOcr: string[] | null
+   jsonArticulo: unknown | null
+   erpId: string | null
+-  erpCodigo: string | null
+-  erpNombre: string | null
++  erpCodigo: string // PK in DB — NOT NULL
++  erpNombre: string // NOT NULL
+   erpPrecio: string | null
+   erpCosto: string | null
+   erpUnidades: number | null
+   erpDatos: unknown | null
++  erpCreado: string | null // Date serialized as string from API
++  erpActualizado: string | null // Date serialized as string from API
+   erpSincronizado: boolean | null
+   erpFechaSync: string | null // Date serialized as string from API
+   originSource: string | null
+   originSyncId: string | null
+   originSyncedAt: string | null // Date serialized as string from API
+-  activo: boolean
+-  createdAt: string // Date serialized as string from API
+-  updatedAt: string // Date serialized as string from API
++  activo: boolean | null
++  creado: string | null // Date serialized as string from API
++  actualizado: string | null // Date serialized as string from API
+ }

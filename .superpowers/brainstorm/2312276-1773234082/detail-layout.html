@@ -1,0 +1,199 @@
+<h2>Panel de Detalle — Distribución</h2>
+<p class="subtitle">¿Cómo organizar la información del artículo en el sheet lateral?</p>
+<p class="subtitle" style="font-size: 13px; margin-top: -8px;">Problema actual: lista vertical plana, todo tiene el mismo peso visual, precio y stock enterrados</p>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d1117;">
+      <div style="width: 100%; font-family: system-ui; font-size: 11px; color: #c9d1d9;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: #f0f6fc;">Remera Adidas Originals</div>
+            <div style="color: #8b949e; font-size: 10px;">COD-001 · SKU: ADI-REM-001</div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="background: #238636; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Activo</span>
+            <span style="background: #30363d; color: #8b949e; padding: 2px 8px; border-radius: 4px; font-size: 10px;">✏ Editar</span>
+          </div>
+        </div>
+
+        <!-- Hero: Price + Stock summary inline -->
+        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+          <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 10px;">
+            <div style="color: #8b949e; font-size: 9px; text-transform: uppercase;">Precio</div>
+            <div style="font-size: 16px; font-weight: 600; color: #f0f6fc;">$1,250.00</div>
+          </div>
+          <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 10px;">
+            <div style="color: #8b949e; font-size: 9px; text-transform: uppercase;">Costo</div>
+            <div style="font-size: 16px; font-weight: 600; color: #f0f6fc;">$680.00</div>
+          </div>
+          <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 10px;">
+            <div style="color: #8b949e; font-size: 9px; text-transform: uppercase;">Stock Total</div>
+            <div style="font-size: 16px; font-weight: 600; color: #f0f6fc;">142</div>
+          </div>
+        </div>
+
+        <!-- Properties grid 2-col -->
+        <div style="color: #8b949e; font-size: 9px; text-transform: uppercase; margin-bottom: 6px;">Propiedades</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Marca</span><span>Adidas</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Modelo</span><span>Originals</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Talle</span><span>M</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Color</span><span>Negro</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Material</span><span>Algodón</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Medida</span><span>—</span></div>
+        </div>
+
+        <!-- Stock table compact -->
+        <div style="color: #8b949e; font-size: 9px; text-transform: uppercase; margin-bottom: 6px;">Stock por Depósito</div>
+        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 8px; font-size: 10px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; color: #8b949e; margin-bottom: 4px;">
+            <span>Depósito</span><span>Cant.</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;"><span>Central</span><span>98</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>Sucursal Norte</span><span>44</span></div>
+        </div>
+
+        <!-- Collapsible sections hint -->
+        <div style="color: #8b949e; font-size: 10px; border-top: 1px solid #30363d; padding-top: 8px;">
+          <div>▸ ERP · ▸ Origen · ▸ Datos crudos</div>
+          <div style="font-size: 9px; margin-top: 2px;">Secciones colapsables</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Cards de resumen + Secciones colapsables</h3>
+      <p>Precio/Costo/Stock como tarjetas hero arriba. Propiedades en grid 2 columnas. ERP/Origen/Datos crudos siempre colapsados. Máxima jerarquía visual.</p>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d1117;">
+      <div style="width: 100%; font-family: system-ui; font-size: 11px; color: #c9d1d9;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: #f0f6fc;">Remera Adidas Originals</div>
+            <div style="color: #8b949e; font-size: 10px;">COD-001 · SKU: ADI-REM-001</div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="background: #238636; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Activo</span>
+            <span style="background: #30363d; color: #8b949e; padding: 2px 8px; border-radius: 4px; font-size: 10px;">✏ Editar</span>
+          </div>
+        </div>
+
+        <!-- Price inline row -->
+        <div style="display: flex; justify-content: space-between; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-bottom: 12px;">
+          <div><span style="color: #8b949e; font-size: 9px;">PRECIO</span><div style="font-size: 15px; font-weight: 600;">$1,250.00</div></div>
+          <div style="text-align: center;"><span style="color: #8b949e; font-size: 9px;">COSTO</span><div style="font-size: 15px; font-weight: 600;">$680.00</div></div>
+          <div style="text-align: right;"><span style="color: #8b949e; font-size: 9px;">MARGEN</span><div style="font-size: 15px; font-weight: 600; color: #3fb950;">45.6%</div></div>
+        </div>
+
+        <!-- Tabs: Datos | Stock | ERP -->
+        <div style="display: flex; gap: 0; margin-bottom: 12px; border-bottom: 1px solid #30363d;">
+          <div style="padding: 6px 12px; border-bottom: 2px solid #58a6ff; color: #58a6ff; font-size: 11px;">Datos</div>
+          <div style="padding: 6px 12px; color: #8b949e; font-size: 11px;">Stock</div>
+          <div style="padding: 6px 12px; color: #8b949e; font-size: 11px;">ERP</div>
+          <div style="padding: 6px 12px; color: #8b949e; font-size: 11px;">Origen</div>
+        </div>
+
+        <!-- Tab content: Datos -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;">
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Marca</span><span>Adidas</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Modelo</span><span>Originals</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Talle</span><span>M</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Color</span><span>Negro</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Material</span><span>Algodón</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Medida</span><span>—</span></div>
+          <div style="grid-column: span 2; display: flex; justify-content: space-between; margin-top: 4px;"><span style="color: #8b949e;">Observaciones</span><span>Sin observaciones</span></div>
+        </div>
+
+        <!-- Footer hint -->
+        <div style="color: #8b949e; font-size: 9px; margin-top: 12px; text-align: center;">
+          Las tabs cambian el contenido inferior sin scroll
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Precio hero + Tabs</h3>
+      <p>Barra de precio/costo/margen destacada. El contenido restante se organiza en tabs (Datos, Stock, ERP, Origen). Cero scroll, todo a la vista cambiando tabs.</p>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d1117;">
+      <div style="width: 100%; font-family: system-ui; font-size: 11px; color: #c9d1d9;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: #f0f6fc;">Remera Adidas Originals</div>
+            <div style="color: #8b949e; font-size: 10px;">COD-001</div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="background: #238636; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Activo</span>
+            <span style="background: #30363d; color: #8b949e; padding: 2px 8px; border-radius: 4px; font-size: 10px;">✏ Editar</span>
+          </div>
+        </div>
+
+        <!-- Compact KPIs row -->
+        <div style="display: flex; gap: 6px; margin-bottom: 14px;">
+          <div style="flex: 1; text-align: center; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 6px;">
+            <div style="font-size: 14px; font-weight: 600;">$1,250</div>
+            <div style="color: #8b949e; font-size: 8px;">PRECIO</div>
+          </div>
+          <div style="flex: 1; text-align: center; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 6px;">
+            <div style="font-size: 14px; font-weight: 600;">$680</div>
+            <div style="color: #8b949e; font-size: 8px;">COSTO</div>
+          </div>
+          <div style="flex: 1; text-align: center; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 6px;">
+            <div style="font-size: 14px; font-weight: 600;">142</div>
+            <div style="color: #8b949e; font-size: 8px;">STOCK</div>
+          </div>
+          <div style="flex: 1; text-align: center; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 6px;">
+            <div style="font-size: 14px; font-weight: 600; color: #3fb950;">45%</div>
+            <div style="color: #8b949e; font-size: 8px;">MARGEN</div>
+          </div>
+        </div>
+
+        <!-- Identification -->
+        <div style="color: #8b949e; font-size: 9px; text-transform: uppercase; margin-bottom: 4px;">Identificación</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px 12px; font-size: 10px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">SKU</span><span>ADI-REM-001</span></div>
+          <div style="display: flex; justify-content: space-between;"><span style="color: #8b949e;">Barras</span><span>779023456</span></div>
+        </div>
+
+        <!-- Properties -->
+        <div style="color: #8b949e; font-size: 9px; text-transform: uppercase; margin-bottom: 4px;">Propiedades</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px;">
+          <span style="background: #21262d; border: 1px solid #30363d; padding: 2px 8px; border-radius: 12px; font-size: 10px;">Adidas</span>
+          <span style="background: #21262d; border: 1px solid #30363d; padding: 2px 8px; border-radius: 12px; font-size: 10px;">Originals</span>
+          <span style="background: #21262d; border: 1px solid #30363d; padding: 2px 8px; border-radius: 12px; font-size: 10px;">M</span>
+          <span style="background: #21262d; border: 1px solid #30363d; padding: 2px 8px; border-radius: 12px; font-size: 10px;">Negro</span>
+          <span style="background: #21262d; border: 1px solid #30363d; padding: 2px 8px; border-radius: 12px; font-size: 10px;">Algodón</span>
+        </div>
+
+        <!-- Stock mini-table -->
+        <div style="color: #8b949e; font-size: 9px; text-transform: uppercase; margin-bottom: 4px;">Stock</div>
+        <div style="font-size: 10px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between;"><span>Central</span><span>98</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>Sucursal Norte</span><span>44</span></div>
+        </div>
+
+        <!-- Collapsible -->
+        <div style="color: #8b949e; font-size: 10px; border-top: 1px solid #30363d; padding-top: 6px;">
+          ▸ ERP · ▸ Origen · ▸ JSON
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — KPIs compactos + Tags + Collapsibles</h3>
+      <p>4 KPIs (precio, costo, stock, margen) como mini-cards. Propiedades como badges/tags en vez de tabla. Máxima densidad de información, mínimo scroll.</p>
+    </div>
+  </div>
+
+</div>

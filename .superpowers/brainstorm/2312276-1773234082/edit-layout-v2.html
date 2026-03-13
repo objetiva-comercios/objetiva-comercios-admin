@@ -1,0 +1,302 @@
+<h2>Página de Edición — Con Gestión de Imágenes</h2>
+<p class="subtitle">6 imágenes de producto + 3 de etiquetas, todas editables (subir/eliminar/reordenar)</p>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d1117;">
+      <div style="width: 100%; font-family: system-ui; font-size: 11px; color: #c9d1d9;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #30363d;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="color: #8b949e; font-size: 10px;">← Volver</span>
+            <span style="font-size: 13px; font-weight: 600; color: #f0f6fc;">Editar: Remera Adidas</span>
+            <span style="background: #238636; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 9px;">Activo</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <span style="color: #f85149; font-size: 9px; border: 1px solid #f8514930; padding: 2px 8px; border-radius: 3px;">Desactivar</span>
+            <div style="background: #238636; color: #fff; padding: 2px 12px; border-radius: 3px; font-size: 10px;">Guardar</div>
+          </div>
+        </div>
+
+        <!-- Two columns: left form, right images -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <!-- LEFT: All form fields -->
+          <div>
+            <!-- Identificación -->
+            <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-bottom: 8px;">
+              <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Identificación</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                <div style="background: #161b22; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; color: #484f58; font-size: 9px;">COD-001 🔒</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">ADI-REM-001</div>
+              </div>
+              <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px; margin-top: 4px;">Remera Adidas Originals</div>
+              <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px; margin-top: 4px;">779023456</div>
+            </div>
+
+            <!-- Propiedades -->
+            <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-bottom: 8px;">
+              <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Propiedades</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Adidas</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Originals</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">M</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Negro</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Algodón</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">—</div>
+              </div>
+            </div>
+
+            <!-- Precios -->
+            <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-bottom: 8px;">
+              <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Precios</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">$ 1,250.00</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">$ 680.00</div>
+              </div>
+            </div>
+
+            <!-- Observaciones -->
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 6px; font-size: 9px; min-height: 28px; color: #8b949e;">Observaciones...</div>
+
+            <!-- Collapsibles -->
+            <div style="display: flex; gap: 4px; margin-top: 8px;">
+              <div style="flex: 1; border: 1px solid #30363d; border-radius: 3px; padding: 5px; color: #8b949e; font-size: 9px; text-align: center;">▸ ERP</div>
+              <div style="flex: 1; border: 1px solid #30363d; border-radius: 3px; padding: 5px; color: #8b949e; font-size: 9px; text-align: center;">▸ Origen</div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Images -->
+          <div>
+            <!-- Imágenes Producto -->
+            <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="color: #8b949e; font-size: 8px; text-transform: uppercase;">Imágenes Producto</div>
+                <div style="color: #58a6ff; font-size: 9px;">+ Subir</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  📷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  📷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  📷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  📷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  📷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  📷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+              </div>
+              <div style="margin-top: 6px; border: 2px dashed #30363d; border-radius: 3px; padding: 8px; text-align: center; color: #484f58; font-size: 9px;">
+                Arrastrá imágenes o hacé click para subir
+              </div>
+            </div>
+
+            <!-- Imágenes Etiquetas -->
+            <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="color: #8b949e; font-size: 8px; text-transform: uppercase;">Imágenes Etiquetas</div>
+                <div style="color: #58a6ff; font-size: 9px;">+ Subir</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  🏷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  🏷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+                <div style="aspect-ratio: 1; background: #21262d; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative;">
+                  🏷
+                  <span style="position: absolute; top: 2px; right: 2px; background: #f8514950; color: #f85149; width: 14px; height: 14px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px;">✕</span>
+                </div>
+              </div>
+              <div style="margin-top: 6px; border: 2px dashed #30363d; border-radius: 3px; padding: 8px; text-align: center; color: #484f58; font-size: 9px;">
+                Arrastrá etiquetas o hacé click para subir
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 50/50: Datos izquierda, Imágenes derecha</h3>
+      <p>Columna izquierda con todos los campos del form en cards. Columna derecha dedicada a las dos galerías de imágenes (producto 3x2 + etiquetas 3x1) con dropzone y botones de eliminar. Ambas columnas scrollean independiente.</p>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d1117;">
+      <div style="width: 100%; font-family: system-ui; font-size: 11px; color: #c9d1d9;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #30363d;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="color: #8b949e; font-size: 10px;">← Volver</span>
+            <span style="font-size: 13px; font-weight: 600; color: #f0f6fc;">Editar: Remera Adidas</span>
+            <span style="background: #238636; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 9px;">Activo</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <span style="color: #f85149; font-size: 9px; border: 1px solid #f8514930; padding: 2px 8px; border-radius: 3px;">Desactivar</span>
+            <div style="background: #238636; color: #fff; padding: 2px 12px; border-radius: 3px; font-size: 10px;">Guardar</div>
+          </div>
+        </div>
+
+        <!-- Hero image + thumbnails -->
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <div style="width: 120px; height: 90px; background: #21262d; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;">📷</div>
+          <div style="flex: 1;">
+            <div style="display: flex; gap: 3px; flex-wrap: wrap;">
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 1px solid #58a6ff;">📷</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">📷</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">📷</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">📷</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">📷</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">📷</div>
+              <div style="width: 28px; height: 28px; border: 1px dashed #30363d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #484f58;">+</div>
+            </div>
+            <div style="display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px;">
+              <div style="color: #8b949e; font-size: 8px; margin-right: 4px; align-self: center;">Etiquetas:</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">🏷</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">🏷</div>
+              <div style="width: 28px; height: 28px; background: #21262d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px;">🏷</div>
+              <div style="width: 28px; height: 28px; border: 1px dashed #30363d; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #484f58;">+</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form fields below -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px;">
+            <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Identificación</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px;">
+              <div style="background: #161b22; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; color: #484f58; font-size: 9px;">COD-001 🔒</div>
+              <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">ADI-REM</div>
+            </div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px; margin-top: 3px;">Remera Adidas Originals</div>
+          </div>
+          <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px;">
+            <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Precios</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px;">
+              <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">$ 1,250.00</div>
+              <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">$ 680.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Propiedades -->
+        <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-top: 8px;">
+          <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Propiedades</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;">
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Adidas</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Originals</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">M</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Negro</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Algodón</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">—</div>
+          </div>
+        </div>
+
+        <!-- Collapsibles -->
+        <div style="display: flex; gap: 4px; margin-top: 8px;">
+          <div style="flex: 1; border: 1px solid #30363d; border-radius: 3px; padding: 5px; color: #8b949e; font-size: 9px; text-align: center;">▸ ERP</div>
+          <div style="flex: 1; border: 1px solid #30363d; border-radius: 3px; padding: 5px; color: #8b949e; font-size: 9px; text-align: center;">▸ Origen</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Galería hero arriba, form abajo</h3>
+      <p>Imagen principal grande + thumbnails de producto y etiquetas arriba. Formulario compacto de 2 columnas abajo. Las imágenes son lo primero que ves, como un e-commerce.</p>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d1117;">
+      <div style="width: 100%; font-family: system-ui; font-size: 11px; color: #c9d1d9;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #30363d;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="color: #8b949e; font-size: 10px;">← Volver</span>
+            <span style="font-size: 13px; font-weight: 600; color: #f0f6fc;">Editar: Remera Adidas</span>
+            <span style="background: #238636; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 9px;">Activo</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <span style="color: #f85149; font-size: 9px; border: 1px solid #f8514930; padding: 2px 8px; border-radius: 3px;">Desactivar</span>
+            <div style="background: #238636; color: #fff; padding: 2px 12px; border-radius: 3px; font-size: 10px;">Guardar</div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div style="display: flex; gap: 0; margin-bottom: 10px; border-bottom: 1px solid #30363d;">
+          <div style="padding: 5px 12px; border-bottom: 2px solid #58a6ff; color: #58a6ff; font-size: 10px;">Datos</div>
+          <div style="padding: 5px 12px; color: #8b949e; font-size: 10px;">Imágenes Producto (6)</div>
+          <div style="padding: 5px 12px; color: #8b949e; font-size: 10px;">Etiquetas (3)</div>
+          <div style="padding: 5px 12px; color: #8b949e; font-size: 10px;">ERP / Origen</div>
+        </div>
+
+        <!-- Tab: Datos (active) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px;">
+            <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Identificación</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px;">
+              <div style="background: #161b22; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; color: #484f58; font-size: 9px;">COD-001 🔒</div>
+              <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">ADI-REM</div>
+            </div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px; margin-top: 3px;">Remera Adidas Originals</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px; margin-top: 3px;">779023456</div>
+          </div>
+          <div>
+            <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-bottom: 8px;">
+              <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Precios</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px;">
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">$ 1,250.00</div>
+                <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">$ 680.00</div>
+              </div>
+            </div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 6px; font-size: 9px; min-height: 50px; color: #8b949e;">Observaciones...</div>
+          </div>
+        </div>
+
+        <div style="border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-top: 8px;">
+          <div style="color: #8b949e; font-size: 8px; text-transform: uppercase; margin-bottom: 6px;">Propiedades</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px;">
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Adidas</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Originals</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">M</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Negro</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">Algodón</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">—</div>
+            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 3px; padding: 3px 6px; font-size: 9px;">—</div>
+          </div>
+        </div>
+
+        <div style="color: #8b949e; font-size: 9px; margin-top: 10px; text-align: center; font-style: italic;">
+          Tab "Imágenes Producto" → grid de 6 con drag & drop + dropzone<br>
+          Tab "Etiquetas" → grid de 3 con drag & drop + dropzone<br>
+          Tab "ERP / Origen" → campos ERP y Origen completos
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Tabs: Datos | Imágenes | Etiquetas | ERP</h3>
+      <p>Todo el formulario organizado en tabs. Cada sección tiene espacio completo. Las imágenes tienen su propia tab con grid grande y dropzone. Cero scroll en cada tab.</p>
+    </div>
+  </div>
+
+</div>

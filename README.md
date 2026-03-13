@@ -1,6 +1,6 @@
 # Objetiva Comercios Admin
 
-Sistema de administracion para operaciones comerciales. Permite gestionar articulos, existencias (stock multi-deposito), inventarios fisicos, ordenes, ventas y compras desde una app web y una app movil. Funciona como monorepo con un backend NestJS, una app web Next.js y una app movil Capacitor + React, compartiendo autenticacion via Supabase y datos de negocio en PostgreSQL con Drizzle ORM. Dirigido a duenos de comercios y personal interno de operaciones diarias.
+Sistema de administracion para operaciones comerciales. Permite gestionar articulos (~30 campos con imagenes), existencias (stock multi-deposito), inventarios fisicos, ordenes, ventas y compras desde una app web y una app movil. Incluye API keys para integraciones externas y webhooks para notificaciones de eventos. Funciona como monorepo con un backend NestJS, una app web Next.js y una app movil Capacitor + React, compartiendo autenticacion via Supabase y datos de negocio en PostgreSQL con Drizzle ORM. Dirigido a duenos de comercios y personal interno de operaciones diarias.
 
 ## Tecnologias
 
@@ -11,7 +11,9 @@ Sistema de administracion para operaciones comerciales. Permite gestionar articu
 | Frontend Movil | Vite 5, React 18, Capacitor 8, React Router 7       |
 | Backend        | NestJS 10, TypeScript 5.3                           |
 | Base de datos  | PostgreSQL (Drizzle ORM 0.45)                       |
-| Autenticacion  | Supabase Auth (JWT via JWKS)                        |
+| Autenticacion  | Supabase Auth (JWT via JWKS), API Keys (SHA-256)    |
+| Imagenes       | sharp 0.34 (WebP, thumbnails automaticos)           |
+| Eventos        | @nestjs/event-emitter 3 (webhooks)                  |
 | UI             | shadcn/ui, Radix UI, Lucide Icons, Recharts         |
 | Tablas         | TanStack Table 8, TanStack Query 5 (movil)          |
 | Formularios    | React Hook Form 7, Zod 4                            |
@@ -30,7 +32,7 @@ Sistema de administracion para operaciones comerciales. Permite gestionar articu
 1. Clonar el repositorio e instalar dependencias:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/objetiva-comercios/objetiva-comercios-admin.git
 cd objetiva-comercios-admin
 pnpm install
 ```
@@ -63,9 +65,9 @@ pnpm dev
 El proyecto usa **dos bases de datos separadas**:
 
 - **Supabase**: Exclusivamente para autenticacion (login, signup, JWT). No almacena datos de negocio.
-- **PostgreSQL local** (Drizzle ORM): Todos los datos de negocio (articulos, existencias, inventarios, ordenes, ventas, compras, depositos, configuracion).
+- **PostgreSQL local** (Drizzle ORM): Todos los datos de negocio (articulos, existencias, inventarios, ordenes, ventas, compras, depositos, configuracion, api keys, webhooks).
 
-El backend no se conecta a la base de Supabase. Solo valida los JWT que Supabase genera, usando el endpoint JWKS publico.
+El backend no se conecta a la base de Supabase. Solo valida los JWT que Supabase genera, usando el endpoint JWKS publico. Tambien acepta API keys como metodo alternativo de autenticacion (CompositeAuthGuard: JWT primero, fallback a Bearer token).
 
 ### `apps/backend/.env`
 
@@ -147,7 +149,7 @@ Puertos:
 docker compose up -d --build
 ```
 
-Los servicios `erp-web` y `erp-backend` se conectan a la red externa `sanchez_docker_network`. El backend carga variables desde `apps/backend/.env.production`.
+Los servicios `erp-web` y `erp-backend` se conectan a la red externa `sanchez_docker_network` y se rutean via Traefik. El backend carga variables desde `apps/backend/.env.production`.
 
 ## Arquitectura del proyecto
 
@@ -157,15 +159,17 @@ objetiva-comercios-admin/
 │   ├── backend/                # NestJS API + Drizzle ORM
 │   │   ├── src/
 │   │   │   ├── auth/           # Modulo de autenticacion (controller, types)
-│   │   │   ├── common/         # Guards (JWT, Roles), decoradores, DTOs, filtros
+│   │   │   ├── common/         # Guards (JWT, Roles, CompositeAuth), decoradores, DTOs, filtros
 │   │   │   ├── db/             # DrizzleService, schema, seed, generators
-│   │   │   └── modules/        # articulos, depositos, existencias, inventarios,
-│   │   │                       # dispositivos, dashboard, orders, sales, purchases, settings
+│   │   │   └── modules/        # articulos (+ imagenes), depositos, existencias, inventarios,
+│   │   │                       # dispositivos, dashboard, orders, sales, purchases, settings,
+│   │   │                       # api-keys, webhooks
 │   │   └── drizzle/            # Migraciones SQL generadas
 │   ├── web/                    # Next.js 14 App Router
 │   │   └── src/
-│   │       ├── app/            # Rutas: dashboard, articulos (listado/existencias/inventarios),
-│   │       │                   #   orders, sales, purchases, settings (depositos/dispositivos)
+│   │       ├── app/            # Rutas: dashboard, articulos (CRUD/existencias/inventarios),
+│   │       │                   #   orders, sales, purchases, settings (depositos/dispositivos/
+│   │       │                   #   api-keys/webhooks/articulos-config)
 │   │       ├── components/     # articulos/, depositos/, existencias/, inventarios/,
 │   │       │                   #   dispositivos/, dashboard/, layout/, settings/, tables/, ui/
 │   │       ├── config/         # navigation.ts (sidebar config)
@@ -174,8 +178,7 @@ objetiva-comercios-admin/
 │   └── mobile/                 # Vite + React + Capacitor
 │       └── src/
 │           ├── components/     # auth/, layout/ (AppShell, BottomTabs, DrawerNav), ui/
-│           ├── pages/          # Dashboard, Articulos, Pedidos, Ventas, Compras, Login, Signup,
-│           │                   #   Profile, Settings
+│           ├── pages/          # Dashboard, Articulos, Pedidos, Ventas, Compras, Login, Settings
 │           ├── lib/            # Supabase client, API fetch
 │           └── types/          # Interfaces TypeScript
 ├── packages/
@@ -185,7 +188,9 @@ objetiva-comercios-admin/
 ├── docker/
 │   ├── web.Dockerfile          # Build multi-stage Next.js standalone
 │   └── backend.Dockerfile      # Build multi-stage NestJS
-├── docker-compose.yml          # Servicios erp-web + erp-backend
+├── uploads/                    # Imagenes de articulos (volumen Docker persistente)
+├── docker-compose.yml          # Servicios erp-web + erp-backend con Traefik
+├── install.sh                  # Instalador automatico para VPS
 ├── turbo.json                  # Pipeline de build con cache
 └── pnpm-workspace.yaml         # apps/* + packages/*
 ```
@@ -197,14 +202,17 @@ Usuario → [Web/Mobile] → Supabase Auth → JWT
                                            │
                                            ▼
                           [Backend] ← valida JWT via JWKS
-                              │
+                              │         (o API Key via SHA-256)
                               ▼
                         PostgreSQL (datos de negocio)
+                              │
+                              ▼ (EventEmitter)
+                        Webhooks → URLs externas (HMAC-SHA256)
 ```
 
 ## API / Endpoints
 
-Todos los endpoints requieren JWT valido en header `Authorization: Bearer <token>`, excepto `/health`.
+Todos los endpoints requieren JWT valido en header `Authorization: Bearer <token>` o API key como Bearer token, excepto `/health` y `GET /api/settings`.
 
 Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_metadata.role`.
 
@@ -223,13 +231,16 @@ Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_m
 
 ### Articulos
 
-| Metodo | Ruta                            | Descripcion                                                   |
-| ------ | ------------------------------- | ------------------------------------------------------------- |
-| GET    | `/api/articulos`                | Lista paginada con busqueda multi-campo (codigo, SKU, nombre) |
-| GET    | `/api/articulos/:codigo`        | Detalle de articulo                                           |
-| POST   | `/api/articulos`                | Crear articulo (admin)                                        |
-| PATCH  | `/api/articulos/:codigo`        | Actualizar articulo (admin)                                   |
-| PATCH  | `/api/articulos/:codigo/toggle` | Toggle activo/inactivo (admin)                                |
+| Metodo | Ruta                                          | Descripcion                                             |
+| ------ | --------------------------------------------- | ------------------------------------------------------- |
+| GET    | `/api/articulos`                              | Lista paginada con busqueda multi-campo y sorting       |
+| GET    | `/api/articulos/:codigo`                      | Detalle de articulo                                     |
+| POST   | `/api/articulos`                              | Crear articulo (admin)                                  |
+| PATCH  | `/api/articulos/:codigo`                      | Actualizar articulo (admin)                             |
+| DELETE | `/api/articulos/:codigo`                      | Soft-delete (admin) — emite articulo.deleted            |
+| PATCH  | `/api/articulos/:codigo/toggle`               | Toggle activo/inactivo (admin) — emite articulo.updated |
+| POST   | `/api/articulos/:codigo/imagenes`             | Subir imagen a slot (admin, multipart)                  |
+| DELETE | `/api/articulos/:codigo/imagenes/:tipo/:slot` | Eliminar imagen de slot (admin)                         |
 
 ### Depositos
 
@@ -320,6 +331,30 @@ Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_m
 | POST   | `/api/settings/logo/:type` | Subir logo (type: `square` o `rectangular`, max 2MB) |
 | DELETE | `/api/settings/logo/:type` | Eliminar logo (admin)                                |
 
+### API Keys
+
+| Metodo | Ruta                | Descripcion                                  |
+| ------ | ------------------- | -------------------------------------------- |
+| GET    | `/api/api-keys`     | Lista de API keys activas (admin, solo JWT)  |
+| POST   | `/api/api-keys`     | Crear API key — retorna key completa una vez |
+| DELETE | `/api/api-keys/:id` | Revocar API key (admin, solo JWT)            |
+
+### Webhooks
+
+| Metodo | Ruta                                       | Descripcion                       |
+| ------ | ------------------------------------------ | --------------------------------- |
+| GET    | `/api/webhooks`                            | Lista de suscripciones (admin)    |
+| GET    | `/api/webhooks/:id`                        | Detalle de suscripcion (admin)    |
+| POST   | `/api/webhooks`                            | Crear suscripcion (admin)         |
+| PATCH  | `/api/webhooks/:id`                        | Actualizar suscripcion (admin)    |
+| DELETE | `/api/webhooks/:id`                        | Revocar suscripcion (admin)       |
+| POST   | `/api/webhooks/:id/ping`                   | Enviar test ping (admin)          |
+| POST   | `/api/webhooks/:id/regenerate-secret`      | Regenerar secreto HMAC (admin)    |
+| GET    | `/api/webhooks/:id/deliveries`             | Log de entregas (admin)           |
+| POST   | `/api/webhooks/:id/deliveries/:did/resend` | Reenviar delivery fallido (admin) |
+
+Eventos disponibles: `articulo.created`, `articulo.updated`, `articulo.deleted`. Los payloads se firman con HMAC-SHA256 (header `X-Signature`). Entregas con hasta 3 reintentos y backoff exponencial.
+
 ## Scripts y automatizacion
 
 ### Base de datos (desde `apps/backend/`)
@@ -336,6 +371,46 @@ Los endpoints de escritura (POST, PATCH, DELETE) requieren rol `admin` en `app_m
 
 Husky + lint-staged ejecutan ESLint y Prettier automaticamente en cada commit sobre los archivos modificados.
 
+## Docker
+
+Dos servicios dockerizados con multi-stage builds (Node.js 20 Alpine):
+
+| Servicio      | Dockerfile                  | Puerto | Descripcion                                        |
+| ------------- | --------------------------- | ------ | -------------------------------------------------- |
+| `erp-web`     | `docker/web.Dockerfile`     | 3000   | Next.js standalone (3 stages: deps → build → run)  |
+| `erp-backend` | `docker/backend.Dockerfile` | 3001   | NestJS production (3 stages: deps → build → prune) |
+
+Volumenes: `./uploads:/app/uploads` — imagenes de articulos persistentes entre rebuilds.
+
+Red: `sanchez_docker_network` (externa) — conecta con Traefik y otros servicios.
+
+Traefik rutea `PathPrefix(/api)` y `/health` al backend (priority 10), todo lo demas al web (priority 1).
+
+```bash
+# Levantar
+docker compose up -d --build
+
+# Logs
+docker compose logs -f
+
+# Rebuild sin cache
+docker compose build --no-cache && docker compose up -d
+```
+
+## Deploy
+
+Instalacion automatica en VPS:
+
+```bash
+curl -sL https://raw.githubusercontent.com/objetiva-comercios/objetiva-comercios-admin/main/install.sh | bash
+```
+
+El script clona el repo, preserva `.env.production` y `uploads/` en reinstalaciones, construye las imagenes Docker y ejecuta health check. Requiere Docker, Traefik configurado en `sanchez_docker_network`, y PostgreSQL accesible.
+
+Dominio: `erp.sanchezrepuestos.com.ar` (via Traefik, entrypoint `web`).
+
+Ver [DEPLOY.md](DEPLOY.md) para documentacion completa (arquitectura, variables, troubleshooting).
+
 ## Testing de autenticacion
 
 ### Test rapido (sin token)
@@ -345,20 +420,6 @@ Husky + lint-staged ejecutan ESLint y Prettier automaticamente en cada commit so
 ```
 
 Verifica: health check, rechazo sin token, rechazo con token invalido.
-
-### Test manual
-
-```bash
-# Health check (publico)
-curl http://localhost:3001/health
-
-# Endpoint protegido (espera 401)
-curl http://localhost:3001/api/auth/verify
-
-# Con token valido (espera 200)
-curl -H "Authorization: Bearer TU_JWT_DE_SUPABASE" \
-  http://localhost:3001/api/auth/verify
-```
 
 ### Crear usuario admin en Supabase
 
@@ -400,6 +461,6 @@ pnpm install
 
 ## Estado del proyecto
 
-Milestone v1.1 "Modelo Articulos + Inventario" completado -- 5 fases, 18 planes ejecutados (100%). Reemplazo completo del modelo de datos: articulos con PK texto, existencias multi-deposito, inventarios fisicos con conteo por sectores y dispositivos moviles.
+Milestone v1.2 "Articulos CRUD + Imagenes + API Keys + Webhooks" completado — 10 fases, 18 planes ejecutados (100%). CRUD completo de articulos con imagenes, columnas configurables, API keys para integraciones externas, y webhooks con firma HMAC-SHA256. 22/22 requisitos satisfechos, 7/7 flujos E2E verificados.
 
-Ultimo avance: 2026-03-06.
+Ultimo avance: 2026-03-13.
