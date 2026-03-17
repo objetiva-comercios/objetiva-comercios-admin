@@ -5,7 +5,7 @@ milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: shipped
 stopped_at: Milestone v1.2 archived
 last_updated: '2026-03-13T01:15:00.000Z'
-last_activity: 2026-03-13 — v1.2 milestone shipped
+last_activity: 2026-03-17 — Completed quick task 260317-qz6: Igualar tamaño de fuente de lista de artículos con compras/ventas/pedidos
 progress:
   total_phases: 10
   completed_phases: 10
@@ -57,6 +57,12 @@ None.
 ### Blockers/Concerns
 
 None active. All v1.2 blockers resolved.
+
+### Quick Tasks Completed
+
+| #          | Description                                                               | Date       | Commit  | Directory                                                                                                           |
+| ---------- | ------------------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| 260317-qz6 | Igualar tamaño de fuente de lista de artículos con compras/ventas/pedidos | 2026-03-17 | d28cd8c | [260317-qz6-igualar-tama-o-de-fuente-de-lista-de-art](./quick/260317-qz6-igualar-tama-o-de-fuente-de-lista-de-art/) |
 
 ## Session Continuity
 
