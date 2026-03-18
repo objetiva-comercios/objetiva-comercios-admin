@@ -195,61 +195,73 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
           <Separator />
 
           {/* Images section */}
-          <div>
-            <div className="flex items-center gap-0.5 text-[10px] text-muted-foreground mb-1">
-              <span className="flex-[6] text-center">Producto</span>
-              <span className="w-px" />
-              <span className="flex-[3] text-center">Etiqueta</span>
-            </div>
-            <div className="flex items-stretch gap-1 h-14">
-              {articulo.imagenesProducto.map((url, i) =>
-                url ? (
-                  <button
-                    key={`p-${i}`}
-                    onClick={() => openLightboxForType('producto', url)}
-                    className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                  >
-                    <img
-                      src={API_BASE_URL + getThumbUrl(url)}
-                      className="w-full h-full object-cover"
-                      alt=""
-                    />
-                  </button>
-                ) : (
-                  <div
-                    key={`p-${i}`}
-                    className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
-                  >
-                    <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
-                  </div>
-                )
-              )}
-              {/* Vertical separator */}
-              <div className="w-px bg-border self-stretch mx-0.5" />
-              {articulo.imagenesEtiqueta.map((url, i) =>
-                url ? (
-                  <button
-                    key={`e-${i}`}
-                    onClick={() => openLightboxForType('etiqueta', url)}
-                    className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                  >
-                    <img
-                      src={API_BASE_URL + getThumbUrl(url)}
-                      className="w-full h-full object-cover"
-                      alt=""
-                    />
-                  </button>
-                ) : (
-                  <div
-                    key={`e-${i}`}
-                    className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
-                  >
-                    <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
-                  </div>
-                )
-              )}
-            </div>
-          </div>
+          {(() => {
+            const productoSlots = Array.from(
+              { length: 6 },
+              (_, i) => articulo.imagenesProducto[i] ?? null
+            )
+            const etiquetaSlots = Array.from(
+              { length: 3 },
+              (_, i) => articulo.imagenesEtiqueta[i] ?? null
+            )
+            return (
+              <div>
+                <div className="flex items-center gap-0.5 text-[10px] text-muted-foreground mb-1">
+                  <span className="flex-[6] text-center">Producto</span>
+                  <span className="w-px" />
+                  <span className="flex-[3] text-center">Etiqueta</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {productoSlots.map((url, i) =>
+                    url ? (
+                      <button
+                        key={`p-${i}`}
+                        onClick={() => openLightboxForType('producto', url)}
+                        className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                      >
+                        <img
+                          src={API_BASE_URL + getThumbUrl(url)}
+                          className="w-full h-full object-cover"
+                          alt=""
+                        />
+                      </button>
+                    ) : (
+                      <div
+                        key={`p-${i}`}
+                        className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
+                      >
+                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
+                      </div>
+                    )
+                  )}
+                  {/* Vertical separator */}
+                  <div className="w-px self-stretch bg-border mx-0.5" />
+                  {etiquetaSlots.map((url, i) =>
+                    url ? (
+                      <button
+                        key={`e-${i}`}
+                        onClick={() => openLightboxForType('etiqueta', url)}
+                        className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                      >
+                        <img
+                          src={API_BASE_URL + getThumbUrl(url)}
+                          className="w-full h-full object-cover"
+                          alt=""
+                        />
+                      </button>
+                    ) : (
+                      <div
+                        key={`e-${i}`}
+                        className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
+                      >
+                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            )
+          })()}
 
           <Separator />
 
