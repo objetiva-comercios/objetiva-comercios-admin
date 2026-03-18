@@ -149,27 +149,30 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] md:w-[540px] sm:max-w-lg overflow-y-auto">
+      <SheetContent className="w-[480px] md:w-[640px] sm:max-w-2xl overflow-y-auto">
         <SheetHeader>
           <div className="flex items-center justify-between pr-2">
             <div>
-              <SheetTitle>{articulo.nombre}</SheetTitle>
+              <div className="flex items-center gap-2">
+                <SheetTitle>{articulo.nombre}</SheetTitle>
+                <Badge
+                  variant={articulo.activo ? 'default' : 'secondary'}
+                  className="text-[11px] px-1.5 py-0"
+                >
+                  {articulo.activo ? 'Activo' : 'Inactivo'}
+                </Badge>
+              </div>
               <SheetDescription>
                 {articulo.codigo}
                 {isCampoVisible('sku') && articulo.sku ? ` · SKU: ${articulo.sku}` : ''}
               </SheetDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={articulo.activo ? 'default' : 'secondary'}>
-                {articulo.activo ? 'Activo' : 'Inactivo'}
-              </Badge>
-              <Button asChild variant="outline" size="sm" className="h-8 text-sm">
-                <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
-                  <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
-                  Editar
-                </Link>
-              </Button>
-            </div>
+            <Button asChild variant="outline" size="sm" className="h-8 text-sm">
+              <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
+                <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
+                Editar
+              </Link>
+            </Button>
           </div>
         </SheetHeader>
 
@@ -192,78 +195,61 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
           <Separator />
 
           {/* Images section */}
-          {(() => {
-            const hasEtiquetas = articulo.imagenesEtiqueta.some(u => u != null)
-            const hasProductos = articulo.imagenesProducto.some(u => u != null)
-            const hasAnyImages = hasEtiquetas || hasProductos
-
-            if (!hasAnyImages) {
-              return (
-                <div>
-                  <SectionHeader title="Sin imagenes" />
-                  <div className="mt-2 flex gap-1.5">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 rounded-sm bg-muted flex items-center justify-center"
-                      >
-                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
-                      </div>
-                    ))}
+          <div>
+            <div className="flex items-center gap-0.5 text-[10px] text-muted-foreground mb-1">
+              <span className="flex-[6] text-center">Producto</span>
+              <span className="w-px" />
+              <span className="flex-[3] text-center">Etiqueta</span>
+            </div>
+            <div className="flex items-stretch gap-1 h-14">
+              {articulo.imagenesProducto.map((url, i) =>
+                url ? (
+                  <button
+                    key={`p-${i}`}
+                    onClick={() => openLightboxForType('producto', url)}
+                    className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={API_BASE_URL + getThumbUrl(url)}
+                      className="w-full h-full object-cover"
+                      alt=""
+                    />
+                  </button>
+                ) : (
+                  <div
+                    key={`p-${i}`}
+                    className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
+                  >
+                    <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
                   </div>
-                </div>
-              )
-            }
-
-            return (
-              <div className="space-y-3">
-                {hasEtiquetas && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1.5">Etiquetas</p>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {articulo.imagenesEtiqueta
-                        .filter((u): u is string => u != null)
-                        .map((url, i) => (
-                          <button
-                            key={i}
-                            onClick={() => openLightboxForType('etiqueta', url)}
-                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                          >
-                            <img
-                              src={API_BASE_URL + getThumbUrl(url)}
-                              className="w-full h-full object-cover"
-                              alt=""
-                            />
-                          </button>
-                        ))}
-                    </div>
+                )
+              )}
+              {/* Vertical separator */}
+              <div className="w-px bg-border self-stretch mx-0.5" />
+              {articulo.imagenesEtiqueta.map((url, i) =>
+                url ? (
+                  <button
+                    key={`e-${i}`}
+                    onClick={() => openLightboxForType('etiqueta', url)}
+                    className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={API_BASE_URL + getThumbUrl(url)}
+                      className="w-full h-full object-cover"
+                      alt=""
+                    />
+                  </button>
+                ) : (
+                  <div
+                    key={`e-${i}`}
+                    className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
+                  >
+                    <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
                   </div>
-                )}
-                {hasProductos && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1.5">Productos</p>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {articulo.imagenesProducto
-                        .filter((u): u is string => u != null)
-                        .map((url, i) => (
-                          <button
-                            key={i}
-                            onClick={() => openLightboxForType('producto', url)}
-                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                          >
-                            <img
-                              src={API_BASE_URL + getThumbUrl(url)}
-                              className="w-full h-full object-cover"
-                              alt=""
-                            />
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          })()}
+                )
+              )}
+            </div>
+          </div>
 
           <Separator />
 
