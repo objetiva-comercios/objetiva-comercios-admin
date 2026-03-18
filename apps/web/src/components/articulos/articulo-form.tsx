@@ -62,6 +62,8 @@ interface ArticuloFormProps {
   showSubmitButton?: boolean
   onLoadingChange?: (loading: boolean) => void
   formId?: string
+  onToggleActivo?: () => void
+  isActivo?: boolean
 }
 
 function SectionHeader({ title }: { title: string }) {
@@ -77,6 +79,8 @@ export function ArticuloForm({
   showSubmitButton = true,
   onLoadingChange,
   formId,
+  onToggleActivo,
+  isActivo,
 }: ArticuloFormProps) {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
@@ -150,7 +154,17 @@ export function ArticuloForm({
       <form id={formId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Identificacion */}
         <div className="border rounded-sm p-4 space-y-3">
-          <SectionHeader title="Identificacion" />
+          <div className="flex items-center justify-between">
+            <SectionHeader title="Identificacion" />
+            {mode === 'edit' && onToggleActivo && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {isActivo ? 'Activo' : 'Inactivo'}
+                </span>
+                <Switch checked={isActivo} onCheckedChange={() => onToggleActivo()} />
+              </div>
+            )}
+          </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <FormField
