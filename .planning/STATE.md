@@ -5,7 +5,7 @@ milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: shipped
 stopped_at: Milestone v1.2 archived
 last_updated: '2026-03-13T01:15:00.000Z'
-last_activity: 2026-03-18 — Completed quick task 260318-fsf: Simplificar header sticky edicion articulos + Switch activo/inactivo en card Identificacion
+last_activity: 2026-03-18 — Completed quick task 260318-m5y: Redisenar seccion imagenes vista detalle
 progress:
   total_phases: 10
   completed_phases: 10
@@ -60,11 +60,12 @@ None active. All v1.2 blockers resolved.
 
 ### Quick Tasks Completed
 
-| #          | Description                                                                                 | Date       | Commit  | Directory                                                                                                           |
-| ---------- | ------------------------------------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
-| 260317-qz6 | Igualar tamaño de fuente de lista de artículos con compras/ventas/pedidos                   | 2026-03-17 | d28cd8c | [260317-qz6-igualar-tama-o-de-fuente-de-lista-de-art](./quick/260317-qz6-igualar-tama-o-de-fuente-de-lista-de-art/) |
-| 260318-2l2 | Agregar escala UI 90% global configurable con persistencia localStorage                     | 2026-03-18 | 26dadbe | [260318-2l2-agregar-escala-ui-90-global-configurable](./quick/260318-2l2-agregar-escala-ui-90-global-configurable/) |
-| 260318-fsf | Simplificar header sticky edicion articulos + Switch activo/inactivo en card Identificacion | 2026-03-18 | 83bf43b | [260318-fsf-mejoras-ui-edici-n-art-culos-bot-n-volve](./quick/260318-fsf-mejoras-ui-edici-n-art-culos-bot-n-volve/) |
+| #          | Description                                                                                    | Date       | Commit  | Directory                                                                                                           |
+| ---------- | ---------------------------------------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| 260317-qz6 | Igualar tamaño de fuente de lista de artículos con compras/ventas/pedidos                      | 2026-03-17 | d28cd8c | [260317-qz6-igualar-tama-o-de-fuente-de-lista-de-art](./quick/260317-qz6-igualar-tama-o-de-fuente-de-lista-de-art/) |
+| 260318-2l2 | Agregar escala UI 90% global configurable con persistencia localStorage                        | 2026-03-18 | 26dadbe | [260318-2l2-agregar-escala-ui-90-global-configurable](./quick/260318-2l2-agregar-escala-ui-90-global-configurable/) |
+| 260318-fsf | Simplificar header sticky edicion articulos + Switch activo/inactivo en card Identificacion    | 2026-03-18 | 83bf43b | [260318-fsf-mejoras-ui-edici-n-art-culos-bot-n-volve](./quick/260318-fsf-mejoras-ui-edici-n-art-culos-bot-n-volve/) |
+| 260318-m5y | Redisenar seccion imagenes vista detalle: 9 slots horizontales fijos (6 producto + 3 etiqueta) | 2026-03-18 | 2578ab7 | [260318-m5y-redise-ar-secci-n-im-genes-vista-detalle](./quick/260318-m5y-redise-ar-secci-n-im-genes-vista-detalle/) |
 
 ## Session Continuity
 
