@@ -17,6 +17,8 @@ export interface Articulo {
   presentacion: string | null
   medida: string | null
   objeto: string | null
+  categoria: string | null
+  subcategoria: string | null
   precio: string | null // numeric → string, use parseFloat() for display
   costo: string | null // numeric → string, use parseFloat() for display
   imagenesProducto: (string | null)[]

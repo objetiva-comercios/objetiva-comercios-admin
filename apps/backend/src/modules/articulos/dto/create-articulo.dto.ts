@@ -65,6 +65,16 @@ export class CreateArticuloDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
+  categoria?: string
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  subcategoria?: string
+
+  @IsOptional()
+  @IsString()
   precio?: string
 
   @IsOptional()

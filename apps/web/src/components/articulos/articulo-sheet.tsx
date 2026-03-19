@@ -169,7 +169,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                 {isCampoVisible('sku') && articulo.sku ? ` · SKU: ${articulo.sku}` : ''}
               </SheetDescription>
             </div>
-            <Button asChild variant="outline" size="sm" className="h-8 text-sm">
+            <Button asChild variant="default" size="sm" className="h-8 text-sm">
               <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
                 <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
                 Editar
@@ -272,6 +272,8 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               {isCampoVisible('objeto') && (
                 <FieldRow label="Tipo / Objeto" value={articulo.objeto} />
               )}
+              <FieldRow label="Categoría" value={articulo.categoria} />
+              <FieldRow label="Subcategoría" value={articulo.subcategoria} />
               {isCampoVisible('marca') && <FieldRow label="Marca" value={articulo.marca} />}
               {isCampoVisible('modelo') && <FieldRow label="Modelo" value={articulo.modelo} />}
               {isCampoVisible('talle') && <FieldRow label="Talle" value={articulo.talle} />}
@@ -361,8 +363,9 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
             </div>
           </div>
 
-          {/* Estado — compact single line */}
-          <div className="flex items-center gap-2 text-sm">
+          {/* Metadata — separated from main content */}
+          <Separator className="mt-4" />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
             <span className="text-muted-foreground">Creado</span>
             <span>{formatDate(articulo.createdAt)}</span>
             <span className="text-muted-foreground">·</span>

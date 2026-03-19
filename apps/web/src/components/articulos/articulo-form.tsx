@@ -32,6 +32,8 @@ const articuloFormSchema = z.object({
   codigoBarras: z.string().optional().or(z.literal('')),
   observaciones: z.string().optional().or(z.literal('')),
   objeto: z.string().optional().or(z.literal('')),
+  categoria: z.string().optional().or(z.literal('')),
+  subcategoria: z.string().optional().or(z.literal('')),
   marca: z.string().optional().or(z.literal('')),
   modelo: z.string().optional().or(z.literal('')),
   talle: z.string().optional().or(z.literal('')),
@@ -99,6 +101,8 @@ export function ArticuloForm({
       codigoBarras: articulo?.codigoBarras ?? '',
       observaciones: articulo?.observaciones ?? '',
       objeto: articulo?.objeto ?? '',
+      categoria: articulo?.categoria ?? '',
+      subcategoria: articulo?.subcategoria ?? '',
       marca: articulo?.marca ?? '',
       modelo: articulo?.modelo ?? '',
       talle: articulo?.talle ?? '',
@@ -261,6 +265,32 @@ export function ArticuloForm({
                   )}
                 />
               )}
+              <FormField
+                control={form.control}
+                name="categoria"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoría</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Categoría" className="h-9" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="subcategoria"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subcategoría</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Subcategoría" className="h-9" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               {isCampoVisible('marca') && (
                 <FormField
                   control={form.control}
