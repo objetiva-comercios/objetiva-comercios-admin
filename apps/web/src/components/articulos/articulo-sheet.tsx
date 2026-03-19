@@ -39,7 +39,7 @@ interface ArticuloSheetProps {
 function FieldRow({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-sm text-muted-foreground shrink-0">{label}</span>
+      <span className="text-sm font-medium text-muted-foreground shrink-0">{label}</span>
       <span className="text-sm text-right">{value ?? '—'}</span>
     </div>
   )
@@ -47,13 +47,15 @@ function FieldRow({ label, value }: { label: string; value: string | null | unde
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</h3>
+    <h3 className="text-sm font-semibold text-foreground border-l-2 border-primary pl-2">
+      {title}
+    </h3>
   )
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 bg-muted rounded-sm p-3">
+    <div className="flex-1 bg-muted rounded-sm p-3 border-l-2 border-primary/30">
       <p className="text-xs text-muted-foreground uppercase">{label}</p>
       <p className="text-xl font-semibold tabular-nums">{value}</p>
     </div>
@@ -63,7 +65,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
 function CollapsibleSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Collapsible>
-      <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-90">
+      <CollapsibleTrigger className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors [&[data-state=open]>svg]:rotate-90">
         <ChevronRight className="h-4 w-4 transition-transform" />
         {title}
       </CollapsibleTrigger>
@@ -176,7 +178,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
           </div>
         </SheetHeader>
 
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-3">
           {/* Hero stat cards */}
           <div className="flex gap-2">
             <StatCard
@@ -263,10 +265,8 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
             )
           })()}
 
-          <Separator />
-
           {/* Properties grid 2-col */}
-          <div>
+          <div className="bg-card/50 rounded-sm border p-3">
             <SectionHeader title="Propiedades" />
             <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
               {isCampoVisible('objeto') && (
@@ -297,10 +297,8 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
             )}
           </div>
 
-          <Separator />
-
           {/* Stock por Deposito */}
-          <div>
+          <div className="bg-card/50 rounded-sm border p-3">
             <SectionHeader title="Stock por Deposito" />
             <div className="mt-2 border rounded-sm">
               {stockLoading ? (
@@ -314,7 +312,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               ) : (
                 <table className="w-full text-sm">
                   <thead>
-                    <tr>
+                    <tr className="bg-muted">
                       <th className="h-8 px-3 text-left font-medium text-muted-foreground">
                         Deposito
                       </th>
@@ -362,8 +360,6 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               )}
             </div>
           </div>
-
-          <Separator />
 
           {/* Estado — compact single line */}
           <div className="flex items-center gap-2 text-sm">
