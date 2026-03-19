@@ -132,7 +132,7 @@ export default function EditarArticuloPage() {
   return (
     <>
       {/* Sticky header */}
-      <div className="sticky top-0 z-10 bg-background border-b -mx-6 -mt-6 px-6 py-3 mb-4">
+      <div className="sticky -top-6 z-10 bg-background border-b -mx-6 -mt-6 px-6 pt-6 pb-3 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <Button variant="outline" size="sm" asChild className="h-8 text-sm shrink-0">
