@@ -5,7 +5,7 @@ milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: shipped
 stopped_at: Milestone v1.2 archived
 last_updated: '2026-03-13T01:15:00.000Z'
-last_activity: 2026-03-19 — Completed quick task 260319-ly5: Mejorar visibilidad secciones vista detalle articulo
+last_activity: 2026-03-19 — Completed quick task 260319-od3: Fix boton editar, agregar categoria/subcategoria, separar metadata
 progress:
   total_phases: 10
   completed_phases: 10
@@ -67,6 +67,7 @@ None active. All v1.2 blockers resolved.
 | 260318-fsf | Simplificar header sticky edicion articulos + Switch activo/inactivo en card Identificacion    | 2026-03-18 | 83bf43b | [260318-fsf-mejoras-ui-edici-n-art-culos-bot-n-volve](./quick/260318-fsf-mejoras-ui-edici-n-art-culos-bot-n-volve/) |
 | 260318-m5y | Redisenar seccion imagenes vista detalle: 9 slots horizontales fijos (6 producto + 3 etiqueta) | 2026-03-18 | 2578ab7 | [260318-m5y-redise-ar-secci-n-im-genes-vista-detalle](./quick/260318-m5y-redise-ar-secci-n-im-genes-vista-detalle/) |
 | 260319-ly5 | Mejorar visibilidad secciones vista detalle articulo con jerarquía visual Tabler               | 2026-03-19 | 28032cc | [260319-ly5-mejorar-visibilidad-secciones-vista-deta](./quick/260319-ly5-mejorar-visibilidad-secciones-vista-deta/) |
+| 260319-od3 | Fix botón editar, agregar categoría/subcategoría end-to-end, separar metadata                  | 2026-03-19 | a505e2c | [260319-od3-fix-boton-editar-spacing-x-agregar-categ](./quick/260319-od3-fix-boton-editar-spacing-x-agregar-categ/) |
 
 ## Session Continuity
 
