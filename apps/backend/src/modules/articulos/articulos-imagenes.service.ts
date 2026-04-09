@@ -85,7 +85,7 @@ export class ArticulosImagenesService {
 
     // 6. Update DB JSONB array
     const dbField = this.getDbField(dto.tipo)
-    const currentArr: (string | null)[] = [...((articulo[dbField] as string[]) || [])]
+    const currentArr: (string | null)[] = [...(articulo[dbField] ?? [])]
 
     // Extend array with nulls if needed
     while (currentArr.length < dto.slot) {
@@ -128,7 +128,7 @@ export class ArticulosImagenesService {
 
     // 4. Update DB: set slot to null
     const dbField = this.getDbField(tipo)
-    const currentArr: (string | null)[] = [...((articulo[dbField] as string[]) || [])]
+    const currentArr: (string | null)[] = [...(articulo[dbField] ?? [])]
 
     if (slot <= currentArr.length) {
       currentArr[slot - 1] = null
