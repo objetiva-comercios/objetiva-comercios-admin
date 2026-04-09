@@ -18,8 +18,8 @@ export interface GeneratedInventarioArticulo {
   inventarioIdx: number
   articuloCodigo: string
   cantidadContada: number
+  columna: number | null
   dispositivoId: number | null
-  sectorId: number | null
   observaciones: string | null
 }
 
@@ -75,8 +75,7 @@ export function generateInventarioSectores(depositoIds: number[]): GeneratedInve
 export function generateInventarios(
   depositoIds: number[],
   articuloCodigos: string[],
-  dispositivoIds: number[],
-  sectorIds: number[]
+  dispositivoIds: number[]
 ): { inventarios: GeneratedInventario[]; inventariosArticulos: GeneratedInventarioArticulo[] } {
   const inventarios: GeneratedInventario[] = []
   const inventariosArticulos: GeneratedInventarioArticulo[] = []
@@ -108,13 +107,12 @@ export function generateInventarios(
         inventarioIdx: i,
         articuloCodigo,
         cantidadContada: faker.number.int({ min: 0, max: 100 }),
+        columna: faker.datatype.boolean(0.8)
+          ? faker.number.int({ min: 1, max: 200 })
+          : null,
         dispositivoId: faker.datatype.boolean(0.4)
           ? faker.helpers.arrayElement(dispositivoIds)
           : null,
-        sectorId:
-          faker.datatype.boolean(0.5) && sectorIds.length > 0
-            ? faker.helpers.arrayElement(sectorIds)
-            : null,
         observaciones: faker.datatype.boolean(0.2) ? faker.lorem.sentence() : null,
       })
     }

@@ -367,10 +367,8 @@ export const inventariosArticulos = pgTable(
       .notNull()
       .references(() => articulos.codigo, { onDelete: 'restrict' }),
     cantidadContada: integer('cantidad_contada').notNull().default(0),
+    columna: integer('columna'),
     dispositivoId: integer('dispositivo_id').references(() => dispositivosMoviles.id, {
-      onDelete: 'set null',
-    }),
-    sectorId: integer('sector_id').references(() => inventarioSectores.id, {
       onDelete: 'set null',
     }),
     observaciones: text('observaciones'),
