@@ -13,7 +13,7 @@ export default async function DashboardPage() {
     <div className="space-y-4">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2"><LayoutDashboard className="h-8 w-8" style={{ color: '#056ed1' }} />Panel</h1>
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2"><LayoutDashboard className="h-7 w-7" style={{ color: '#056ed1' }} />Panel</h1>
         <p className="text-muted-foreground">
           Resumen de las métricas de tu negocio e indicadores clave de rendimiento
         </p>
