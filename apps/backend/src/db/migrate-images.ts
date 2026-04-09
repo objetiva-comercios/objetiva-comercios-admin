@@ -275,8 +275,8 @@ async function main() {
     rows = await sourceDb`
       SELECT codigo, label_images, article_images, label_ocrs, descripcion_web, json_articulo
       FROM articulos
-      WHERE (label_images IS NOT NULL AND label_images != '[]'::jsonb)
-         OR (article_images IS NOT NULL AND article_images != '[]'::jsonb)
+      WHERE (label_images IS NOT NULL AND array_length(label_images, 1) > 0)
+         OR (article_images IS NOT NULL AND array_length(article_images, 1) > 0)
     `
   }
 
