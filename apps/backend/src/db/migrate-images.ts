@@ -1,9 +1,11 @@
 /**
  * migrate-images.ts
  *
- * Lee imagenes_producto e imagenes_etiqueta de articulos con rutas viejas
- * (/images/...), re-procesa los JPG con sharp (thumb + detail webp),
- * y actualiza la DB con las rutas nuevas (/api/uploads/articulos/...).
+ * Lee label_images y article_images de la DB `sanchez` (fuente),
+ * procesa los JPG con sharp (thumb + detail webp),
+ * y escribe las rutas nuevas en `erp_sanchez.articulos`.
+ *
+ * Tambien copia label_ocrs, descripcion_web y json_articulo.
  *
  * Uso:
  *   pnpm tsx src/db/migrate-images.ts C30421MA           # uno solo
@@ -18,8 +20,14 @@ import { existsSync } from 'fs'
 import { join } from 'path'
 import sharp from 'sharp'
 
-const sql = postgres(process.env.DATABASE_URL!)
-// uploads/ esta en la raiz del monorepo, no en apps/backend/
+// ── Conexiones a las dos DBs ──────────────────────────────────────────
+
+const sourceDb = postgres('postgresql://sanchez:S4nch3zR3pu3st0s@localhost:5432/sanchez')
+const targetDb = postgres('postgresql://sanchez:S4nch3zR3pu3st0s@localhost:5432/erp_sanchez')
+
+// ── Rutas base ────────────────────────────────────────────────────────
+
+const ALFRED_BASE = '/home/sanchez/proyectos/sanchez-vps-alfred/uploads/pim/inventario'
 const MONOREPO_ROOT = join(process.cwd(), '..', '..')
 const UPLOADS_BASE = join(MONOREPO_ROOT, 'uploads', 'articulos')
 
@@ -44,13 +52,34 @@ function subdir(tipo: 'etiqueta' | 'producto'): string {
 }
 
 /**
- * Dado "/images/labelImages_xxx_1.jpg", busca el archivo real en disco.
+ * Resuelve una ruta de imagen fuente desde ALFRED_BASE.
+ * Las rutas en la DB sanchez son como "/images/temporales/IMG_xxx.jpg"
  */
-function resolveOldFile(oldPath: string, tipo: 'etiqueta' | 'producto'): string | null {
-  const filename = oldPath.split('/').pop()
-  if (!filename) return null
-  const fullPath = join(UPLOADS_BASE, subdir(tipo), filename)
+function resolveSourceFile(sourcePath: string): string | null {
+  // Quitar el / inicial si lo tiene para hacer join correcto
+  const relative = sourcePath.startsWith('/') ? sourcePath.slice(1) : sourcePath
+  const fullPath = join(ALFRED_BASE, relative)
   return existsSync(fullPath) ? fullPath : null
+}
+
+/**
+ * Revisa si ya existen los webp procesados para este codigo/slot/tipo.
+ * Retorna la URL del detail si ambos existen, null si no.
+ */
+function checkExistingWebp(
+  codigo: string,
+  tipo: 'etiqueta' | 'producto',
+  slot: number
+): string | null {
+  const outputDir = join(UPLOADS_BASE, subdir(tipo))
+  const thumbPath = join(outputDir, buildFileName(codigo, slot, 'thumb'))
+  const detailPath = join(outputDir, buildFileName(codigo, slot, 'detail'))
+  const detailName = buildFileName(codigo, slot, 'detail')
+
+  if (existsSync(thumbPath) && existsSync(detailPath)) {
+    return `/api/uploads/articulos/${subdir(tipo)}/${detailName}`
+  }
+  return null
 }
 
 async function processImage(
@@ -66,7 +95,7 @@ async function processImage(
   const detailUrl = `/api/uploads/articulos/${subdir(tipo)}/${detailName}`
 
   if (dryRun) {
-    console.log(`    [DRY-RUN] ${filePath} → ${detailName} + ${thumbName}`)
+    console.log(`    [DRY-RUN] ${filePath} -> ${detailName} + ${thumbName}`)
     return detailUrl
   }
 
@@ -87,58 +116,87 @@ async function processImage(
   await writeFile(join(outputDir, detailName), detailBuffer)
 
   console.log(
-    `    ✓ ${detailName} (${(detailBuffer.length / 1024).toFixed(0)}KB) + ${thumbName} (${(thumbBuffer.length / 1024).toFixed(0)}KB)`
+    `    + ${detailName} (${(detailBuffer.length / 1024).toFixed(0)}KB) + ${thumbName} (${(thumbBuffer.length / 1024).toFixed(0)}KB)`
   )
   return detailUrl
 }
 
 // ── Tipos ─────────────────────────────────────────────────────────────
 
-interface ArticuloRow {
+interface SourceRow {
   codigo: string
-  imagenes_producto: string[] | null
-  imagenes_etiqueta: string[] | null
+  label_images: string[] | null  // jsonb en sanchez, postgres lib lo parsea
+  article_images: string[] | null
+  label_ocrs: string[] | null
+  descripcion_web: string | null
+  json_articulo: unknown | null
 }
 
 type TipoConfig = {
   tipo: 'etiqueta' | 'producto'
-  field: 'imagenes_etiqueta' | 'imagenes_producto'
+  sourceField: 'label_images' | 'article_images'
+  targetField: 'imagenes_etiqueta' | 'imagenes_producto'
 }
 
 const TIPOS: TipoConfig[] = [
-  { tipo: 'etiqueta', field: 'imagenes_etiqueta' },
-  { tipo: 'producto', field: 'imagenes_producto' },
+  { tipo: 'etiqueta', sourceField: 'label_images', targetField: 'imagenes_etiqueta' },
+  { tipo: 'producto', sourceField: 'article_images', targetField: 'imagenes_producto' },
 ]
 
+// Contadores globales de imagenes
+let imagesProcessed = 0
+let imagesReused = 0
+
 async function migrateArticulo(
-  art: ArticuloRow,
+  art: SourceRow,
+  targetExisting: { imagenes_etiqueta: string[] | null; imagenes_producto: string[] | null } | null,
   dryRun: boolean
 ): Promise<{ changed: boolean; errors: string[] }> {
   const errors: string[] = []
-  const updates: Record<string, (string | null)[]> = {}
   let changed = false
 
-  for (const { tipo, field } of TIPOS) {
-    const arr = art[field] || []
-    if (arr.length === 0) continue
+  // Verificar si ya esta migrado en target
+  if (targetExisting) {
+    const etiqArr = targetExisting.imagenes_etiqueta || []
+    const prodArr = targetExisting.imagenes_producto || []
+    if (
+      etiqArr.some(u => u?.startsWith('/api/uploads/')) ||
+      prodArr.some(u => u?.startsWith('/api/uploads/'))
+    ) {
+      console.log('  -> ya migrado, saltando')
+      return { changed: false, errors: [] }
+    }
+  }
 
-    // Ya migrado
-    if (arr.some(u => u?.startsWith('/api/uploads/'))) continue
-    // Sin formato viejo
-    if (!arr.some(u => u?.startsWith('/images/'))) continue
+  const newEtiquetas: (string | null)[] = []
+  const newProductos: (string | null)[] = []
+
+  for (const { tipo, sourceField, targetField } of TIPOS) {
+    const rawArr = art[sourceField]
+    // jsonb array: filtrar nulls y strings vacios
+    const arr = (rawArr || []).filter((v: unknown) => typeof v === 'string' && (v as string).trim() !== '')
+    if (arr.length === 0) continue
 
     const newArr: (string | null)[] = []
 
     for (let i = 0; i < arr.length; i++) {
-      const oldUrl = arr[i]
-      if (!oldUrl || !oldUrl.startsWith('/images/')) {
-        newArr.push(oldUrl)
+      const sourcePath = arr[i] as string
+
+      // Verificar si ya existe el webp procesado
+      const existingUrl = checkExistingWebp(art.codigo, tipo, i + 1)
+      if (existingUrl) {
+        console.log(`    ~ reusando: ${buildFileName(art.codigo, i + 1, 'detail')}`)
+        newArr.push(existingUrl)
+        imagesReused++
+        changed = true
         continue
       }
 
-      const filePath = resolveOldFile(oldUrl, tipo)
+      // Resolver archivo fuente desde alfred
+      const filePath = resolveSourceFile(sourcePath)
       if (!filePath) {
-        errors.push(`${tipo} slot ${i + 1}: archivo no encontrado para ${oldUrl}`)
+        console.log(`  ! ${art.codigo} slot ${i + 1}: fuente no encontrada: ${sourcePath}`)
+        errors.push(`${tipo} slot ${i + 1}: fuente no encontrada: ${sourcePath}`)
         newArr.push(null)
         continue
       }
@@ -146,6 +204,7 @@ async function migrateArticulo(
       try {
         const newUrl = await processImage(filePath, art.codigo, tipo, i + 1, dryRun)
         newArr.push(newUrl)
+        imagesProcessed++
         changed = true
       } catch (err) {
         errors.push(`${tipo} slot ${i + 1}: error procesando: ${(err as Error).message}`)
@@ -153,19 +212,34 @@ async function migrateArticulo(
       }
     }
 
-    updates[field] = newArr
+    if (targetField === 'imagenes_etiqueta') {
+      newEtiquetas.push(...newArr)
+    } else {
+      newProductos.push(...newArr)
+    }
   }
 
   if (changed && !dryRun) {
-    const etiq = updates.imagenes_etiqueta
-    const prod = updates.imagenes_producto
-    if (etiq && prod) {
-      await sql`UPDATE articulos SET imagenes_etiqueta = ${etiq}, imagenes_producto = ${prod}, actualizado = now() WHERE codigo = ${art.codigo}`
-    } else if (etiq) {
-      await sql`UPDATE articulos SET imagenes_etiqueta = ${etiq}, actualizado = now() WHERE codigo = ${art.codigo}`
-    } else if (prod) {
-      await sql`UPDATE articulos SET imagenes_producto = ${prod}, actualizado = now() WHERE codigo = ${art.codigo}`
-    }
+    const etiq = newEtiquetas.length > 0 ? newEtiquetas : null
+    const prod = newProductos.length > 0 ? newProductos : null
+    const ocrs = art.label_ocrs && art.label_ocrs.length > 0
+      ? (art.label_ocrs as string[])
+      : null
+    const descWeb = art.descripcion_web || null
+    const jsonArt = art.json_articulo ? JSON.stringify(art.json_articulo) : null
+
+    // Un solo UPDATE con todos los campos; los null no sobreescriben
+    // porque usamos COALESCE para preservar valores existentes
+    await targetDb`
+      UPDATE articulos SET
+        imagenes_etiqueta = COALESCE(${etiq}::text[], imagenes_etiqueta),
+        imagenes_producto = COALESCE(${prod}::text[], imagenes_producto),
+        etiquetas_ocr = COALESCE(${ocrs}::text[], etiquetas_ocr),
+        descripcion_web = COALESCE(${descWeb}::text, descripcion_web),
+        json_articulo = COALESCE(${jsonArt}::jsonb, json_articulo),
+        actualizado = now()
+      WHERE codigo = ${art.codigo}
+    `
   }
 
   return { changed, errors }
@@ -178,29 +252,35 @@ async function main() {
   const dryRun = args.includes('--dry-run')
   const codigoArg = args.find(a => !a.startsWith('--'))
 
-  if (dryRun) console.log('=== DRY RUN — no se escribe nada ===\n')
+  console.log('Migracion de imagenes: sanchez -> erp_sanchez')
+  console.log(`Source DB: sanchez | Target DB: erp_sanchez`)
+  console.log(`Alfred base: ${ALFRED_BASE}`)
+  console.log(`Uploads base: ${UPLOADS_BASE}`)
+  if (dryRun) console.log('\n=== DRY RUN -- no se escribe nada ===')
+  console.log()
 
-  let rows: ArticuloRow[]
+  let rows: SourceRow[]
 
   if (codigoArg) {
-    rows = await sql`
-      SELECT codigo, imagenes_producto, imagenes_etiqueta
-      FROM articulos WHERE codigo = ${codigoArg}
+    rows = await sourceDb`
+      SELECT codigo, label_images, article_images, label_ocrs, descripcion_web, json_articulo
+      FROM articulos
+      WHERE codigo = ${codigoArg}
     `
     if (rows.length === 0) {
-      console.error(`Articulo ${codigoArg} no encontrado`)
+      console.error(`Articulo ${codigoArg} no encontrado en DB sanchez`)
       process.exit(1)
     }
   } else {
-    rows = await sql`
-      SELECT codigo, imagenes_producto, imagenes_etiqueta
+    rows = await sourceDb`
+      SELECT codigo, label_images, article_images, label_ocrs, descripcion_web, json_articulo
       FROM articulos
-      WHERE array_to_string(imagenes_producto, ',') LIKE '%/images/%'
-         OR array_to_string(imagenes_etiqueta, ',') LIKE '%/images/%'
+      WHERE (label_images IS NOT NULL AND label_images != '[]'::jsonb)
+         OR (article_images IS NOT NULL AND article_images != '[]'::jsonb)
     `
   }
 
-  console.log(`Articulos a procesar: ${rows.length}\n`)
+  console.log(`Articulos a procesar (fuente): ${rows.length}\n`)
 
   let processed = 0
   let migrated = 0
@@ -208,12 +288,29 @@ async function main() {
   let withErrors = 0
 
   for (const art of rows) {
-    console.log(`[${processed + 1}/${rows.length}] ${art.codigo}`)
+    const etiqCount = ((art.label_images || []) as string[]).filter(v => typeof v === 'string' && v.trim() !== '').length
+    const prodCount = ((art.article_images || []) as string[]).filter(v => typeof v === 'string' && v.trim() !== '').length
+    console.log(`[${processed + 1}/${rows.length}] ${art.codigo} -- ${etiqCount} etiqueta(s), ${prodCount} producto(s)`)
 
-    const result = await migrateArticulo(art, dryRun)
+    // Buscar estado actual en target
+    const targetRows = await targetDb`
+      SELECT imagenes_etiqueta, imagenes_producto
+      FROM articulos WHERE codigo = ${art.codigo}
+    `
+    const targetExisting = targetRows.length > 0
+      ? targetRows[0] as { imagenes_etiqueta: string[] | null; imagenes_producto: string[] | null }
+      : null
+
+    if (!targetExisting) {
+      console.log('  -> codigo no existe en erp_sanchez, saltando')
+      skipped++
+      processed++
+      continue
+    }
+
+    const result = await migrateArticulo(art, targetExisting, dryRun)
 
     if (!result.changed) {
-      console.log('  → sin cambios')
       skipped++
     } else {
       migrated++
@@ -221,21 +318,22 @@ async function main() {
 
     if (result.errors.length > 0) {
       withErrors++
-      for (const e of result.errors) console.log(`  ⚠ ${e}`)
     }
 
     processed++
   }
 
   console.log(`\n=== Resumen ===`)
-  console.log(
-    `Total: ${processed} | Migrados: ${migrated} | Sin cambios: ${skipped} | Con errores: ${withErrors}`
-  )
+  console.log(`Total: ${processed} | Migrados: ${migrated} | Sin cambios/saltados: ${skipped} | Con errores: ${withErrors}`)
+  console.log(`Imagenes procesadas: ${imagesProcessed} | Imagenes reusadas (webp existente): ${imagesReused}`)
 
-  await sql.end()
+  await sourceDb.end()
+  await targetDb.end()
 }
 
-main().catch(err => {
+main().catch(async err => {
   console.error('Error fatal:', err)
+  await sourceDb.end().catch(() => {})
+  await targetDb.end().catch(() => {})
   process.exit(1)
 })
