@@ -170,7 +170,7 @@ export default function EditarArticuloPage() {
             onLoadingChange={setFormLoading}
             formId="articulo-edit-form"
             onToggleActivo={() => setShowToggleDialog(true)}
-            isActivo={articulo.activo}
+            isActivo={articulo.activo ?? true}
           />
         </div>
 
