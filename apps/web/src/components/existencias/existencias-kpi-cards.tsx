@@ -25,7 +25,7 @@ const cards: {
   {
     key: 'totalConStock',
     status: 'normal',
-    label: 'Total con Stock',
+    label: 'Con unidades',
     icon: PackageIcon,
     activeClass: 'ring-2 ring-primary border-primary',
     iconClass: 'text-muted-foreground',
@@ -33,7 +33,7 @@ const cards: {
   {
     key: 'stockBajo',
     status: 'bajo',
-    label: 'Stock Bajo',
+    label: 'Bajo minimo',
     icon: AlertTriangleIcon,
     activeClass: 'ring-2 ring-yellow-400 border-yellow-200',
     iconClass: 'text-yellow-600',
@@ -41,7 +41,7 @@ const cards: {
   {
     key: 'sinStock',
     status: 'sin_stock',
-    label: 'Sin Stock',
+    label: 'Sin unidades',
     icon: XCircleIcon,
     activeClass: 'ring-2 ring-red-400 border-red-200',
     iconClass: 'text-red-600',
