@@ -1,19 +1,22 @@
-import { IsString, IsOptional, IsArray, IsBoolean, IsInt } from 'class-validator'
+import { IsString, IsOptional, MaxLength, IsArray, IsBoolean, IsInt } from 'class-validator'
 
 export class CreateArticuloDto {
   @IsString()
+  @MaxLength(50)
   codigo!: string
 
-  @IsOptional()
   @IsString()
-  nombre?: string
+  @MaxLength(255)
+  nombre!: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   sku?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   codigoBarras?: string
 
   @IsOptional()
@@ -22,95 +25,43 @@ export class CreateArticuloDto {
 
   @IsOptional()
   @IsString()
-  codigoEquivalencia?: string
-
-  @IsOptional()
-  @IsString()
-  nombreCorto?: string
-
-  @IsOptional()
-  @IsString()
-  descripcion?: string
-
-  @IsOptional()
-  @IsString()
-  descripcionWeb?: string
-
-  @IsOptional()
-  @IsString()
-  categoria?: string
-
-  @IsOptional()
-  @IsString()
-  subcategoria?: string
-
-  @IsOptional()
-  @IsString()
-  rubro?: string
-
-  @IsOptional()
-  @IsString()
-  subrubro?: string
-
-  @IsOptional()
-  @IsString()
-  adjetivo?: string
-
-  @IsOptional()
-  @IsString()
+  @MaxLength(100)
   marca?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   modelo?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   talle?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   color?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   material?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   presentacion?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   medida?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   objeto?: string
-
-  @IsOptional()
-  @IsString()
-  propAux1?: string
-
-  @IsOptional()
-  @IsString()
-  propAux2?: string
-
-  @IsOptional()
-  @IsString()
-  propAux3?: string
-
-  @IsOptional()
-  @IsString()
-  propAux4?: string
-
-  @IsOptional()
-  @IsString()
-  propAux5?: string
-
-  @IsOptional()
-  @IsInt()
-  unidades?: number
 
   @IsOptional()
   @IsString()
@@ -130,10 +81,6 @@ export class CreateArticuloDto {
 
   @IsOptional()
   @IsArray()
-  imagenesProductoProcesadas?: string[]
-
-  @IsOptional()
-  @IsArray()
   etiquetasOcr?: string[]
 
   @IsOptional()
@@ -141,14 +88,17 @@ export class CreateArticuloDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   erpId?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   erpCodigo?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(255)
   erpNombre?: string
 
   @IsOptional()
@@ -172,10 +122,12 @@ export class CreateArticuloDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   originSource?: string
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   originSyncId?: string
 
   @IsOptional()
