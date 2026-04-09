@@ -5,7 +5,7 @@ milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: shipped
 stopped_at: Milestone v1.2 archived
 last_updated: '2026-03-13T01:15:00.000Z'
-last_activity: 2026-04-09 — Completed quick task 260409-jwl: Sync Drizzle schema with production DB
+last_activity: 2026-04-09 — Completed quick task 260409-lik: Auditar modelo stock/depositos/unidades + migrar a existencias + trigger PG
 progress:
   total_phases: 10
   completed_phases: 10
@@ -70,6 +70,7 @@ None active. All v1.2 blockers resolved.
 | 260319-od3 | Fix botón editar, agregar categoría/subcategoría end-to-end, separar metadata                  | 2026-03-19 | a505e2c | [260319-od3-fix-boton-editar-spacing-x-agregar-categ](./quick/260319-od3-fix-boton-editar-spacing-x-agregar-categ/) |
 | 260319-whs | Fix sticky header gap en edición y error 500 al subir imagen (text[] → jsonb)                  | 2026-03-19 | f4a232d | [260319-whs-fix-sticky-header-gap-y-error-upload-ima](./quick/260319-whs-fix-sticky-header-gap-y-error-upload-ima/) |
 | 260409-jwl | Sync Drizzle schema with production DB                                                         | 2026-04-09 | ab23b75 | [260409-jwl-sync-drizzle-schema-with-production-db](./quick/260409-jwl-sync-drizzle-schema-with-production-db/)     |
+| 260409-lik | Auditar modelo stock/depositos/unidades + migrar a existencias + trigger PG                     | 2026-04-09 | 79ed24b | [260409-lik-auditar-modelo-stock-depositos-unidades-](./quick/260409-lik-auditar-modelo-stock-depositos-unidades-/) |
 
 ## Session Continuity
 
