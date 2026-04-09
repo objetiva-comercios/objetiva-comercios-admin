@@ -39,7 +39,7 @@ interface ArticuloSheetProps {
 function FieldRow({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-sm font-medium text-muted-foreground shrink-0">{label}</span>
+      <span className="text-sm text-muted-foreground shrink-0">{label}</span>
       <span className="text-sm text-right">{value ?? '—'}</span>
     </div>
   )
@@ -47,15 +47,13 @@ function FieldRow({ label, value }: { label: string; value: string | null | unde
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h3 className="text-sm font-semibold text-foreground border-l-2 border-primary pl-2">
-      {title}
-    </h3>
+    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</h3>
   )
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 bg-muted rounded-sm p-3 border-l-2 border-primary/30">
+    <div className="flex-1 bg-muted rounded-sm p-3">
       <p className="text-xs text-muted-foreground uppercase">{label}</p>
       <p className="text-xl font-semibold tabular-nums">{value}</p>
     </div>
@@ -65,7 +63,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
 function CollapsibleSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Collapsible>
-      <CollapsibleTrigger className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors [&[data-state=open]>svg]:rotate-90">
+      <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-90">
         <ChevronRight className="h-4 w-4 transition-transform" />
         {title}
       </CollapsibleTrigger>
@@ -151,34 +149,31 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[480px] md:w-[640px] sm:max-w-2xl overflow-y-auto">
+      <SheetContent className="w-[400px] md:w-[540px] sm:max-w-lg overflow-y-auto">
         <SheetHeader>
           <div className="flex items-center justify-between pr-2">
             <div>
-              <div className="flex items-center gap-2">
-                <SheetTitle>{articulo.nombre}</SheetTitle>
-                <Badge
-                  variant={articulo.activo ? 'default' : 'secondary'}
-                  className="text-[11px] px-1.5 py-0"
-                >
-                  {articulo.activo ? 'Activo' : 'Inactivo'}
-                </Badge>
-              </div>
+              <SheetTitle>{articulo.nombre}</SheetTitle>
               <SheetDescription>
                 {articulo.codigo}
                 {isCampoVisible('sku') && articulo.sku ? ` · SKU: ${articulo.sku}` : ''}
               </SheetDescription>
             </div>
-            <Button asChild variant="default" size="sm" className="h-8 text-sm">
-              <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
-                <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
-                Editar
-              </Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Badge variant={articulo.activo ? 'default' : 'secondary'}>
+                {articulo.activo ? 'Activo' : 'Inactivo'}
+              </Badge>
+              <Button asChild variant="outline" size="sm" className="h-8 text-sm">
+                <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
+                  <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
+                  Editar
+                </Link>
+              </Button>
+            </div>
           </div>
         </SheetHeader>
 
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 space-y-4">
           {/* Hero stat cards */}
           <div className="flex gap-2">
             <StatCard
@@ -198,82 +193,87 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
           {/* Images section */}
           {(() => {
-            const productoSlots = Array.from(
-              { length: 6 },
-              (_, i) => articulo.imagenesProducto[i] ?? null
-            )
-            const etiquetaSlots = Array.from(
-              { length: 3 },
-              (_, i) => articulo.imagenesEtiqueta[i] ?? null
-            )
+            const hasEtiquetas = articulo.imagenesEtiqueta.some(u => u != null)
+            const hasProductos = articulo.imagenesProducto.some(u => u != null)
+            const hasAnyImages = hasEtiquetas || hasProductos
+
+            if (!hasAnyImages) {
+              return (
+                <div>
+                  <SectionHeader title="Sin imagenes" />
+                  <div className="mt-2 flex gap-1.5">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-10 h-10 rounded-sm bg-muted flex items-center justify-center"
+                      >
+                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            }
+
             return (
-              <div>
-                <div className="flex items-center gap-0.5 text-[10px] text-muted-foreground mb-1">
-                  <span className="flex-[6] text-center">Producto</span>
-                  <span className="w-px" />
-                  <span className="flex-[3] text-center">Etiqueta</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {productoSlots.map((url, i) =>
-                    url ? (
-                      <button
-                        key={`p-${i}`}
-                        onClick={() => openLightboxForType('producto', url)}
-                        className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                      >
-                        <img
-                          src={API_BASE_URL + getThumbUrl(url)}
-                          className="w-full h-full object-cover"
-                          alt=""
-                        />
-                      </button>
-                    ) : (
-                      <div
-                        key={`p-${i}`}
-                        className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
-                      >
-                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
-                      </div>
-                    )
-                  )}
-                  {/* Vertical separator */}
-                  <div className="w-px self-stretch bg-border mx-0.5" />
-                  {etiquetaSlots.map((url, i) =>
-                    url ? (
-                      <button
-                        key={`e-${i}`}
-                        onClick={() => openLightboxForType('etiqueta', url)}
-                        className="flex-1 min-w-0 aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                      >
-                        <img
-                          src={API_BASE_URL + getThumbUrl(url)}
-                          className="w-full h-full object-cover"
-                          alt=""
-                        />
-                      </button>
-                    ) : (
-                      <div
-                        key={`e-${i}`}
-                        className="flex-1 min-w-0 aspect-square rounded-sm bg-muted flex items-center justify-center"
-                      >
-                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
-                      </div>
-                    )
-                  )}
-                </div>
+              <div className="space-y-3">
+                {hasEtiquetas && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1.5">Etiquetas</p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {articulo.imagenesEtiqueta
+                        .filter((u): u is string => u != null)
+                        .map((url, i) => (
+                          <button
+                            key={i}
+                            onClick={() => openLightboxForType('etiqueta', url)}
+                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                          >
+                            <img
+                              src={API_BASE_URL + getThumbUrl(url)}
+                              className="w-full h-full object-cover"
+                              alt=""
+                            />
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+                {hasProductos && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1.5">Productos</p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {articulo.imagenesProducto
+                        .filter((u): u is string => u != null)
+                        .map((url, i) => (
+                          <button
+                            key={i}
+                            onClick={() => openLightboxForType('producto', url)}
+                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
+                          >
+                            <img
+                              src={API_BASE_URL + getThumbUrl(url)}
+                              className="w-full h-full object-cover"
+                              alt=""
+                            />
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )
           })()}
 
+          <Separator />
+
           {/* Properties grid 2-col */}
-          <div className="bg-card/50 rounded-sm border p-3">
+          <div>
             <SectionHeader title="Propiedades" />
             <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
               {isCampoVisible('objeto') && (
                 <FieldRow label="Tipo / Objeto" value={articulo.objeto} />
               )}
-              <FieldRow label="Categoría" value={articulo.categoria} />
-              <FieldRow label="Subcategoría" value={articulo.subcategoria} />
               {isCampoVisible('marca') && <FieldRow label="Marca" value={articulo.marca} />}
               {isCampoVisible('modelo') && <FieldRow label="Modelo" value={articulo.modelo} />}
               {isCampoVisible('talle') && <FieldRow label="Talle" value={articulo.talle} />}
@@ -299,8 +299,10 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
             )}
           </div>
 
+          <Separator />
+
           {/* Stock por Deposito */}
-          <div className="bg-card/50 rounded-sm border p-3">
+          <div>
             <SectionHeader title="Stock por Deposito" />
             <div className="mt-2 border rounded-sm">
               {stockLoading ? (
@@ -314,7 +316,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               ) : (
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-muted">
+                    <tr>
                       <th className="h-8 px-3 text-left font-medium text-muted-foreground">
                         Deposito
                       </th>
@@ -363,9 +365,10 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
             </div>
           </div>
 
-          {/* Metadata — separated from main content */}
-          <Separator className="mt-4" />
-          <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+          <Separator />
+
+          {/* Estado — compact single line */}
+          <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Creado</span>
             <span>{formatDate(articulo.createdAt)}</span>
             <span className="text-muted-foreground">·</span>

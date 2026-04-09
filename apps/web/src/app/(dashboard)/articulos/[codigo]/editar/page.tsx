@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2 } from 'lucide-react'
 import type { Articulo } from '@/types/articulo'
 import { fetchArticuloByCodigoClient, toggleArticuloActivo, deleteArticulo } from '@/lib/api.client'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -132,18 +133,31 @@ export default function EditarArticuloPage() {
   return (
     <>
       {/* Sticky header */}
-      <div className="sticky -top-6 z-10 bg-background border-b -mx-6 -mt-6 px-6 pt-6 pb-3 mb-4">
+      <div className="sticky top-0 z-10 bg-background border-b -mx-6 px-6 py-3 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <Button variant="outline" size="sm" asChild className="h-8 text-sm shrink-0">
+            <Button variant="ghost" size="sm" asChild className="shrink-0">
               <Link href="/articulos">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Volver
               </Link>
             </Button>
-            <h1 className="text-lg font-semibold tracking-tight">Editar: {articulo.nombre}</h1>
+            <h1 className="text-lg font-semibold tracking-tight truncate max-w-[300px]">
+              Editar: {articulo.nombre}
+            </h1>
+            <Badge variant={articulo.activo ? 'default' : 'secondary'} className="shrink-0">
+              {articulo.activo ? 'Activo' : 'Inactivo'}
+            </Badge>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant={articulo.activo ? 'destructive' : 'outline'}
+              size="sm"
+              className="h-8 text-sm"
+              onClick={() => setShowToggleDialog(true)}
+            >
+              {articulo.activo ? 'Desactivar' : 'Reactivar'}
+            </Button>
             <Button
               type="submit"
               size="sm"
@@ -169,8 +183,6 @@ export default function EditarArticuloPage() {
             showSubmitButton={false}
             onLoadingChange={setFormLoading}
             formId="articulo-edit-form"
-            onToggleActivo={() => setShowToggleDialog(true)}
-            isActivo={articulo.activo ?? true}
           />
         </div>
 

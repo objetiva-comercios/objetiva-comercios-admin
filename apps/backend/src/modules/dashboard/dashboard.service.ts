@@ -21,7 +21,7 @@ interface DashboardStats {
 
 interface LowStockItem {
   articuloCodigo: string
-  articuloNombre: string | null
+  articuloNombre: string
   totalCantidad: number
   minStockMinimo: number
 }

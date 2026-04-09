@@ -4,12 +4,9 @@ import { useTheme } from 'next-themes'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Monitor, Moon, Sun } from 'lucide-react'
-import { useUiScale } from '@/hooks/use-ui-scale'
-import { cn } from '@/lib/utils'
 
 export default function AppearancePage() {
   const { theme, setTheme } = useTheme()
-  const { scale, setScale } = useUiScale()
 
   return (
     <div className="space-y-6">
@@ -61,38 +58,6 @@ export default function AppearancePage() {
               </Label>
             </div>
           </RadioGroup>
-        </div>
-      </div>
-
-      <div className="rounded-lg border p-6">
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-medium">Escala de interfaz</h3>
-            <p className="text-sm text-muted-foreground">
-              Ajustá el tamaño general de la interfaz.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {[80, 85, 90, 95, 100].map(value => (
-              <button
-                key={value}
-                onClick={() => setScale(value)}
-                className={cn(
-                  'inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors',
-                  scale === value
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-input bg-background hover:bg-accent hover:text-accent-foreground'
-                )}
-              >
-                {value}%
-              </button>
-            ))}
-          </div>
-
-          <p className="text-xs text-muted-foreground">
-            Escala actual: {scale}%. El valor por defecto es 90%.
-          </p>
         </div>
       </div>
     </div>

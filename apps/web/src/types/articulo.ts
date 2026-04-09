@@ -5,19 +5,10 @@
  */
 export interface Articulo {
   codigo: string // PK — text, e.g. "ART-001"
-  nombre: string | null
+  nombre: string
   sku: string | null
   codigoBarras: string | null
   observaciones: string | null
-  codigoEquivalencia: string | null
-  nombreCorto: string | null
-  descripcion: string | null
-  descripcionWeb: string | null
-  categoria: string | null
-  subcategoria: string | null
-  rubro: string | null
-  subrubro: string | null
-  adjetivo: string | null
   marca: string | null
   modelo: string | null
   talle: string | null
@@ -26,17 +17,10 @@ export interface Articulo {
   presentacion: string | null
   medida: string | null
   objeto: string | null
-  propAux1: string | null
-  propAux2: string | null
-  propAux3: string | null
-  propAux4: string | null
-  propAux5: string | null
-  unidades: number | null
   precio: string | null // numeric → string, use parseFloat() for display
   costo: string | null // numeric → string, use parseFloat() for display
   imagenesProducto: (string | null)[]
   imagenesEtiqueta: (string | null)[]
-  imagenesProductoProcesadas: string[] | null
   etiquetasOcr: string[]
   jsonArticulo: unknown | null
   erpId: string | null
@@ -48,12 +32,10 @@ export interface Articulo {
   erpDatos: unknown | null
   erpSincronizado: boolean | null
   erpFechaSync: string | null // Date serialized as string from API
-  erpCreado: string | null // Date serialized as string from API
-  erpActualizado: string | null // Date serialized as string from API
   originSource: string | null
   originSyncId: string | null
   originSyncedAt: string | null // Date serialized as string from API
-  activo: boolean | null
+  activo: boolean
   createdAt: string // Date serialized as string from API
   updatedAt: string // Date serialized as string from API
 }

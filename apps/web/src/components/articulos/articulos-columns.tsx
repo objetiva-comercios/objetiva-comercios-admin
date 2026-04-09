@@ -141,11 +141,11 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
       },
     },
     {
-      accessorKey: 'erpUnidades',
+      accessorKey: 'unidades',
       header: 'Unidades',
       enableSorting: false,
       cell: ({ row }) => {
-        const unidades = row.getValue('erpUnidades') as number | null
+        const unidades = row.getValue('unidades') as number | null
         return (
           <div className="text-sm">
             {unidades !== null && unidades !== undefined ? unidades : '-'}
