@@ -55,7 +55,7 @@ export function Sidebar({ className, branding }: SidebarProps) {
                     : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4" style={isActive ? undefined : { color: '#056ed1' }} />
                 <span>{route.label}</span>
               </Link>
             )
