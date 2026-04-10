@@ -103,7 +103,7 @@ const stockStatusConfig: Record<
 > = {
   normal: { label: 'Normal', variant: 'default' },
   bajo: { label: 'Bajo', variant: 'secondary' },
-  sin_stock: { label: 'Sin unidades', variant: 'destructive' },
+  sin_stock: { label: 'Sin stock', variant: 'destructive' },
 }
 
 export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetProps) {
@@ -186,7 +186,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                 value={articulo.costo ? formatCurrency(parseFloat(articulo.costo)) : '—'}
               />
             )}
-            <StatCard label="Unidades" value={stockLoading ? '...' : totalStock.toString()} />
+            <StatCard label="Stock" value={stockLoading ? '...' : totalStock.toString()} />
           </div>
 
           <Separator />
@@ -303,7 +303,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
           {/* Stock por Deposito */}
           <div>
-            <SectionHeader title="Unidades por Deposito" />
+            <SectionHeader title="Stock por Deposito" />
             <div className="mt-2 border rounded-sm">
               {stockLoading ? (
                 <div className="p-3 space-y-2">
@@ -312,7 +312,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                   ))}
                 </div>
               ) : existencias.length === 0 ? (
-                <p className="p-3 text-sm text-muted-foreground">Sin unidades registradas</p>
+                <p className="p-3 text-sm text-muted-foreground">Sin stock registrado</p>
               ) : (
                 <table className="w-full text-sm">
                   <thead>

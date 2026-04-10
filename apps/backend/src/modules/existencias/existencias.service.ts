@@ -184,26 +184,17 @@ export class ExistenciasService {
   }
 
   async getKpiStats() {
-    const [[stockResult], [articuloResult]] = await Promise.all([
-      this.drizzle.db
-        .select({
-          totalConStock: count(sql`CASE WHEN ${existencias.cantidad} > 0 THEN 1 END`),
-          totalUnidades: sql<number>`COALESCE(sum(${existencias.cantidad}), 0)::int`,
-          stockBajo: count(
-            sql`CASE WHEN ${existencias.cantidad} > 0 AND ${existencias.cantidad} <= ${existencias.stockMinimo} AND ${existencias.stockMinimo} > 0 THEN 1 END`
-          ),
-          sinStock: count(sql`CASE WHEN ${existencias.cantidad} = 0 THEN 1 END`),
-        })
-        .from(existencias),
-      this.drizzle.db
-        .select({
-          totalArticulos: count(),
-        })
-        .from(articulos)
-        .where(eq(articulos.activo, true)),
-    ])
+    const [result] = await this.drizzle.db
+      .select({
+        totalConStock: count(sql`CASE WHEN ${existencias.cantidad} > 0 THEN 1 END`),
+        stockBajo: count(
+          sql`CASE WHEN ${existencias.cantidad} > 0 AND ${existencias.cantidad} <= ${existencias.stockMinimo} AND ${existencias.stockMinimo} > 0 THEN 1 END`
+        ),
+        sinStock: count(sql`CASE WHEN ${existencias.cantidad} = 0 THEN 1 END`),
+      })
+      .from(existencias)
 
-    return { ...stockResult, ...articuloResult }
+    return result
   }
 
   async upsert(dto: CreateExistenciaDto) {

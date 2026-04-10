@@ -156,7 +156,7 @@ export function ConteoTable({ inventarioId, estado }: ConteoTableProps) {
               <TableRow>
                 <TableHead className="w-[40%]">Articulo</TableHead>
                 <TableHead className="w-[15%] text-right">Cantidad Contada</TableHead>
-                <TableHead className="w-[15%] text-right">Unidades Sistema</TableHead>
+                <TableHead className="w-[15%] text-right">Stock Sistema</TableHead>
                 <TableHead className="w-[15%] text-right">Diferencia</TableHead>
                 {!isReadOnly && <TableHead className="w-[15%]" />}
               </TableRow>

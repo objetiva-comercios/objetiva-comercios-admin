@@ -89,7 +89,7 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
                   return (
-                    <TableHead key={header.id} className="text-sm px-2 py-1.5">
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -109,7 +109,7 @@ export function DataTable<TData, TValue>({
                   className={onRowClick ? 'cursor-pointer' : ''}
                 >
                   {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id} className="text-sm px-2 py-1.5">
+                    <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

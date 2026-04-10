@@ -139,10 +139,12 @@ async function seed() {
       }))
     )
     .returning({ id: schema.inventarioSectores.id })
+  const sectorIds = insertedSectores.map(s => s.id)
+
   // ── Inventarios + Inventarios Articulos ───────────────────────────────
 
   const { inventarios: inventariosData, inventariosArticulos: invArticulosData } =
-    generateInventarios(depositoIds, articuloCodigos, dispositivoIds)
+    generateInventarios(depositoIds, articuloCodigos, dispositivoIds, sectorIds)
   console.log(`Seeding ${inventariosData.length} inventarios...`)
 
   const insertedInventarioIds: number[] = []
@@ -168,8 +170,8 @@ async function seed() {
         inventarioId: insertedInventarioIds[ia.inventarioIdx],
         articuloCodigo: ia.articuloCodigo,
         cantidadContada: ia.cantidadContada,
-        columna: ia.columna,
         dispositivoId: ia.dispositivoId,
+        sectorId: ia.sectorId,
         observaciones: ia.observaciones,
       }))
     )

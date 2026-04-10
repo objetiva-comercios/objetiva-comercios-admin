@@ -1,7 +1,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontal, PencilIcon, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
+import { MoreHorizontal, PencilIcon, ArrowUp, ArrowDown, ArrowUpDown, Image, Tag } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -105,6 +105,31 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
       cell: ({ row }) => <div className="font-medium">{row.getValue('nombre')}</div>,
     },
     {
+      id: 'imagenes',
+      enableSorting: false,
+      enableHiding: false,
+      cell: ({ row }) => {
+        const productoCount = row.original.imagenesProducto.filter(u => u != null).length
+        const etiquetaCount = row.original.imagenesEtiqueta.filter(u => u != null).length
+        return (
+          <div className="flex gap-2 items-center">
+            <span className="flex items-center gap-0.5">
+              <Image className={`h-3.5 w-3.5 ${productoCount > 0 ? 'text-muted-foreground' : 'text-muted-foreground/30'}`} />
+              <span className={`text-xs ${productoCount > 0 ? 'text-muted-foreground' : 'text-muted-foreground/30'}`}>
+                {productoCount > 0 ? productoCount : '\u00B7'}
+              </span>
+            </span>
+            <span className="flex items-center gap-0.5">
+              <Tag className={`h-3.5 w-3.5 ${etiquetaCount > 0 ? 'text-muted-foreground' : 'text-muted-foreground/30'}`} />
+              <span className={`text-xs ${etiquetaCount > 0 ? 'text-muted-foreground' : 'text-muted-foreground/30'}`}>
+                {etiquetaCount > 0 ? etiquetaCount : '\u00B7'}
+              </span>
+            </span>
+          </div>
+        )
+      },
+    },
+    {
       accessorKey: 'marca',
       header: 'Marca',
       enableSorting: false,
@@ -141,11 +166,11 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
       },
     },
     {
-      accessorKey: 'unidades',
+      accessorKey: 'erpUnidades',
       header: 'Unidades',
       enableSorting: false,
       cell: ({ row }) => {
-        const unidades = row.getValue('unidades') as number | null
+        const unidades = row.getValue('erpUnidades') as number | null
         return (
           <div className="text-sm">
             {unidades !== null && unidades !== undefined ? unidades : '-'}

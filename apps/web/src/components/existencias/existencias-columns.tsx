@@ -16,7 +16,7 @@ const statusConfig: Record<
     className: 'bg-green-50 text-green-700 border-green-200',
   },
   bajo: { label: 'Bajo', variant: 'outline', className: 'text-yellow-700 border-yellow-300' },
-  sin_stock: { label: 'Sin unidades', variant: 'destructive' },
+  sin_stock: { label: 'Sin Stock', variant: 'destructive' },
 }
 
 export type OnStockUpdate = (

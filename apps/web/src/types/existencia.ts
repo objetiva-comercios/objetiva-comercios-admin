@@ -19,9 +19,7 @@ export function getStockStatus(cantidad: number, stockMinimo: number): StockStat
 }
 
 export interface ExistenciasKpi {
-  totalArticulos: number
   totalConStock: number
-  totalUnidades: number
   stockBajo: number
   sinStock: number
 }

@@ -45,11 +45,11 @@ export function InlineEditCell({ value, onSave, className }: InlineEditCellProps
     setSaving(true)
     try {
       await onSave(parsed)
-      toast({ title: 'Unidades actualizadas' })
+      toast({ title: 'Stock actualizado' })
       setEditing(false)
     } catch (error) {
       toast({
-        title: 'Error al actualizar unidades',
+        title: 'Error al actualizar stock',
         description: error instanceof Error ? error.message : 'Error desconocido',
         variant: 'destructive',
       })

@@ -14,12 +14,12 @@ export class CreateInventarioArticuloDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  columna?: number
+  dispositivoId?: number
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  dispositivoId?: number
+  sectorId?: number
 
   @IsOptional()
   @IsString()

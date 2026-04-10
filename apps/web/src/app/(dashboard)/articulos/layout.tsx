@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Package } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -25,7 +24,7 @@ export default function ArticulosLayout({ children }: { children: React.ReactNod
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2"><Package className="h-7 w-7" style={{ color: '#056ed1' }} />Artículos</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Articulos</h1>
         <p className="text-sm text-muted-foreground">
           Gestiona tu catalogo de articulos e inventario.
         </p>
