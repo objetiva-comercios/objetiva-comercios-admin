@@ -42,6 +42,13 @@ Thumbs.db
 apps/backend/uploads/*
 !apps/backend/uploads/.gitkeep
 
+# Playwright CLI artifacts
+.playwright-cli/
+
+# Screenshots and uploaded images (root level)
+*.png
+uploads/
+
 # Misc
 *.tsbuildinfo
 .cache/
