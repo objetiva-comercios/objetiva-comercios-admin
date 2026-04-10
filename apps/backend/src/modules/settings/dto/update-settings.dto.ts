@@ -9,21 +9,21 @@ import {
 import { Type } from 'class-transformer'
 
 class CamposVisiblesDto {
-  @IsBoolean() marca!: boolean
-  @IsBoolean() modelo!: boolean
-  @IsBoolean() talle!: boolean
-  @IsBoolean() color!: boolean
-  @IsBoolean() material!: boolean
-  @IsBoolean() presentacion!: boolean
-  @IsBoolean() medida!: boolean
-  @IsBoolean() sku!: boolean
-  @IsBoolean() codigoBarras!: boolean
-  @IsBoolean() costo!: boolean
-  @IsBoolean() observaciones!: boolean
-  @IsBoolean() erp!: boolean
-  @IsBoolean() erpUnidades!: boolean
-  @IsBoolean() origen!: boolean
-  @IsBoolean() objeto!: boolean
+  @IsOptional() @IsBoolean() marca?: boolean
+  @IsOptional() @IsBoolean() modelo?: boolean
+  @IsOptional() @IsBoolean() talle?: boolean
+  @IsOptional() @IsBoolean() color?: boolean
+  @IsOptional() @IsBoolean() material?: boolean
+  @IsOptional() @IsBoolean() presentacion?: boolean
+  @IsOptional() @IsBoolean() medida?: boolean
+  @IsOptional() @IsBoolean() sku?: boolean
+  @IsOptional() @IsBoolean() codigoBarras?: boolean
+  @IsOptional() @IsBoolean() costo?: boolean
+  @IsOptional() @IsBoolean() observaciones?: boolean
+  @IsOptional() @IsBoolean() erp?: boolean
+  @IsOptional() @IsBoolean() erpUnidades?: boolean
+  @IsOptional() @IsBoolean() origen?: boolean
+  @IsOptional() @IsBoolean() objeto?: boolean
 }
 
 class ArticulosConfigDto {

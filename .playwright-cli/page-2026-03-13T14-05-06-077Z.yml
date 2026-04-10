@@ -1,0 +1,785 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "C Comercio Ejemplo" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=e6]: C
+        - generic [ref=e7]: Comercio Ejemplo
+      - generic [ref=e11]:
+        - link "Panel" [ref=e12] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e13]
+          - generic [ref=e18]: Panel
+        - link "Artículos" [ref=e19] [cursor=pointer]:
+          - /url: /articulos
+          - img [ref=e20]
+          - generic [ref=e24]: Artículos
+        - link "Compras" [ref=e25] [cursor=pointer]:
+          - /url: /purchases
+          - img [ref=e26]
+          - generic [ref=e30]: Compras
+        - link "Ventas" [ref=e31] [cursor=pointer]:
+          - /url: /sales
+          - img [ref=e32]
+          - generic [ref=e35]: Ventas
+        - link "Pedidos" [ref=e36] [cursor=pointer]:
+          - /url: /orders
+          - img [ref=e37]
+          - generic [ref=e40]: Pedidos
+        - link "Configuración" [ref=e41] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e42]
+          - generic [ref=e45]: Configuración
+      - paragraph [ref=e47]: Comercio Ejemplo Admin
+    - generic [ref=e48]:
+      - banner [ref=e49]:
+        - generic [ref=e50]:
+          - button "Cambiar tema" [ref=e51] [cursor=pointer]:
+            - img
+            - generic [ref=e52]: Cambiar tema
+          - button "SA" [ref=e53] [cursor=pointer]:
+            - generic [ref=e55]: SA
+      - main [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - heading "Articulos" [level=1] [ref=e59]
+            - paragraph [ref=e60]: Gestiona tu catalogo de articulos e inventario.
+          - generic [ref=e61]:
+            - link "Listado" [ref=e62] [cursor=pointer]:
+              - /url: /articulos
+            - link "Existencias" [ref=e63] [cursor=pointer]:
+              - /url: /articulos/existencias
+            - link "Inventarios" [ref=e64] [cursor=pointer]:
+              - /url: /articulos/inventarios
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]:
+                - button "Activos" [ref=e167] [cursor=pointer]
+                - button "Inactivos" [ref=e168] [cursor=pointer]
+                - button "Todos" [ref=e169] [cursor=pointer]
+              - generic [ref=e170]:
+                - img [ref=e171]
+                - textbox "Buscar articulos..." [ref=e174]
+            - link "Nuevo Articulo" [ref=e175] [cursor=pointer]:
+              - /url: /articulos/nuevo
+              - img
+              - text: Nuevo Articulo
+          - generic [ref=e176]:
+            - button "Columnas" [ref=e178] [cursor=pointer]:
+              - img
+              - text: Columnas
+            - table [ref=e181]:
+              - rowgroup [ref=e182]:
+                - row "Codigo Nombre Marca Modelo Medida Presentacion Unidades Objeto Precio Estado SKU Cod. Barras Costo ERP Codigo" [ref=e183]:
+                  - columnheader "Codigo" [ref=e184]:
+                    - button "Codigo" [ref=e185] [cursor=pointer]:
+                      - text: Codigo
+                      - img
+                  - columnheader "Nombre" [ref=e186]:
+                    - button "Nombre" [ref=e187] [cursor=pointer]:
+                      - text: Nombre
+                      - img
+                  - columnheader "Marca" [ref=e188]
+                  - columnheader "Modelo" [ref=e189]
+                  - columnheader "Medida" [ref=e190]
+                  - columnheader "Presentacion" [ref=e191]
+                  - columnheader "Unidades" [ref=e192]
+                  - columnheader "Objeto" [ref=e193]
+                  - columnheader "Precio" [ref=e194]:
+                    - button "Precio" [ref=e195] [cursor=pointer]:
+                      - text: Precio
+                      - img
+                  - columnheader "Estado" [ref=e196]
+                  - columnheader "SKU" [ref=e197]
+                  - columnheader "Cod. Barras" [ref=e198]
+                  - columnheader "Costo" [ref=e199]:
+                    - button "Costo" [ref=e200] [cursor=pointer]:
+                      - text: Costo
+                      - img
+                  - columnheader "ERP Codigo" [ref=e201]
+                  - columnheader [ref=e202]
+              - rowgroup [ref=e203]:
+                - row "FIS-97040VE CARCAZA PORTA TERMOT FISPA - - - - 1 - $60,800.00 Activo - - $29,523.69 FIS-97040VE Abrir menu" [ref=e204] [cursor=pointer]:
+                  - cell "FIS-97040VE" [ref=e205]:
+                    - generic [ref=e206]: FIS-97040VE
+                  - cell "CARCAZA PORTA TERMOT FISPA" [ref=e207]:
+                    - generic [ref=e208]: CARCAZA PORTA TERMOT FISPA
+                  - cell "-" [ref=e209]:
+                    - generic [ref=e210]: "-"
+                  - cell "-" [ref=e211]:
+                    - generic [ref=e212]: "-"
+                  - cell "-" [ref=e213]:
+                    - generic [ref=e214]: "-"
+                  - cell "-" [ref=e215]:
+                    - generic [ref=e216]: "-"
+                  - cell "1" [ref=e217]:
+                    - generic [ref=e218]: "1"
+                  - cell "-" [ref=e219]:
+                    - generic [ref=e220]: "-"
+                  - cell "$60,800.00" [ref=e221]:
+                    - generic [ref=e222]: $60,800.00
+                  - cell "Activo" [ref=e223]:
+                    - generic [ref=e224]: Activo
+                  - cell "-" [ref=e225]:
+                    - generic [ref=e226]: "-"
+                  - cell "-" [ref=e227]:
+                    - generic [ref=e228]: "-"
+                  - cell "$29,523.69" [ref=e229]:
+                    - generic [ref=e230]: $29,523.69
+                  - cell "FIS-97040VE" [ref=e231]:
+                    - generic [ref=e232]: FIS-97040VE
+                  - cell "Abrir menu" [ref=e233]:
+                    - button "Abrir menu" [ref=e234]:
+                      - generic [ref=e235]: Abrir menu
+                      - img
+                - row "2058AP RODAMIENTO EATON - - - - 2 - $77,500.00 Activo - - $49,996.26 2058AP Abrir menu" [ref=e236] [cursor=pointer]:
+                  - cell "2058AP" [ref=e237]:
+                    - generic [ref=e238]: 2058AP
+                  - cell "RODAMIENTO EATON" [ref=e239]:
+                    - generic [ref=e240]: RODAMIENTO EATON
+                  - cell "-" [ref=e241]:
+                    - generic [ref=e242]: "-"
+                  - cell "-" [ref=e243]:
+                    - generic [ref=e244]: "-"
+                  - cell "-" [ref=e245]:
+                    - generic [ref=e246]: "-"
+                  - cell "-" [ref=e247]:
+                    - generic [ref=e248]: "-"
+                  - cell "2" [ref=e249]:
+                    - generic [ref=e250]: "2"
+                  - cell "-" [ref=e251]:
+                    - generic [ref=e252]: "-"
+                  - cell "$77,500.00" [ref=e253]:
+                    - generic [ref=e254]: $77,500.00
+                  - cell "Activo" [ref=e255]:
+                    - generic [ref=e256]: Activo
+                  - cell "-" [ref=e257]:
+                    - generic [ref=e258]: "-"
+                  - cell "-" [ref=e259]:
+                    - generic [ref=e260]: "-"
+                  - cell "$49,996.26" [ref=e261]:
+                    - generic [ref=e262]: $49,996.26
+                  - cell "2058AP" [ref=e263]:
+                    - generic [ref=e264]: 2058AP
+                  - cell "Abrir menu" [ref=e265]:
+                    - button "Abrir menu" [ref=e266]:
+                      - generic [ref=e267]: Abrir menu
+                      - img
+                - row "FIS-97029VE CARCAZA PORTA TERMOST COMP - - - - 4 - $40,100.00 Activo - - $19,455.10 FIS-97029VE Abrir menu" [ref=e268] [cursor=pointer]:
+                  - cell "FIS-97029VE" [ref=e269]:
+                    - generic [ref=e270]: FIS-97029VE
+                  - cell "CARCAZA PORTA TERMOST COMP" [ref=e271]:
+                    - generic [ref=e272]: CARCAZA PORTA TERMOST COMP
+                  - cell "-" [ref=e273]:
+                    - generic [ref=e274]: "-"
+                  - cell "-" [ref=e275]:
+                    - generic [ref=e276]: "-"
+                  - cell "-" [ref=e277]:
+                    - generic [ref=e278]: "-"
+                  - cell "-" [ref=e279]:
+                    - generic [ref=e280]: "-"
+                  - cell "4" [ref=e281]:
+                    - generic [ref=e282]: "4"
+                  - cell "-" [ref=e283]:
+                    - generic [ref=e284]: "-"
+                  - cell "$40,100.00" [ref=e285]:
+                    - generic [ref=e286]: $40,100.00
+                  - cell "Activo" [ref=e287]:
+                    - generic [ref=e288]: Activo
+                  - cell "-" [ref=e289]:
+                    - generic [ref=e290]: "-"
+                  - cell "-" [ref=e291]:
+                    - generic [ref=e292]: "-"
+                  - cell "$19,455.10" [ref=e293]:
+                    - generic [ref=e294]: $19,455.10
+                  - cell "FIS-97029VE" [ref=e295]:
+                    - generic [ref=e296]: FIS-97029VE
+                  - cell "Abrir menu" [ref=e297]:
+                    - button "Abrir menu" [ref=e298]:
+                      - generic [ref=e299]: Abrir menu
+                      - img
+                - row "38290-NA JGO PAST FRENO LITTON DEL - - - - 1 - $25,500.00 Activo - - $12,389.40 38290-NA Abrir menu" [ref=e300] [cursor=pointer]:
+                  - cell "38290-NA" [ref=e301]:
+                    - generic [ref=e302]: 38290-NA
+                  - cell "JGO PAST FRENO LITTON DEL" [ref=e303]:
+                    - generic [ref=e304]: JGO PAST FRENO LITTON DEL
+                  - cell "-" [ref=e305]:
+                    - generic [ref=e306]: "-"
+                  - cell "-" [ref=e307]:
+                    - generic [ref=e308]: "-"
+                  - cell "-" [ref=e309]:
+                    - generic [ref=e310]: "-"
+                  - cell "-" [ref=e311]:
+                    - generic [ref=e312]: "-"
+                  - cell "1" [ref=e313]:
+                    - generic [ref=e314]: "1"
+                  - cell "-" [ref=e315]:
+                    - generic [ref=e316]: "-"
+                  - cell "$25,500.00" [ref=e317]:
+                    - generic [ref=e318]: $25,500.00
+                  - cell "Activo" [ref=e319]:
+                    - generic [ref=e320]: Activo
+                  - cell "-" [ref=e321]:
+                    - generic [ref=e322]: "-"
+                  - cell "-" [ref=e323]:
+                    - generic [ref=e324]: "-"
+                  - cell "$12,389.40" [ref=e325]:
+                    - generic [ref=e326]: $12,389.40
+                  - cell "38290-NA" [ref=e327]:
+                    - generic [ref=e328]: 38290-NA
+                  - cell "Abrir menu" [ref=e329]:
+                    - button "Abrir menu" [ref=e330]:
+                      - generic [ref=e331]: Abrir menu
+                      - img
+                - row "627423.87JRU KIT TERMOSTATO - - - - 1 - $75,900.00 Activo - - $37,968.00 627423.87JRU Abrir menu" [ref=e332] [cursor=pointer]:
+                  - cell "627423.87JRU" [ref=e333]:
+                    - generic [ref=e334]: 627423.87JRU
+                  - cell "KIT TERMOSTATO" [ref=e335]:
+                    - generic [ref=e336]: KIT TERMOSTATO
+                  - cell "-" [ref=e337]:
+                    - generic [ref=e338]: "-"
+                  - cell "-" [ref=e339]:
+                    - generic [ref=e340]: "-"
+                  - cell "-" [ref=e341]:
+                    - generic [ref=e342]: "-"
+                  - cell "-" [ref=e343]:
+                    - generic [ref=e344]: "-"
+                  - cell "1" [ref=e345]:
+                    - generic [ref=e346]: "1"
+                  - cell "-" [ref=e347]:
+                    - generic [ref=e348]: "-"
+                  - cell "$75,900.00" [ref=e349]:
+                    - generic [ref=e350]: $75,900.00
+                  - cell "Activo" [ref=e351]:
+                    - generic [ref=e352]: Activo
+                  - cell "-" [ref=e353]:
+                    - generic [ref=e354]: "-"
+                  - cell "-" [ref=e355]:
+                    - generic [ref=e356]: "-"
+                  - cell "$37,968.00" [ref=e357]:
+                    - generic [ref=e358]: $37,968.00
+                  - cell "627423.87JRU" [ref=e359]:
+                    - generic [ref=e360]: 627423.87JRU
+                  - cell "Abrir menu" [ref=e361]:
+                    - button "Abrir menu" [ref=e362]:
+                      - generic [ref=e363]: Abrir menu
+                      - img
+                - row "MY896670JT KIT BULONES MEGANE/CLIO 2 1.6 - - - - 2 - $34,900.00 Activo - - $16,438.32 MY896670JT Abrir menu" [ref=e364] [cursor=pointer]:
+                  - cell "MY896670JT" [ref=e365]:
+                    - generic [ref=e366]: MY896670JT
+                  - cell "KIT BULONES MEGANE/CLIO 2 1.6" [ref=e367]:
+                    - generic [ref=e368]: KIT BULONES MEGANE/CLIO 2 1.6
+                  - cell "-" [ref=e369]:
+                    - generic [ref=e370]: "-"
+                  - cell "-" [ref=e371]:
+                    - generic [ref=e372]: "-"
+                  - cell "-" [ref=e373]:
+                    - generic [ref=e374]: "-"
+                  - cell "-" [ref=e375]:
+                    - generic [ref=e376]: "-"
+                  - cell "2" [ref=e377]:
+                    - generic [ref=e378]: "2"
+                  - cell "-" [ref=e379]:
+                    - generic [ref=e380]: "-"
+                  - cell "$34,900.00" [ref=e381]:
+                    - generic [ref=e382]: $34,900.00
+                  - cell "Activo" [ref=e383]:
+                    - generic [ref=e384]: Activo
+                  - cell "-" [ref=e385]:
+                    - generic [ref=e386]: "-"
+                  - cell "-" [ref=e387]:
+                    - generic [ref=e388]: "-"
+                  - cell "$16,438.32" [ref=e389]:
+                    - generic [ref=e390]: $16,438.32
+                  - cell "MY896670JT" [ref=e391]:
+                    - generic [ref=e392]: MY896670JT
+                  - cell "Abrir menu" [ref=e393]:
+                    - button "Abrir menu" [ref=e394]:
+                      - generic [ref=e395]: Abrir menu
+                      - img
+                - row "MY056670NA JGO.JUNTAS P/MOTOR MEGANE 1.6 - - - - 1 - $129,600.00 Activo - - $59,372.54 MY056670NA Abrir menu" [ref=e396] [cursor=pointer]:
+                  - cell "MY056670NA" [ref=e397]:
+                    - generic [ref=e398]: MY056670NA
+                  - cell "JGO.JUNTAS P/MOTOR MEGANE 1.6" [ref=e399]:
+                    - generic [ref=e400]: JGO.JUNTAS P/MOTOR MEGANE 1.6
+                  - cell "-" [ref=e401]:
+                    - generic [ref=e402]: "-"
+                  - cell "-" [ref=e403]:
+                    - generic [ref=e404]: "-"
+                  - cell "-" [ref=e405]:
+                    - generic [ref=e406]: "-"
+                  - cell "-" [ref=e407]:
+                    - generic [ref=e408]: "-"
+                  - cell "1" [ref=e409]:
+                    - generic [ref=e410]: "1"
+                  - cell "-" [ref=e411]:
+                    - generic [ref=e412]: "-"
+                  - cell "$129,600.00" [ref=e413]:
+                    - generic [ref=e414]: $129,600.00
+                  - cell "Activo" [ref=e415]:
+                    - generic [ref=e416]: Activo
+                  - cell "-" [ref=e417]:
+                    - generic [ref=e418]: "-"
+                  - cell "-" [ref=e419]:
+                    - generic [ref=e420]: "-"
+                  - cell "$59,372.54" [ref=e421]:
+                    - generic [ref=e422]: $59,372.54
+                  - cell "MY056670NA" [ref=e423]:
+                    - generic [ref=e424]: MY056670NA
+                  - cell "Abrir menu" [ref=e425]:
+                    - button "Abrir menu" [ref=e426]:
+                      - generic [ref=e427]: Abrir menu
+                      - img
+                - row "MY896992JT KIT BULONES TOYOTA HILUX - - - - 1 - $86,000.00 Activo - - $40,572.87 MY896992JT Abrir menu" [ref=e428] [cursor=pointer]:
+                  - cell "MY896992JT" [ref=e429]:
+                    - generic [ref=e430]: MY896992JT
+                  - cell "KIT BULONES TOYOTA HILUX" [ref=e431]:
+                    - generic [ref=e432]: KIT BULONES TOYOTA HILUX
+                  - cell "-" [ref=e433]:
+                    - generic [ref=e434]: "-"
+                  - cell "-" [ref=e435]:
+                    - generic [ref=e436]: "-"
+                  - cell "-" [ref=e437]:
+                    - generic [ref=e438]: "-"
+                  - cell "-" [ref=e439]:
+                    - generic [ref=e440]: "-"
+                  - cell "1" [ref=e441]:
+                    - generic [ref=e442]: "1"
+                  - cell "-" [ref=e443]:
+                    - generic [ref=e444]: "-"
+                  - cell "$86,000.00" [ref=e445]:
+                    - generic [ref=e446]: $86,000.00
+                  - cell "Activo" [ref=e447]:
+                    - generic [ref=e448]: Activo
+                  - cell "-" [ref=e449]:
+                    - generic [ref=e450]: "-"
+                  - cell "-" [ref=e451]:
+                    - generic [ref=e452]: "-"
+                  - cell "$40,572.87" [ref=e453]:
+                    - generic [ref=e454]: $40,572.87
+                  - cell "MY896992JT" [ref=e455]:
+                    - generic [ref=e456]: MY896992JT
+                  - cell "Abrir menu" [ref=e457]:
+                    - button "Abrir menu" [ref=e458]:
+                      - generic [ref=e459]: Abrir menu
+                      - img
+                - row "38610-NA JGO PAST FRENO LITTON DEL - - - - 2 - $25,800.00 Activo - - $12,506.81 38610-NA Abrir menu" [ref=e460] [cursor=pointer]:
+                  - cell "38610-NA" [ref=e461]:
+                    - generic [ref=e462]: 38610-NA
+                  - cell "JGO PAST FRENO LITTON DEL" [ref=e463]:
+                    - generic [ref=e464]: JGO PAST FRENO LITTON DEL
+                  - cell "-" [ref=e465]:
+                    - generic [ref=e466]: "-"
+                  - cell "-" [ref=e467]:
+                    - generic [ref=e468]: "-"
+                  - cell "-" [ref=e469]:
+                    - generic [ref=e470]: "-"
+                  - cell "-" [ref=e471]:
+                    - generic [ref=e472]: "-"
+                  - cell "2" [ref=e473]:
+                    - generic [ref=e474]: "2"
+                  - cell "-" [ref=e475]:
+                    - generic [ref=e476]: "-"
+                  - cell "$25,800.00" [ref=e477]:
+                    - generic [ref=e478]: $25,800.00
+                  - cell "Activo" [ref=e479]:
+                    - generic [ref=e480]: Activo
+                  - cell "-" [ref=e481]:
+                    - generic [ref=e482]: "-"
+                  - cell "-" [ref=e483]:
+                    - generic [ref=e484]: "-"
+                  - cell "$12,506.81" [ref=e485]:
+                    - generic [ref=e486]: $12,506.81
+                  - cell "38610-NA" [ref=e487]:
+                    - generic [ref=e488]: 38610-NA
+                  - cell "Abrir menu" [ref=e489]:
+                    - button "Abrir menu" [ref=e490]:
+                      - generic [ref=e491]: Abrir menu
+                      - img
+                - row "FIS-97041VE CARCAZA PORTA TERMOST FISPA - - - - 2 - $58,200.00 Activo - - $28,269.95 FIS-97041VE Abrir menu" [ref=e492] [cursor=pointer]:
+                  - cell "FIS-97041VE" [ref=e493]:
+                    - generic [ref=e494]: FIS-97041VE
+                  - cell "CARCAZA PORTA TERMOST FISPA" [ref=e495]:
+                    - generic [ref=e496]: CARCAZA PORTA TERMOST FISPA
+                  - cell "-" [ref=e497]:
+                    - generic [ref=e498]: "-"
+                  - cell "-" [ref=e499]:
+                    - generic [ref=e500]: "-"
+                  - cell "-" [ref=e501]:
+                    - generic [ref=e502]: "-"
+                  - cell "-" [ref=e503]:
+                    - generic [ref=e504]: "-"
+                  - cell "2" [ref=e505]:
+                    - generic [ref=e506]: "2"
+                  - cell "-" [ref=e507]:
+                    - generic [ref=e508]: "-"
+                  - cell "$58,200.00" [ref=e509]:
+                    - generic [ref=e510]: $58,200.00
+                  - cell "Activo" [ref=e511]:
+                    - generic [ref=e512]: Activo
+                  - cell "-" [ref=e513]:
+                    - generic [ref=e514]: "-"
+                  - cell "-" [ref=e515]:
+                    - generic [ref=e516]: "-"
+                  - cell "$28,269.95" [ref=e517]:
+                    - generic [ref=e518]: $28,269.95
+                  - cell "FIS-97041VE" [ref=e519]:
+                    - generic [ref=e520]: FIS-97041VE
+                  - cell "Abrir menu" [ref=e521]:
+                    - button "Abrir menu" [ref=e522]:
+                      - generic [ref=e523]: Abrir menu
+                      - img
+                - row "8PK1385-CONT CORREA POLY V FORD - - - - 2 - $35,100.00 Activo - - $17,578.08 8PK1385-CONT Abrir menu" [ref=e524] [cursor=pointer]:
+                  - cell "8PK1385-CONT" [ref=e525]:
+                    - generic [ref=e526]: 8PK1385-CONT
+                  - cell "CORREA POLY V FORD" [ref=e527]:
+                    - generic [ref=e528]: CORREA POLY V FORD
+                  - cell "-" [ref=e529]:
+                    - generic [ref=e530]: "-"
+                  - cell "-" [ref=e531]:
+                    - generic [ref=e532]: "-"
+                  - cell "-" [ref=e533]:
+                    - generic [ref=e534]: "-"
+                  - cell "-" [ref=e535]:
+                    - generic [ref=e536]: "-"
+                  - cell "2" [ref=e537]:
+                    - generic [ref=e538]: "2"
+                  - cell "-" [ref=e539]:
+                    - generic [ref=e540]: "-"
+                  - cell "$35,100.00" [ref=e541]:
+                    - generic [ref=e542]: $35,100.00
+                  - cell "Activo" [ref=e543]:
+                    - generic [ref=e544]: Activo
+                  - cell "-" [ref=e545]:
+                    - generic [ref=e546]: "-"
+                  - cell "-" [ref=e547]:
+                    - generic [ref=e548]: "-"
+                  - cell "$17,578.08" [ref=e549]:
+                    - generic [ref=e550]: $17,578.08
+                  - cell "8PK1385-CONT" [ref=e551]:
+                    - generic [ref=e552]: 8PK1385-CONT
+                  - cell "Abrir menu" [ref=e553]:
+                    - button "Abrir menu" [ref=e554]:
+                      - generic [ref=e555]: Abrir menu
+                      - img
+                - row "6PK1780-CONT CORREA POLY V CHEV/SUZUKI - - - - 2 - $26,700.00 Activo - - $13,333.80 6PK1780-CONT Abrir menu" [ref=e556] [cursor=pointer]:
+                  - cell "6PK1780-CONT" [ref=e557]:
+                    - generic [ref=e558]: 6PK1780-CONT
+                  - cell "CORREA POLY V CHEV/SUZUKI" [ref=e559]:
+                    - generic [ref=e560]: CORREA POLY V CHEV/SUZUKI
+                  - cell "-" [ref=e561]:
+                    - generic [ref=e562]: "-"
+                  - cell "-" [ref=e563]:
+                    - generic [ref=e564]: "-"
+                  - cell "-" [ref=e565]:
+                    - generic [ref=e566]: "-"
+                  - cell "-" [ref=e567]:
+                    - generic [ref=e568]: "-"
+                  - cell "2" [ref=e569]:
+                    - generic [ref=e570]: "2"
+                  - cell "-" [ref=e571]:
+                    - generic [ref=e572]: "-"
+                  - cell "$26,700.00" [ref=e573]:
+                    - generic [ref=e574]: $26,700.00
+                  - cell "Activo" [ref=e575]:
+                    - generic [ref=e576]: Activo
+                  - cell "-" [ref=e577]:
+                    - generic [ref=e578]: "-"
+                  - cell "-" [ref=e579]:
+                    - generic [ref=e580]: "-"
+                  - cell "$13,333.80" [ref=e581]:
+                    - generic [ref=e582]: $13,333.80
+                  - cell "6PK1780-CONT" [ref=e583]:
+                    - generic [ref=e584]: 6PK1780-CONT
+                  - cell "Abrir menu" [ref=e585]:
+                    - button "Abrir menu" [ref=e586]:
+                      - generic [ref=e587]: Abrir menu
+                      - img
+                - row "8PK1345-CONT CORREA POLY V FORD - - - - 4 - $46,100.00 Activo - - $23,061.84 8PK1345-CONT Abrir menu" [ref=e588] [cursor=pointer]:
+                  - cell "8PK1345-CONT" [ref=e589]:
+                    - generic [ref=e590]: 8PK1345-CONT
+                  - cell "CORREA POLY V FORD" [ref=e591]:
+                    - generic [ref=e592]: CORREA POLY V FORD
+                  - cell "-" [ref=e593]:
+                    - generic [ref=e594]: "-"
+                  - cell "-" [ref=e595]:
+                    - generic [ref=e596]: "-"
+                  - cell "-" [ref=e597]:
+                    - generic [ref=e598]: "-"
+                  - cell "-" [ref=e599]:
+                    - generic [ref=e600]: "-"
+                  - cell "4" [ref=e601]:
+                    - generic [ref=e602]: "4"
+                  - cell "-" [ref=e603]:
+                    - generic [ref=e604]: "-"
+                  - cell "$46,100.00" [ref=e605]:
+                    - generic [ref=e606]: $46,100.00
+                  - cell "Activo" [ref=e607]:
+                    - generic [ref=e608]: Activo
+                  - cell "-" [ref=e609]:
+                    - generic [ref=e610]: "-"
+                  - cell "-" [ref=e611]:
+                    - generic [ref=e612]: "-"
+                  - cell "$23,061.84" [ref=e613]:
+                    - generic [ref=e614]: $23,061.84
+                  - cell "8PK1345-CONT" [ref=e615]:
+                    - generic [ref=e616]: 8PK1345-CONT
+                  - cell "Abrir menu" [ref=e617]:
+                    - button "Abrir menu" [ref=e618]:
+                      - generic [ref=e619]: Abrir menu
+                      - img
+                - row "6PK1878-CONT CORREA TRAPEZOIDAL - - - - 4 - $21,300.00 Activo - - $10,667.04 6PK1878-CONT Abrir menu" [ref=e620] [cursor=pointer]:
+                  - cell "6PK1878-CONT" [ref=e621]:
+                    - generic [ref=e622]: 6PK1878-CONT
+                  - cell "CORREA TRAPEZOIDAL" [ref=e623]:
+                    - generic [ref=e624]: CORREA TRAPEZOIDAL
+                  - cell "-" [ref=e625]:
+                    - generic [ref=e626]: "-"
+                  - cell "-" [ref=e627]:
+                    - generic [ref=e628]: "-"
+                  - cell "-" [ref=e629]:
+                    - generic [ref=e630]: "-"
+                  - cell "-" [ref=e631]:
+                    - generic [ref=e632]: "-"
+                  - cell "4" [ref=e633]:
+                    - generic [ref=e634]: "4"
+                  - cell "-" [ref=e635]:
+                    - generic [ref=e636]: "-"
+                  - cell "$21,300.00" [ref=e637]:
+                    - generic [ref=e638]: $21,300.00
+                  - cell "Activo" [ref=e639]:
+                    - generic [ref=e640]: Activo
+                  - cell "-" [ref=e641]:
+                    - generic [ref=e642]: "-"
+                  - cell "-" [ref=e643]:
+                    - generic [ref=e644]: "-"
+                  - cell "$10,667.04" [ref=e645]:
+                    - generic [ref=e646]: $10,667.04
+                  - cell "6PK1878-CONT" [ref=e647]:
+                    - generic [ref=e648]: 6PK1878-CONT
+                  - cell "Abrir menu" [ref=e649]:
+                    - button "Abrir menu" [ref=e650]:
+                      - generic [ref=e651]: Abrir menu
+                      - img
+                - row "6PK1205-CONT CORREA POLY V RENAULT/CITROEN - - - - 2 - $23,200.00 Activo - - $11,606.04 6PK1205-CONT Abrir menu" [ref=e652] [cursor=pointer]:
+                  - cell "6PK1205-CONT" [ref=e653]:
+                    - generic [ref=e654]: 6PK1205-CONT
+                  - cell "CORREA POLY V RENAULT/CITROEN" [ref=e655]:
+                    - generic [ref=e656]: CORREA POLY V RENAULT/CITROEN
+                  - cell "-" [ref=e657]:
+                    - generic [ref=e658]: "-"
+                  - cell "-" [ref=e659]:
+                    - generic [ref=e660]: "-"
+                  - cell "-" [ref=e661]:
+                    - generic [ref=e662]: "-"
+                  - cell "-" [ref=e663]:
+                    - generic [ref=e664]: "-"
+                  - cell "2" [ref=e665]:
+                    - generic [ref=e666]: "2"
+                  - cell "-" [ref=e667]:
+                    - generic [ref=e668]: "-"
+                  - cell "$23,200.00" [ref=e669]:
+                    - generic [ref=e670]: $23,200.00
+                  - cell "Activo" [ref=e671]:
+                    - generic [ref=e672]: Activo
+                  - cell "-" [ref=e673]:
+                    - generic [ref=e674]: "-"
+                  - cell "-" [ref=e675]:
+                    - generic [ref=e676]: "-"
+                  - cell "$11,606.04" [ref=e677]:
+                    - generic [ref=e678]: $11,606.04
+                  - cell "6PK1205-CONT" [ref=e679]:
+                    - generic [ref=e680]: 6PK1205-CONT
+                  - cell "Abrir menu" [ref=e681]:
+                    - button "Abrir menu" [ref=e682]:
+                      - generic [ref=e683]: Abrir menu
+                      - img
+                - row "HG41003 AMORT TRAS FLUENCE 11/.. - - - - 2 - $97,600.00 Activo - - $48,878.33 HG41003 Abrir menu" [ref=e684] [cursor=pointer]:
+                  - cell "HG41003" [ref=e685]:
+                    - generic [ref=e686]: HG41003
+                  - cell "AMORT TRAS FLUENCE 11/.." [ref=e687]:
+                    - generic [ref=e688]: AMORT TRAS FLUENCE 11/..
+                  - cell "-" [ref=e689]:
+                    - generic [ref=e690]: "-"
+                  - cell "-" [ref=e691]:
+                    - generic [ref=e692]: "-"
+                  - cell "-" [ref=e693]:
+                    - generic [ref=e694]: "-"
+                  - cell "-" [ref=e695]:
+                    - generic [ref=e696]: "-"
+                  - cell "2" [ref=e697]:
+                    - generic [ref=e698]: "2"
+                  - cell "-" [ref=e699]:
+                    - generic [ref=e700]: "-"
+                  - cell "$97,600.00" [ref=e701]:
+                    - generic [ref=e702]: $97,600.00
+                  - cell "Activo" [ref=e703]:
+                    - generic [ref=e704]: Activo
+                  - cell "-" [ref=e705]:
+                    - generic [ref=e706]: "-"
+                  - cell "-" [ref=e707]:
+                    - generic [ref=e708]: "-"
+                  - cell "$48,878.33" [ref=e709]:
+                    - generic [ref=e710]: $48,878.33
+                  - cell "HG41003" [ref=e711]:
+                    - generic [ref=e712]: HG41003
+                  - cell "Abrir menu" [ref=e713]:
+                    - button "Abrir menu" [ref=e714]:
+                      - generic [ref=e715]: Abrir menu
+                      - img
+                - row "5PK1795-CONT CORREA POLY V CHEV/FIAT - - - - 2 - $22,400.00 Activo - - $11,192.88 5PK1795-CONT Abrir menu" [ref=e716] [cursor=pointer]:
+                  - cell "5PK1795-CONT" [ref=e717]:
+                    - generic [ref=e718]: 5PK1795-CONT
+                  - cell "CORREA POLY V CHEV/FIAT" [ref=e719]:
+                    - generic [ref=e720]: CORREA POLY V CHEV/FIAT
+                  - cell "-" [ref=e721]:
+                    - generic [ref=e722]: "-"
+                  - cell "-" [ref=e723]:
+                    - generic [ref=e724]: "-"
+                  - cell "-" [ref=e725]:
+                    - generic [ref=e726]: "-"
+                  - cell "-" [ref=e727]:
+                    - generic [ref=e728]: "-"
+                  - cell "2" [ref=e729]:
+                    - generic [ref=e730]: "2"
+                  - cell "-" [ref=e731]:
+                    - generic [ref=e732]: "-"
+                  - cell "$22,400.00" [ref=e733]:
+                    - generic [ref=e734]: $22,400.00
+                  - cell "Activo" [ref=e735]:
+                    - generic [ref=e736]: Activo
+                  - cell "-" [ref=e737]:
+                    - generic [ref=e738]: "-"
+                  - cell "-" [ref=e739]:
+                    - generic [ref=e740]: "-"
+                  - cell "$11,192.88" [ref=e741]:
+                    - generic [ref=e742]: $11,192.88
+                  - cell "5PK1795-CONT" [ref=e743]:
+                    - generic [ref=e744]: 5PK1795-CONT
+                  - cell "Abrir menu" [ref=e745]:
+                    - button "Abrir menu" [ref=e746]:
+                      - generic [ref=e747]: Abrir menu
+                      - img
+                - row "10AV0875-CONT CORREA AUT.CHEV./FIAT/HONDA - - - - 4 - $6,300.00 Activo - - $3,117.48 10AV0875-CONT Abrir menu" [ref=e748] [cursor=pointer]:
+                  - cell "10AV0875-CONT" [ref=e749]:
+                    - generic [ref=e750]: 10AV0875-CONT
+                  - cell "CORREA AUT.CHEV./FIAT/HONDA" [ref=e751]:
+                    - generic [ref=e752]: CORREA AUT.CHEV./FIAT/HONDA
+                  - cell "-" [ref=e753]:
+                    - generic [ref=e754]: "-"
+                  - cell "-" [ref=e755]:
+                    - generic [ref=e756]: "-"
+                  - cell "-" [ref=e757]:
+                    - generic [ref=e758]: "-"
+                  - cell "-" [ref=e759]:
+                    - generic [ref=e760]: "-"
+                  - cell "4" [ref=e761]:
+                    - generic [ref=e762]: "4"
+                  - cell "-" [ref=e763]:
+                    - generic [ref=e764]: "-"
+                  - cell "$6,300.00" [ref=e765]:
+                    - generic [ref=e766]: $6,300.00
+                  - cell "Activo" [ref=e767]:
+                    - generic [ref=e768]: Activo
+                  - cell "-" [ref=e769]:
+                    - generic [ref=e770]: "-"
+                  - cell "-" [ref=e771]:
+                    - generic [ref=e772]: "-"
+                  - cell "$3,117.48" [ref=e773]:
+                    - generic [ref=e774]: $3,117.48
+                  - cell "10AV0875-CONT" [ref=e775]:
+                    - generic [ref=e776]: 10AV0875-CONT
+                  - cell "Abrir menu" [ref=e777]:
+                    - button "Abrir menu" [ref=e778]:
+                      - generic [ref=e779]: Abrir menu
+                      - img
+                - row "6PK2345-CONT CORREA POLY V FORD/JEEP - - - - 6 - $31,100.00 Activo - - $15,549.84 6PK2345-CONT Abrir menu" [ref=e780] [cursor=pointer]:
+                  - cell "6PK2345-CONT" [ref=e781]:
+                    - generic [ref=e782]: 6PK2345-CONT
+                  - cell "CORREA POLY V FORD/JEEP" [ref=e783]:
+                    - generic [ref=e784]: CORREA POLY V FORD/JEEP
+                  - cell "-" [ref=e785]:
+                    - generic [ref=e786]: "-"
+                  - cell "-" [ref=e787]:
+                    - generic [ref=e788]: "-"
+                  - cell "-" [ref=e789]:
+                    - generic [ref=e790]: "-"
+                  - cell "-" [ref=e791]:
+                    - generic [ref=e792]: "-"
+                  - cell "6" [ref=e793]:
+                    - generic [ref=e794]: "6"
+                  - cell "-" [ref=e795]:
+                    - generic [ref=e796]: "-"
+                  - cell "$31,100.00" [ref=e797]:
+                    - generic [ref=e798]: $31,100.00
+                  - cell "Activo" [ref=e799]:
+                    - generic [ref=e800]: Activo
+                  - cell "-" [ref=e801]:
+                    - generic [ref=e802]: "-"
+                  - cell "-" [ref=e803]:
+                    - generic [ref=e804]: "-"
+                  - cell "$15,549.84" [ref=e805]:
+                    - generic [ref=e806]: $15,549.84
+                  - cell "6PK2345-CONT" [ref=e807]:
+                    - generic [ref=e808]: 6PK2345-CONT
+                  - cell "Abrir menu" [ref=e809]:
+                    - button "Abrir menu" [ref=e810]:
+                      - generic [ref=e811]: Abrir menu
+                      - img
+                - row "137-A VALVULAS CHEV 230 - - - - 0 - $14,400.00 Activo - - $7,166.04 137-A Abrir menu" [ref=e812] [cursor=pointer]:
+                  - cell "137-A" [ref=e813]:
+                    - generic [ref=e814]: 137-A
+                  - cell "VALVULAS CHEV 230" [ref=e815]:
+                    - generic [ref=e816]: VALVULAS CHEV 230
+                  - cell "-" [ref=e817]:
+                    - generic [ref=e818]: "-"
+                  - cell "-" [ref=e819]:
+                    - generic [ref=e820]: "-"
+                  - cell "-" [ref=e821]:
+                    - generic [ref=e822]: "-"
+                  - cell "-" [ref=e823]:
+                    - generic [ref=e824]: "-"
+                  - cell "0" [ref=e825]:
+                    - generic [ref=e826]: "0"
+                  - cell "-" [ref=e827]:
+                    - generic [ref=e828]: "-"
+                  - cell "$14,400.00" [ref=e829]:
+                    - generic [ref=e830]: $14,400.00
+                  - cell "Activo" [ref=e831]:
+                    - generic [ref=e832]: Activo
+                  - cell "-" [ref=e833]:
+                    - generic [ref=e834]: "-"
+                  - cell "-" [ref=e835]:
+                    - generic [ref=e836]: "-"
+                  - cell "$7,166.04" [ref=e837]:
+                    - generic [ref=e838]: $7,166.04
+                  - cell "137-A" [ref=e839]:
+                    - generic [ref=e840]: 137-A
+                  - cell "Abrir menu" [ref=e841]:
+                    - button "Abrir menu" [ref=e842]:
+                      - generic [ref=e843]: Abrir menu
+                      - img
+            - generic [ref=e845]:
+              - generic [ref=e846]: Pagina 1 de 5049
+              - generic [ref=e847]:
+                - button "Ir a la primera pagina" [disabled]:
+                  - generic: Ir a la primera pagina
+                  - img
+                - button "Ir a la pagina anterior" [disabled]:
+                  - generic: Ir a la pagina anterior
+                  - img
+                - button "Ir a la pagina siguiente" [ref=e848] [cursor=pointer]:
+                  - generic [ref=e849]: Ir a la pagina siguiente
+                  - img
+                - button "Ir a la ultima pagina" [ref=e850] [cursor=pointer]:
+                  - generic [ref=e851]: Ir a la ultima pagina
+                  - img
+  - region "Notifications (F8)":
+    - list [ref=e853]:
+      - listitem [ref=e854]:
+        - generic [ref=e855]:
+          - generic [ref=e856]: Articulo actualizado
+          - generic [ref=e857]: El articulo "CARCAZA PORTA TERMOST COMP" se actualizo correctamente.
+        - button [ref=e858] [cursor=pointer]:
+          - img [ref=e859]
+  - alert [ref=e163]

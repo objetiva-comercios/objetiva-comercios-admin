@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common'
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common'
 import { writeFile, mkdir, unlink } from 'fs/promises'
 import { join } from 'path'
 import sharp from 'sharp'
@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm'
 import { DrizzleService } from '../../db/index'
 import { articulos } from '../../db/schema'
 import { UploadImagenDto } from './dto/upload-imagen.dto'
+import { ImportImagenUrlDto } from './dto/import-imagen-url.dto'
 
 @Injectable()
 export class ArticulosImagenesService {
@@ -101,6 +102,36 @@ export class ArticulosImagenesService {
       .returning()
 
     return updated[0]
+  }
+
+  private readonly logger = new Logger(ArticulosImagenesService.name)
+
+  async importFromUrl(codigo: string, dto: ImportImagenUrlDto) {
+    // 1. Download image from external URL
+    let buffer: Buffer
+    try {
+      const response = await fetch(dto.url)
+      if (!response.ok) {
+        throw new BadRequestException(
+          `No se pudo descargar la imagen: ${response.status} ${response.statusText}`
+        )
+      }
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.startsWith('image/')) {
+        throw new BadRequestException(
+          `URL no retorna una imagen (content-type: ${contentType})`
+        )
+      }
+      buffer = Buffer.from(await response.arrayBuffer())
+    } catch (err) {
+      if (err instanceof BadRequestException) throw err
+      throw new BadRequestException(`Error descargando imagen desde ${dto.url}: ${(err as Error).message}`)
+    }
+
+    this.logger.log(`Imagen descargada desde ${dto.url} (${buffer.length} bytes) → ${codigo} ${dto.tipo} slot ${dto.slot}`)
+
+    // 2. Reuse existing upload pipeline
+    return this.uploadImagen(codigo, buffer, { tipo: dto.tipo, slot: dto.slot })
   }
 
   async deleteImagen(codigo: string, tipo: 'etiqueta' | 'producto', slot: number) {

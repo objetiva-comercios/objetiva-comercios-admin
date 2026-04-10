@@ -1,0 +1,797 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - link:
+          - /url: /dashboard
+          - generic: C
+          - generic: Comercio Ejemplo
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - link:
+                - /url: /dashboard
+                - img
+                - generic: Panel
+              - link:
+                - /url: /articulos
+                - img
+                - generic: Artículos
+              - link:
+                - /url: /purchases
+                - img
+                - generic: Compras
+              - link:
+                - /url: /sales
+                - img
+                - generic: Ventas
+              - link:
+                - /url: /orders
+                - img
+                - generic: Pedidos
+              - link:
+                - /url: /settings
+                - img
+                - generic: Configuración
+      - generic:
+        - paragraph: Comercio Ejemplo Admin
+    - generic:
+      - banner:
+        - generic:
+          - button:
+            - img
+            - generic: Cambiar tema
+          - button:
+            - generic:
+              - generic: SA
+      - main:
+        - generic:
+          - generic:
+            - heading [level=1]: Articulos
+            - paragraph: Gestiona tu catalogo de articulos e inventario.
+          - generic:
+            - link:
+              - /url: /articulos
+              - text: Listado
+            - link:
+              - /url: /articulos/existencias
+              - text: Existencias
+            - link:
+              - /url: /articulos/inventarios
+              - text: Inventarios
+          - generic:
+            - generic:
+              - generic:
+                - button: Activos
+                - button: Inactivos
+                - button: Todos
+              - generic:
+                - img
+                - textbox:
+                  - /placeholder: Buscar articulos...
+            - link:
+              - /url: /articulos/nuevo
+              - img
+              - text: Nuevo Articulo
+          - generic:
+            - generic:
+              - button:
+                - img
+                - text: Columnas
+            - generic:
+              - generic:
+                - table:
+                  - rowgroup:
+                    - row:
+                      - columnheader:
+                        - button:
+                          - text: Codigo
+                          - img
+                      - columnheader:
+                        - button:
+                          - text: Nombre
+                          - img
+                      - columnheader: Marca
+                      - columnheader: Modelo
+                      - columnheader: Medida
+                      - columnheader: Presentacion
+                      - columnheader: Unidades
+                      - columnheader: Objeto
+                      - columnheader:
+                        - button:
+                          - text: Precio
+                          - img
+                      - columnheader: Estado
+                      - columnheader: SKU
+                      - columnheader: Cod. Barras
+                      - columnheader:
+                        - button:
+                          - text: Costo
+                          - img
+                      - columnheader: ERP Codigo
+                      - columnheader
+                  - rowgroup:
+                    - row:
+                      - cell:
+                        - generic: FIS-97029VE
+                      - cell:
+                        - generic: CARCAZA PORTA TERMOST COMP
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "4"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $40,100.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $19,455.10
+                      - cell:
+                        - generic: FIS-97029VE
+                      - cell:
+                        - button [expanded]:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: FIS-97040VE
+                      - cell:
+                        - generic: CARCAZA PORTA TERMOT FISPA
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $60,800.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $29,523.69
+                      - cell:
+                        - generic: FIS-97040VE
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 2058AP
+                      - cell:
+                        - generic: RODAMIENTO EATON
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $77,500.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $49,996.26
+                      - cell:
+                        - generic: 2058AP
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 38290-NA
+                      - cell:
+                        - generic: JGO PAST FRENO LITTON DEL
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $25,500.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $12,389.40
+                      - cell:
+                        - generic: 38290-NA
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: MY896670JT
+                      - cell:
+                        - generic: KIT BULONES MEGANE/CLIO 2 1.6
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $34,900.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $16,438.32
+                      - cell:
+                        - generic: MY896670JT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 627423.87JRU
+                      - cell:
+                        - generic: KIT TERMOSTATO
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $75,900.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $37,968.00
+                      - cell:
+                        - generic: 627423.87JRU
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: MY056670NA
+                      - cell:
+                        - generic: JGO.JUNTAS P/MOTOR MEGANE 1.6
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $129,600.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $59,372.54
+                      - cell:
+                        - generic: MY056670NA
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 38610-NA
+                      - cell:
+                        - generic: JGO PAST FRENO LITTON DEL
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $25,800.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $12,506.81
+                      - cell:
+                        - generic: 38610-NA
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: FIS-97041VE
+                      - cell:
+                        - generic: CARCAZA PORTA TERMOST FISPA
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $58,200.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $28,269.95
+                      - cell:
+                        - generic: FIS-97041VE
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: MY896992JT
+                      - cell:
+                        - generic: KIT BULONES TOYOTA HILUX
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $86,000.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $40,572.87
+                      - cell:
+                        - generic: MY896992JT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 6PK1878-CONT
+                      - cell:
+                        - generic: CORREA TRAPEZOIDAL
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "4"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $21,300.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $10,667.04
+                      - cell:
+                        - generic: 6PK1878-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 6PK1205-CONT
+                      - cell:
+                        - generic: CORREA POLY V RENAULT/CITROEN
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $23,200.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $11,606.04
+                      - cell:
+                        - generic: 6PK1205-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 8PK1345-CONT
+                      - cell:
+                        - generic: CORREA POLY V FORD
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "4"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $46,100.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $23,061.84
+                      - cell:
+                        - generic: 8PK1345-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 8PK1385-CONT
+                      - cell:
+                        - generic: CORREA POLY V FORD
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $35,100.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $17,578.08
+                      - cell:
+                        - generic: 8PK1385-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 6PK1780-CONT
+                      - cell:
+                        - generic: CORREA POLY V CHEV/SUZUKI
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $26,700.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $13,333.80
+                      - cell:
+                        - generic: 6PK1780-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 10AV0875-CONT
+                      - cell:
+                        - generic: CORREA AUT.CHEV./FIAT/HONDA
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "4"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $6,300.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $3,117.48
+                      - cell:
+                        - generic: 10AV0875-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: HG41003
+                      - cell:
+                        - generic: AMORT TRAS FLUENCE 11/..
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $97,600.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $48,878.33
+                      - cell:
+                        - generic: HG41003
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 5PK1795-CONT
+                      - cell:
+                        - generic: CORREA POLY V CHEV/FIAT
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $22,400.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $11,192.88
+                      - cell:
+                        - generic: 5PK1795-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: HG31127
+                      - cell:
+                        - generic: AMORT TRAS VW CROSS FOX 05/12
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $104,100.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $52,125.40
+                      - cell:
+                        - generic: HG31127
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 6PK2345-CONT
+                      - cell:
+                        - generic: CORREA POLY V FORD/JEEP
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "6"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $31,100.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $15,549.84
+                      - cell:
+                        - generic: 6PK2345-CONT
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+            - generic:
+              - generic:
+                - generic: Pagina 1 de 5049
+                - generic:
+                  - button [disabled]:
+                    - generic: Ir a la primera pagina
+                    - img
+                  - button [disabled]:
+                    - generic: Ir a la pagina anterior
+                    - img
+                  - button:
+                    - generic: Ir a la pagina siguiente
+                    - img
+                  - button:
+                    - generic: Ir a la ultima pagina
+                    - img
+  - list
+  - alert
+  - menu "Abrir menu" [active] [ref=e1275]:
+    - menuitem "Editar" [ref=e1276]:
+      - img
+      - text: Editar
+    - menuitem "Desactivar" [ref=e1277]

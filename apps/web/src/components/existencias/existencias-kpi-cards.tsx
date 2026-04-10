@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertTriangleIcon, PackageIcon, XCircleIcon } from 'lucide-react'
+import { AlertTriangleIcon, ArchiveIcon, BoxesIcon, PackageIcon, XCircleIcon } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,18 +14,37 @@ interface ExistenciasKpiCardsProps {
   isLoading?: boolean
 }
 
-const cards: {
+interface KpiCard {
   key: keyof ExistenciasKpi
-  status: StockStatus | 'normal'
+  status: StockStatus | 'normal' | null
   label: string
   icon: typeof PackageIcon
   activeClass: string
   iconClass: string
-}[] = [
+  format?: (value: number, kpi: ExistenciasKpi) => string
+}
+
+const cards: KpiCard[] = [
+  {
+    key: 'totalArticulos',
+    status: null,
+    label: 'Total articulos',
+    icon: ArchiveIcon,
+    activeClass: '',
+    iconClass: 'text-muted-foreground',
+  },
+  {
+    key: 'totalUnidades',
+    status: null,
+    label: 'Total unidades',
+    icon: BoxesIcon,
+    activeClass: '',
+    iconClass: 'text-muted-foreground',
+  },
   {
     key: 'totalConStock',
     status: 'normal',
-    label: 'Total con Stock',
+    label: 'Con unidades',
     icon: PackageIcon,
     activeClass: 'ring-2 ring-primary border-primary',
     iconClass: 'text-muted-foreground',
@@ -33,7 +52,7 @@ const cards: {
   {
     key: 'stockBajo',
     status: 'bajo',
-    label: 'Stock Bajo',
+    label: 'Bajo minimo',
     icon: AlertTriangleIcon,
     activeClass: 'ring-2 ring-yellow-400 border-yellow-200',
     iconClass: 'text-yellow-600',
@@ -41,7 +60,7 @@ const cards: {
   {
     key: 'sinStock',
     status: 'sin_stock',
-    label: 'Sin Stock',
+    label: 'Sin unidades',
     icon: XCircleIcon,
     activeClass: 'ring-2 ring-red-400 border-red-200',
     iconClass: 'text-red-600',
@@ -55,16 +74,18 @@ export function ExistenciasKpiCards({
   isLoading,
 }: ExistenciasKpiCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
       {cards.map(card => {
         const Icon = card.icon
-        const isActive = activeFilter === card.status
+        const isFilterable = card.status !== null
+        const isActive = isFilterable && activeFilter === card.status
         return (
           <Card
             key={card.key}
-            onClick={() => onFilterChange(isActive ? null : (card.status as StockStatus))}
+            onClick={isFilterable ? () => onFilterChange(isActive ? null : (card.status as StockStatus)) : undefined}
             className={cn(
-              'cursor-pointer p-3 transition-all hover:shadow-md',
+              'p-3 transition-all',
+              isFilterable && 'cursor-pointer hover:shadow-md',
               isActive && card.activeClass
             )}
           >
@@ -75,7 +96,7 @@ export function ExistenciasKpiCards({
                   <Skeleton className="mt-1 h-7 w-12" />
                 ) : (
                   <p className={cn('text-2xl font-bold', isActive && card.iconClass)}>
-                    {kpi[card.key]}
+                    {card.format ? card.format(kpi[card.key], kpi) : kpi[card.key].toLocaleString()}
                   </p>
                 )}
               </div>

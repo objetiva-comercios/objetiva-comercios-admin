@@ -159,9 +159,9 @@ export const purchaseItems = pgTable(
 
 export const businessSettings = pgTable('business_settings', {
   id: serial('id').primaryKey(),
-  companyName: varchar('company_name', { length: 100 }).notNull().default('Comercio Ejemplo'),
-  address: varchar('address', { length: 200 }),
-  taxId: varchar('tax_id', { length: 30 }),
+  companyName: text('company_name').notNull().default('Comercio Ejemplo'),
+  address: text('address'),
+  taxId: text('tax_id'),
   logoSquare: text('logo_square'),
   logoRectangular: text('logo_rectangular'),
   articulosConfig: jsonb('articulos_config')
@@ -180,49 +180,69 @@ export const articulos = pgTable(
     codigo: text('codigo').primaryKey(),
 
     // Identification
-    nombre: varchar('nombre', { length: 255 }).notNull(),
-    sku: varchar('sku', { length: 50 }),
-    codigoBarras: varchar('codigo_barras', { length: 50 }),
+    nombre: text('nombre'),
+    sku: text('sku'),
+    codigoBarras: text('codigo_barras'),
     observaciones: text('observaciones'),
+    codigoEquivalencia: text('codigo_equivalencia'),
+    nombreCorto: text('nombre_corto'),
+    descripcion: text('descripcion'),
+    descripcionWeb: text('descripcion_web'),
+
+    // Classification
+    categoria: text('categoria'),
+    subcategoria: text('subcategoria'),
+    rubro: text('rubro'),
+    subrubro: text('subrubro'),
+    adjetivo: text('adjetivo'),
 
     // Properties
-    marca: varchar('marca', { length: 100 }),
-    modelo: varchar('modelo', { length: 100 }),
-    talle: varchar('talle', { length: 50 }),
-    color: varchar('color', { length: 50 }),
-    material: varchar('material', { length: 100 }),
-    presentacion: varchar('presentacion', { length: 100 }),
-    medida: varchar('medida', { length: 50 }),
+    marca: text('marca'),
+    modelo: text('modelo'),
+    talle: text('talle'),
+    color: text('color'),
+    material: text('material'),
+    presentacion: text('presentacion'),
+    medida: text('medida'),
     objeto: text('objeto'),
+    propAux1: text('prop_aux_1'),
+    propAux2: text('prop_aux_2'),
+    propAux3: text('prop_aux_3'),
+    propAux4: text('prop_aux_4'),
+    propAux5: text('prop_aux_5'),
+    unidades: integer('unidades').default(0),
 
     // Prices
-    precio: numeric('precio', { precision: 10, scale: 2 }),
-    costo: numeric('costo', { precision: 10, scale: 2 }),
+    precio: numeric('precio'),
+    costo: numeric('costo'),
 
     // Images
-    imagenesProducto: jsonb('imagenes_producto').$type<string[]>().default([]),
-    imagenesEtiqueta: jsonb('imagenes_etiqueta').$type<string[]>().default([]),
-    etiquetasOcr: jsonb('etiquetas_ocr').$type<string[]>().default([]),
-    jsonArticulo: jsonb('json_articulo'),
+    imagenesProducto: text('imagenes_producto').array(),
+    imagenesEtiqueta: text('imagenes_etiqueta').array(),
+    imagenesProductoProcesadas: text('imagenes_producto_procesadas').array(),
+    etiquetasOcr: text('etiquetas_ocr').array(),
+    jsonArticulo: jsonb('json_articulo').default({}),
 
     // ERP
-    erpId: varchar('erp_id', { length: 50 }),
-    erpCodigo: varchar('erp_codigo', { length: 50 }),
-    erpNombre: varchar('erp_nombre', { length: 255 }),
-    erpPrecio: numeric('erp_precio', { precision: 10, scale: 2 }),
-    erpCosto: numeric('erp_costo', { precision: 10, scale: 2 }),
+    erpId: text('erp_id'),
+    erpCodigo: text('erp_codigo'),
+    erpNombre: text('erp_nombre'),
+    erpPrecio: numeric('erp_precio'),
+    erpCosto: numeric('erp_costo'),
     erpUnidades: integer('erp_unidades'),
-    erpDatos: jsonb('erp_datos'),
+    erpDatos: jsonb('erp_datos').default({}),
     erpSincronizado: boolean('erp_sincronizado').default(false),
     erpFechaSync: timestamp('erp_fecha_sync'),
+    erpCreado: timestamp('erp_creado'),
+    erpActualizado: timestamp('erp_actualizado'),
 
     // Origin
-    originSource: varchar('origin_source', { length: 50 }),
-    originSyncId: varchar('origin_sync_id', { length: 100 }),
+    originSource: text('origin_source'),
+    originSyncId: text('origin_sync_id'),
     originSyncedAt: timestamp('origin_synced_at'),
 
     // State
-    activo: boolean('activo').notNull().default(true),
+    activo: boolean('activo').default(true),
     createdAt: timestamp('creado').notNull().defaultNow(),
     updatedAt: timestamp('actualizado').notNull().defaultNow(),
   },
@@ -347,10 +367,8 @@ export const inventariosArticulos = pgTable(
       .notNull()
       .references(() => articulos.codigo, { onDelete: 'restrict' }),
     cantidadContada: integer('cantidad_contada').notNull().default(0),
+    columna: integer('columna'),
     dispositivoId: integer('dispositivo_id').references(() => dispositivosMoviles.id, {
-      onDelete: 'set null',
-    }),
-    sectorId: integer('sector_id').references(() => inventarioSectores.id, {
       onDelete: 'set null',
     }),
     observaciones: text('observaciones'),

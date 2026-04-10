@@ -1,0 +1,244 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "S Sanchez Repuestos" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=e6]: S
+        - generic [ref=e7]: Sanchez Repuestos
+      - generic [ref=e11]:
+        - link "Panel" [ref=e12] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e13]
+          - generic [ref=e18]: Panel
+        - link "Artículos" [ref=e19] [cursor=pointer]:
+          - /url: /articulos
+          - img [ref=e20]
+          - generic [ref=e24]: Artículos
+        - link "Compras" [ref=e25] [cursor=pointer]:
+          - /url: /purchases
+          - img [ref=e26]
+          - generic [ref=e30]: Compras
+        - link "Ventas" [ref=e31] [cursor=pointer]:
+          - /url: /sales
+          - img [ref=e32]
+          - generic [ref=e35]: Ventas
+        - link "Pedidos" [ref=e36] [cursor=pointer]:
+          - /url: /orders
+          - img [ref=e37]
+          - generic [ref=e40]: Pedidos
+        - link "Configuración" [ref=e41] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e42]
+          - generic [ref=e45]: Configuración
+      - paragraph [ref=e47]: Sanchez Repuestos Admin
+    - generic [ref=e48]:
+      - banner [ref=e49]:
+        - generic [ref=e50]:
+          - button "Cambiar tema" [ref=e51] [cursor=pointer]:
+            - img
+            - generic [ref=e52]: Cambiar tema
+          - button "SA" [ref=e53] [cursor=pointer]:
+            - generic [ref=e55]: SA
+      - main [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - heading "Compras" [level=1] [ref=e59]
+            - paragraph [ref=e60]: Gestión de compras y órdenes a proveedores.
+          - generic [ref=e61]:
+            - textbox "Filtrar por proveedor..." [ref=e64]
+            - table [ref=e67]:
+              - rowgroup [ref=e68]:
+                - row "N.° de compra Proveedor Artículos Total Estado Entrega estimada Fecha" [ref=e69]:
+                  - columnheader "N.° de compra" [ref=e70]:
+                    - button "N.° de compra" [ref=e71] [cursor=pointer]:
+                      - text: N.° de compra
+                      - img
+                  - columnheader "Proveedor" [ref=e72]:
+                    - button "Proveedor" [ref=e73] [cursor=pointer]:
+                      - text: Proveedor
+                      - img
+                  - columnheader "Artículos" [ref=e74]
+                  - columnheader "Total" [ref=e75]:
+                    - button "Total" [ref=e76] [cursor=pointer]:
+                      - text: Total
+                      - img
+                  - columnheader "Estado" [ref=e77]
+                  - columnheader "Entrega estimada" [ref=e78]
+                  - columnheader "Fecha" [ref=e79]:
+                    - button "Fecha" [ref=e80] [cursor=pointer]:
+                      - text: Fecha
+                      - img
+              - rowgroup [ref=e81]:
+                - row "PO-90025696 Corwin Inc 8 artículos $134,765.44 Recibida Apr 4, 2026 Feb 16, 2026" [ref=e82] [cursor=pointer]:
+                  - cell "PO-90025696" [ref=e83]:
+                    - generic [ref=e84]: PO-90025696
+                  - cell "Corwin Inc" [ref=e85]:
+                    - generic [ref=e86]: Corwin Inc
+                  - cell "8 artículos" [ref=e87]:
+                    - generic [ref=e88]: 8 artículos
+                  - cell "$134,765.44" [ref=e89]:
+                    - generic [ref=e90]: $134,765.44
+                  - cell "Recibida" [ref=e91]:
+                    - generic [ref=e92]: Recibida
+                  - cell "Apr 4, 2026" [ref=e93]:
+                    - generic [ref=e94]: Apr 4, 2026
+                  - cell "Feb 16, 2026" [ref=e95]:
+                    - generic [ref=e96]: Feb 16, 2026
+                - row "PO-72412338 Baumbach Inc 10 artículos $156,946.52 Borrador Apr 23, 2026 Feb 9, 2026" [ref=e97] [cursor=pointer]:
+                  - cell "PO-72412338" [ref=e98]:
+                    - generic [ref=e99]: PO-72412338
+                  - cell "Baumbach Inc" [ref=e100]:
+                    - generic [ref=e101]: Baumbach Inc
+                  - cell "10 artículos" [ref=e102]:
+                    - generic [ref=e103]: 10 artículos
+                  - cell "$156,946.52" [ref=e104]:
+                    - generic [ref=e105]: $156,946.52
+                  - cell "Borrador" [ref=e106]:
+                    - generic [ref=e107]: Borrador
+                  - cell "Apr 23, 2026" [ref=e108]:
+                    - generic [ref=e109]: Apr 23, 2026
+                  - cell "Feb 9, 2026" [ref=e110]:
+                    - generic [ref=e111]: Feb 9, 2026
+                - row "PO-58187055 Leannon, Corkery and Wolf 6 artículos $66,849.11 Recibida Apr 19, 2026 Jan 11, 2026" [ref=e112] [cursor=pointer]:
+                  - cell "PO-58187055" [ref=e113]:
+                    - generic [ref=e114]: PO-58187055
+                  - cell "Leannon, Corkery and Wolf" [ref=e115]:
+                    - generic [ref=e116]: Leannon, Corkery and Wolf
+                  - cell "6 artículos" [ref=e117]:
+                    - generic [ref=e118]: 6 artículos
+                  - cell "$66,849.11" [ref=e119]:
+                    - generic [ref=e120]: $66,849.11
+                  - cell "Recibida" [ref=e121]:
+                    - generic [ref=e122]: Recibida
+                  - cell "Apr 19, 2026" [ref=e123]:
+                    - generic [ref=e124]: Apr 19, 2026
+                  - cell "Jan 11, 2026" [ref=e125]:
+                    - generic [ref=e126]: Jan 11, 2026
+                - row "PO-92193275 Berge, Weimann and Williamson 4 artículos $76,681.50 Recibida Mar 7, 2026 Dec 27, 2025" [ref=e127] [cursor=pointer]:
+                  - cell "PO-92193275" [ref=e128]:
+                    - generic [ref=e129]: PO-92193275
+                  - cell "Berge, Weimann and Williamson" [ref=e130]:
+                    - generic [ref=e131]: Berge, Weimann and Williamson
+                  - cell "4 artículos" [ref=e132]:
+                    - generic [ref=e133]: 4 artículos
+                  - cell "$76,681.50" [ref=e134]:
+                    - generic [ref=e135]: $76,681.50
+                  - cell "Recibida" [ref=e136]:
+                    - generic [ref=e137]: Recibida
+                  - cell "Mar 7, 2026" [ref=e138]:
+                    - generic [ref=e139]: Mar 7, 2026
+                  - cell "Dec 27, 2025" [ref=e140]:
+                    - generic [ref=e141]: Dec 27, 2025
+                - row "PO-26179096 Hilll - Jacobi 3 artículos $19,403.59 Pedida Mar 11, 2026 Dec 13, 2025" [ref=e142] [cursor=pointer]:
+                  - cell "PO-26179096" [ref=e143]:
+                    - generic [ref=e144]: PO-26179096
+                  - cell "Hilll - Jacobi" [ref=e145]:
+                    - generic [ref=e146]: Hilll - Jacobi
+                  - cell "3 artículos" [ref=e147]:
+                    - generic [ref=e148]: 3 artículos
+                  - cell "$19,403.59" [ref=e149]:
+                    - generic [ref=e150]: $19,403.59
+                  - cell "Pedida" [ref=e151]:
+                    - generic [ref=e152]: Pedida
+                  - cell "Mar 11, 2026" [ref=e153]:
+                    - generic [ref=e154]: Mar 11, 2026
+                  - cell "Dec 13, 2025" [ref=e155]:
+                    - generic [ref=e156]: Dec 13, 2025
+                - row "PO-84807852 Harris - Hessel 1 artículos $14,400.94 Recibida Mar 31, 2026 Nov 23, 2025" [ref=e157] [cursor=pointer]:
+                  - cell "PO-84807852" [ref=e158]:
+                    - generic [ref=e159]: PO-84807852
+                  - cell "Harris - Hessel" [ref=e160]:
+                    - generic [ref=e161]: Harris - Hessel
+                  - cell "1 artículos" [ref=e162]:
+                    - generic [ref=e163]: 1 artículos
+                  - cell "$14,400.94" [ref=e164]:
+                    - generic [ref=e165]: $14,400.94
+                  - cell "Recibida" [ref=e166]:
+                    - generic [ref=e167]: Recibida
+                  - cell "Mar 31, 2026" [ref=e168]:
+                    - generic [ref=e169]: Mar 31, 2026
+                  - cell "Nov 23, 2025" [ref=e170]:
+                    - generic [ref=e171]: Nov 23, 2025
+                - row "PO-76463792 Altenwerth - Denesik 1 artículos $20,137.08 Borrador Mar 24, 2026 Nov 5, 2025" [ref=e172] [cursor=pointer]:
+                  - cell "PO-76463792" [ref=e173]:
+                    - generic [ref=e174]: PO-76463792
+                  - cell "Altenwerth - Denesik" [ref=e175]:
+                    - generic [ref=e176]: Altenwerth - Denesik
+                  - cell "1 artículos" [ref=e177]:
+                    - generic [ref=e178]: 1 artículos
+                  - cell "$20,137.08" [ref=e179]:
+                    - generic [ref=e180]: $20,137.08
+                  - cell "Borrador" [ref=e181]:
+                    - generic [ref=e182]: Borrador
+                  - cell "Mar 24, 2026" [ref=e183]:
+                    - generic [ref=e184]: Mar 24, 2026
+                  - cell "Nov 5, 2025" [ref=e185]:
+                    - generic [ref=e186]: Nov 5, 2025
+                - row "PO-46581088 Halvorson - Parker 1 artículos $16,381.89 Pedida Apr 9, 2026 Oct 11, 2025" [ref=e187] [cursor=pointer]:
+                  - cell "PO-46581088" [ref=e188]:
+                    - generic [ref=e189]: PO-46581088
+                  - cell "Halvorson - Parker" [ref=e190]:
+                    - generic [ref=e191]: Halvorson - Parker
+                  - cell "1 artículos" [ref=e192]:
+                    - generic [ref=e193]: 1 artículos
+                  - cell "$16,381.89" [ref=e194]:
+                    - generic [ref=e195]: $16,381.89
+                  - cell "Pedida" [ref=e196]:
+                    - generic [ref=e197]: Pedida
+                  - cell "Apr 9, 2026" [ref=e198]:
+                    - generic [ref=e199]: Apr 9, 2026
+                  - cell "Oct 11, 2025" [ref=e200]:
+                    - generic [ref=e201]: Oct 11, 2025
+                - row "PO-45732265 Von - Zemlak 5 artículos $51,687.91 Recibida Apr 22, 2026 Oct 10, 2025" [ref=e202] [cursor=pointer]:
+                  - cell "PO-45732265" [ref=e203]:
+                    - generic [ref=e204]: PO-45732265
+                  - cell "Von - Zemlak" [ref=e205]:
+                    - generic [ref=e206]: Von - Zemlak
+                  - cell "5 artículos" [ref=e207]:
+                    - generic [ref=e208]: 5 artículos
+                  - cell "$51,687.91" [ref=e209]:
+                    - generic [ref=e210]: $51,687.91
+                  - cell "Recibida" [ref=e211]:
+                    - generic [ref=e212]: Recibida
+                  - cell "Apr 22, 2026" [ref=e213]:
+                    - generic [ref=e214]: Apr 22, 2026
+                  - cell "Oct 10, 2025" [ref=e215]:
+                    - generic [ref=e216]: Oct 10, 2025
+                - row "PO-12891547 Bruen - Stokes 2 artículos $26,555.86 Recibida Apr 27, 2026 Sep 9, 2025" [ref=e217] [cursor=pointer]:
+                  - cell "PO-12891547" [ref=e218]:
+                    - generic [ref=e219]: PO-12891547
+                  - cell "Bruen - Stokes" [ref=e220]:
+                    - generic [ref=e221]: Bruen - Stokes
+                  - cell "2 artículos" [ref=e222]:
+                    - generic [ref=e223]: 2 artículos
+                  - cell "$26,555.86" [ref=e224]:
+                    - generic [ref=e225]: $26,555.86
+                  - cell "Recibida" [ref=e226]:
+                    - generic [ref=e227]: Recibida
+                  - cell "Apr 27, 2026" [ref=e228]:
+                    - generic [ref=e229]: Apr 27, 2026
+                  - cell "Sep 9, 2025" [ref=e230]:
+                    - generic [ref=e231]: Sep 9, 2025
+            - generic [ref=e233]:
+              - generic [ref=e234]:
+                - paragraph [ref=e235]: Filas por página
+                - combobox [ref=e236] [cursor=pointer]:
+                  - img [ref=e237]
+                - combobox [ref=e239]
+              - generic [ref=e240]: Página 1 de 2
+              - generic [ref=e241]:
+                - button "Ir a la primera página" [disabled]:
+                  - generic: Ir a la primera página
+                  - img
+                - button "Ir a la página anterior" [disabled]:
+                  - generic: Ir a la página anterior
+                  - img
+                - button "Ir a la página siguiente" [ref=e242] [cursor=pointer]:
+                  - generic [ref=e243]: Ir a la página siguiente
+                  - img
+                - button "Ir a la última página" [ref=e244] [cursor=pointer]:
+                  - generic [ref=e245]: Ir a la última página
+                  - img
+  - region "Notifications (F8)":
+    - list
+  - alert [ref=e246]

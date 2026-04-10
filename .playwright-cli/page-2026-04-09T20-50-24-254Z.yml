@@ -1,0 +1,121 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "C Comercio Ejemplo" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=e6]: C
+        - generic [ref=e7]: Comercio Ejemplo
+      - generic [ref=e11]:
+        - link "Panel" [ref=e12] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e13]
+          - generic [ref=e18]: Panel
+        - link "Artículos" [ref=e19] [cursor=pointer]:
+          - /url: /articulos
+          - img [ref=e20]
+          - generic [ref=e24]: Artículos
+        - link "Compras" [ref=e25] [cursor=pointer]:
+          - /url: /purchases
+          - img [ref=e26]
+          - generic [ref=e30]: Compras
+        - link "Ventas" [ref=e31] [cursor=pointer]:
+          - /url: /sales
+          - img [ref=e32]
+          - generic [ref=e35]: Ventas
+        - link "Pedidos" [ref=e36] [cursor=pointer]:
+          - /url: /orders
+          - img [ref=e37]
+          - generic [ref=e40]: Pedidos
+        - link "Configuración" [ref=e41] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e42]
+          - generic [ref=e45]: Configuración
+      - paragraph [ref=e47]: Comercio Ejemplo Admin
+    - generic [ref=e48]:
+      - banner [ref=e49]:
+        - generic [ref=e50]:
+          - button "Cambiar tema" [ref=e51] [cursor=pointer]:
+            - img
+            - generic [ref=e52]: Cambiar tema
+          - button "SA" [ref=e53] [cursor=pointer]:
+            - generic [ref=e55]: SA
+      - main [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - heading "Panel" [level=1] [ref=e59]:
+              - img [ref=e60]
+              - text: Panel
+            - paragraph [ref=e65]: Resumen de las métricas de tu negocio e indicadores clave de rendimiento
+          - generic [ref=e66]:
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - generic [ref=e69]: Ingresos totales
+                - img [ref=e70]
+              - generic [ref=e72]:
+                - generic [ref=e73]: $0.00
+                - paragraph [ref=e74]: $0.00 hoy
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - generic [ref=e77]: Total de pedidos
+                - img [ref=e78]
+              - generic [ref=e82]:
+                - generic [ref=e83]: "0"
+                - paragraph [ref=e84]: 0 pendientes
+            - generic [ref=e85]:
+              - generic [ref=e86]:
+                - generic [ref=e87]: Total de articulos
+                - img [ref=e88]
+              - generic [ref=e92]:
+                - generic [ref=e93]: "100.990"
+                - paragraph [ref=e94]: 100.990 activos — 0 con unidades bajo minimo
+            - generic [ref=e95]:
+              - generic [ref=e96]:
+                - generic [ref=e97]: Total de ventas
+                - img [ref=e98]
+              - generic [ref=e101]:
+                - generic [ref=e102]: "0"
+                - paragraph [ref=e103]: 0 hoy
+            - generic [ref=e104]:
+              - generic [ref=e105]:
+                - generic [ref=e106]: Compras pendientes
+                - img [ref=e107]
+              - generic [ref=e112]:
+                - generic [ref=e113]: "0"
+                - paragraph [ref=e114]: $0.00 valor pendiente
+          - generic [ref=e115]:
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - generic [ref=e119]: Resumen de ventas
+                - generic [ref=e120]: Tendencia de ventas en los últimos 7 días
+              - application [ref=e124]:
+                - generic [ref=e145]:
+                  - generic [ref=e146]:
+                    - generic [ref=e148]: Lun
+                    - generic [ref=e150]: Mar
+                    - generic [ref=e152]: Mié
+                    - generic [ref=e154]: Jue
+                    - generic [ref=e156]: Vie
+                    - generic [ref=e158]: Sáb
+                    - generic [ref=e160]: Dom
+                  - generic [ref=e161]:
+                    - generic [ref=e163]: $0
+                    - generic [ref=e165]: $1
+                    - generic [ref=e167]: $2
+                    - generic [ref=e169]: $3
+                    - generic [ref=e171]: $4
+            - generic [ref=e173]:
+              - generic [ref=e174]:
+                - generic [ref=e175]: Alertas de unidades bajo minimo
+                - generic [ref=e176]: Articulos que requieren atencion
+              - generic [ref=e178]:
+                - paragraph [ref=e179]: Sin articulos con unidades bajo minimo
+                - paragraph [ref=e180]: Todos los niveles de unidades estan bien
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - generic [ref=e183]: Pedidos recientes
+              - generic [ref=e184]: Actividad de pedidos reciente
+            - paragraph [ref=e187]: Sin pedidos recientes
+  - region "Notifications (F8)":
+    - list
+  - alert [ref=e188]
+  - generic [ref=e189]: $0

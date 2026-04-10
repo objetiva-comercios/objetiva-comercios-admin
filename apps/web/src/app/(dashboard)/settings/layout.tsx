@@ -1,3 +1,4 @@
+import { Settings } from 'lucide-react'
 import { SettingsNav } from '@/components/settings/settings-nav'
 import { createClient } from '@/lib/supabase/server'
 
@@ -11,7 +12,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Configuración</h1>
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2"><Settings className="h-7 w-7" style={{ color: '#056ed1' }} />Configuración</h1>
         <p className="text-muted-foreground">
           Administrá tu cuenta y las preferencias de la aplicación.
         </p>

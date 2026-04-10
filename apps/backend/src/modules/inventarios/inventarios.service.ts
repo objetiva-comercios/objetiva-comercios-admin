@@ -219,8 +219,8 @@ export class InventariosService {
         articuloNombre: articulos.nombre,
         cantidadContada: inventariosArticulos.cantidadContada,
         stockSistema: sql<number>`COALESCE(${existencias.cantidad}, 0)`,
+        columna: inventariosArticulos.columna,
         dispositivoId: inventariosArticulos.dispositivoId,
-        sectorId: inventariosArticulos.sectorId,
         observaciones: inventariosArticulos.observaciones,
       })
       .from(inventariosArticulos)
@@ -251,8 +251,8 @@ export class InventariosService {
           inventarioId,
           articuloCodigo: dto.articuloCodigo,
           cantidadContada: dto.cantidadContada ?? 0,
+          columna: dto.columna,
           dispositivoId: dto.dispositivoId,
-          sectorId: dto.sectorId,
           observaciones: dto.observaciones,
         })
         .returning()
@@ -277,7 +277,7 @@ export class InventariosService {
     const updateData: Record<string, unknown> = { updatedAt: new Date() }
     if (dto.cantidadContada !== undefined) updateData.cantidadContada = dto.cantidadContada
     if (dto.dispositivoId !== undefined) updateData.dispositivoId = dto.dispositivoId
-    if (dto.sectorId !== undefined) updateData.sectorId = dto.sectorId
+    if (dto.columna !== undefined) updateData.columna = dto.columna
     if (dto.observaciones !== undefined) updateData.observaciones = dto.observaciones
 
     const rows = await this.drizzle.db

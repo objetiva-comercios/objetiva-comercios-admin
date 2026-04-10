@@ -12,13 +12,15 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Alertas de stock bajo</CardTitle>
+          <CardTitle>Alertas de unidades bajo minimo</CardTitle>
           <CardDescription>Articulos que requieren atencion</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="text-sm text-muted-foreground">Sin articulos con stock bajo</p>
-            <p className="text-xs text-muted-foreground">Todos los niveles de stock estan bien</p>
+            <p className="text-sm text-muted-foreground">Sin articulos con unidades bajo minimo</p>
+            <p className="text-xs text-muted-foreground">
+              Todos los niveles de unidades estan bien
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -28,7 +30,7 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Alertas de stock bajo</CardTitle>
+        <CardTitle>Alertas de unidades bajo minimo</CardTitle>
         <CardDescription>Articulos que requieren atencion</CardDescription>
       </CardHeader>
       <CardContent>
@@ -48,7 +50,7 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
                 </div>
               </div>
               <Badge variant={item.totalCantidad === 0 ? 'destructive' : 'secondary'}>
-                {item.totalCantidad === 0 ? 'Sin stock' : 'Stock bajo'}
+                {item.totalCantidad === 0 ? 'Sin unidades' : 'Unidades bajo minimo'}
               </Badge>
             </div>
           ))}

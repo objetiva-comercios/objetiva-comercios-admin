@@ -1,0 +1,98 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "C Comercio Ejemplo" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=e6]: C
+        - generic [ref=e7]: Comercio Ejemplo
+      - generic [ref=e11]:
+        - link "Panel" [ref=e12] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e13]
+          - generic [ref=e18]: Panel
+        - link "Artículos" [ref=e19] [cursor=pointer]:
+          - /url: /articulos
+          - img [ref=e20]
+          - generic [ref=e24]: Artículos
+        - link "Compras" [ref=e25] [cursor=pointer]:
+          - /url: /purchases
+          - img [ref=e26]
+          - generic [ref=e30]: Compras
+        - link "Ventas" [ref=e31] [cursor=pointer]:
+          - /url: /sales
+          - img [ref=e32]
+          - generic [ref=e35]: Ventas
+        - link "Pedidos" [ref=e36] [cursor=pointer]:
+          - /url: /orders
+          - img [ref=e37]
+          - generic [ref=e40]: Pedidos
+        - link "Configuración" [ref=e41] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e42]
+          - generic [ref=e45]: Configuración
+      - paragraph [ref=e47]: Comercio Ejemplo Admin
+    - generic [ref=e48]:
+      - banner [ref=e49]:
+        - generic [ref=e50]:
+          - button "Cambiar tema" [ref=e51] [cursor=pointer]:
+            - img
+            - generic [ref=e52]: Cambiar tema
+          - button "SA" [ref=e53] [cursor=pointer]:
+            - generic [ref=e55]: SA
+      - main [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - heading "Compras" [level=1] [ref=e59]:
+              - img [ref=e60]
+              - text: Compras
+            - paragraph [ref=e64]: Gestión de compras y órdenes a proveedores.
+          - generic [ref=e65]:
+            - textbox "Filtrar por proveedor..." [ref=e68]
+            - table [ref=e71]:
+              - rowgroup [ref=e72]:
+                - row "N.° de compra Proveedor Artículos Total Estado Entrega estimada Fecha" [ref=e73]:
+                  - columnheader "N.° de compra" [ref=e74]:
+                    - button "N.° de compra" [ref=e75] [cursor=pointer]:
+                      - text: N.° de compra
+                      - img
+                  - columnheader "Proveedor" [ref=e76]:
+                    - button "Proveedor" [ref=e77] [cursor=pointer]:
+                      - text: Proveedor
+                      - img
+                  - columnheader "Artículos" [ref=e78]
+                  - columnheader "Total" [ref=e79]:
+                    - button "Total" [ref=e80] [cursor=pointer]:
+                      - text: Total
+                      - img
+                  - columnheader "Estado" [ref=e81]
+                  - columnheader "Entrega estimada" [ref=e82]
+                  - columnheader "Fecha" [ref=e83]:
+                    - button "Fecha" [ref=e84] [cursor=pointer]:
+                      - text: Fecha
+                      - img
+              - rowgroup [ref=e85]:
+                - row "No se encontraron resultados." [ref=e86]:
+                  - cell "No se encontraron resultados." [ref=e87]
+            - generic [ref=e89]:
+              - generic [ref=e90]:
+                - paragraph [ref=e91]: Filas por página
+                - combobox [ref=e92] [cursor=pointer]:
+                  - img [ref=e93]
+                - combobox [ref=e95]
+              - generic [ref=e96]: Página 1 de 0
+              - generic [ref=e97]:
+                - button "Ir a la primera página" [disabled]:
+                  - generic: Ir a la primera página
+                  - img
+                - button "Ir a la página anterior" [disabled]:
+                  - generic: Ir a la página anterior
+                  - img
+                - button "Ir a la página siguiente" [disabled]:
+                  - generic: Ir a la página siguiente
+                  - img
+                - button "Ir a la última página" [disabled]:
+                  - generic: Ir a la última página
+                  - img
+  - region "Notifications (F8)":
+    - list
+  - alert [ref=e98]

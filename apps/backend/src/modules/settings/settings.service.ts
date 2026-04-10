@@ -23,9 +23,23 @@ export class SettingsService {
   async update(dto: UpdateSettingsDto) {
     const current = await this.get()
 
+    // Merge articulosConfig with existing values (partial updates)
+    const { articulosConfig, ...rest } = dto
+    const setData: Record<string, unknown> = { ...rest, updatedAt: new Date() }
+
+    if (articulosConfig) {
+      const currentConfig = (current.articulosConfig as unknown as { camposVisibles: Record<string, boolean> }) ?? { camposVisibles: {} }
+      setData.articulosConfig = {
+        camposVisibles: {
+          ...currentConfig.camposVisibles,
+          ...articulosConfig.camposVisibles,
+        },
+      }
+    }
+
     const [updated] = await this.drizzle.db
       .update(businessSettings)
-      .set({ ...dto, updatedAt: new Date() })
+      .set(setData)
       .where(eq(businessSettings.id, current.id))
       .returning()
 

@@ -16,6 +16,7 @@ import { RolesGuard } from '../../common/guards/roles.guard'
 import { Roles } from '../../common/decorators/roles.decorator'
 import { ArticulosImagenesService } from './articulos-imagenes.service'
 import { UploadImagenDto } from './dto/upload-imagen.dto'
+import { ImportImagenUrlDto } from './dto/import-imagen-url.dto'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
@@ -51,6 +52,16 @@ export class ArticulosImagenesController {
       throw new BadRequestException('Archivo requerido')
     }
     return this.articulosImagenesService.uploadImagen(codigo, file.buffer, dto)
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Post(':codigo/imagenes/from-url')
+  importFromUrl(
+    @Param('codigo') codigo: string,
+    @Body() dto: ImportImagenUrlDto
+  ) {
+    return this.articulosImagenesService.importFromUrl(codigo, dto)
   }
 
   @UseGuards(RolesGuard)

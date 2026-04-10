@@ -1,0 +1,733 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - link:
+          - /url: /dashboard
+          - generic: S
+          - generic: Sanchez Repuestos
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - link:
+                - /url: /dashboard
+                - img
+                - generic: Panel
+              - link:
+                - /url: /articulos
+                - img
+                - generic: Artículos
+              - link:
+                - /url: /purchases
+                - img
+                - generic: Compras
+              - link:
+                - /url: /sales
+                - img
+                - generic: Ventas
+              - link:
+                - /url: /orders
+                - img
+                - generic: Pedidos
+              - link:
+                - /url: /settings
+                - img
+                - generic: Configuración
+      - generic:
+        - paragraph: Sanchez Repuestos Admin
+    - generic:
+      - banner:
+        - generic:
+          - button:
+            - img
+            - generic: Cambiar tema
+          - button:
+            - generic:
+              - generic: SA
+      - main:
+        - generic:
+          - generic:
+            - heading [level=1]: Articulos
+            - paragraph: Gestiona tu catalogo de articulos e inventario.
+          - generic:
+            - link:
+              - /url: /articulos
+              - text: Listado
+            - link:
+              - /url: /articulos/existencias
+              - text: Existencias
+            - link:
+              - /url: /articulos/inventarios
+              - text: Inventarios
+          - generic:
+            - generic:
+              - generic:
+                - button: Activos
+                - button: Inactivos
+                - button: Todos
+              - generic:
+                - img
+                - textbox:
+                  - /placeholder: Buscar articulos...
+            - link:
+              - /url: /articulos/nuevo
+              - img
+              - text: Nuevo Articulo
+          - generic:
+            - generic:
+              - button:
+                - img
+                - text: Columnas
+            - generic:
+              - generic:
+                - table:
+                  - rowgroup:
+                    - row:
+                      - columnheader:
+                        - button:
+                          - text: Codigo
+                          - img
+                      - columnheader:
+                        - button:
+                          - text: Nombre
+                          - img
+                      - columnheader: Marca
+                      - columnheader: Modelo
+                      - columnheader: Medida
+                      - columnheader: Presentacion
+                      - columnheader: Unidades
+                      - columnheader: Objeto
+                      - columnheader:
+                        - button:
+                          - text: Precio
+                          - img
+                      - columnheader: Estado
+                      - columnheader:
+                        - button:
+                          - text: Costo
+                          - img
+                      - columnheader
+                  - rowgroup:
+                    - row:
+                      - cell:
+                        - generic: LAC4204
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $452,700.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $220,068.14
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: "7402"
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "10"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $114,000.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $55,398.64
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: LAC4781
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $494,700.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $240,448.37
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 589RU
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $0.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $15,384.77
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: LAC4706
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $403,800.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $196,293.68
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: "7601"
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "4"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $126,500.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $61,467.24
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 7403COM
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $702,900.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $341,677.61
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: HB88508A-BTP
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "3"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $50,700.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $20,945.27
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: VKM31058-TIMING
+                      - cell
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "0"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $0.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $0.00
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 2058AP
+                      - cell:
+                        - generic: RODAMIENTO EATON
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $77,500.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $49,996.26
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: FIS-97040VE
+                      - cell:
+                        - generic: CARCAZA PORTA TERMOT FISPA
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $60,800.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $29,523.69
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: FIS-97029VE
+                      - cell:
+                        - generic: CARCAZA PORTA TERMOST COMP
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "4"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $40,100.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $19,455.10
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 38290-NA
+                      - cell:
+                        - generic: JGO PAST FRENO LITTON DEL
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $25,500.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $12,389.40
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: MY896670JT
+                      - cell:
+                        - generic: KIT BULONES MEGANE/CLIO 2 1.6
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $34,900.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $16,438.32
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 627423.87JRU
+                      - cell:
+                        - generic: KIT TERMOSTATO
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $75,900.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $37,968.00
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: MY056670NA
+                      - cell:
+                        - generic: JGO.JUNTAS P/MOTOR MEGANE 1.6
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $129,600.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $59,372.54
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: FIS-97041VE
+                      - cell:
+                        - generic: CARCAZA PORTA TERMOST FISPA
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $58,200.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $28,269.95
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: MY896992JT
+                      - cell:
+                        - generic: KIT BULONES TOYOTA HILUX
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "1"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $86,000.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $40,572.87
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 38610-NA
+                      - cell:
+                        - generic: JGO PAST FRENO LITTON DEL
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $25,800.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $12,506.81
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+                    - row:
+                      - cell:
+                        - generic: 8PK1385-CONT
+                      - cell:
+                        - generic: CORREA POLY V FORD
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: "2"
+                      - cell:
+                        - generic: "-"
+                      - cell:
+                        - generic: $35,100.00
+                      - cell:
+                        - generic: Activo
+                      - cell:
+                        - generic: $17,578.08
+                      - cell:
+                        - button:
+                          - generic: Abrir menu
+                          - img
+            - generic:
+              - generic:
+                - generic: Pagina 1 de 5049
+                - generic:
+                  - button [disabled]:
+                    - generic: Ir a la primera pagina
+                    - img
+                  - button [disabled]:
+                    - generic: Ir a la pagina anterior
+                    - img
+                  - button:
+                    - generic: Ir a la pagina siguiente
+                    - img
+                  - button:
+                    - generic: Ir a la ultima pagina
+                    - img
+  - list
+  - alert
+  - dialog [ref=e1136]:
+    - generic [ref=e1138]:
+      - generic [ref=e1139]:
+        - generic [ref=e1140]:
+          - heading [level=2]
+          - generic [ref=e1141]: Activo
+        - paragraph [ref=e1142]: LAC4204
+      - link "Editar" [ref=e1143] [cursor=pointer]:
+        - /url: /articulos/LAC4204/editar
+        - img
+        - text: Editar
+    - generic [ref=e1144]:
+      - generic [ref=e1145]:
+        - generic [ref=e1146]:
+          - paragraph [ref=e1147]: Precio
+          - paragraph [ref=e1148]: $452,700.00
+        - generic [ref=e1149]:
+          - paragraph [ref=e1150]: Costo
+          - paragraph [ref=e1151]: $220,068.14
+        - generic [ref=e1152]:
+          - paragraph [ref=e1153]: Stock
+          - paragraph [ref=e1154]: "0"
+      - generic [ref=e1155]:
+        - generic [ref=e1156]:
+          - generic [ref=e1157]: Producto
+          - generic [ref=e1158]: Etiqueta
+        - generic [ref=e1159]:
+          - img [ref=e1161]
+          - img [ref=e1166]
+          - img [ref=e1171]
+          - img [ref=e1176]
+          - img [ref=e1181]
+          - img [ref=e1186]
+          - img [ref=e1192]
+          - img [ref=e1197]
+          - img [ref=e1202]
+      - generic [ref=e1206]:
+        - heading "Propiedades" [level=3] [ref=e1207]
+        - generic [ref=e1208]:
+          - generic [ref=e1209]:
+            - generic [ref=e1210]: Tipo / Objeto
+            - generic [ref=e1211]: —
+          - generic [ref=e1212]:
+            - generic [ref=e1213]: Marca
+            - generic [ref=e1214]: —
+          - generic [ref=e1215]:
+            - generic [ref=e1216]: Modelo
+            - generic [ref=e1217]: —
+          - generic [ref=e1218]:
+            - generic [ref=e1219]: Presentacion
+            - generic [ref=e1220]: —
+          - generic [ref=e1221]:
+            - generic [ref=e1222]: Medida
+            - generic [ref=e1223]: —
+      - generic [ref=e1224]:
+        - heading "Stock por Deposito" [level=3] [ref=e1225]
+        - paragraph [ref=e1227]: Sin stock registrado
+      - generic [ref=e1228]:
+        - generic [ref=e1229]: Creado
+        - generic [ref=e1230]: 17/03/2026 13:45
+        - generic [ref=e1231]: ·
+        - generic [ref=e1232]: Actualizado
+        - generic [ref=e1233]: 17/03/2026 13:52
+      - generic [ref=e1234]:
+        - button "Origen" [active] [ref=e1236] [cursor=pointer]:
+          - img [ref=e1237]
+          - text: Origen
+        - button "Datos crudos" [ref=e1240] [cursor=pointer]:
+          - img [ref=e1241]
+          - text: Datos crudos
+    - button "Close" [ref=e1243] [cursor=pointer]:
+      - img [ref=e1244]
+      - generic [ref=e1247]: Close

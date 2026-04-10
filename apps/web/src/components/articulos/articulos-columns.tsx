@@ -22,9 +22,9 @@ function RowActions({ articulo, handlers }: { articulo: Articulo; handlers: Colu
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0" onClick={e => e.stopPropagation()}>
+        <Button variant="ghost" className="h-6 w-6 p-0" onClick={e => e.stopPropagation()}>
           <span className="sr-only">Abrir menu</span>
-          <MoreHorizontal className="h-4 w-4" />
+          <MoreHorizontal className="h-3.5 w-3.5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -227,7 +227,7 @@ export function getColumns(handlers: ColumnHandlers): ColumnDef<Articulo>[] {
       cell: ({ row }) => {
         const activo = row.getValue('activo') as boolean
         return (
-          <Badge variant={activo ? 'default' : 'secondary'}>{activo ? 'Activo' : 'Inactivo'}</Badge>
+          <Badge variant={activo ? 'default' : 'secondary'} className="px-1.5 py-0 text-[11px]">{activo ? 'Activo' : 'Inactivo'}</Badge>
         )
       },
     },
