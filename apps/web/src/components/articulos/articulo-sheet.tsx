@@ -114,10 +114,38 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
   function openLightboxForType(tipo: 'etiqueta' | 'producto', clickedUrl: string) {
     if (!articulo) return
-    const urls = tipo === 'producto' ? articulo.imagenesProducto : articulo.imagenesEtiqueta
-    const nonNullUrls = urls.filter((u): u is string => u != null)
-    const indexInFiltered = nonNullUrls.indexOf(clickedUrl)
-    setLightbox({ images: nonNullUrls, initialIndex: Math.max(0, indexInFiltered) })
+    const productoUrls = articulo.imagenesProducto.filter((u): u is string => u != null)
+    const etiquetaUrls = articulo.imagenesEtiqueta.filter((u): u is string => u != null)
+    const allImages = [...productoUrls, ...etiquetaUrls]
+    const clickedIndex = allImages.indexOf(clickedUrl)
+    setLightbox({ images: allImages, initialIndex: Math.max(0, clickedIndex) })
+  }
+
+  function renderSlot(tipo: 'producto' | 'etiqueta', index: number, url: string | null | undefined) {
+    const hasImage = url != null
+    if (hasImage) {
+      return (
+        <button
+          key={`${tipo}-${index}`}
+          onClick={() => openLightboxForType(tipo, url)}
+          className="w-12 h-12 rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity flex-shrink-0"
+        >
+          <img
+            src={API_BASE_URL + getThumbUrl(url)}
+            className="w-full h-full object-cover"
+            alt=""
+          />
+        </button>
+      )
+    }
+    return (
+      <div
+        key={`${tipo}-${index}`}
+        className="w-12 h-12 rounded-sm border-2 border-dashed border-muted-foreground/20 flex items-center justify-center flex-shrink-0"
+      >
+        <ImageIcon className="h-4 w-4 text-muted-foreground/30" />
+      </div>
+    )
   }
 
   useEffect(() => {
@@ -191,79 +219,28 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
           <Separator />
 
-          {/* Images section */}
-          {(() => {
-            const hasEtiquetas = articulo.imagenesEtiqueta.some(u => u != null)
-            const hasProductos = articulo.imagenesProducto.some(u => u != null)
-            const hasAnyImages = hasEtiquetas || hasProductos
-
-            if (!hasAnyImages) {
-              return (
-                <div>
-                  <SectionHeader title="Sin imagenes" />
-                  <div className="mt-2 flex gap-1.5">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 rounded-sm bg-muted flex items-center justify-center"
-                      >
-                        <ImageIcon className="h-4 w-4 text-muted-foreground/40" />
-                      </div>
-                    ))}
-                  </div>
+          {/* Images section — 9 slots: 6 producto + separator + 3 etiqueta */}
+          <div>
+            <SectionHeader title="Imagenes" />
+            <div className="mt-2 flex items-start gap-4">
+              {/* Grupo Producto */}
+              <div>
+                <p className="text-[10px] text-muted-foreground mb-1">Producto</p>
+                <div className="flex gap-1">
+                  {[0, 1, 2, 3, 4, 5].map(i => renderSlot('producto', i, articulo.imagenesProducto[i]))}
                 </div>
-              )
-            }
-
-            return (
-              <div className="space-y-3">
-                {hasEtiquetas && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1.5">Etiquetas</p>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {articulo.imagenesEtiqueta
-                        .filter((u): u is string => u != null)
-                        .map((url, i) => (
-                          <button
-                            key={i}
-                            onClick={() => openLightboxForType('etiqueta', url)}
-                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                          >
-                            <img
-                              src={API_BASE_URL + getThumbUrl(url)}
-                              className="w-full h-full object-cover"
-                              alt=""
-                            />
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                )}
-                {hasProductos && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1.5">Productos</p>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {articulo.imagenesProducto
-                        .filter((u): u is string => u != null)
-                        .map((url, i) => (
-                          <button
-                            key={i}
-                            onClick={() => openLightboxForType('producto', url)}
-                            className="aspect-square rounded-sm overflow-hidden cursor-pointer border border-border hover:opacity-80 transition-opacity"
-                          >
-                            <img
-                              src={API_BASE_URL + getThumbUrl(url)}
-                              className="w-full h-full object-cover"
-                              alt=""
-                            />
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                )}
               </div>
-            )
-          })()}
+              {/* Separador vertical */}
+              <div className="w-px bg-border self-stretch mt-4" />
+              {/* Grupo Etiqueta */}
+              <div>
+                <p className="text-[10px] text-muted-foreground mb-1">Etiqueta</p>
+                <div className="flex gap-1">
+                  {[0, 1, 2].map(i => renderSlot('etiqueta', i, articulo.imagenesEtiqueta[i]))}
+                </div>
+              </div>
+            </div>
+          </div>
 
           <Separator />
 
