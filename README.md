@@ -461,6 +461,12 @@ pnpm install
 
 ## Estado del proyecto
 
-Milestone v1.2 "Articulos CRUD + Imagenes + API Keys + Webhooks" completado — 10 fases, 18 planes ejecutados (100%). CRUD completo de articulos con imagenes, columnas configurables, API keys para integraciones externas, y webhooks con firma HMAC-SHA256. 22/22 requisitos satisfechos, 7/7 flujos E2E verificados.
+| Milestone | Fases | Planes | Estado  | Fecha      |
+| --------- | ----- | ------ | ------- | ---------- |
+| v1.0 MVP  | 13    | 42     | Shipped | 2026-03-04 |
+| v1.1      | 5     | 18     | Shipped | 2026-03-10 |
+| v1.2      | 10    | 18     | Shipped | 2026-03-13 |
 
-Ultimo avance: 2026-03-13.
+Milestone v1.2 "Articulos CRUD + Imagenes + API Keys + Webhooks" completado — 78 planes totales ejecutados a traves de 28 fases. CRUD completo de articulos con imagenes, columnas configurables, API keys para integraciones externas, y webhooks con firma HMAC-SHA256. Incluye mejoras post-milestone: escala UI configurable, rediseno de imagenes en detalle, iconos de secciones, cards de KPIs de existencias, y sincronizacion con schema de produccion.
+
+Ultimo avance: 2026-04-10.
