@@ -6,22 +6,23 @@
 #   curl -sL https://raw.githubusercontent.com/objetiva-comercios/objetiva-comercios-admin/main/install.sh | bash
 #
 # O desde el VPS:
-#   bash ~/proyectos/objetiva-comercios-admin/install.sh
+#   bash /opt/objetiva-comercios/objetiva-comercios-admin/install.sh
 #
 # Que hace:
 #   1. Verifica dependencias (git, docker, docker compose)
-#   2. Clona o actualiza el repositorio
-#   3. Preserva archivos .env.production si existen
-#   4. Crea la red Docker si no existe
-#   5. Construye imagenes (web + backend)
-#   6. Levanta servicios con docker compose
-#   7. Ejecuta health check del backend
-#   8. Muestra resumen de acceso
+#   2. Protege contra sobreescritura de repos de desarrollo
+#   3. Clona o actualiza el repositorio en /opt/objetiva-comercios/
+#   4. Preserva archivos .env.production y uploads/ si existen
+#   5. Crea la red Docker si no existe
+#   6. Construye imagenes Docker (web + backend)
+#   7. Levanta servicios con docker compose
+#   8. Ejecuta health check del backend
+#   9. Muestra resumen de acceso y configuracion DNS
 #
 # Requisitos:
-#   - Docker >= 24.0 con Docker Compose v2
+#   - Docker >= 20.10 con Docker Compose v2
 #   - Git
-#   - Red Traefik configurada (sanchez_docker_network)
+#   - Traefik corriendo en red sanchez_docker_network
 #   - PostgreSQL accesible desde la red Docker
 #   - Proyecto Supabase configurado (auth)
 # =============================================================================
@@ -29,9 +30,10 @@
 set -euo pipefail
 
 # -- Config ------------------------------------------------------------------
-INSTALL_DIR="${HOME}/proyectos"
-REPO_DIR="${INSTALL_DIR}/objetiva-comercios-admin"
-REPO_URL="https://github.com/objetiva-comercios/objetiva-comercios-admin.git"
+GIT_USER="objetiva-comercios"
+APP_NAME="objetiva-comercios-admin"
+INSTALL_DIR="/opt/${GIT_USER}/${APP_NAME}"
+REPO_URL="https://github.com/${GIT_USER}/${APP_NAME}.git"
 DOCKER_NETWORK="sanchez_docker_network"
 DOMAIN="erp.sanchezrepuestos.com.ar"
 HEALTH_ENDPOINT="/health"
@@ -70,16 +72,27 @@ ok "docker encontrado"
 docker compose version >/dev/null 2>&1 || error "docker compose v2 no esta disponible"
 ok "docker compose v2 encontrado"
 
+# -- Proteccion contra sobreescritura de repo de desarrollo ------------------
+if [ -d "$INSTALL_DIR/.git" ]; then
+  DIRTY_FILES=$(git -C "$INSTALL_DIR" status --porcelain 2>/dev/null | wc -l)
+  if [ "$DIRTY_FILES" -gt 0 ]; then
+    error "$INSTALL_DIR tiene $DIRTY_FILES cambios sin commitear — parece ser un repo de desarrollo. Abortando para no pisarlo."
+  fi
+fi
+
 # -- Manejar instalacion previa ----------------------------------------------
 REINSTALL=false
-if [ -d "$REPO_DIR" ]; then
-  warn "Directorio $REPO_DIR ya existe"
+BACKUP_DIR=""
+
+if [ -d "$INSTALL_DIR" ]; then
+  warn "Directorio $INSTALL_DIR ya existe"
   info "Deteniendo servicios..."
-  cd "$REPO_DIR"
+  cd "$INSTALL_DIR"
   docker compose down 2>/dev/null || true
 
-  # Backup de archivos de entorno
+  # Backup de archivos de entorno y uploads
   BACKUP_DIR=$(mktemp -d)
+
   if [ -f "apps/backend/.env.production" ]; then
     cp apps/backend/.env.production "$BACKUP_DIR/backend.env.production"
     ok "Backup: apps/backend/.env.production"
@@ -92,25 +105,25 @@ if [ -d "$REPO_DIR" ]; then
   # Preservar uploads
   if [ -d "uploads" ] && [ "$(ls -A uploads 2>/dev/null)" ]; then
     info "Preservando directorio uploads/..."
-    mv uploads "$BACKUP_DIR/uploads"
+    cp -a uploads "$BACKUP_DIR/uploads"
     ok "Backup: uploads/"
   fi
 
-  cd "$INSTALL_DIR"
-  rm -rf "$REPO_DIR"
+  cd /tmp
+  rm -rf "$INSTALL_DIR"
   REINSTALL=true
   ok "Directorio anterior eliminado"
 fi
 
 # -- Clonar repositorio ------------------------------------------------------
 info "Clonando repositorio..."
-mkdir -p "$INSTALL_DIR"
-git clone "$REPO_URL" "$REPO_DIR"
-cd "$REPO_DIR"
-ok "Repositorio clonado en $REPO_DIR"
+mkdir -p "/opt/${GIT_USER}"
+git clone "$REPO_URL" "$INSTALL_DIR"
+cd "$INSTALL_DIR"
+ok "Repositorio clonado en $INSTALL_DIR"
 
 # -- Restaurar backups -------------------------------------------------------
-if [ "$REINSTALL" = true ]; then
+if [ "$REINSTALL" = true ] && [ -n "$BACKUP_DIR" ]; then
   if [ -f "$BACKUP_DIR/backend.env.production" ]; then
     cp "$BACKUP_DIR/backend.env.production" apps/backend/.env.production
     ok "Restaurado: apps/backend/.env.production"
@@ -120,7 +133,7 @@ if [ "$REINSTALL" = true ]; then
     ok "Restaurado: apps/web/.env.production"
   fi
   if [ -d "$BACKUP_DIR/uploads" ]; then
-    mv "$BACKUP_DIR/uploads" uploads
+    cp -a "$BACKUP_DIR/uploads" uploads
     ok "Restaurado: uploads/"
   fi
   rm -rf "$BACKUP_DIR"
@@ -131,32 +144,30 @@ MISSING_ENV=false
 
 if [ ! -f "apps/backend/.env.production" ]; then
   warn "Falta apps/backend/.env.production"
-  info "Crea el archivo con:"
+  info "Crea el archivo con las siguientes variables:"
   echo ""
-  echo "  cp apps/backend/.env.example apps/backend/.env.production"
-  echo "  nano apps/backend/.env.production"
-  echo ""
-  echo "  Variables requeridas:"
-  echo "    DATABASE_URL=postgresql://user:password@host:5432/objetiva_comercios"
-  echo "    SUPABASE_PROJECT_ID=tu-project-id"
-  echo "    PORT=3001"
-  echo "    NODE_ENV=production"
+  echo "  cat > $INSTALL_DIR/apps/backend/.env.production << 'ENVEOF'"
+  echo "  DATABASE_URL=postgresql://usuario:password@postgres:5432/erp_db"
+  echo "  SUPABASE_PROJECT_ID=tu-project-id"
+  echo "  SUPABASE_JWT_SECRET=tu-jwt-secret"
+  echo "  PORT=3001"
+  echo "  NODE_ENV=production"
+  echo "  CORS_ORIGINS=http://${DOMAIN}"
+  echo "  ENVEOF"
   echo ""
   MISSING_ENV=true
 fi
 
 if [ ! -f "apps/web/.env.production" ]; then
   warn "Falta apps/web/.env.production"
-  info "Crea el archivo con:"
+  info "Crea el archivo con las siguientes variables:"
   echo ""
-  echo "  cp apps/web/.env.example apps/web/.env.production"
-  echo "  nano apps/web/.env.production"
-  echo ""
-  echo "  Variables requeridas:"
-  echo "    NEXT_PUBLIC_SUPABASE_URL=https://tu-project-id.supabase.co"
-  echo "    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key"
-  echo "    NEXT_PUBLIC_API_URL=http://${DOMAIN}"
-  echo "    API_URL=http://erp-backend:3001"
+  echo "  cat > $INSTALL_DIR/apps/web/.env.production << 'ENVEOF'"
+  echo "  NEXT_PUBLIC_SUPABASE_URL=https://tu-project-id.supabase.co"
+  echo "  NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key"
+  echo "  NEXT_PUBLIC_API_URL=http://${DOMAIN}"
+  echo "  API_URL=http://erp-backend:3001"
+  echo "  ENVEOF"
   echo ""
   MISSING_ENV=true
 fi
@@ -176,8 +187,12 @@ else
   ok "Red Docker $DOCKER_NETWORK ya existe"
 fi
 
+# -- Crear directorio de uploads ---------------------------------------------
+mkdir -p uploads/articulos/etiquetas uploads/articulos/producto
+ok "Directorio uploads/ verificado"
+
 # -- Build y deploy ----------------------------------------------------------
-info "Construyendo imagenes Docker..."
+info "Construyendo imagenes Docker (esto puede tardar unos minutos)..."
 if [ "$REINSTALL" = true ]; then
   docker compose build --no-cache
 else
@@ -204,9 +219,10 @@ while [ $RETRIES -lt $MAX_RETRIES ]; do
 done
 
 if [ $RETRIES -eq $MAX_RETRIES ]; then
-  warn "Health check fallo despues de ${MAX_RETRIES} intentos"
+  warn "Health check fallo despues de ${MAX_RETRIES} intentos (60s)"
   info "Logs del backend:"
   docker compose logs --tail 30 erp-backend
+  echo ""
   info "Logs del web:"
   docker compose logs --tail 15 erp-web
   error "El backend no responde. Revisa los logs arriba."
@@ -228,6 +244,8 @@ echo "=========================================="
 echo -e "  ${GREEN}Instalacion completada${NC}"
 echo "=========================================="
 echo ""
+echo "  Directorio: ${INSTALL_DIR}"
+echo ""
 echo "  Servicios:"
 echo "    - erp-web:     Next.js (puerto 3000 interno)"
 echo "    - erp-backend: NestJS  (puerto 3001 interno)"
@@ -240,13 +258,12 @@ echo "  DNS (agregar en /etc/hosts si no hay DNS publico):"
 echo "    ${TAILSCALE_IP}    ${DOMAIN}"
 echo ""
 echo "  Comandos utiles:"
-echo "    cd ${REPO_DIR}"
+echo "    cd ${INSTALL_DIR}"
 echo "    docker compose logs -f          # Ver logs"
 echo "    docker compose restart          # Reiniciar"
 echo "    docker compose down             # Detener"
 echo "    docker compose up -d --build    # Rebuild y deploy"
 echo ""
 echo "  Imagenes de articulos:"
-echo "    Directorio: ${REPO_DIR}/uploads/"
-echo "    Acceso:     http://${DOMAIN}/api/uploads/"
+echo "    Directorio: ${INSTALL_DIR}/uploads/"
 echo ""
