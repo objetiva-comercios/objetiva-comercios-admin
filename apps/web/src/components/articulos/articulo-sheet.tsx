@@ -177,7 +177,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] md:w-[540px] sm:max-w-lg overflow-y-auto">
+      <SheetContent className="w-[400px] md:w-[540px] sm:max-w-[35rem] overflow-y-auto">
         <SheetHeader>
           <div className="flex items-center justify-between pr-2">
             <div>
