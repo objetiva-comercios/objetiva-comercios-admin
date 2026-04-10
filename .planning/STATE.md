@@ -5,7 +5,7 @@ milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
 status: shipped
 stopped_at: Milestone v1.2 archived
 last_updated: '2026-03-13T01:15:00.000Z'
-last_activity: 2026-04-09 — Completed quick task 260409-v0e: Cards existencias y tamaño títulos secciones
+last_activity: 2026-04-10 — Completed quick task 260410-ifc: Rediseño imágenes artículos (iconos lista + 9 slots detalle)
 progress:
   total_phases: 10
   completed_phases: 10
@@ -75,6 +75,7 @@ None active. All v1.2 blockers resolved.
 | 260409-ndp | Fix migrate-images: leer de DB sanchez y poblar imágenes en erp_sanchez                        | 2026-04-09 | bd587ff | [260409-ndp-fix-migrate-images-leer-de-db-sanchez-y-](./quick/260409-ndp-fix-migrate-images-leer-de-db-sanchez-y-/) |
 | 260409-r97 | Agregar iconos secciones y color #056ed1 en sidebar y headers                                  | 2026-04-09 | 463e172 | [260409-r97-agregar-iconos-a-titulos-de-seccion-y-co](.planning/quick/260409-r97-agregar-iconos-a-titulos-de-seccion-y-co/) |
 | 260409-v0e | Cards existencias (total artículos/unidades) + normalizar tamaño títulos secciones             | 2026-04-09 | eb86a01 | [260409-v0e-cards-existencias-y-tama-o-titulos-secci](./quick/260409-v0e-cards-existencias-y-tama-o-titulos-secci/) |
+| 260410-ifc | Rediseño imágenes artículos: iconos en lista + 9 slots en detalle                              | 2026-04-10 | 9a8e6a28 | [260410-ifc-redise-o-de-im-genes-de-art-culos-iconos](./quick/260410-ifc-redise-o-de-im-genes-de-art-culos-iconos/) |
 
 ## Session Continuity
 

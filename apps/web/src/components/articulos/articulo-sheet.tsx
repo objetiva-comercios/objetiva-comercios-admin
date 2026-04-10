@@ -112,7 +112,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
   const { isCampoVisible } = useArticulosConfig()
   const [lightbox, setLightbox] = useState<{ images: string[]; initialIndex: number } | null>(null)
 
-  function openLightboxForType(tipo: 'etiqueta' | 'producto', clickedUrl: string) {
+  function openLightboxForType(_tipo: 'etiqueta' | 'producto', clickedUrl: string) {
     if (!articulo) return
     const productoUrls = articulo.imagenesProducto.filter((u): u is string => u != null)
     const etiquetaUrls = articulo.imagenesEtiqueta.filter((u): u is string => u != null)
