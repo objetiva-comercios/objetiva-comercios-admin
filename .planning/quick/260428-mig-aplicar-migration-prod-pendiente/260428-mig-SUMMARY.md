@@ -3,7 +3,7 @@ plan: 260428-mig
 one_liner: Aplicada migration-prod.sql pendiente desde Abr 9 — restauradas 16 tablas y 2 columnas en produccion, admin operativo
 status: complete
 commits:
-  - TBD: 'fix(quick-260428-mig): apply pending migration-prod.sql to restore admin DB schema'
+  - db558335: 'docs(quick-260428-mig): apply pending migration-prod.sql, restore admin DB schema'
 deviations: []
 ---
 

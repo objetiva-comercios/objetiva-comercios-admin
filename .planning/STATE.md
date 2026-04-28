@@ -77,7 +77,7 @@ None active. All v1.2 blockers resolved.
 | 260409-v0e | Cards existencias (total artículos/unidades) + normalizar tamaño títulos secciones             | 2026-04-09 | eb86a01 | [260409-v0e-cards-existencias-y-tama-o-titulos-secci](./quick/260409-v0e-cards-existencias-y-tama-o-titulos-secci/) |
 | 260410-ifc | Rediseño imágenes artículos: iconos en lista + 9 slots en detalle                              | 2026-04-10 | 9a8e6a28 | [260410-ifc-redise-o-de-im-genes-de-art-culos-iconos](./quick/260410-ifc-redise-o-de-im-genes-de-art-culos-iconos/) |
 | 260410-juo | Ensanchar sheet detalle articulo a max-w-[35rem]                                                | 2026-04-10 | fa80a0d3 | [260410-juo-ensanchar-sheet-detalle-articulo-a-max-w](./quick/260410-juo-ensanchar-sheet-detalle-articulo-a-max-w/) |
-| 260428-mig | Aplicar migration-prod.sql pendiente desde Abr 9: restaurar 16 tablas y 2 columnas en produccion | 2026-04-28 | TBD      | [260428-mig-aplicar-migration-prod-pendiente](./quick/260428-mig-aplicar-migration-prod-pendiente/)                  |
+| 260428-mig | Aplicar migration-prod.sql pendiente desde Abr 9: restaurar 16 tablas y 2 columnas en produccion | 2026-04-28 | db558335 | [260428-mig-aplicar-migration-prod-pendiente](./quick/260428-mig-aplicar-migration-prod-pendiente/)                  |
 
 ## Session Continuity
 
