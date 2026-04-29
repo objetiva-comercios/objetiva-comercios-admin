@@ -1,226 +1,353 @@
-# Feature Landscape
+# Feature Landscape — v1.3 Variantes y Modelo de Stock
 
-**Domain:** Admin platform for commercial operations — full article CRUD, image management, API keys, webhooks
-**Researched:** 2026-03-10
-**Scope:** v1.2 milestone features only (articulos CRUD completo, imagenes, columnas configurables, API keys, webhooks)
-
----
-
-## Table Stakes
-
-Features users expect. Missing = product feels incomplete.
-
-### Articulos CRUD Completo
-
-| Feature                                      | Why Expected                                                                                                            | Complexity | Notes                                                                                                                                                                              |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruta de edicion `/articulos/[codigo]/editar` | El sheet de detalle ya tiene boton "Editar" que linkea ahi, pero la ruta no existe. CRUD sin Edit es incompleto.        | Low        | `ArticuloForm` ya acepta `mode: 'edit'`. Solo falta la page con fetch del articulo por codigo y pasarlo al form.                                                                   |
-| Soft-delete con confirmacion                 | El controller tiene `toggleActive` pero no hay accion de "eliminar" en la UI. Usuarios esperan poder retirar articulos. | Low        | Usar AlertDialog de confirmacion. No hacer hard delete — FKs con `onDelete: restrict` en orders/sales/purchases lo impiden. El toggle activo/inactivo ya es el mecanismo correcto. |
-| Feedback de exito/error en operaciones       | Toasts al crear/editar/eliminar. Ya implementado en `ArticuloForm` con `useToast`.                                      | Done       | Solo agregar toast para toggle activo.                                                                                                                                             |
-| Formulario agrupado en secciones             | Secciones logicas para ~30 campos: Identificacion, Propiedades, Precios, Imagenes, ERP, Origen, Estado.                 | Done       | Ya implementado con `SectionHeader` + grids de 2 columnas. Solo falta la seccion de imagenes funcional (actualmente placeholder).                                                  |
-
-### Image Management
-
-| Feature                                          | Why Expected                                                                                                                              | Complexity | Notes                                                                                                                              |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Upload de imagenes con preview                   | Todo admin de productos permite subir fotos. El form actual tiene un placeholder que dice "proximamente".                                 | Med        | Requiere: (1) endpoint backend de upload multipart, (2) servicio de archivos estaticos, (3) componente de upload en frontend.      |
-| Visualizacion de imagenes en el sheet de detalle | El `ArticuloSheet` muestra todos los campos pero no imagenes. Las fotos son lo primero que un usuario busca para identificar un articulo. | Low        | Agregar seccion de imagenes al sheet, renderizar thumbnails desde las URLs almacenadas en `imagenesProducto` e `imagenesEtiqueta`. |
-| Eliminar imagen individual                       | No se puede subir sin poder borrar. Error al subir la imagen equivocada necesita correccion.                                              | Low        | Boton de eliminar en cada thumbnail. Borrar archivo del filesystem + remover URL del array jsonb.                                  |
-
-### Columnas Configurables
-
-| Feature                                             | Why Expected                                                                                                                                              | Complexity | Notes                                                                                                                |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| UI para show/hide columnas en la lista de articulos | TanStack Table soporta column visibility nativamente. Ya existe `defaultColumnVisibility` que oculta 8 columnas por defecto. Falta el control de usuario. | Low        | Dropdown con checkboxes por columna. Patron standard: boton con icono Columns al lado del search.                    |
-| Persistencia de la configuracion                    | Si el usuario oculta columnas y recarga la pagina, debe mantener su eleccion.                                                                             | Low-Med    | Requirement dice "global" (aplica a todos los usuarios del negocio). Guardar en `businessSettings` como campo jsonb. |
-
-### API Keys
-
-| Feature                              | Why Expected                                                                                                                        | Complexity | Notes                                                                                                                           |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Crear API key con nombre descriptivo | Patron universal: Stripe, GitHub, Vercel. El admin necesita tokens para integrar con sistemas externos sin pasar por Supabase Auth. | Med        | Dialog con campo nombre. Generar token aleatorio (crypto.randomBytes). Guardar hash en DB, mostrar token completo solo una vez. |
-| Lista de API keys con estado         | Tabla: nombre, prefijo truncado (`sk_...a3f2`), fecha creacion, ultimo uso, estado activa/revocada.                                 | Low        | Solo lectura + accion de revocar.                                                                                               |
-| Copiar key al portapapeles           | Al crear, el key se muestra en un campo readonly con boton "Copiar". Warning: "No se mostrara de nuevo".                            | Low        | `navigator.clipboard.writeText()`. Boton con feedback visual ("Copiado!").                                                      |
-| Revocar key con confirmacion         | La revocacion es irreversible. AlertDialog explicando que las integraciones que usan este key dejaran de funcionar.                 | Low        | PATCH al backend que marca como revocada. No se puede reactivar.                                                                |
-
-### Webhooks CRUD
-
-| Feature                                   | Why Expected                                                                                                                                                                     | Complexity | Notes                                                                                        |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------- |
-| Crear suscripcion: entidad + evento + URL | Todo sistema de webhooks tiene este formulario basico. Entidad = "Articulos" (unica en v1.2). Evento = "Creado" / "Actualizado" / "Eliminado" / "Todos". URL = endpoint destino. | Med        | Dialog con selects + input de URL. Validar que URL sea HTTPS (o HTTP para desarrollo local). |
-| Lista de suscripciones con estado         | Tabla: URL (truncada), entidad, evento, activo/inactivo, ultima entrega.                                                                                                         | Low        | Datos de `webhook_subscriptions` table.                                                      |
-| Editar suscripcion                        | Cambiar URL, evento, o toggle activo/inactivo.                                                                                                                                   | Low        | Mismo dialog que crear, precargado.                                                          |
-| Eliminar suscripcion con confirmacion     | AlertDialog. Irreversible.                                                                                                                                                       | Low        | Hard delete, no soft-delete. Las suscripciones no tienen dependencias criticas.              |
+**Domain:** Admin de operaciones comerciales para rubrería de repuestos automotrices — sistema de variantes con SKU universal, catálogos de atributos compartidos y redesign del modelo de stock (ubicaciones + sectores transversales).
+**Researched:** 2026-04-29
+**Scope:** v1.3 milestone — features NUEVAS sobre el chasis ya validado en v1.0–v1.2.
+**Confidence:** HIGH (decisiones cerradas en `v1.3-design-notes.md` + benchmarking de Shopify/Medusa/Saleor/WooCommerce/Vendure)
 
 ---
 
-## Differentiators
+## Out of Re-Research Scope
 
-Features that set product apart. Not expected, but valued.
+Estos features ya están shipped y validados — NO se re-investigan en este documento:
 
-| Feature                                                          | Value Proposition                                                                                                                                                                                                                 | Complexity | Notes                                                                                                                                                                       |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Grid de imagenes con slots etiquetados (3 etiqueta + 6 producto) | En vez de un gallery generico tipo Shopify, tener slots visuales claros: "Etiqueta 1/2/3" y "Producto 1-6". El usuario entiende exactamente que imagen va donde. El schema ya distingue `imagenesEtiqueta` de `imagenesProducto`. | Med        | Grid de 3 columnas. Fila superior: 3 slots "Etiqueta". Filas inferiores: 6 slots "Producto". Cada slot: cuadrado, borde dashed si vacio, thumbnail con acciones si ocupado. |
-| Upload desde filesystem local (no cloud)                         | PROJECT.md dice "desde filesystem local". Las imagenes se guardan en el servidor backend. Para un comercio chico en red local: no depende de internet para ver fotos de articulos.                                                | Med        | NestJS sirve estaticos con `ServeStaticModule` o endpoint dedicado. URLs relativas: `/uploads/articulos/ART-001/producto-1.jpg`.                                            |
-| Secret de webhook con HMAC-SHA256                                | Cada suscripcion tiene un secret. El payload se firma. El receptor verifica autenticidad. Patron de Stripe/GitHub.                                                                                                                | Low        | Generar secret al crear, mostrarlo una vez (mismo patron que API key). Header: `X-Webhook-Signature: sha256=...`.                                                           |
-| Boton "Enviar test" en webhook                                   | Manda un payload de ejemplo al URL y muestra resultado inline (status code, response). Ahorra tiempo al integrador.                                                                                                               | Low        | No necesita crear un articulo real para verificar conectividad.                                                                                                             |
-| Log de entregas de webhook                                       | Cada entrega registrada: timestamp, status code, payload, response. El admin puede ver que webhooks fallaron y diagnosticar.                                                                                                      | Med        | Tabla `webhook_deliveries`. En la UI: expandir fila de suscripcion o sub-tabla con ultimas N entregas. Badges verde/rojo por status code.                                   |
-| Webhook delivery con retry basico                                | 3 intentos con delay incremental (1s, 10s, 60s) en caso de fallo (timeout o 5xx).                                                                                                                                                 | Med        | Implementar sincrono con setTimeout. No requiere cola de mensajes a esta escala. Registrar cada intento en deliveries.                                                      |
-| Columnas configurables como setting global del negocio           | La config de columnas aplica a todos los usuarios, no por usuario individual. Consistencia para equipos chicos.                                                                                                                   | Low-Med    | Guardar en `businessSettings` como jsonb. Cargar al montar la tabla. Un admin configura, todos ven lo mismo.                                                                |
-| Margen calculado en precios                                      | Mostrar margen (%) automaticamente cuando precio y costo estan presentes. Informacion util que no requiere campo adicional.                                                                                                       | Low        | Solo display, no se guarda. `((precio - costo) / costo * 100).toFixed(1)%` debajo de los campos de precio.                                                                  |
+- Articulos full CRUD con ~30 campos, search, soft-delete, formulario agrupado (v1.1, v1.2)
+- Image upload con sharp WebP, DnD, lightbox (v1.2)
+- Configurable list columns persistidas en DB + sorting (v1.2)
+- ArticuloSheet (vista detalle en panel lateral) (v1.2)
+- API Keys con CompositeAuthGuard (v1.2)
+- Webhooks con HMAC-SHA256 + retry backoff + delivery log (v1.2)
+- Existencias por artículo×depósito con low-stock alerts e inline editing (v1.1)
+- Inventarios físicos con sectores, dispositivos móviles, status workflow (v1.1)
+
+Se asume el chasis. Lo que sigue es exclusivamente la capa nueva.
 
 ---
 
-## Anti-Features
+## Reversal Explícito
 
-Features to explicitly NOT build in v1.2.
+**v1.0 declaró Out-of-Scope:** "Full variant/SKU matrix (size x color = N child SKUs) — flat properties covers real use case."
 
-| Anti-Feature                                  | Why Avoid                                                                                                                           | What to Do Instead                                                                                                                                                |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Crop/resize de imagenes en frontend           | Canvas API + aspect ratio UI + preview es un proyecto en si mismo. Las fotos de articulos se toman con celular y se suben tal cual. | Resize server-side al recibir upload con `sharp`. Generar thumbnail automaticamente (ej: 200x200 para tabla, 800px max para detalle).                             |
-| Drag-and-drop reorder de imagenes             | Con slots fijos (3 etiqueta + 6 producto), no hay que reordenar. Cada slot tiene posicion definida.                                 | Click en slot para subir/reemplazar. Eliminar para vaciar el slot.                                                                                                |
-| Bulk import de articulos via CSV              | Scope creep significativo: parseo, validacion linea por linea, preview de cambios, manejo de duplicados.                            | Dejar para v1.3+. La API REST con API keys soporta POST individual; un script externo puede automatizar imports.                                                  |
-| Rate limiting por API key                     | Ventanas deslizantes, quotas, throttling por key: es infraestructura de API gateway, no de la app.                                  | Rate limit basico a nivel de Nginx/reverse proxy si es necesario.                                                                                                 |
-| OAuth2 / token refresh para API keys          | API keys son Bearer tokens estaticos. No agregar refresh tokens ni OAuth flows.                                                     | `Authorization: Bearer sk_...`. Si se compromete, revocar y crear nueva. Simple y seguro.                                                                         |
-| Webhook fan-out (multiples URLs por evento)   | Un evento dispara N webhooks: complejidad de delivery, ordering, partial failures.                                                  | Una suscripcion = una URL. Multiples destinos = multiples suscripciones. Simple y transparente.                                                                   |
-| Editor WYSIWYG para observaciones             | Las observaciones son notas internas cortas. No justifican un editor rico con formatting.                                           | `<Textarea>` simple, como ya esta implementado.                                                                                                                   |
-| Gestion de imagenes desde mobile              | La app mobile es para consulta y conteo. Subir fotos es tarea del admin en desktop.                                                 | Mostrar imagenes en mobile como read-only. Upload solo desde web.                                                                                                 |
-| Webhook para entidades distintas de articulos | v1.2 scope es solo articulos. Extender a orders/sales/purchases agrega complejidad de payload, testing, y documentacion.            | Arquitectura extensible (campo `entidad` en la tabla), pero solo "articulos" habilitado. Agregar entidades en v1.3.                                               |
-| Permisos granulares por API key               | Scopes tipo "read:articulos write:articulos". Over-engineering para un admin de comercio chico.                                     | API key tiene acceso completo a todos los endpoints. El RBAC existente (admin/viewer del JWT) no aplica a API keys — las keys son de integracion, no de usuarios. |
-| Dashboard de uso de API keys                  | Graficas de requests/dia, endpoints mas usados, latencia. Es analytics, no admin.                                                   | Campo `ultimoUso` (timestamp) en la tabla de keys. Suficiente para saber si una key esta activa.                                                                  |
+**v1.3 lo revierte parcialmente:** El negocio (rubrería de repuestos) requiere modelado fino con catálogos compartidos, SKU/nombre auto y consistencia entre artículos del mismo modelo. **Pero no se adopta la matriz cartesiana de Shopify/Medusa.** El approach es **single-table flat con N filas**, donde cada fila es una variante (o el artículo solo si no tiene variantes). Diferenciador clave del milestone: la simplicidad de Shopify/Saleor (un row por SKU) sin la madre/hijo de WooCommerce/Magento.
+
+---
+
+## Table Stakes (Must-Have para v1.3)
+
+### Eje 1: Sistema de Variantes
+
+| # | Feature | Por qué es expected | Complejidad | Depende de | Notas |
+|---|---|---|---|---|---|
+| TS-01 | **Migración de PK `codigo` → `sku`** en `articulos` | Sin esto nada funciona. Todo el resto cuelga de SKU como identificador universal. | **L** | FKs en orders, sales, purchases, existencias, inventarios_articulos | Transacción atómica con backup. `sku=codigo` para todas las filas existentes. Requiere rename + drop UNIQUE en `codigo` + add UNIQUE en `sku` + cascade FKs. |
+| TS-02 | **`codigo` como agrupador NOT UNIQUE indexado** | "Tiene variantes" se infiere de `COUNT(*) WHERE codigo=X > 1`. Sin este índice, listados y aggregations son lentos. | S | TS-01 | `CREATE INDEX articulos_codigo_idx ON articulos(codigo)`. No-UNIQUE intencional. |
+| TS-03 | **Tabla `articulos_templates`** (1 default desde día 1) | Sin template no hay receta de SKU ni de nombre auto. | S | — | Schema mínimo: `id, nombre UNIQUE, descripcion, is_default, timestamps`. Seed con 1 fila `nombre='default'`. |
+| TS-04 | **Tabla `template_atributos`** con receta SKU + nombre + flag variante | Define qué atributos aplican, cuáles van al SKU + orden, cuáles al nombre + orden, cuáles son ejes de variante. | M | TS-03 | Schema: `id, template_id FK, tipo_atributo, es_variante bool, orden_sku int NULL, orden_nombre int NULL, requerido bool, catalogo_tabla text`. Order semantics: NULL = no participa. |
+| TS-05 | **Catálogos de atributos como tablas FK** (no JSONB) | Decisión cerrada (#14 en design-notes). FK a tablas tipo `marcas(id, nombre, slug)`, `colores(id, nombre, slug)`, etc. | M | TS-04 | Una tabla por tipo de atributo. Schema canónico: `(id PK, nombre TEXT NOT NULL, slug TEXT NOT NULL UNIQUE, activo bool, timestamps)`. Slug autogenerado desde nombre. Pattern consistente con cómo Saleor maneja `Attribute` + `AttributeValue` cuando los atributos son globales. |
+| TS-06 | **Columnas FK en `articulos` para atributos del template default** | Para que la vista cruda de la tabla sea elocuente (decisión #14). Sin esto, queries necesitan joins constantes. | M | TS-05, Q4 | Cada atributo del template es una columna FK nullable. Para el default automotor: `marca_id`, `presentacion_id`, `objeto_id`, `calificador_id`, etc. + freetext donde aplique (`modelo`, `medida`). **Q4 cierra qué columnas exactas.** |
+| TS-07 | **SKU autogenerado** con receta `codigo` + slug₁ + slug₂... | Decisión cerrada (#6). Sin auto, los usuarios escriben SKUs inconsistentes. | M | TS-04, TS-05, TS-06 | Pure function: `composeSku(codigo, atributos, template) → string`. Separador único (default `-`). El `codigo` es prefijo implícito, no figura en `template_atributos`. Best practice: uppercase + hyphens, ≤20 chars cuando sea posible (Symbia/Eshopbox). |
+| TS-08 | **Nombre autogenerado** con flag `nombre_auto` por artículo | Decisión #18. Si `nombre_auto=true`, regenera al guardar concatenando atributos según `orden_nombre`. | M | TS-04, TS-05, TS-06 | Pure function: `composeNombre(atributos, template) → string`. Si `nombre_auto=false`, respeta el campo `nombre` manual del usuario. Default `true` para artículos nuevos creados desde template. |
+| TS-09 | **CRUD de catálogos de atributos** (UI admin) | Sin UI no se pueden agregar marcas/colores/etc. sin SQL manual. | M | TS-05 | Patron repetible: lista paginada + create/edit modal + soft-delete. Una página por catálogo, agrupadas en `/admin/catalogos`. Slug auto-derived from nombre con preview editable. |
+| TS-10 | **CRUD de templates** (UI admin) | Sin UI no se pueden crear nuevos templates ni editar el default. | M | TS-03, TS-04 | Página `/admin/templates`. Lista templates + detalle: tabla de atributos arrastrables (orden), checkboxes (es_variante, requerido), inputs de orden_sku/orden_nombre. Vista preview "qué SKU sale con valores ejemplo". |
+| TS-11 | **Crear artículo desde template** (UI nuevo flujo) | El flujo viejo (form de 30 campos) sigue funcionando, pero con variantes el usuario quiere "elegir template, llenar atributos comunes, definir matriz de variantes". | L | TS-04 a TS-10 | Wizard de 3 pasos: (1) seleccionar template + completar atributos comunes y `codigo` (manual, ver TS-15), (2) definir qué valores tendrá cada atributo-variante (multi-select por catálogo), (3) preview de N filas a crear con SKU+nombre auto + edit por fila + confirm. Inspirado en "variant generator" de Medusa y "variant creator" de Saleor 2.9. |
+| TS-12 | **Editar variante individual** (UI) | Una variante puede tener precio, stock, descripción, imagen propia. | M | TS-11 | Reusa `ArticuloForm` pero scoped a `WHERE sku=X`. Diferenciar visualmente "datos de la variante" (mutables solas) vs "datos del modelo" (mutables todas las hermanas — ver TS-13). |
+| TS-13 | **Editar datos del modelo** (cascada por `codigo`) | Decisión #9: app-level consistency. Form aparte que hace `UPDATE WHERE codigo=X`. | M | TS-12 | Botón "Editar datos del modelo" en la página de la variante o en una vista de listado. Confirmación con count de variantes afectadas. Sin DB constraints — solo app. |
+| TS-14 | **Listado de artículos con grouping por `codigo`** | Sin grouping visual, una rubrería con 100 artículos × 5 variantes muestra 500 filas planas. UX inservible. | M | TS-01, TS-02 | Toggle "Vista plana" / "Vista agrupada". Agrupada: una fila por `codigo` con expandable que muestra las N variantes. Pattern de Shopify Admin (master row + variant rows). Stock total agregado en la master row. |
+| TS-15 | **`codigo` manual** (alineado con `erp_codigo`) | Q7 tentativa. ERP existente ya genera códigos manualmente. Auto-codigo crearía drift. | S | — | Input freeform con validación de unicidad-por-grupo (puede repetirse — es agrupador, no PK). Validación de formato configurable. **Q7 a confirmar.** |
+| TS-16 | **`codigo_barras` separado del SKU** | Decisión #20. Las etiquetas físicas ya impresas no se pueden re-imprimir cada vez que cambia el schema. | S | — | Campo independiente, opcional, con índice único parcial cuando NOT NULL. NO se regenera en cambios de template. |
+
+### Eje 2: Cambios Masivos de Schema
+
+| # | Feature | Por qué es expected | Complejidad | Depende de | Notas |
+|---|---|---|---|---|---|
+| TS-17 | **Preview de impacto** al editar template | Decisión #19. El usuario debe ver cuántos SKUs/nombres cambian antes de confirmar. | M | TS-10 | Query: `SELECT COUNT, sample LIMIT 20` de SKUs viejos vs nuevos. Diff visual. Inspirado en Matrixify (Shopify) que muestra dry-run antes de bulk update. |
+| TS-18 | **Cascade transaccional** SKU viejo → nuevo en tablas hijo | Sin cascade, las FKs se rompen al cambiar SKU. | L | TS-01, TS-17 | Transacción atómica: update articulos.sku + UPDATE en orders, sales, purchases, existencias, inventarios_articulos via mapping table temporal. Lock advisory durante el batch. |
+| TS-19 | **Tabla `articulo_sku_history`** append-only | Decisión #19. Audit + posibilidad de "deshacer último cambio masivo". | S | TS-18 | Schema: `id, sku_anterior, sku_nuevo, codigo, batch_id UUID, motivo, ejecutado_por, ejecutado_en`. Insert por cada fila afectada en cada batch. |
+| TS-20 | **Campo `articulos.sku_anterior`** (idempotencia) | Decisión #19. Permite re-ejecución segura del cascade y rollback rápido del último cambio. | S | TS-01 | NULLable. Set durante el cascade, NULL al confirmar. Rollback = `UPDATE SET sku=sku_anterior WHERE sku_anterior IS NOT NULL`. |
+
+### Eje 3: Stock Redesign
+
+| # | Feature | Por qué es expected | Complejidad | Depende de | Notas |
+|---|---|---|---|---|---|
+| TS-21 | **Rename `columna` → `ubicacion`** en `existencias` e `inventarios_articulos` | Decisión #21. El término actual no cubre estanterías/percheros/cajones. | S | — | Migración de schema + rename en backend (services, DTOs, types) + UI. ALTER COLUMN preserva datos. |
+| TS-22 | **Tabla `sectores`** + tabla pivot `sector_ubicaciones` | Decisión #22, #23. Sectores son transversales — agrupan ubicaciones físicas, no son por inventario ni existencia. | M | TS-21 | `sectores(id, nombre, slug, deposito_id FK, descripcion, activo, timestamps)`. Pivot `sector_ubicaciones(sector_id, ubicacion, deposito_id, PRIMARY KEY composite)`. M:N porque una ubicación puede pertenecer a múltiples sectores. |
+| TS-23 | **CRUD de sectores** (UI admin) | Sin UI no se gestionan sectores. Patrón equivalente a CRUD de depósitos ya existente. | M | TS-22 | Lista + create/edit modal con multi-select de ubicaciones disponibles del depósito. Validación: una ubicación sin sector queda en sector implícito "Sin asignar". |
+| TS-24 | **Migración histórica de existencias** (ejecución del plan Q8) | Pendiente desde abril. ~7,500 con ubicación real + ~80–400 sentinel. | M | TS-21, contexto de quick task `260429-rec` | Script idempotente. Para cada artículo con `unidades > 0`: crear/actualizar existencia con ubicación desde `sanchez.articulos.columna` cuando hay match (slugify + comparison), `ubicacion='0'` sentinel sin match, `cantidad = articulos.unidades` (verdad actual desde erp_sanchez). Reporte post-ejecución de matches/sentinels. |
+| TS-25 | **Filtros por ubicación y sector** en vista de existencias | Sin filtros, vista plana de 8000 existencias es inservible. | M | TS-22 | Combobox multi-select de sectores + multi-select de ubicaciones. URL state para deep-link. |
+| TS-26 | **Edición visual de existencias** (UI) | Q11. La inline-edit actual edita una celda; con ubicaciones + sectores se necesita un editor que entienda la grid 2D (artículo × ubicación). | L | TS-25 | Pivot table vista: filas = artículos, columnas = ubicaciones, celdas = cantidad editable. Sticky headers. Bulk edit con shift-click. Save explícito por celda o batch. |
+| TS-27 | **Dashboard de stock por sector** | Q11. Total de unidades por sector, low-stock por sector, distribución por categoría dentro del sector. | M | TS-22, TS-25 | Cards con KPIs por sector + bar chart de distribución (Recharts). Drill-down a vista filtrada de existencias. |
+
+### Eje 4: Comprobantes Referencian SKU
+
+| # | Feature | Por qué es expected | Complejidad | Depende de | Notas |
+|---|---|---|---|---|---|
+| TS-28 | **`order_lines.articulo_codigo` → `articulo_sku`** (rename + retype) | Si SKU es identificador universal pero comprobantes usan codigo, sale stock equivocado para artículos con variantes. | M | TS-01, TS-18 | Rename de columna + rebuild del FK + cascade desde TS-18. Aplica también a `sale_lines`, `purchase_lines`. |
+| TS-29 | **Selector de SKU en alta de comprobante** (UI) | Combobox debe permitir buscar por codigo (filtra group), nombre, SKU directo, código de barras. | M | TS-28 | Search backend que devuelve sku + nombre + codigo + atributos + stock disponible. Mostrar atributos diferenciadores cuando hay múltiples variantes con mismo codigo. Inspirado en autocomplete de Shopify POS y Medusa Admin. |
+
+### Eje 5: Tech Debt (consolidado en este milestone)
+
+| # | Feature | Por qué es expected | Complejidad | Depende de | Notas |
+|---|---|---|---|---|---|
+| TS-30 | **`numeric()` para campos monetarios** (deferred desde v1.0) | `doublePrecision` causa problems de precisión financiera. Decisión clave #12 lo flagged. | M | — | Migrar `precio`, `costo`, `precio_lista`, etc. de `doublePrecision` a `numeric(10,2)`. Drizzle config + migration. Validar serialización (numeric devuelve string en pg, hay que castear). |
+| TS-31 | **Drift TS↔DB cleanup** (Q9) | Cosmético pero confunde reviews y futuras migraciones. | S | — | Renombrar índices en TS para match con DB (`idx_articulos_marca`). Agregar precision en TS para numeric. `timestamp(6)` consistency. |
+
+---
+
+## Differentiators (Nice-to-have, valiosos pero opcionales)
+
+| # | Feature | Value Proposition | Complejidad | Notas |
+|---|---|---|---|---|
+| D-01 | **Slug + nombre denormalizados** en `articulos` | IA-friendly: `SELECT * FROM articulos` muestra "rojo" en vez de FK opaco `42`. Browsing visual amigable. **Recomendación pendiente Q2.** | M | Trigger en INSERT/UPDATE de catálogo: actualiza filas hijas con nombre cacheado. O denormalización on-write desde la app. Trade-off: storage extra + complejidad de invalidación vs simplicidad de queries. |
+| D-02 | **Undo last bulk SKU change** (botón rollback) | Completa la feature TS-19 + TS-20 con UX de un click. Reduce ansiedad al editar templates. | M | UI: lista de últimos 10 batches con timestamp + count + botón "Deshacer". Validación: detectar si hubo cambios posteriores que rompen el rollback (e.g., comprobantes nuevos referenciando SKUs nuevos). |
+| D-03 | **Mass SKU regeneration con dry-run extendido** | Más allá de TS-17, mostrar diff lado a lado por artículo (tabla con columnas viejo/nuevo) + export a CSV antes de confirmar. | M | Construye sobre TS-17. Útil para refactorings grandes (ej: agregar `material` al SKU del template default cuando no estaba antes). |
+| D-04 | **Variant value swatch UI** (color picker, talles ordenados) | Saleor 2.9 introdujo "swatch" attributes con preview visual de color/imagen. Mejora UX de selección de variantes. | M | Extender `template_atributos` con `display_type ENUM('text', 'swatch', 'dropdown')`. Catálogo `colores` puede tener hex code adicional. Aplica a UI del wizard TS-11 y al combobox TS-29. |
+| D-05 | **Preview WYSIWYG del SKU/nombre** mientras se edita el template | Mostrar "ejemplo: ABC-RED-XL" en tiempo real al cambiar la receta. Reduce errores de configuración. | S | Pure function reusable de TS-07 + TS-08, alimentada con valores de ejemplo del primer artículo del catálogo. |
+| D-06 | **Heatmap de stock por sector** | Visualización visual del depósito (grid 2D coloreada por nivel de stock). Más impactante que tabla pivot. | L | Plotly o D3 custom. Define grid del depósito (config en DB: filas, columnas, ubicaciones por celda). Más cerca de un MVP de "warehouse map" que dashboard tradicional. |
+| D-07 | **Webhook events para variantes** (`articulo.variant.created`, `articulo.sku.changed`) | Sistemas externos integrados via API key necesitan saber cuando un SKU cambia para reconciliar. | S | Extiende el sistema de webhooks de v1.2 (HMAC-SHA256 + retry). Solo agregar nuevos event types al EventEmitter. |
+
+---
+
+## Anti-Features (Explícitamente NO construir)
+
+| # | Feature | Por qué se pide | Por qué es problemático | Alternativa |
+|---|---|---|---|---|
+| AF-01 | **JSONB para atributos** | Flexibilidad: agregar atributos sin migración. | Decisión cerrada #14. Queries opacas, no IA-friendly, sin FK referential integrity, sin filtros indexados eficientes, performance peor que columnas (Microsoft SQL/Allstars findings). Para un single-tenant con rubro acotado, el costo de migración por atributo nuevo es bajo. | Catálogos FK + columnas en `articulos` (TS-05, TS-06). Si surge un atributo dinámico futuro, agregar columna + tabla catálogo. |
+| AF-02 | **Variant matrix combinatorial UI** estilo Shopify (size × color = N) | Es lo que muestra Shopify Admin como UI de variants. | El modelo es flat single-table (decisión #7). El usuario crea N filas explícitamente. Una matriz UI sugiere semánticas que no aplican (master/child) y choca con el modelo. | Wizard TS-11 con multi-select de valores y preview de N filas a crear. Las filas son entidades de primera clase, no derivadas. |
+| AF-03 | **Pricing tiers / modificadores relativos** ("variante L = +$5 sobre M") | Convención de Shopify y Medusa donde el padre tiene precio base. | Decisión #13: precio absoluto por variante. Modelado relativo agrega complejidad sin valor en este negocio (precios cambian por variante con factores como costo de proveedor distinto). | Cada fila guarda su propio precio. Si se necesita coherencia, `editar datos del modelo` (TS-13) puede setear precio en cascada. |
+| AF-04 | **Multi-currency** (USD, EUR adicional al MXN) | "Por si exportamos a USA". | Out of scope explícito en `PROJECT.md`. Multi-currency cambia drásticamente el modelo financiero (rates, conversiones, FX gain/loss). | Seguir en MXN. Si en algún milestone v2.x se exporta, abrir milestone dedicado. |
+| AF-05 | **Catálogo completo de vehículos compatibles + fitment** | Q3 tentativa. Lo necesita una rubrería de repuestos automotrices. | Trabajo grande por sí mismo (catálogo de marcas-modelos-años-motores, UI de fitment, posible importación ACES/PIES). Alcance del milestone explota. **Out of scope explícito en `PROJECT.md`** — diferido a v1.4. | v1.3 cierra solo el sistema de variantes y stock. v1.4 abre catálogo de vehículos como milestone aparte. |
+| AF-06 | **Inheritance via "tabla por template"** (Q1 opción A4) | Permite columnas distintas por rubro. | Multiplica tablas, complica queries que cruzan rubros, choca con el principio de "single-table flat" decidido en #7. | A1 (pocas comunes + pivot para extras) o A2 (slots numerados) — se cierra en `/gsd-discuss-phase` con Q1. |
+| AF-07 | **Reorder automático de stock** | Low-stock alerts ya existen, "que pida solo". | Out of scope explícito en `PROJECT.md` ("scope creep into procurement"). Decisiones de compra requieren reglas de negocio (proveedores, tiempos de entrega, mínimos económicos) que no están en el modelo. | Mantener alertas como info, decisión humana sigue. |
+| AF-08 | **Búsqueda full-text por descripción de variante** | "Quiero buscar 'cinta roja talle XL'". | El combobox TS-29 con búsqueda por codigo+nombre+SKU+atributos cubre el 95% del caso. Full-text search introduce dependencias (pg_trgm, materialized views, ranking). | Search compuesto sobre los 4 campos en TS-29. Si en producción se ve insuficiente, abrir feature ad-hoc en milestone futuro. |
+| AF-09 | **Variant images con galería propia por variante** | Cada color/talle quiere su foto. | El sistema de imágenes de v1.2 ya soporta hasta 6 imágenes por artículo. Como cada variante es una fila propia, ya tiene su propio array de imágenes. **No es un anti-feature, es una clarificación: la feature ya existe gracias al modelo flat.** Listada acá para evitar re-implementar. | Reusar el sistema de imágenes v1.2 sin cambios. |
+| AF-10 | **Lot/batch/serial number tracking** | "Quiero rastrear cuándo entró cada lote." | Out of scope explícito en `PROJECT.md`. Cambia el grano de existencias (de cantidad a (lote, cantidad)). Trabajo grande, dominio aparte. | Mantener cantidad-por-ubicación. Si surge necesidad real, milestone aparte. |
 
 ---
 
 ## Feature Dependencies
 
 ```
-ArticuloForm (existente) ──> Image Upload Grid (nuevo, reemplaza placeholder)
-                         ──> Ruta /articulos/[codigo]/editar (nuevo, usa form existente)
+TS-01 (PK migration sku)
+   ├──> TS-02 (codigo grouping index)
+   ├──> TS-12 (edit variante)
+   ├──> TS-13 (edit modelo cascada)
+   ├──> TS-14 (listado agrupado)
+   ├──> TS-18 (cascade transaccional) ──> TS-28 (comprobantes referencian SKU)
+   ├──> TS-20 (sku_anterior)
+   └──> stock redesign (independiente, no toca PK)
 
-ArticuloSheet (existente) ──> Seccion de imagenes (agregar thumbnails)
+TS-03 (templates table)
+   └──> TS-04 (template_atributos)
+           ├──> TS-05 (catálogos FK)
+           │       └──> TS-06 (columnas FK en articulos)
+           │               ├──> TS-07 (SKU autogen)
+           │               ├──> TS-08 (nombre autogen)
+           │               └──> TS-11 (wizard crear desde template)
+           ├──> TS-09 (CRUD catálogos)
+           └──> TS-10 (CRUD templates)
+                   └──> TS-17 (preview impacto)
+                           └──> TS-18 (cascade) ──> TS-19 (history) ──> D-02 (undo)
 
-ServerDataTable (existente) ──> Column visibility dropdown (agregar control UI)
-                            ──> businessSettings extension (persistir preferencia)
+TS-21 (rename columna→ubicacion)
+   ├──> TS-22 (sectores + pivot)
+   │       ├──> TS-23 (CRUD sectores)
+   │       ├──> TS-25 (filtros)
+   │       │       └──> TS-26 (edición visual)
+   │       └──> TS-27 (dashboard)
+   └──> TS-24 (migración histórica)
 
-Settings Nav (existente) ──> API Keys page (nueva seccion)
-                         ──> Webhooks page (nueva seccion)
+TS-30 (numeric monetario) — independiente
+TS-31 (drift TS↔DB) — independiente
 
-Backend upload endpoint (nuevo) ──> Image Upload Grid (frontend necesita donde mandar archivos)
-Backend static serving (nuevo)  ──> Image display (frontend necesita URLs que resuelvan)
-
-api_keys table (nuevo)         ──> API Keys UI (CRUD)
-                               ──> JwtAuthGuard extension (aceptar Bearer api_key ademas de JWT)
-
-webhook_subscriptions (nuevo)  ──> Webhooks UI (CRUD)
-webhook_deliveries (nuevo)     ──> Delivery log UI
-ArticulosService events        ──> Webhook delivery engine (disparar POST en create/update/delete)
+TS-29 (selector SKU comprobantes)
+   └──> requires TS-28 (rename FK)
 ```
 
-Dependencias criticas:
+### Dependency Notes Críticas
 
-- **Image upload requiere backend work primero**: endpoint de upload multipart + static file serving. No existe nada de esto en el backend actual.
-- **API Keys requiere extension del auth guard**: el `JwtAuthGuard` actual solo valida JWTs de Supabase. Debe aceptar tambien `Bearer sk_...` tokens. Sin esto, los keys no sirven para nada.
-- **Webhooks requiere event emitting**: el `ArticulosService` necesita emitir eventos despues de create/update/delete. NestJS tiene `EventEmitter2` para esto. El webhook engine escucha y despacha.
-- **Columnas configurables requiere extension de businessSettings**: agregar campo jsonb para la configuracion. Endpoint GET/PATCH ya existe.
-
----
-
-## MVP Recommendation
-
-Prioritize:
-
-1. **Ruta editar + soft-delete en UI** — La base ya existe (form, controller, toggle endpoint). Solo falta wiring. Desbloquea CRUD completo sin imagenes. Maximo medio dia de trabajo.
-2. **Columnas configurables** — Dropdown con checkboxes + persistencia en businessSettings. TanStack Table ya lo soporta. Mejora inmediata en la lista existente.
-3. **Image upload backend** — Upload endpoint con multer, static serving, resize con sharp. Infraestructura necesaria antes del UI.
-4. **Image upload grid en ArticuloForm** — Componente de slots etiquetados. Reemplaza el placeholder. La feature mas visible para el usuario.
-5. **API Keys backend + UI** — Schema, modulo NestJS, guard extension, pagina en Settings. Independiente de webhooks.
-6. **Webhooks CRUD (backend + UI)** — Suscripciones en Settings. Independiente de delivery.
-7. **Webhook delivery engine + logs** — Lo mas complejo. Event emitting, HTTP dispatch, retry, tabla de deliveries, UI de logs.
-
-Defer:
-
-- **Webhook retry con backoff**: Implementar delivery sincrono primero (fire-and-forget con log del resultado). Agregar retry asincrono si la escala lo justifica.
-- **API key usage tracking detallado**: Solo guardar `ultimoUso` timestamp. No analytics.
+- **TS-01 es bloqueante absoluto.** Todo el eje 1 (variantes) y la cascade del eje 2 dependen de la migración de PK. Sin esto, FKs no apuntan a SKU y todo es teórico.
+- **TS-21 vs TS-22 son independientes de TS-01.** Stock redesign no necesita variantes implementadas. Pueden ir en fases paralelas si el roadmap lo permite.
+- **TS-24 (migración histórica)** debería ir después de TS-22 pero antes de TS-26 (edición visual) — los datos consolidados son input del editor.
+- **TS-30 (numeric)** es ideal hacerlo antes de la migración de PK porque toca filas masivamente; combinar ambos en una transacción reduce downtime.
+- **D-02 (undo)** es el "ROI rápido" sobre TS-19 — implementar TS-19 sin D-02 deja value en la mesa.
 
 ---
 
-## UX Patterns Recomendados
+## MVP Definition (v1.3)
 
-### Formulario de Articulo (~30 campos)
+### Launch With (v1.3 release)
 
-El form actual ya sigue las mejores practicas:
+Mínimo para shippear el milestone:
 
-- **Secciones con SectionHeader**: Identificacion, Propiedades, Precios, Imagenes, ERP, Origen. Scroll vertical continuo.
-- **Grids de 2 columnas** para campos cortos (codigo/nombre, marca/modelo, precio/costo).
-- **Campos full-width** para texto largo (observaciones).
-- **No migrar a tabs ni stepper**: el scroll vertical con secciones es el patron correcto para formularios de ~30 campos en desktop. Las secciones son scanneables y el usuario no pierde contexto.
+- [ ] **TS-01 a TS-08** — Sistema de variantes core (PK migration, templates, catálogos, autogen)
+- [ ] **TS-09, TS-10** — CRUD de catálogos y templates
+- [ ] **TS-11, TS-12, TS-13** — Wizard de creación + edit variant + edit modelo
+- [ ] **TS-14** — Listado agrupado
+- [ ] **TS-15, TS-16** — Codigo manual + codigo_barras separado
+- [ ] **TS-17 a TS-20** — Cambios masivos con preview/cascade/history
+- [ ] **TS-21 a TS-24** — Stock redesign completo + migración histórica
+- [ ] **TS-25, TS-26** — Filtros y edición visual
+- [ ] **TS-28, TS-29** — Comprobantes refieren SKU
+- [ ] **TS-30, TS-31** — Tech debt monetario + drift
 
-Agregar:
+### Add After Validation (v1.3.x patches)
 
-- **Seccion de imagenes funcional** (reemplazar placeholder).
-- **Switch activo/inactivo** con confirmacion (ya existe el campo `activo` en el form schema).
+Features post-launch dependientes de feedback de uso real:
 
-### Image Upload Grid
+- [ ] **D-02** (undo last bulk change) — agregar al cerrar TS-19 si hay tiempo, sino en patch
+- [ ] **D-05** (preview WYSIWYG) — bajo costo, agregar si UX testing lo pide
+- [ ] **TS-27** (dashboard sector) — dependiente de uso real para priorizar KPIs
+- [ ] **D-07** (webhook events para variantes) — agregar cuando un consumer real lo pida
 
-- **Layout**: Grid de 3 columnas. Seccion "Etiquetas" (3 slots) arriba, seccion "Producto" (6 slots en 2 filas) abajo.
-- **Slot vacio**: Cuadrado con borde dashed, icono "+" centrado, texto "Etiqueta 1" o "Producto 3" como label. Click abre file picker.
-- **Slot ocupado**: Thumbnail de la imagen. Hover muestra overlay oscuro con icono de eliminar (trash) y reemplazar (refresh).
-- **Upload feedback**: Spinner dentro del slot durante upload. Toast de error si falla.
-- **Restricciones**: Aceptar solo imagenes (image/\*). Limite sugerido: 5MB por archivo. Validar client-side antes de enviar.
-- **No preview modal**: Para ver la imagen grande, abrir en nueva tab. No construir un lightbox.
+### Future Consideration (v1.4+)
 
-### API Keys Management
-
-- **Ubicacion**: Nueva entrada en Settings nav. Icono: Key (lucide). Titulo: "API Keys". Descripcion: "Gestiona tokens de acceso para integraciones".
-- **Lista**: Tabla con columnas: Nombre, Key (prefijo truncado `sk_...a3f2`), Creada (fecha relativa), Ultimo uso (fecha relativa o "Nunca"), Estado (badge Activa/Revocada). Accion: boton "Revocar" (solo si activa).
-- **Crear**: Boton "Nueva API Key" abre Dialog. Campo: nombre (obligatorio). Al confirmar, el dialog cambia a "Key creada" mostrando: campo readonly con el key completo, boton "Copiar" prominente, warning en rojo: "Guarda este key. No se mostrara de nuevo." Boton "Entendido, cerrar" solo se habilita despues de copiar o tras 5 segundos.
-- **Revocar**: AlertDialog: "Revocar API Key [nombre]? Las integraciones que usan este key dejaran de funcionar inmediatamente. Esta accion no se puede deshacer." Botones: Cancelar / Revocar (destructive).
-- **RBAC**: Solo usuarios con rol `admin` pueden ver y gestionar API keys.
-
-### Webhooks Management
-
-- **Ubicacion**: Nueva entrada en Settings nav. Icono: Globe o Webhook (lucide). Titulo: "Webhooks". Descripcion: "Configura notificaciones HTTP para eventos".
-- **Lista**: Tabla con columnas: URL (truncada con tooltip del full URL), Entidad (badge), Evento (badge), Estado (switch inline para activar/desactivar), Ultima entrega (timestamp + badge de status code). Acciones: Editar, Test, Eliminar.
-- **Crear/Editar**: Dialog con: Select "Entidad" (solo "Articulos" en v1.2), Select "Evento" (Creado / Actualizado / Eliminado / Todos), Input URL (validacion de formato URL), Switch activo. Al crear: mostrar secret generado (mismo patron que API key — una sola vez).
-- **Test**: Boton en cada fila. Al clickear, envia POST con payload de ejemplo. Muestra resultado inline o en toast: "200 OK" (verde) o "500 Internal Server Error" (rojo) con response body truncado.
-- **Secret**: Al crear, se muestra una vez. Boton "Regenerar secret" en edicion (con confirmacion, invalida el anterior). El receptor valida con `X-Webhook-Signature: sha256=hmac(secret, body)`.
-- **Log de entregas**: Expandir fila (accordion) o link a sub-pagina. Tabla: timestamp, evento, status code (badge), intentos, response truncada. Filtrable por estado (exitoso/fallido).
+- [ ] **AF-05 reversal**: Vehículos compatibles + fitment (milestone v1.4 dedicado)
+- [ ] **D-01** (slug+nombre denormalizado) — depende de cómo IA agents (LLM consumers via API key) consumen los datos
+- [ ] **D-04** (swatch UI) — depende de si usuarios piden visual color/talle en wizard
+- [ ] **D-06** (heatmap depósito) — depende de adopción del dashboard básico TS-27
 
 ---
 
-## Complexity Summary
+## Feature Prioritization Matrix
 
-| Feature                | Backend                                | Frontend                     | Total    |
-| ---------------------- | -------------------------------------- | ---------------------------- | -------- |
-| Ruta editar articulo   | None (endpoint existe)                 | Low (page + fetch)           | Low      |
-| Soft-delete UI         | None (endpoint existe)                 | Low (AlertDialog)            | Low      |
-| Columnas configurables | Low (extend settings)                  | Low-Med (dropdown + persist) | Low-Med  |
-| Image upload backend   | Med (multer + sharp + static)          | None                         | Med      |
-| Image upload grid UI   | None (usa endpoint)                    | Med (componente slots)       | Med      |
-| API Keys               | Med (schema + module + guard)          | Med (settings page)          | Med-High |
-| Webhooks CRUD          | Med (schema + module)                  | Med (settings page)          | Med      |
-| Webhook delivery       | Med-High (events + HTTP + retry + log) | Low (log display)            | Med-High |
+| Feature | User Value | Implementation Cost | Priority |
+|---|---|---|---|
+| TS-01 (PK migration sku) | HIGH | HIGH | **P1** (bloqueante) |
+| TS-02 (codigo grouping) | HIGH | LOW | P1 |
+| TS-03–TS-04 (templates schema) | HIGH | LOW–MED | P1 |
+| TS-05–TS-06 (catálogos + columnas FK) | HIGH | MED | P1 |
+| TS-07–TS-08 (autogen SKU+nombre) | HIGH | MED | P1 |
+| TS-09–TS-10 (CRUD catálogos+templates) | HIGH | MED | P1 |
+| TS-11 (wizard crear desde template) | HIGH | HIGH | P1 |
+| TS-12–TS-13 (edit variante/modelo) | HIGH | MED | P1 |
+| TS-14 (listado agrupado) | HIGH | MED | P1 |
+| TS-15–TS-16 (codigo manual, barras) | MED | LOW | P1 |
+| TS-17 (preview impacto) | HIGH | MED | P1 |
+| TS-18 (cascade transaccional) | HIGH | HIGH | P1 |
+| TS-19 (history append-only) | MED | LOW | P1 |
+| TS-20 (sku_anterior idempotencia) | MED | LOW | P1 |
+| TS-21 (rename columna→ubicacion) | MED | LOW | P1 |
+| TS-22 (sectores + pivot) | HIGH | MED | P1 |
+| TS-23 (CRUD sectores) | HIGH | MED | P1 |
+| TS-24 (migración histórica) | HIGH | MED | P1 |
+| TS-25 (filtros ubicación/sector) | HIGH | MED | P1 |
+| TS-26 (edición visual existencias) | HIGH | HIGH | P1 |
+| TS-27 (dashboard sector) | MED | MED | P2 |
+| TS-28 (rename FK comprobantes) | HIGH | MED | P1 |
+| TS-29 (selector SKU) | HIGH | MED | P1 |
+| TS-30 (numeric monetario) | MED | MED | P1 |
+| TS-31 (drift TS↔DB) | LOW | LOW | P2 |
+| D-01 (slug+nombre denormalized) | MED | MED | P3 |
+| D-02 (undo bulk) | MED | MED | P2 |
+| D-03 (dry-run extendido) | MED | MED | P3 |
+| D-04 (swatch UI) | LOW | MED | P3 |
+| D-05 (preview WYSIWYG) | MED | LOW | P2 |
+| D-06 (heatmap depósito) | LOW | HIGH | P3 |
+| D-07 (webhook eventos variantes) | MED | LOW | P2 |
 
-Esfuerzo total estimado: **5-8 fases** de trabajo, dependiendo de granularidad.
+**Priority key:**
+- **P1**: Must-have para v1.3 release
+- **P2**: Should-have, fit-if-possible o patch post-launch
+- **P3**: Nice-to-have, defer a v1.4+
+
+---
+
+## Reference App Patterns
+
+| Pattern | Source | Cómo lo adoptamos |
+|---|---|---|
+| **SKU como identificador universal** (no parent product ID) | Shopify ProductVariant.sku, Medusa ProductVariant.sku | Adoptado completamente. SKU es PK desde día 1. |
+| **Variant generator wizard** (multi-select de option values, preview de N filas) | Saleor 2.9 "variant creator", Medusa "variant generator" (discussion #5119) | Adoptado en TS-11. Wizard 3 pasos en lugar de modal único. |
+| **Auto SKU con receta `parent + slugs`** | WooCommerce (slugs/IDs append), Booster for WC, OmniOrders attribute-based generation | Adoptado en TS-07. Diferencia: NO hay "parent SKU" — el `codigo` es el prefijo implícito. |
+| **Variant attribute selection** (dropdown/swatch/numeric) | Saleor AssignedVariantAttribute con `variant_selection` flag y display types | Adoptado parcialmente como Differentiator D-04. |
+| **Bulk SKU update con dry-run** | Matrixify (Shopify), Magento Store Manager | Adoptado en TS-17 + D-03. |
+| **Single-table product+variant flat** | Algolia search index para Shopify (one-document-per-variant pattern) | Adoptado completamente en el modelo de DB (decisión #7). |
+| **Configurable products via custom fields** | Vendure ProductVariant + OrderLine custom fields | NO adoptado. Vendure separa "configuración" (per-order) de "variantes" (per-product). Nuestro caso es 100% variantes. |
+| **Bin location with aisle/shelf hierarchy** | Inventoryops, Katana, Linnworks WMS guides | Adoptado simplificado en TS-22. Sectores = "zonas" del WMS. Ubicaciones = "bins". Pivot M:N = sectores transversales (decisión #22). |
+| **Inventory dashboard con filter por location** | UI Bakery / Microsoft Dynamics inventory dashboards | Adoptado en TS-25 + TS-27. |
+| **EAV vs Hybrid (catálogos FK + columnas)** | Practical Ecommerce, Allstarsit hybrid recommendations | Adoptado el lado FK (no JSONB, no EAV puro). Híbrido pragmático: columnas comunes + tablas catálogo + (eventualmente) pivot para extras. |
+| **ACES/PIES fitment** | Vertical Development, AutoFitmentPlus, ShowMeTheParts | NO adoptado en v1.3 (AF-05). Se evalúa para v1.4 milestone "Vehículos compatibles". |
+
+---
+
+## Open Questions Linked to Phase Discussion
+
+Estas se cierran en `/gsd-discuss-phase` antes de planificar cada fase:
+
+- **Q1** (modelo de columnas para atributos del rubro) → afecta TS-06, TS-09. Recomendación: A1 (pocas comunes + pivot para extras), pero el usuario decide.
+- **Q2** (FK por id, slug o nombre + cache) → afecta D-01, TS-29 (búsqueda). Recomendación tentativa: FK por id + denormalización slug+nombre via trigger.
+- **Q3** (vehículos compatibles a v1.3 o v1.4) → si entra a v1.3, AF-05 deja de ser anti-feature. Recomendación: diferir a v1.4 (alcance grande).
+- **Q4** (atributos finales del template default automotor) → afecta TS-06. Cierra qué FKs van a `articulos`.
+- **Q5** (`propAux1..5` actuales: keep/drop/rename) → afecta TS-31 + datos legacy.
+- **Q6** (`categoria/subcategoria/rubro/subrubro/adjetivo` taxonomía vs atributos) → afecta TS-04, TS-06.
+- **Q7** (`codigo` manual o autogen) → afecta TS-15.
+- **Q8** (plan migración existencias) → cierra TS-24.
+- **Q9** (drift TS↔DB) → cierra TS-31.
+- **Q10** (qué tech debt entra) → cierra TS-30, TS-31, posible HOOK-03/06.
+- **Q11** (UIs nuevas que entran) → cierra TS-23, TS-26, TS-27, TS-09, TS-10, TS-11.
+
+---
+
+## Confidence Assessment
+
+| Area | Level | Reason |
+|---|---|---|
+| Variantes table-stakes (TS-01 a TS-16) | HIGH | Decisiones cerradas en design-notes + patrones validados de Shopify/Medusa/Saleor. |
+| Cambios masivos schema (TS-17 a TS-20) | HIGH | Pattern estándar (preview + transacción + history + idempotencia). Decisiones #19, #20 explícitas. |
+| Stock redesign (TS-21 a TS-27) | MED-HIGH | Decisiones #21, #22, #23 cerradas. Q11 deja UIs específicas abiertas. Migración Q8 pendiente de validar contra datos reales (~7,500 filas). |
+| Comprobantes refieren SKU (TS-28 a TS-29) | HIGH | Cascade desde TS-18 + UI estándar de combobox. |
+| Tech debt (TS-30 a TS-31) | MED | TS-30 tiene riesgo de serialización (numeric → string). Q9, Q10 cierran scope final. |
+| Anti-features | HIGH | Justificadas por decisiones existentes en `PROJECT.md` y `v1.3-design-notes.md`. |
+| Differentiators | MED | Valor variable según uso real post-launch. |
 
 ---
 
 ## Sources
 
-- [Adobe Commerce Image Uploader Pattern Library](https://developer.adobe.com/commerce/admin-developer/pattern-library/getting-user-input/image-uploader)
-- [Mastering UX for CRUD Operations (Medium)](https://medium.com/design-bootcamp/mastering-crud-operations-a-framework-for-seamless-product-design-2630affbc1e5)
-- [CRUD Beyond Grids: Modern UI Patterns 2026](https://copyprogramming.com/howto/what-is-the-best-ux-to-let-user-perform-crud-operations)
-- [API Key Management Best Practices 2025 (MultitaskAI)](https://multitaskai.com/blog/api-key-management-best-practices/)
-- [API Keys Complete 2025 Guide (DEV)](https://dev.to/hamd_writer_8c77d9c88c188/api-keys-the-complete-2025-guide-to-security-management-and-best-practices-3980)
-- [API Key Management Best Practices (OneUptime)](https://oneuptime.com/blog/post/2026-02-20-api-key-management-best-practices/view)
-- [Building Webhooks Best Practices (WorkOS)](https://workos.com/blog/building-webhooks-into-your-application-guidelines-and-best-practices)
-- [Managing Webhooks (Zendesk)](https://support.zendesk.com/hc/en-us/articles/4408836101146-Managing-webhooks)
-- [Svix - Webhooks as a Service](https://www.svix.com/)
-- [Data Table UX Patterns (Pencil & Paper)](https://www.pencilandpaper.io/articles/ux-pattern-analysis-enterprise-data-tables)
-- Codebase analysis: `articulo-form.tsx`, `articulo-sheet.tsx`, `articulos-columns.tsx`, `articulos-client.tsx`, `settings-nav.tsx`, `schema.ts`
+### Decisiones Internas
+- [`.planning/PROJECT.md`](../../PROJECT.md) — Validated requirements, Out of Scope, Key Decisions
+- [`.planning/research/v1.3-design-notes.md`](./v1.3-design-notes.md) — Decisiones cerradas + Q1–Q11
 
----
+### Reference Apps
+- [Shopify ProductVariant GraphQL](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant)
+- [Shopify product model components](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components)
+- [Medusa Products Architecture](https://docs.medusajs.com/v1/modules/products)
+- [Medusa Product Module](https://docs.medusajs.com/resources/commerce-modules/product)
+- [Medusa variant generator discussion #5119](https://github.com/medusajs/medusa/discussions/5119)
+- [Saleor product variant overview](https://docs.saleor.io/developer/products/overview)
+- [Saleor 2.9 variant creator + plugin architecture](https://saleor.io/blog/release-enterprisegrade-attributes-variant-creator-and-plugin-architecture-117/)
+- [Saleor AssignedVariantAttribute](https://docs.saleor.io/api-reference/attributes/objects/assigned-variant-attribute)
+- [WooCommerce variable products](https://woocommerce.com/document/variable-product/)
+- [WooCommerce SKU Generator plugin](https://github.com/godaddy-wordpress/woocommerce-product-sku-generator/blob/master/woocommerce-product-sku-generator.php)
+- [Vendure configurable products](https://docs.vendure.io/current/core/how-to/configurable-products)
+- [Vendure ProductVariant entity](https://github.com/vendurehq/vendure/blob/master/packages/core/src/entity/product-variant/product-variant.entity.ts)
 
-_Feature research for v1.2 milestone: Articulos CRUD completo + Imagenes + Columnas Configurables + API Keys + Webhooks_
-_Researched: 2026-03-10_
-_Research confidence: HIGH (based on codebase analysis, industry patterns, established UX conventions)_
+### SKU / Schema Best Practices
+- [Symbia Logistics — SKU naming with examples](https://www.symbia.com/resources/product-skus/)
+- [Eshopbox SKU naming guide](https://www.eshopbox.com/blog/sku-naming)
+- [OmniOrders 5 SKU best practices](https://omniorders.com/blog/sku-best-practices)
+- [Nisum white paper SKU IDs](https://www.nisum.com/nisum-knows/white-paper-best-practices-for-defining-sku-ids)
+- [Algolia Shopify schema (flat)](https://www.algolia.com/doc/integration/shopify/sending-and-managing-data/schemas)
+- [Elastic schema for variants](https://www.elastic.co/blog/how-to-create-a-document-schema-for-product-variants-and-skus-for-your-ecommerce-search-experience)
+
+### Database Design
+- [Allstars — product attributes DB design FK vs JSONB](https://www.allstarsit.com/blog/ecommerce-product-attributes-database-design-best-practices-patterns)
+- [Microsoft — JSON catalog patterns SQL Server](https://techcommunity.microsoft.com/blog/sqlserver/designing-product-catalogs-in-sql-server-using-json/384594)
+- [Practical Ecommerce — better way to store variants](https://www.practicalecommerce.com/A-Better-Way-to-Store-Ecommerce-Product-Information)
+- [Mediusware — variant-wise storage organization](https://mediusware.com/blog/from-complexity-to-clarity-organizing-variant-wise)
+
+### Bulk Operations / Cascade
+- [Matrixify Shopify SKU bulk update](https://matrixify.app/tutorials/bulk-update-shopify-product-sku/)
+- [Shopify bulk editing](https://help.shopify.com/en/manual/shopify-admin/productivity-tools/bulk-editing)
+- [Magento Store Manager bulk update](https://www.mag-manager.com/product-information/magento-inventory-management/how-to-bulk-update-magento-product-skus/)
+
+### Warehouse / Stock
+- [Inventoryops — Bin Locations](https://www.inventoryops.com/articles/bin-locations.html)
+- [Katana — bin location best practices](https://katanamrp.com/blog/warehouse-bin-location/)
+- [Linnworks — warehouse locations and labeling](https://www.linnworks.com/blog/warehouse-locations-and-bin-labeling-best-practices-and-tips/)
+- [Microsoft Dynamics inventory dashboards](https://learn.microsoft.com/en-us/dynamics365/intelligent-order-management/inventory-dashboards)
+- [UI Bakery inventory management dashboard template](https://uibakery.io/templates/inventory-management-dashboard)
+
+### Automotive / Fitment (defer v1.4)
+- [PDM Automotive ACES/PIES guide](https://pdmautomotive.com/aces-and-pies-the-ultimate-guide/)
+- [Convermax fitment sources](https://convermax.com/fitment-sources)
+- [ShowMeTheParts cataloging](https://info.showmetheparts.com/)

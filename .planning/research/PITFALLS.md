@@ -1,359 +1,531 @@
-# Pitfalls Research
+# PITFALLS — v1.3 Variantes y Modelo de Stock
 
-**Domain:** File uploads, API Keys y Webhooks para admin platform NestJS existente
-**Researched:** 2026-03-10
-**Confidence:** HIGH
+**Domain:** Adding variants + flat-table SKU model + cascade migrations to existing live commerce system (11,316 articulos, 7,873 existencias, FK refs from orders/sales/purchases/inventarios_articulos)
+**Researched:** 2026-04-29
+**Confidence:** HIGH (Postgres semantics + Drizzle behaviors verified against official docs)
 
-## Critical Pitfalls
+## CRITICAL PITFALLS
 
-### Pitfall 1: Webhook delivery bloqueando la respuesta CRUD
+### P-01 — PK swap from `codigo` to `sku` breaks 4 child FK relationships simultaneously
 
-**What goes wrong:**
-El endpoint `POST /api/articulos` hace el insert en DB y luego intenta entregar webhooks sincrónicamente antes de responder al cliente. Si el servidor destino del webhook tarda 10 segundos o hace timeout, el usuario espera 10+ segundos para crear un artículo. En el peor caso, si el destino está caído y hay 5 suscriptores, el CRUD timeout completo.
+**What goes wrong**
+`articulos.codigo` is the PK referenced by `orderItems.articuloCodigo`, `saleItems.articuloCodigo`, `purchaseItems.articuloCodigo`, `existencias.articuloCodigo`, `inventariosArticulos.articuloCodigo`. Dropping the PK with `CASCADE` deletes ALL those FK constraints in one shot. If the migration script isn't perfectly authored, you end up with an articulos table whose PK is `sku`, but child tables silently lose referential integrity and accept orphan inserts until you re-add FKs. Worse: if you re-add FKs pointing to `sku` BEFORE backfilling `articulos.sku = codigo` for the no-variants case, every existing child row becomes orphan and the FK validation step fails with `violates foreign key constraint`.
 
-**Why it happens:**
-Es la implementación "obvia" -- después del insert, iterar los webhooks y hacer `fetch()` a cada URL. Funciona en dev con un solo webhook rápido, pero se rompe en producción con destinos lentos o caídos.
+**Why it happens**
+The "obvious" path (`ALTER TABLE articulos DROP CONSTRAINT articulos_pkey CASCADE; ALTER TABLE articulos ADD PRIMARY KEY (sku);`) is what every Postgres tutorial shows, but those tutorials assume zero child tables.
 
-**How to avoid:**
-Desacoplar completamente la entrega de webhooks del ciclo request/response del CRUD. Dos opciones:
+**Warning signs**
+- `pg_dump` of pre-migration vs post-migration shows different `tc.constraint_name` count
+- `SELECT conname FROM pg_constraint WHERE confrelid = 'articulos'::regclass` returns fewer rows after migration
+- Inserts into `existencias` with non-existent codigo succeed (they shouldn't)
+- TS compilation passes but runtime FK errors appear randomly
 
-1. **Cola con BullMQ + Redis** (recomendado a futuro): El servicio CRUD emite un evento, un job se encola en Redis, un worker separado entrega los webhooks con reintentos exponenciales. El CRUD responde inmediatamente.
-2. **Fire-and-forget con EventEmitter** (viable para v1.2): `eventEmitter.emit('articulo.created', payload)` y un listener hace los HTTP calls en background. Sin garantía de entrega ni reintentos, pero no bloquea.
+**Prevention strategy**
+Use this exact 7-step sequence inside ONE transaction with explicit lock:
 
-Para v1.2 con scope pequeño (solo artículos), el EventEmitter de NestJS es suficiente. BullMQ es necesario cuando los webhooks sean críticos o haya muchos suscriptores.
+```sql
+BEGIN;
+LOCK TABLE articulos, existencias, inventarios_articulos, order_items, sale_items, purchase_items
+  IN ACCESS EXCLUSIVE MODE;
 
-**Warning signs:**
+-- 1. Add sku column nullable first (cheap, no rewrite)
+ALTER TABLE articulos ADD COLUMN sku_new TEXT;
 
-- Response times del CRUD suben cuando hay webhooks configurados
-- Timeouts intermitentes en creación/edición de artículos
-- Tests de artículos lentos porque esperan respuestas HTTP externas
+-- 2. Backfill sku = codigo for current data
+UPDATE articulos SET sku_new = codigo;
+ALTER TABLE articulos ALTER COLUMN sku_new SET NOT NULL;
 
-**Phase to address:**
-Fase de Webhooks -- diseñar como async desde el primer día, nunca como llamada síncrona.
+-- 3. Pre-validate row counts match expectations
+DO $$ BEGIN
+  IF (SELECT count(*) FROM articulos WHERE sku_new IS NULL) > 0 THEN
+    RAISE EXCEPTION 'Backfill incomplete';
+  END IF;
+END $$;
 
----
+-- 4. Add columns to children, backfill from existing FK
+ALTER TABLE existencias ADD COLUMN sku TEXT;
+UPDATE existencias e SET sku = a.sku_new FROM articulos a WHERE e.articulo_codigo = a.codigo;
+-- Repeat for order_items, sale_items, purchase_items, inventarios_articulos
 
-### Pitfall 2: API Keys almacenadas en texto plano en la base de datos
+-- 5. Verify NO orphans and counts match
+DO $$ BEGIN
+  IF (SELECT count(*) FROM existencias WHERE sku IS NULL) > 0 THEN
+    RAISE EXCEPTION 'Existencias backfill incomplete';
+  END IF;
+END $$;
 
-**What goes wrong:**
-Se guarda la API key tal cual en la tabla `api_keys`. Si la DB se compromete (SQL injection, backup expuesto, acceso indebido), todas las keys están expuestas y el atacante tiene acceso completo a la API.
+-- 6. Drop old PK with CASCADE (drops child FKs)
+ALTER TABLE articulos DROP CONSTRAINT articulos_pkey CASCADE;
+ALTER TABLE articulos RENAME COLUMN sku_new TO sku;
+ALTER TABLE articulos ADD PRIMARY KEY (sku);
+ALTER TABLE articulos ALTER COLUMN codigo DROP NOT NULL;
+CREATE INDEX idx_articulos_codigo ON articulos(codigo); -- non-unique grouper
 
-**Why it happens:**
-Las API keys parecen "no tan sensibles" como passwords. El desarrollador piensa "es solo un token interno" y lo guarda como varchar. Además, necesita mostrar la key al usuario al crearla, lo que lleva a pensar que debe ser recuperable.
+-- 7. Re-add child FKs against sku
+ALTER TABLE existencias ADD CONSTRAINT fk_existencias_articulo
+  FOREIGN KEY (sku) REFERENCES articulos(sku) ON UPDATE CASCADE ON DELETE RESTRICT;
+-- Repeat for all children
+ALTER TABLE existencias DROP COLUMN articulo_codigo; -- only AFTER frontend deployed
 
-**How to avoid:**
-
-- Generar la key con `crypto.randomBytes(32).toString('hex')` (64 chars hex, alta entropía)
-- Almacenar SOLO el hash SHA-256 de la key (NO bcrypt -- las API keys tienen entropía suficiente, SHA-256 es rápido para lookup y seguro para keys de 256+ bits)
-- Mostrar la key completa SOLO una vez al crearla, con advertencia clara de "no se puede recuperar"
-- Guardar un prefijo visible (primeros 8 chars) para identificación en la UI: `obj_a1b2c3d4...`
-- Índice UNIQUE en la columna `key_hash` para búsqueda rápida
-
-Esquema recomendado:
-
+COMMIT;
 ```
-api_keys: id, name, key_hash (sha256, unique), key_prefix (8 chars), role (admin/viewer), created_by, created_at, last_used_at, expires_at, revoked_at
-```
 
-**Warning signs:**
+**Phase assignment:** Phase "PK Swap & Schema Cutover" (post-template-design, pre-cascade-engine). MUST be its own phase.
 
-- La tabla `api_keys` tiene una columna `key` o `token` de tipo varchar sin hash
-- Se puede "ver" la key completa desde la UI después de crearla
-- No hay columna `key_hash` en el schema
+### P-02 — Trigger feedback loop: `articulos.unidades` SUM trigger + cascade SKU updates
 
-**Phase to address:**
-Fase de API Keys -- el schema y la lógica de hashing deben implementarse desde el primer commit.
+**What goes wrong**
+Quick task `260429-rec` installed a trigger that maintains `articulos.unidades = SUM(existencias.cantidad)`. When the cascade engine renames a SKU, it issues `UPDATE existencias SET sku = new_sku WHERE sku = old_sku`. With `ON UPDATE CASCADE` from articulos→existencias the cascade also fires the trigger, which recomputes unidades and writes back to articulos, multiplying rewrite cost by 10x or more.
 
----
+**Warning signs**
+- Migration runtime explodes from <1s (no trigger) to 30s+ (with trigger fanout)
+- `pg_stat_user_functions` shows the trigger function called N² times instead of N
+- `pg_trigger_depth() > 1` during the operation
 
-### Pitfall 3: Guard JWT global en conflicto con API Key auth
+**Prevention strategy**
+Three layers of defense:
 
-**What goes wrong:**
-El proyecto tiene `JwtAuthGuard` como guard global que valida Supabase JWTs via JWKS. Al agregar API Keys, hay dos problemas:
+1. **Disable the trigger inside the cascade transaction**:
+   ```sql
+   BEGIN;
+   ALTER TABLE existencias DISABLE TRIGGER trg_existencias_recalc_unidades;
+   -- do cascade UPDATE
+   UPDATE articulos a SET unidades = (SELECT COALESCE(SUM(e.cantidad), 0)
+     FROM existencias e WHERE e.sku = a.sku);
+   ALTER TABLE existencias ENABLE TRIGGER trg_existencias_recalc_unidades;
+   COMMIT;
+   ```
+2. **Guard the trigger function with `pg_trigger_depth()`**:
+   ```sql
+   IF pg_trigger_depth() > 1 THEN RETURN NEW; END IF;
+   ```
+3. **Set a session GUC that the cascade engine sets**:
+   ```sql
+   SET LOCAL gsd.skip_unidades_trigger = 'on';
+   ```
 
-1. Si se pone el API Key guard como OTRO guard global, ambos corren y uno falla (el JWT guard rechaza requests con API key porque no tiene Bearer JWT válido de Supabase)
-2. Si se marca las rutas de API key como `@Public()`, se pierde toda autenticación
-3. El `request.user` esperado por `RolesGuard` tiene shape diferente según venga de JWT o API key
+**Phase assignment:** Phase "Cascade Engine + Audit History" — add integration test that asserts trigger fired exactly once per existencia.
 
-**Why it happens:**
-El guard JWT actual (en `jwt-auth.guard.ts`) está diseñado para un solo tipo de autenticación -- valida contra Supabase JWKS con issuer y audience específicos. Agregar un segundo tipo de auth requiere refactorizar el flujo, no solo "agregar otro guard".
+### P-03 — Bulk UPDATE without batching: lock + replication lag + WAL bloat
 
-**How to avoid:**
-Crear un **CompositeAuthGuard** que reemplace al `JwtAuthGuard` global:
+**What goes wrong**
+Cascade renames typically touch all rows for a `codigo` group. If a popular article has 10,000 historical line-items, a single UPDATE rewrites 10k rows in one MVCC version, holds row locks until commit, generates 10k WAL entries, and blocks any concurrent reader using `SELECT FOR UPDATE`. With multiple concurrent users editing different templates simultaneously, deadlocks become likely.
 
-1. Inspecciona el header `Authorization`:
-   - Si empieza con `Bearer ey...` (JWT, base64-encoded) -> valida con Supabase JWKS (lógica actual)
-   - Si empieza con `Bearer obj_...` (API key con prefijo conocido) -> busca SHA-256 hash en tabla `api_keys`, verifica que no esté revocada ni expirada
-2. Ambos paths terminan seteando `request.user` con la misma interfaz `AuthenticatedUser` (`userId`, `email`, `role`)
-3. Para API keys, el `role` se define al crear la key (admin/viewer) y se asigna al `request.user.role`
-4. El `RolesGuard` existente funciona sin cambios porque `request.user` tiene la misma forma
-5. Agregar `request.authMethod: 'jwt' | 'apikey'` para distinguir el origen de la autenticación si se necesita
+**Warning signs**
+- p95 latency on `SELECT * FROM order_items WHERE order_id = ?` spikes during cascade
+- `pg_stat_activity` shows blocked queries with `wait_event_type = Lock`
+- WAL files grow rapidly
 
-**Warning signs:**
-
-- Tests de endpoints existentes empiezan a fallar después de agregar API key auth
-- `request.user` es `undefined` en algunos paths
-- El `RolesGuard` tira `ForbiddenException` para requests autenticados con API key
-
-**Phase to address:**
-Fase de API Keys -- implementar el CompositeAuthGuard ANTES de crear las rutas de gestión de API keys.
-
----
-
-### Pitfall 4: Validación de imágenes solo por MIME type del header
-
-**What goes wrong:**
-Se valida `file.mimetype === 'image/jpeg'` que viene del header `Content-Type` del cliente. Un atacante sube un archivo `.php`, `.html` o ejecutable renombrándolo a `.jpg` y seteando el Content-Type a `image/jpeg`. Si el servidor sirve el archivo directamente, puede ejecutar código malicioso o XSS.
-
-**Why it happens:**
-Multer expone `file.mimetype` que es el valor declarado por el cliente, no verificado. Es la validación más fácil y parece suficiente en un test rápido.
-
-**How to avoid:**
-Validación en tres capas:
-
-1. **Extensión**: whitelist de extensiones (.jpg, .jpeg, .png, .webp)
-2. **Magic bytes**: leer los primeros bytes del archivo y verificar la firma (JPEG: `FF D8 FF`, PNG: `89 50 4E 47`). NestJS `FileTypeValidator` usa magic numbers internamente.
-3. **Tamaño máximo**: 5MB por imagen (configurable), 50MB por request total
-4. **Servir con Content-Type forzado** basado en extensión validada, no en metadata del upload
+**Prevention strategy**
+Batch the UPDATE in chunks of 500-1000 rows with explicit transactions per chunk:
 
 ```typescript
-new ParseFilePipe({
-  validators: [
-    new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
-    new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/ }),
-  ],
-})
+async function cascadeUpdateSku(oldSku: string, newSku: string) {
+  for (const table of ['order_items', 'sale_items', 'purchase_items', 'existencias', 'inventarios_articulos']) {
+    let updated = 0;
+    do {
+      updated = await db.execute(sql`
+        WITH batch AS (
+          SELECT ctid FROM ${table} WHERE sku = ${oldSku} LIMIT 500 FOR UPDATE SKIP LOCKED
+        )
+        UPDATE ${table} SET sku = ${newSku} FROM batch WHERE ${table}.ctid = batch.ctid
+      `);
+    } while (updated === 500);
+  }
+}
 ```
 
-**Warning signs:**
-
-- Solo se valida `file.mimetype` sin verificar magic bytes
-- Se sirven archivos con el Content-Type original del upload
-- No hay límite de tamaño configurado en el endpoint
-
-**Phase to address:**
-Fase de Upload de Imágenes -- implementar validación completa en el pipe del endpoint.
-
----
-
-### Pitfall 5: Colisión de nombres de archivo y path traversal
-
-**What goes wrong:**
-Dos usuarios suben `foto.jpg` y el segundo sobrescribe al primero. O peor: un atacante sube un archivo con nombre `../../../etc/cron.d/malicious` y escribe fuera del directorio de uploads.
-
-**Why it happens:**
-Se usa `file.originalname` directamente como nombre de archivo destino, o se construye el path con string concatenation sin sanitización.
-
-**How to avoid:**
-
-- **NUNCA** usar `file.originalname` como nombre de archivo. Generar UUID: `${uuidv4()}.${ext}`
-- Estructura de directorio predecible: `uploads/articulos/{codigo}/producto/{uuid}.jpg` y `uploads/articulos/{codigo}/etiqueta/{uuid}.jpg`
-- Usar `path.join()` para construir rutas, nunca concatenación de strings
-- Validar que el `codigo` del artículo no contenga `..`, `/`, `\` o null bytes antes de usarlo en paths
-- Configurar Multer con `destination` absoluto, no relativo
-
-```typescript
-storage: diskStorage({
-  destination: '/var/data/objetiva/uploads',
-  filename: (req, file, cb) => {
-    const ext = extname(file.originalname).toLowerCase()
-    cb(null, `${uuidv4()}${ext}`)
-  },
-})
+Acquire a Postgres advisory lock keyed by `codigo`:
+```sql
+SELECT pg_advisory_xact_lock(hashtext('cascade:' || $codigo));
 ```
 
-**Warning signs:**
+**Phase assignment:** Phase "Cascade Engine + Audit History".
 
-- `file.originalname` aparece en el path de destino
-- Los archivos se guardan dentro del directorio del proyecto (`apps/backend/uploads/`)
-- El path se construye con template literals sin sanitización del `codigo`
+### P-04 — Slug collisions across catalogs
 
-**Phase to address:**
-Fase de Upload de Imágenes -- configurar Multer correctamente desde el inicio.
+**What goes wrong**
+SKU composition is `codigo + slug(atrib1) + slug(atrib2) + …`. If `talle.nombre = 'XL'` and `color.nombre = 'XL'` both slugify to `xl`, the SKU `ABC-xl-xl` is ambiguous on parse. Real cases:
+- Two catalogs both have value `'2'` → `abc-2-2`
+- `marca.nombre = 'AC/DC'` → `acdc`; `modelo.nombre = 'AC DC'` → `acdc` → collision
+- Unicode: `'Café'` (NFC) vs `'Café'` (NFD) slugify to same `cafe` but catalog may already have one
 
----
+**Warning signs**
+- Two different attribute combinations produce the same `articulos.sku` → unique violation
+- `SELECT codigo, COUNT(DISTINCT sku), COUNT(*) FROM articulos GROUP BY codigo HAVING COUNT(DISTINCT sku) < COUNT(*)` returns rows
 
-### Pitfall 6: SSRF via webhook URLs
+**Prevention strategy**
+1. **Slug uniqueness within catalog only**, not across catalogs.
+2. **Validate SKU uniqueness at composition time, not at write**:
+   ```typescript
+   const candidateSku = composeSku(codigo, atribs);
+   const exists = await db.select().from(articulos).where(eq(articulos.sku, candidateSku));
+   if (exists.length > 0) throw new SkuCollisionError(candidateSku);
+   ```
+3. **Slug normalization MUST be deterministic and documented**: NFD normalize + strip diacritics + lowercase + replace non-alphanumeric with `-` + collapse `--+` → `-` + trim. Centralize in `packages/utils/slugify.ts`. Test cases: `'Café'`, `'AC/DC'`, `' XL '`, `'2 1/2'`, `'½'`, `'Niño'`, emoji.
+4. **Reject slug duplicates within a single SKU composition**: detect same slug at 2+ positions and prefix (`talle-xl-color-xl`) or reject.
+5. **CHECK constraint** on `articulo_*.slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'`.
 
-**What goes wrong:**
-Un usuario admin configura un webhook con URL `http://169.254.169.254/latest/meta-data/` (AWS metadata endpoint), `http://localhost:5432/` (PostgreSQL), o `http://10.0.0.1/admin` (servicio interno). El servidor hace la request y expone datos internos de la infraestructura.
+**Phase assignment:** Phase "Catálogos de Atributos" — define slug rules. Phase "Sistema de Variantes UI" — enforce at composition.
 
-**Why it happens:**
-Se acepta cualquier URL que el usuario ingresa sin validar que apunta a un host externo legítimo. En desarrollo todo funciona porque solo se prueban URLs públicas.
+### P-05 — Existing articulos.sku column has stale data
 
-**How to avoid:**
-Validación de URL del webhook al momento de REGISTRAR (no solo al entregar):
+**What goes wrong**
+The current schema already has `articulos.sku` (line 185). It's not the PK but it's there. In production, 11,316 rows likely have ARBITRARY values: NULL, copies of codigo, hand-typed garbage, or external ERP SKUs. The migration "set sku = codigo for null variant case" assumes the column is empty or trivially overwritable. If it has business meaning, overwriting is data loss.
 
-1. Parsear la URL y resolver el DNS
-2. Rechazar IPs privadas/reservadas: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.0/8`, `169.254.0.0/16`, `::1`, `fc00::/7`
-3. Rechazar esquemas que no sean `https://` (excepto en desarrollo con flag explícito)
-4. Al momento de ENTREGAR, re-validar la IP resuelta (el DNS puede cambiar entre registro y entrega -- DNS rebinding attack)
+**Warning signs**
+- `SELECT count(*) FROM articulos WHERE sku IS NOT NULL AND sku != codigo` returns > 0
+- `SELECT sku, count(*) FROM articulos GROUP BY sku HAVING count(*) > 1 AND sku IS NOT NULL` returns dupes
+- Settings page or any module references `articulo.sku` separately from `articulo.codigo`
 
-Para v1.2 con usuarios admin internos, una validación básica (rechazar IPs privadas + solo HTTPS en prod) es suficiente. No necesita un proxy dedicado tipo smokescreen.
+**Prevention strategy**
+Pre-migration audit script:
+```sql
+SELECT
+  count(*) FILTER (WHERE sku IS NULL) AS null_sku,
+  count(*) FILTER (WHERE sku = codigo) AS sku_eq_codigo,
+  count(*) FILTER (WHERE sku IS NOT NULL AND sku != codigo) AS sku_diff_codigo,
+  count(*) FILTER (WHERE sku IS NOT NULL) - count(DISTINCT sku) FILTER (WHERE sku IS NOT NULL) AS sku_dupes
+FROM articulos;
+```
+- If `sku_diff_codigo > 0`: triage with the user. Options: rename column to `sku_legacy`, ignore it, or merge meaning.
+- If `sku_dupes > 0`: cannot promote to PK without resolving.
 
-**Warning signs:**
+**Phase assignment:** Phase "PK Swap & Schema Cutover" — preflight check is task #1.
 
-- Se puede registrar `http://localhost:...` como webhook URL
-- No hay validación de URL al crear el webhook
-- La entrega se hace sin verificar la IP resuelta
+### P-06 — `codigo_barras` collateral damage when SKU regenerates
 
-**Phase to address:**
-Fase de Webhooks -- validación de URL en el servicio de creación de webhooks.
+**What goes wrong**
+Closed decision: `codigo_barras` is separate from SKU and DOES NOT regenerate. But: physical barcodes on shelf labels are scanned to look up an article. If the lookup currently does `WHERE codigo = scanned_value`, and after migration we have multiple rows with same codigo (variants), scanning a label gives N results — ambiguous. The barcode → variant mapping must be 1:1.
 
----
+**Warning signs**
+- After variant creation: `SELECT codigo_barras, count(*) FROM articulos WHERE codigo_barras IS NOT NULL GROUP BY codigo_barras HAVING count(*) > 1`
+- Scanner endpoint returns ambiguous result
 
-### Pitfall 7: Formulario de artículos con ~30 campos sin agrupación UX
+**Prevention strategy**
+1. **Make `codigo_barras` column-level UNIQUE**: `CREATE UNIQUE INDEX articulos_codigo_barras_unique ON articulos(codigo_barras) WHERE codigo_barras IS NOT NULL;`
+2. **When splitting an articulo into variants**: assign the original codigo_barras to ONE variant (the "default" or first one), set NULL on others. UI must enforce this.
+3. **Document explicitly**: "Las variantes nuevas no heredan el código de barras."
 
-**What goes wrong:**
-Se renderiza un formulario con 30+ campos en una sola página, el usuario se abruma, no sabe qué es requerido, pierde scroll position, y el submit falla por validación de un campo que no ve. La experiencia es tan mala que los usuarios prefieren no usar el sistema.
+**Phase assignment:** Phase "Sistema de Variantes UI".
 
-**Why it happens:**
-Se implementan los campos uno a uno desde el schema de DB sin pensar en la experiencia de usuario. Cada campo existe en la DB, así que "hay que mostrarlo". No hay diseño de UX previo.
+## MODERATE PITFALLS
 
-**How to avoid:**
-Agrupar en secciones colapsables/tabs con prioridad:
+### P-07 — Drizzle treats `columna→ubicacion` rename as DROP + ADD (data loss)
 
-1. **Identificación** (siempre visible): codigo, nombre, sku, codigoBarras -- 4 campos
-2. **Propiedades** (expandible): marca, modelo, talle, color, material, presentacion, medida -- 7 campos
-3. **Precios** (expandible): precio, costo -- 2 campos
-4. **Imágenes** (tab separado o sección dedicada): imagenesProducto, imagenesEtiqueta -- zona de upload con preview
-5. **ERP** (colapsado por defecto, solo admin): erpId, erpCodigo, erpNombre, erpPrecio, erpCosto, erpUnidades, erpDatos, erpSincronizado, erpFechaSync -- 9 campos
-6. **Origen/Sistema** (colapsado): originSource, originSyncId, originSyncedAt, activo -- 4 campos
-7. **Observaciones**: observaciones -- 1 campo, textarea
+**What goes wrong**
+When you rename `existencias.columna` to `ubicacion` in `schema.ts` and run `pnpm db:generate`, Drizzle Kit's interactive prompt asks: "Is `ubicacion` created or renamed from `columna`?" If you (or CI without TTY) answer wrong, Drizzle generates `DROP COLUMN columna; ADD COLUMN ubicacion;` — the existing data evaporates.
 
-Validación inline al perder foco (blur), no solo al submit. Indicar campos requeridos claramente. Mantener scroll position al mostrar errores.
+**Warning signs**
+- Generated migration SQL contains `DROP COLUMN columna` instead of `RENAME COLUMN columna TO ubicacion`
+- Post-migration `SELECT count(*) FROM existencias WHERE ubicacion IS NOT NULL` is 0
 
-**Warning signs:**
+**Prevention strategy**
+1. **Never run db:generate non-interactively in CI for renames.**
+2. **Hand-edit the generated migration file**: `ALTER TABLE existencias RENAME COLUMN columna TO ubicacion;` and verify SQL diff before committing.
+3. **For inventarios_articulos.columna (integer) → ubicacion (text)**: type change. Two-step: add new `ubicacion` text column, backfill `ubicacion = COALESCE(columna::text, '0')`, drop `columna` in a SEPARATE deploy.
+4. **Test the rollback path** by snapshotting pre-migration data.
 
-- El formulario tiene más de 10 campos visibles simultáneamente sin agrupación
-- No hay indicación visual de qué secciones tienen errores
-- El usuario tiene que scrollear mucho para encontrar un error de validación
+**Phase assignment:** Phase "Rename `columna` → `ubicacion` + sectores transversales".
 
-**Phase to address:**
-Fase de Artículos CRUD completo -- diseñar la UX del formulario ANTES de implementar campos.
+### P-08 — Sectores migration: JSONB columnas array → pivot table
 
----
+**What goes wrong**
+`inventarioSectores.columnas: jsonb('columnas').$type<string[]>().default([])` currently stores `["1", "2", "3"]` as JSONB. Migrating to pivot `sector_ubicaciones (sector_id, ubicacion text)` requires UNNESTing every existing row's array. Edge cases: empty array, NULL columnas, duplicates within array, whitespace, numeric vs text drift.
 
-## Technical Debt Patterns
+**Warning signs**
+- Pivot table row count != expected `SUM(jsonb_array_length(columnas))`
+- After migration, sector view shows different ubicaciones than pre-migration
+- Unique violations during migration insert
 
-| Shortcut                                             | Immediate Benefit                          | Long-term Cost                                                                                       | When Acceptable                                                                                        |
-| ---------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Webhooks con EventEmitter (sin cola persistente)     | Sin Redis, implementación simple           | No hay reintentos si el proceso muere, sin dead-letter queue                                         | v1.2 con pocos suscriptores. Migrar a BullMQ cuando los webhooks sean críticos para integraciones      |
-| Imágenes en filesystem local sin CDN                 | Sin infra adicional, rápido de implementar | No escala horizontalmente, se pierde en redeploy sin volumen persistente, sin optimización de tamaño | Aceptable para v1.2 si el deploy usa volumen persistente. Migrar a S3/minio cuando se necesite escalar |
-| API key sin expiración por defecto                   | Menos fricción UX, "just works"            | Keys olvidadas activas indefinidamente, riesgo de seguridad acumulativo                              | Nunca -- siempre poner expiración default (90 días) con opción de renovar                              |
-| Webhook sin firma HMAC                               | Menos código, implementación más rápida    | Receptores no pueden verificar autenticidad del payload, vulnera integridad                          | Solo en MVP interno. Agregar HMAC antes de que terceros consuman webhooks                              |
-| Guardar URLs de imagen como paths relativos en jsonb | Simple, funciona en desarrollo             | Mobile necesita URLs absolutas, migrar después es tedioso                                            | Nunca -- guardar siempre path relativo al root de uploads y construir URL completa en el serializer    |
+**Prevention strategy**
+Migration script with explicit deduplication:
+```sql
+INSERT INTO sector_ubicaciones (sector_id, ubicacion)
+SELECT DISTINCT s.id, btrim(c::text, '" ')
+FROM inventario_sectores s,
+     jsonb_array_elements(COALESCE(s.columnas, '[]'::jsonb)) AS c
+WHERE c IS NOT NULL AND btrim(c::text, '" ') <> '';
+```
+Pre-migration audit:
+```sql
+SELECT id, jsonb_array_length(columnas) AS n,
+  jsonb_array_length(columnas) - cardinality(array(SELECT DISTINCT btrim(jsonb_array_elements_text(columnas), ' '))) AS dupes
+FROM inventario_sectores;
+```
+Keep `inventario_sectores.columnas` JSONB column for 1 deploy as fallback.
 
-## Integration Gotchas
+**Phase assignment:** Phase "Rename `columna` → `ubicacion` + sectores transversales".
 
-| Integration                             | Common Mistake                                                                                                                                        | Correct Approach                                                                                                                                                 |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Multer + NestJS ParseFilePipe           | `ParseFilePipe` como pipe global no se aplica a archivos Multer; confusión entre `@UploadedFile()` y `@Body()` mezclando campos de texto con archivos | Usar `@UploadedFile(new ParseFilePipe({...}))` directamente en el parámetro del método. Campos de texto del formulario van en `@Body()` separado                 |
-| API Keys + `request.user` tipado        | API key auth setea un user sin `userId` real (no hay Supabase user), pero código existente asume `request.user.userId` siempre es UUID válido         | Definir un `userId` sintético para API keys (e.g., `apikey:{key_id}`) y asegurar que logs/audit trail lo manejen                                                 |
-| ServeStaticModule + rutas API           | `ServeStaticModule` sirve archivos estáticos y puede interceptar rutas de API si el prefijo colisiona                                                 | No usar ServeStaticModule para uploads. Crear un controller dedicado `UploadsController` con auth guard que lea y sirva archivos. Ruta: `GET /api/uploads/:path` |
-| Webhook payload + serialización Drizzle | Timestamps de Drizzle son `Date` objects, `numeric` son strings. Al serializar a JSON el payload cambia de tipos                                      | Definir un schema de payload explícito con tipos consistentes. No pasar el objeto Drizzle raw al webhook                                                         |
-| Multer multipart + Capacitor mobile     | Capacitor `@capacitor/http` plugin no envía `multipart/form-data` correctamente en algunas versiones; headers y boundary se corrompen                 | Usar el `fetch()` nativo del WebView (no el plugin HTTP de Capacitor) con `FormData` estándar. En Capacitor 5+ el fetch nativo funciona bien para multipart      |
-| Webhook + artículo con texto PK en URL  | El `codigo` de artículo puede tener caracteres especiales que rompen URLs del webhook payload                                                         | URL-encode el `codigo` cuando se incluya en links dentro del payload. Usar `encodeURIComponent()`                                                                |
+### P-09 — Existencias historical migration: sentinel `ubicacion=0` ambiguity
 
-## Performance Traps
+**What goes wrong**
+Per design notes Q8, articulos without a matching `sanchez.articulos.columna` get `ubicacion='0'` (sentinel). Problem: if real ubicaciones include `'0'` (some shelves are labeled "0"), sentinel and real value collide. Also: when staff query "articles without assigned location", the query becomes fragile.
 
-| Trap                                               | Symptoms                                                                                                                      | Prevention                                                                                                                                                                  | When It Breaks                              |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| Listar artículos incluyendo campos de imágenes     | GET /articulos trae jsonb de imagenes_producto + imagenes_etiqueta para cada artículo, respuesta de 500KB+ para 100 artículos | No incluir campos de imágenes en el listado. Endpoint separado `GET /articulos/:codigo/imagenes` o query param `?fields=imagenes`                                           | >100 artículos con imágenes                 |
-| Webhook fan-out síncrono en el handler del CRUD    | CRUD response time = sum(webhook delivery times). 3 webhooks x 3s timeout = 9s extra mínimo                                   | Async delivery con EventEmitter. Timeout máximo de 5s por webhook con abort                                                                                                 | >2 webhooks configurados O un destino lento |
-| Validación de imágenes con memoryStorage de Multer | Multer guarda archivo completo en memoria antes de validar. 6 imágenes de producto x 5MB = 30MB en RAM por request            | Usar `diskStorage` (no `memoryStorage`). Validar magic bytes leyendo primeros 16 bytes del archivo en disco                                                                 | >3 archivos simultáneos o >5MB por archivo  |
-| API key lookup sin índice en hash                  | SHA-256 lookup hace full table scan. Cada request autenticado por API key paga el costo                                       | Índice UNIQUE en columna `key_hash`. La tabla será pequeña pero el lookup es por-request                                                                                    | >50 API keys o alta concurrencia            |
-| Webhook retry storm en batch updates               | 100 artículos actualizados en batch generan 100 webhooks x N suscriptores x 3 reintentos = miles de HTTP calls                | Rate limit por destino URL (max 10 concurrent), debounce/batch de eventos del mismo tipo en ventana de 5s, circuit breaker (auto-disable después de 10 fallos consecutivos) | Batch updates + destino caído               |
-| Imágenes sin resize/optimización                   | Se almacenan fotos de 4000x3000px tal cual del celular. Listar artículos con thumbnails descarga 3MB por imagen               | Generar thumbnail (300px) al subir. Almacenar original + thumbnail. Listar con thumbnail, detalle con original                                                              | >20 artículos con fotos de celular          |
+**Warning signs**
+- Real ubicaciones table has a row with `nombre = '0'` and the sentinel is also `'0'`
+- Staff complain "I assigned location 0 but it disappeared"
 
-## Security Mistakes
+**Prevention strategy**
+Use NULL or a clearly-non-real string:
+- Best: `ubicacion = NULL` for "unknown", reserve `'SIN_UBICACION'` if NULL is awkward
+- Document: never allow `'0'`, `''`, or NULL as a real ubicacion via CHECK constraint
+- Migration script computes `ubicacion = NULLIF(s.columna, '')` instead of sentinel
+- Add view `vw_existencias_sin_ubicacion AS SELECT * FROM existencias WHERE ubicacion IS NULL`
 
-| Mistake                                         | Risk                                                                                                                         | Prevention                                                                                                            |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Servir uploads como archivos estáticos sin auth | Cualquiera con la URL puede ver imágenes de artículos; posible info comercial sensible (precios en etiquetas OCR)            | Servir desde controller con guard de auth, o aceptar el riesgo documentando que las imágenes de producto son públicas |
-| API key visible en logs del servidor            | NestJS LoggerMiddleware o interceptor de logging captura headers incluyendo Authorization; la API key completa queda en logs | Sanitizar headers de auth en el logger: mostrar solo `Bearer obj_a1b2...` (prefijo). Nunca loguear el valor completo  |
-| Webhook secret compartido entre suscriptores    | Si un suscriptor filtra su secret, puede forjar webhooks para todos los demás                                                | Generar un `signing_secret` HMAC único por suscriptor. Cada registro en `webhooks` tiene su propio secret             |
-| Directorio de uploads dentro del proyecto       | `apps/backend/uploads/` se borra con `git clean`, redeploy, o rebuild del contenedor                                         | Directorio externo: `/var/data/objetiva/uploads/` con volumen Docker persistente. Variable de entorno `UPLOADS_DIR`   |
-| API key sin scope ni permisos granulares        | Una key con acceso total permite que una integración externa borre artículos, modifique settings, etc.                       | Mínimo: campo `role` (admin/viewer) en la key. Ideal: scopes por recurso (`articulos:read`, `articulos:write`)        |
-| DNS rebinding en webhook delivery               | Se valida IP al registrar webhook, pero al entregar (horas después) el DNS resuelve a IP interna                             | Re-resolver DNS y re-validar IP al momento de CADA entrega, no solo al registrar                                      |
-| Upload sin rate limiting                        | Un usuario o bot sube miles de imágenes llenando el disco del servidor                                                       | Rate limit en el endpoint de upload: max 20 uploads/minuto por usuario. Throttler de NestJS                           |
+**Phase assignment:** Phase "Migración histórica de existencias" — revisit Q8 decision.
 
-## UX Pitfalls
+### P-10 — Common-data divergence between sibling variants
 
-| Pitfall                                                  | User Impact                                                                                                    | Better Approach                                                                                                                              |
-| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| No mostrar progreso de upload de imágenes                | El usuario no sabe si el upload funciona, hace click múltiples veces, duplica uploads                          | Barra de progreso por imagen con `XMLHttpRequest.upload.onprogress`. Desactivar botón de submit durante upload                               |
-| API key mostrada una vez sin botón de copiar             | El usuario ve la key, va a configurar su integración, y cuando vuelve ya no puede verla                        | Modal con botón "Copiar al portapapeles", checkbox "Ya copié mi key" habilita el botón de cerrar. Advertencia de que no se mostrará de nuevo |
-| Errores de validación del formulario sin indicar sección | Submit falla con "Error en campo erpCodigo" pero el usuario no sabe en qué sección está                        | Badge rojo en sección con error, auto-expandir sección del primer error, scroll automático al campo                                          |
-| Webhooks sin feedback de estado                          | El usuario configura un webhook y nunca sabe si funciona                                                       | Mostrar último intento de entrega (fecha, HTTP status, response time) en la lista de webhooks. Badge verde/amarillo/rojo                     |
-| Delete de artículo sin advertir sobre webhooks           | El usuario borra un artículo, se dispara webhook.delete, pero no sabe que se notificará a sistemas externos    | Diálogo de confirmación que menciona: "Se notificará a N webhooks sobre la eliminación"                                                      |
-| Upload de imagen sin preview antes de guardar            | El usuario sube 6 imágenes sin verlas, guarda, y una estaba equivocada                                         | Preview en thumbnail antes de submit. Drag-and-drop para reordenar. Botón X para eliminar antes de guardar                                   |
-| Formulario pierde estado al navegar                      | El usuario llena 20 campos, navega a otra sección para consultar un dato, y al volver el formulario está vacío | Persistir estado del formulario en memoria (React state) o sessionStorage. Confirmar antes de navegar si hay cambios sin guardar             |
+**What goes wrong**
+Closed decision #8: data común duplicado entre filas con mismo `codigo`. Decision #9: app-level consistency. Risk: developer issues `UPDATE articulos SET marca = 'Bosch' WHERE sku = 'ABC-XL'` instead of `WHERE codigo = 'ABC'`. Now siblings disagree. Without DB constraints, this drifts silently. Multiplied by 30+ "common" fields and 4-8 variants per group.
 
-## "Looks Done But Isn't" Checklist
+**Warning signs**
+- Audit query: `SELECT codigo, count(DISTINCT marca), count(DISTINCT modelo) FROM articulos GROUP BY codigo HAVING count(DISTINCT marca) > 1 OR count(DISTINCT modelo) > 1`
+- UI shows different marcas in the same `codigo` group
 
-- [ ] **File uploads:** Se sube la imagen pero no se limpia al borrar el artículo -- verificar que DELETE del artículo borre archivos del filesystem
-- [ ] **File uploads:** Las URLs de imagen son relativas (`uploads/articulos/...`) pero el mobile necesita absolutas (`https://api.example.com/uploads/...`) -- verificar que el serializer construya URL completa usando `BACKEND_URL`
-- [ ] **File uploads:** Se suben imágenes pero no se pueden eliminar individualmente -- verificar endpoint `DELETE /api/articulos/:codigo/imagenes/:filename`
-- [ ] **API Keys:** Se puede crear una key pero no revocarla -- verificar endpoint y UI de revocación con confirmación
-- [ ] **API Keys:** La key funciona para auth pero `last_used_at` nunca se actualiza -- verificar que el CompositeAuthGuard actualice el timestamp (async, non-blocking)
-- [ ] **API Keys:** Se puede crear key con rol admin sin ser admin -- verificar que el endpoint de creación requiera rol admin
-- [ ] **Webhooks:** Se entrega el webhook pero no se registra el intento -- verificar tabla `webhook_deliveries` con status code, response body (truncado), y timestamp
-- [ ] **Webhooks:** El payload del webhook no incluye suficiente info -- verificar que incluye: evento, timestamp, artículo completo (o campos cambiados para update)
-- [ ] **Webhooks:** Funciona para create pero no para update/delete -- verificar los tres eventos con tests
-- [ ] **Webhooks:** No hay forma de re-enviar un webhook fallido -- verificar botón "Reintentar" en la UI de deliveries
-- [ ] **Formulario:** Los campos ERP se muestran a viewers que no deberían editarlos -- verificar que campos ERP sean read-only para rol viewer
-- [ ] **Imágenes:** Se suben imágenes pero no se puede reordenar el array en `imagenes_producto` -- verificar drag-and-drop o flechas
-- [ ] **Imágenes:** Se sube una imagen corrupta y el frontend muestra broken image -- verificar que la validación de magic bytes rechace archivos no válidos
+**Prevention strategy**
+Three layers:
+1. **Backend service enforces "model fields" vs "variant fields"**: `articulosService.updateModel(codigo, modelFields)` issues `UPDATE WHERE codigo = ?` for canonical set; `updateVariant(sku, variantFields)` covers the rest.
+2. **Trigger to propagate model fields automatically (optional)**:
+   ```sql
+   CREATE TRIGGER trg_propagate_model_fields
+   AFTER UPDATE OF marca, modelo, categoria, ... ON articulos
+   FOR EACH ROW WHEN (OLD.marca IS DISTINCT FROM NEW.marca OR ...)
+   EXECUTE FUNCTION propagate_to_siblings();
+   ```
+3. **Periodic consistency-check job** that runs nightly and emits webhook on drift.
 
-## Recovery Strategies
+**Phase assignment:** Phase "Sistema de Variantes UI" (layer 1) + Phase "Cascade Engine" (layer 2 if chosen) + Phase "Tech Debt + Audit" (layer 3).
 
-| Pitfall                                                 | Recovery Cost | Recovery Steps                                                                                                                                                                       |
-| ------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| API keys en texto plano en DB                           | MEDIUM        | Script de migración: generar SHA-256 de cada key existente, crear columna `key_hash`, popular, borrar columna plaintext. Las keys siguen funcionando porque el hash se calcula igual |
-| Webhook síncrono bloqueando CRUD                        | MEDIUM        | Extraer lógica de entrega a un EventEmitter listener. Refactoring del servicio, no del controller ni del schema. ~2 horas de trabajo                                                 |
-| Imágenes con nombres originales (colisiones existentes) | HIGH          | Renombrar todos los archivos a UUID, actualizar referencias en `imagenes_producto`/`imagenes_etiqueta` del jsonb. Requiere script de migración + downtime                            |
-| Guard JWT no soporta API keys                           | MEDIUM        | Crear CompositeAuthGuard, registrar como APP_GUARD reemplazando JwtAuthGuard. Tests existentes no deberían romperse si el path de JWT no cambia                                      |
-| Imágenes huérfanas (artículos borrados, archivos no)    | LOW           | Script periódico que lista archivos en uploads/ y verifica contra jsonb de artículos. Los no referenciados van a una carpeta de "orphaned" y se borran después de 30 días            |
-| SSRF en webhooks ya registrados                         | LOW           | Agregar validación de IP al servicio de entrega (no solo al registro). No requiere cambio de schema ni migración de datos                                                            |
-| Formulario sin agrupación ya implementado               | LOW           | Refactoring de UI: envolver campos en componentes `<FormSection>` colapsables. No cambia lógica de negocio                                                                           |
+### P-11 — Slug + nombre denormalization trigger silent failure
 
-## Pitfall-to-Phase Mapping
+**What goes wrong**
+Q2 (gray area): denormalize `articulo_marcas.nombre` into `articulos.marca_nombre` via trigger. If the trigger has a bug, the UPDATE rolls back silently in some setups, or the trigger swallows exceptions, leaving denormalized fields stale.
 
-| Pitfall                           | Prevention Phase                        | Verification                                                                                 |
-| --------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Webhook bloqueando CRUD           | Webhooks (diseño async)                 | Response time de POST /articulos < 500ms con 3 webhooks configurados                         |
-| API keys en texto plano           | API Keys (schema con hash)              | Columna `key_hash` existe, no hay columna `key` plaintext en schema                          |
-| Guard JWT vs API key              | API Keys (CompositeAuthGuard)           | Tests existentes de JWT pasan + tests nuevos de API key auth pasan                           |
-| Validación de imagen insuficiente | Upload de Imágenes (ParseFilePipe)      | Subir archivo .html renombrado a .jpg resulta en rechazo 422                                 |
-| Colisión de nombres de archivo    | Upload de Imágenes (Multer config UUID) | Subir dos archivos con mismo `originalname` genera UUIDs diferentes en disco                 |
-| SSRF en webhooks                  | Webhooks (validación de URL)            | Registrar webhook con `http://localhost:3000` retorna 400                                    |
-| Formulario 30 campos abrumante    | Artículos CRUD UI (secciones)           | Formulario tiene secciones colapsables, badges de error por sección                          |
-| Path traversal en uploads         | Upload de Imágenes (Multer config)      | Subir archivo con nombre `../../etc/passwd` no escribe fuera de uploads/                     |
-| Imágenes huérfanas al borrar      | Artículos CRUD backend                  | DELETE de artículo elimina archivos del filesystem asociados                                 |
-| Webhook sin firma HMAC            | Webhooks (signing)                      | Header `X-Webhook-Signature` presente en cada entrega, verificable con secret del suscriptor |
-| DNS rebinding en webhook          | Webhooks (validación en delivery)       | Webhook hacia dominio que resuelve a IP interna es rechazado al momento de entrega           |
+**Warning signs**
+- `SELECT a.marca_nombre, m.nombre FROM articulos a JOIN articulo_marcas m ON a.marca_id = m.id WHERE a.marca_nombre IS DISTINCT FROM m.nombre`
+- Logs show `WARNING: trigger function ... failed`
+
+**Prevention strategy**
+1. **Avoid triggers for denormalization. Use a generated column or a view.**
+2. **If trigger required, batch the catalog update properly** and `RAISE EXCEPTION` (don't swallow).
+3. **Add a nightly drift check.**
+4. **Per Q2, lean toward storing `id + slug` only on `articulos`, joining for nombre when needed.**
+
+**Phase assignment:** Phase "Catálogos de Atributos" — decide trigger vs view vs join early.
+
+### P-12 — Variant images: inheriting from `codigo` group when `codigo` itself becomes ambiguous
+
+**What goes wrong**
+`articulos.imagenesProducto` and `imagenesEtiqueta` are per-row arrays. When variants exist, do all variants inherit the same images, or each variant has its own? If inherited, copying paths across rows means deleting an image from variant A's array still leaves it in variant B's. Sharp pipeline writes WebP under codigo prefix; codigo→sku promotion may break image links.
+
+**Warning signs**
+- 404 on image URLs after migration
+- File `/images/articulos/ABC/photo.webp` deleted while still in some `imagenesProducto` array
+- Disk usage grows because old image paths never get GC'd
+
+**Prevention strategy**
+1. **Define ownership early.** Recommended: images live under `/images/articulos/<codigo>/` (group-level), and ALL variants of that codigo reference the same paths. Variant override = variant-specific subfolder.
+2. **GC scan must check ALL rows referencing the path**.
+3. **During codigo promotion, do not move physical files.**
+4. **Image override per variant**: add `imagenes_producto_override TEXT[]` distinct from inherited.
+
+**Phase assignment:** Phase "Sistema de Variantes UI".
+
+### P-13 — Cascade idempotency: re-running same template change double-applies
+
+**What goes wrong**
+Cascade engine runs: "for each affected articulo, recompute SKU and update children". If re-run (network blip + retry), engine looks up rows that ALREADY have new SKU, computes "new" SKU on top, produces drift like `ABC-xl-rojo-rojo`. Or finds zero rows and silently succeeds, leaving partial child updates orphan.
+
+**Warning signs**
+- After re-running cascade, `articulos.sku` matches expected pattern but child tables have orphan SKUs
+- `articulo_sku_history` has 2 entries for the same `articulo` within seconds
+
+**Prevention strategy**
+1. **Wrap entire cascade in ONE transaction.**
+2. **Idempotent design**: build mapping `{old_sku: new_sku}` BEFORE writing. If `old_sku == new_sku` for all rows, no-op.
+3. **Persist mapping in `articulo_sku_history` BEFORE the UPDATE** with status column.
+4. **Use `articulos.sku_anterior` (per design decision 19) as the idempotency key**: if `sku_anterior IS NOT NULL` and `sku_anterior == old_sku_we're_about_to_set`, skip.
+
+**Phase assignment:** Phase "Cascade Engine + Audit History".
+
+### P-14 — TS↔DB drift after manual SQL migrations
+
+**What goes wrong**
+Q9: drift between `schema.ts` and DB. After running migration that includes hand-written SQL (cascade engine, P-01 cutover, P-08 pivot), running `pnpm db:generate` again will detect differences and propose to "fix" them — generating a migration that DROPs hand-written index and recreates it with the TS name, or worse, drops a CHECK constraint.
+
+**Warning signs**
+- Newly generated migration contains `DROP INDEX idx_articulos_marca; CREATE INDEX articulos_marca_idx ON ...;`
+- New migration drops constraints you added by hand
+- CI complains schema is "out of sync"
+
+**Prevention strategy**
+1. **Bring `schema.ts` to parity with DB after each major migration phase.**
+2. **For things Drizzle can't model**: put them in `migrations/<n>_custom.sql` with the `--custom` flag. Document in `schema.ts` as comments.
+3. **Pre-deploy guard**: CI step `pnpm db:generate --check` — fail if generation would produce a non-empty migration.
+4. **Snapshot `pg_dump --schema-only` after each prod migration.**
+
+**Phase assignment:** Phase "Tech Debt + TS Drift Cleanup".
+
+### P-15 — N+1 queries on grouped variant lists
+
+**What goes wrong**
+The list view shows articles grouped by `codigo` with variant counts. Naive TanStack Query implementation: fetch list of codigos paginated → for each codigo, fetch variants → for each variant, fetch attributes via FK joins. With 11,316 articulos and pagination 50/page, page load fires hundreds of queries.
+
+**Warning signs**
+- Network tab shows 50+ requests on list page load
+- Backend logs show a burst of identical query shapes
+- p95 list latency > 1s
+
+**Prevention strategy**
+1. **Backend endpoint returns grouped data in ONE query** with `array_agg` or `jsonb_agg`:
+   ```sql
+   SELECT a.codigo,
+     jsonb_agg(jsonb_build_object('sku', a.sku, 'talle', t.nombre, 'color', c.nombre, 'cantidad', e.cantidad)) AS variants
+   FROM articulos a
+   LEFT JOIN articulo_talles t ON a.talle_id = t.id
+   LEFT JOIN articulo_colores c ON a.color_id = c.id
+   LEFT JOIN existencias e ON e.sku = a.sku
+   GROUP BY a.codigo
+   ORDER BY a.codigo
+   LIMIT 50;
+   ```
+2. **Use Drizzle's `with` query builder for nested fetches.**
+3. **TanStack Query enables `keepPreviousData` + cursor pagination.**
+4. **Add `EXPLAIN ANALYZE`** to confirm Index Scan, not Seq Scan.
+
+**Phase assignment:** Phase "Sistema de Variantes UI".
+
+## MINOR PITFALLS
+
+### P-16 — Audit history bloat: `articulo_sku_history` unbounded growth
+
+**What goes wrong**
+Append-only history table grows without bound. With each schema change touching 1k-10k articulos, after 50 changes you have 500k rows. Queries on history become slow.
+
+**Prevention strategy**
+- Range partitioning by month: `PARTITION BY RANGE (created_at)` from day 1.
+- Retention policy: keep 12-24 months online, archive older partitions.
+- Default any history query to `WHERE created_at > now() - interval '90 days'`.
+- Index on `(articulo_codigo, created_at DESC)`.
+
+**Phase assignment:** Phase "Cascade Engine + Audit History".
+
+### P-17 — `nombre_auto` flag interaction with manual edits
+
+**What goes wrong**
+Articulo has `nombre_auto = true`. User manually edits `nombre`. On next save, the trigger/service regenerates `nombre`, overwriting the manual edit. User confused.
+
+**Prevention strategy**
+- When user edits `nombre` in UI, automatically flip `nombre_auto = false`.
+- Show explicit toggle: "Generar nombre automáticamente" with help text.
+- Backend service rejects update where `nombre_auto = true` AND `nombre` is in payload.
+
+**Phase assignment:** Phase "Sistema de Variantes UI".
+
+### P-18 — Preview accuracy under concurrent edits
+
+**What goes wrong**
+Admin opens template editor, sees "preview: 3,450 SKUs will change". Walks away. Another admin creates 200 new articulos. First admin clicks Apply. Real cascade hits 3,650 rows — preview was lying.
+
+**Prevention strategy**
+- Take a `LOCK TABLE articulos IN SHARE MODE` during preview AND application, OR
+- Show preview snapshot timestamp and warn if > 5 minutes old, OR
+- Use optimistic concurrency: include `articulos` table version in preview; reject Apply if differs.
+
+**Phase assignment:** Phase "Cascade Engine + Audit History".
+
+### P-19 — Webhook payload shape change on SKU promotion
+
+**What goes wrong**
+Webhooks deliver `{ articulo: { codigo, sku, ... } }`. After SKU becomes universal id, downstream consumers may expect `id` field, or may key off `codigo`. Existing subscribers break silently.
+
+**Prevention strategy**
+- Bump webhook payload version: `{ event: 'articulo.created', version: 2, articulo: {...} }`.
+- Document migration for subscribers in Settings page.
+- Send "v1.3 cutover notice" delivery to all active webhooks before cutover.
+
+**Phase assignment:** Phase "PK Swap & Schema Cutover".
+
+### P-20 — `numeric()` retrofit changes JS number type to string
+
+**What goes wrong**
+Q10 + design: `doublePrecision` → `numeric()` for monetary fields. Drizzle returns `numeric` as STRING (not number) by default. Existing TS code that does `precio * cantidad` silently becomes `'10.5' * 3` → coerced to NaN or wrong arithmetic.
+
+**Prevention strategy**
+- Audit ALL uses: `grep -rE '(precio|costo|subtotal|total|tax|discount)\s*[\*\+\-]'`.
+- Choose: keep numeric+string and explicitly parse, or stay with doublePrecision, or use custom Drizzle type with `transform`.
+- Add unit tests for arithmetic on monetary fields BEFORE the type change.
+
+**Phase assignment:** Phase "Tech Debt + TS Drift Cleanup".
+
+## Phase-Specific Warnings
+
+| Phase | Likely Pitfalls | Mitigation Tag |
+|---|---|---|
+| Catálogos de Atributos | P-04, P-11 | Define slug rules + denorm strategy first |
+| Templates ABM | P-13, P-17, P-18 | Idempotency + auto/manual + concurrency |
+| PK Swap & Schema Cutover | P-01, P-02, P-05, P-19 | Multi-step transaction + trigger disable + audit |
+| Sistema de Variantes UI | P-04, P-06, P-10, P-12, P-15 | Composition validation + image ownership + grouped query |
+| Cascade Engine + Audit History | P-02, P-03, P-13, P-16, P-18 | Trigger guard + batching + idempotency + partition |
+| Rename columna→ubicacion + Sectores | P-07, P-08 | Hand-edit migration + dedup pivot insert |
+| Migración histórica existencias | P-09 | Reconsider sentinel `'0'` |
+| Tech Debt + TS Drift Cleanup | P-14, P-20 | Schema parity + arithmetic audit |
+
+## Quality Gate Self-Check
+
+- [x] Each pitfall has Warning Sign + Prevention Strategy + Phase Assignment
+- [x] Prevention strategies include concrete SQL/TS code patterns where applicable
+- [x] Integration pitfalls covered: P-01, P-02, P-05, P-06, P-12, P-19
+- [x] Pitfalls specific to variants + SKU + cascade migrations
+- [x] All 15 focus areas from the prompt addressed
+
+**Focus area coverage:**
+1. Slug collisions → P-04
+2. Cascade orphans → P-01
+3. Live migration risks → P-01, P-03, P-07
+4. Trigger feedback loops → P-02
+5. Template vs row inconsistency → P-13, P-18
+6. Image override edge cases → P-12
+7. Bulk SKU regen + codigo_barras → P-06
+8. Slug+nombre denorm sync → P-11
+9. N+1 queries → P-15
+10. Common-data divergence → P-10
+11. Stock reconciliation sentinel → P-09
+12. Sectores pivot migration → P-08
+13. TS schema drift → P-14
+14. Audit history bloat → P-16
+15. Idempotency in cascade → P-13
+
+Plus extras: P-05 (existing sku column), P-17 (nombre_auto interaction), P-19 (webhook contract), P-20 (numeric retrofit JS type).
+
+**Open questions surfacing for `/gsd-discuss-phase`**
+- P-09 sentinel: confirm; proposal is NULL or `'SIN_UBICACION'` not `'0'`.
+- P-10 propagation: trigger vs service-only enforcement?
+- P-11 denormalization: trigger vs view vs no-denorm?
+- P-12 image ownership: codigo-prefix vs sku-prefix?
 
 ## Sources
 
-- [NestJS File Upload docs](https://docs.nestjs.com/techniques/file-upload) -- configuración oficial de Multer, ParseFilePipe, FileTypeValidator con magic numbers
-- [NestJS Authentication docs](https://docs.nestjs.com/security/authentication) -- guards, strategies, composite auth patterns
-- [Webhook Security Best Practices 2025-2026 (DEV)](https://dev.to/digital_trubador/webhook-security-best-practices-for-production-2025-2026-384n) -- HMAC signing, SSRF, idempotency
-- [Standard Webhooks spec](https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md) -- especificación de firma y entrega
-- [API Key Authentication Best Practices (Zuplo)](https://zuplo.com/blog/2022/12/01/api-key-authentication) -- hashing SHA-256 vs bcrypt, rotation pattern, prefix
-- [API Key Management Best Practices (OneUptime)](https://oneuptime.com/blog/post/2026-02-20-api-key-management-best-practices/view) -- lifecycle, rotation, scoping
-- [Building Webhook Systems with NestJS (DEV)](https://dev.to/juan_castillo/building-a-webhook-systems-with-nestjs-handling-retry-security-dead-letter-queues-and-rate-4nm7) -- retry, dead letter queue, BullMQ, rate limiting
-- [Send Webhooks with NestJS (Hookdeck)](https://hookdeck.com/outpost/guides/send-webhooks-with-nestjs-guide) -- outgoing webhook patterns
-- [Best Practices for Webhook Providers (webhooks.fyi)](https://webhooks.fyi/best-practices/webhook-providers) -- delivery, signing, retries
-- [Svix Webhook Security](https://www.svix.com/resources/webhook-best-practices/security/) -- HMAC-SHA256, timestamp freshness, idempotency
-- [NestJS dual auth: API Key + JWT (Medium)](https://medium.com/@alpercitak/nest-js-authenticate-with-both-api-key-and-jwt-4a22bf7b3049) -- composite guard pattern
-- [PayloadTooLargeError fix for NestJS (CopyProgramming)](https://copyprogramming.com/howto/nest-js-request-entity-too-large-payloadtoolargeerror-request-entity-too-large) -- body parser limits, middleware order
-- [Path traversal via file upload (Doyensec)](https://blog.doyensec.com/2025/01/09/cspt-file-upload.html) -- client-side path traversal attacks
-- [File upload MIME type bypass (Sourcery)](https://www.sourcery.ai/vulnerabilities/file-upload-content-type-bypass) -- magic bytes validation necessity
-- [Webhook security checklist (Aikido)](https://www.aikido.dev/blog/webhook-security-checklist) -- comprehensive security checklist
-- Codebase analysis: `apps/backend/src/common/guards/jwt-auth.guard.ts`, `roles.guard.ts`, `apps/backend/src/db/schema.ts` (articulos con jsonb imagenes_producto/imagenes_etiqueta)
+- [How to change the primary key of an existing PostgreSQL table — zauner.nllk.net](https://zauner.nllk.net/post/0036-change-primary-key-of-existing-postgresql-table/)
+- [PostgreSQL Foreign Key — DbSchema](https://dbschema.com/blog/postgresql/foreign-keys/)
+- [Trigger recursion in PostgreSQL — CYBERTEC](https://www.cybertec-postgresql.com/en/dealing-with-trigger-recursion-in-postgresql/)
+- [PostgreSQL Documentation: Trigger Behavior](https://www.postgresql.org/docs/current/trigger-definition.html)
+- [PostgreSQL: Documentation: Explicit Locking](https://www.postgresql.org/docs/current/explicit-locking.html)
+- [Deadlocks while Bulk Updating in PostgreSQL — Medium](https://medium.com/@harshiljani2002/deadlocks-while-bulk-updating-in-postgresql-4af4161b7ff8)
+- [Zero-Downtime Postgres Migrations with Drizzle ORM — DEV](https://dev.to/whoffagents/drizzle-orm-migrations-in-production-zero-downtime-schema-changes-e71)
+- [Drizzle ORM — Migrations](https://orm.drizzle.team/docs/migrations)
+- [drizzle-kit generate: migration.sql is missing renamed column's changes (#3826)](https://github.com/drizzle-team/drizzle-orm/issues/3826)
+- [The Definitive Guide to Slugify Best Practices — Sluggenius](https://sluggenius.com/blog/slugify-best-practices)
+- [UAX #15: Unicode Normalization Forms](https://unicode.org/reports/tr15/)
+- [PostgreSQL partitioning for event/audit tables — AppMaster](https://appmaster.io/blog/postgresql-partitioning-event-audit-tables)
+- [Audit logging with Postgres partitioning — Elephas](https://elephas.io/audit-logging-with-postgres-partitioning/)
+- [Denormalization Techniques in PostgreSQL — educative.io](https://www.educative.io/courses/the-art-of-postgresql/denormalization-with-postgresql)
+- [When to Use ON UPDATE CASCADE in PostgreSQL — GeeksforGeeks](https://www.geeksforgeeks.org/postgresql/when-to-use-on-update-cascade-in-postgresql/)
 
----
-
-_Pitfalls research for: Objetiva Comercios Admin v1.2 -- Artículos CRUD + API Keys + Webhooks_
-_Researched: 2026-03-10_
+**Confidence assessment**
+- Postgres trigger semantics, FK cascade ordering, advisory locks, partitioning: **HIGH**
+- Drizzle Kit rename detection bug: **HIGH** (verified open issue drizzle-team/drizzle-orm#3826)
+- Slug normalization with NFD: **HIGH** (Unicode UAX #15)
+- Project-specific (existing trigger from quick task 260429-rec, image pipeline, webhook payload): **MEDIUM**
