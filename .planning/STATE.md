@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Articulos CRUD + Imagenes + API Keys + Webhooks
-status: shipped
-stopped_at: Milestone v1.2 archived
-last_updated: '2026-04-29T00:25:00.000Z'
-last_activity: 2026-04-29 — Completed quick task 260429-rec: Recuperados datos historicos de inventarios/depositos/existencias desde admin_base_sanchez (7745 inv_articulos + 7873 existencias)
+milestone: v1.3
+milestone_name: Variantes y Modelo de Stock
+status: planning
+last_updated: "2026-04-29T16:10:56.516Z"
+last_activity: 2026-04-29
 progress:
-  total_phases: 10
-  completed_phases: 10
-  total_plans: 18
-  completed_plans: 18
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 
 ## Current Position
 
-Milestone: v1.2 — SHIPPED 2026-03-13
-All 10 phases (18 plans) complete and archived.
-
-Progress (v1.2): [██████████] 100% — SHIPPED
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-29 — Milestone v1.3 started
 
 ## Performance Metrics
 

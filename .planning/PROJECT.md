@@ -8,6 +8,28 @@ A reusable admin platform for commercial applications with full-stack authentica
 
 A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one.
 
+## Current Milestone: v1.3 — Variantes y Modelo de Stock
+
+**Goal:** Habilitar el sistema de variantes de artículos con catálogos de atributos compartidos y generación automática de SKU/nombre vía templates, y formalizar el modelo de stock (ubicaciones, sectores transversales) que viene parchado vía quick tasks desde abril 2026.
+
+**Target features:**
+
+- Sistema de variantes con SKU como identificador universal, `codigo` como agrupador, modelo single-table plano y catálogos de atributos editables (FK, no JSONB)
+- Templates configurables que definen receta de SKU + nombre auto + qué atributos son variantes
+- ABM de catálogos de atributos, ABM de templates, UI de variantes (creación, edición, listado, vista detalle)
+- Cambios de schema masivos con preview + cascade en comprobantes + history para reversibilidad
+- Renombre `columna` → `ubicacion` en `existencias` e `inventarios_articulos`
+- Sectores transversales (agrupan ubicaciones físicas) con tabla pivot
+- Ejecución de migración histórica pendiente de existencias desde `sanchez`
+- UI de stock: vistas filtrables por ubicación/sector, edición visual de existencias, dashboard por sector
+- Tech debt menor: `numeric()` en monetarios, drift TS↔DB de índices, placeholder en `header.tsx`
+
+**Out of scope explícito en este milestone (diferido a v1.4):**
+
+- Vehículos compatibles (catálogo de modelos de auto + fitment + búsqueda inversa)
+
+**Working memory:** `.planning/research/v1.3-design-notes.md` (gray areas Q1–Q11 a resolver en `/gsd-discuss-phase` por fase).
+
 ## Requirements
 
 ### Validated
@@ -43,7 +65,7 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ### Active
 
-(None — planning next milestone)
+(See `.planning/REQUIREMENTS.md` for v1.3 active requirements)
 
 ### Out of Scope
 
@@ -54,7 +76,6 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 - Advanced inventory forecasting (ML) — simple stock alerts sufficient
 - Mobile POS app — admin focus, not cashier UX
 - Multi-currency/multi-language — single locale (es-MX/MXN) initially
-- Full variant/SKU matrix (size x color = N child SKUs) — flat properties covers real use case
 - Automatic reorder/purchase generation from low stock — scope creep into procurement
 - Real-time stock sync with external ERP — erp_codigo for reference, not live sync
 - Lot/batch/serial number tracking — not needed for general commercial operations
@@ -117,7 +138,29 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 | HMAC-SHA256 for webhook signatures                   | Industry standard, verifiable by consumers            | ✓ Good — secure payload verification                    |
 | DB-driven column visibility (JSONB in settings)      | Global config, no per-user tables                     | ✓ Good — simple, immediate-persist UX                   |
 | objeto field as plain Input (no Select/Combobox)     | Parameter table integration deferred                  | ✓ Good — pragmatic, extensible later                    |
+| Variantes de artículos: revertir decisión flat de v1.0 | Negocio (rubrería de repuestos) requiere modelado fino con catálogos compartidos para SKU/nombre automático y consistencia entre artículos del mismo modelo | v1.3 — en construcción |
+| SKU como identificador universal en comprobantes      | `codigo` deja de ser PK, `sku` PK desde el día 1; `sku=codigo` cuando no hay variantes | v1.3 — en construcción |
+| Atributos como FK a catálogos (no JSONB)              | Simplicidad de queries, vista cruda elocuente, IA-friendly, performance; modelo plano single-table con datos comunes duplicados aceptados | v1.3 — en construcción |
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd-transition`):
+
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd-complete-milestone`):
+
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
 
 ---
 
-_Last updated: 2026-03-13 after v1.2 milestone_
+_Last updated: 2026-04-29 starting v1.3 milestone_
