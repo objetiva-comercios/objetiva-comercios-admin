@@ -125,3 +125,22 @@ Si en el futuro se identifica el operador real de los 4 dispositivos "Desconocid
 - `business_settings`: queda con default row creado por la migration (1 fila default)
 - `orders`, `order_items`, `sales`, `sale_items`, `purchases`, `purchase_items`: tablas vacias por diseno (no habia datos historicos)
 - `api_keys`, `webhooks`, `webhook_deliveries`: tablas vacias por diseno
+
+## Follow-up: drift schema vs DB en inventarios_articulos
+
+Tras la migracion inicial, se detecto que `migration-prod.sql` (Apr 9 14:31) era anterior al refactor `c735e9c1` (Apr 9 22:28) que reemplazo `sectorId` por `columna` en el schema TS. La DB quedo con `sector_id` y SIN `columna`, mientras que el codigo Drizzle esperaba `columna` y NO `sector_id`. Ningun query habia fallado en logs porque nadie habia entrado a la seccion de inventarios entre Apr 10 y Apr 29.
+
+### Fix aplicado
+- Nueva migracion: `apps/backend/drizzle/0003_add_columna_inv_articulos.sql`
+  ```sql
+  ALTER TABLE inventarios_articulos ADD COLUMN IF NOT EXISTS columna integer;
+  CREATE INDEX IF NOT EXISTS inv_articulos_columna_idx ON inventarios_articulos (columna);
+  ```
+- Backfill desde `legacy_admin_base.inventarios_articulos.columna` matcheando por `(inventario_id, articulo_codigo)`: **7745 UPDATE** (todos los registros con columna recuperada).
+- 100 columnas distintas preservadas. Top: columna 1 (3295 articulos, sin asignar/default), 75 (311), 77 (279), 16 (240), 73 (168 — Rulemanes).
+- Backend reiniciado, arranco limpio.
+
+### Drift residual conocido
+- `inventarios_articulos.sector_id`: columna huerfana en DB (no esta en schema TS, drizzle la ignora). No se borro por la regla "NUNCA borrar tablas/columnas sin autorizacion explicita". Si se quiere limpiar, requiere `ALTER TABLE inventarios_articulos DROP COLUMN sector_id;` con confirmacion previa.
+- `inventario_sectores.columnas` en DB es jsonb con numeros, pero schema TS lo declara como `$type<string[]>()`. Es un mismatch de tipado pero JSON es flexible — funciona en runtime.
+- Migracion `0003_*` agregada al filesystem pero NO al `meta/_journal.json` ni a `meta/0003_snapshot.json` (solo drizzle-kit puede regenerar snapshots correctamente). La proxima vez que se corra `pnpm db:generate`, drizzle generara su propia migracion correspondiente — el ALTER ya aplicado sera no-op por `IF NOT EXISTS`.
