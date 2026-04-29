@@ -78,7 +78,7 @@ None active. All v1.2 blockers resolved.
 | 260410-ifc | Rediseño imágenes artículos: iconos en lista + 9 slots en detalle                              | 2026-04-10 | 9a8e6a28 | [260410-ifc-redise-o-de-im-genes-de-art-culos-iconos](./quick/260410-ifc-redise-o-de-im-genes-de-art-culos-iconos/) |
 | 260410-juo | Ensanchar sheet detalle articulo a max-w-[35rem]                                                | 2026-04-10 | fa80a0d3 | [260410-juo-ensanchar-sheet-detalle-articulo-a-max-w](./quick/260410-juo-ensanchar-sheet-detalle-articulo-a-max-w/) |
 | 260428-mig | Aplicar migration-prod.sql pendiente desde Abr 9: restaurar 16 tablas y 2 columnas en produccion | 2026-04-28 | db558335 | [260428-mig-aplicar-migration-prod-pendiente](./quick/260428-mig-aplicar-migration-prod-pendiente/)                  |
-| 260429-rec | Recuperar datos historicos de inventarios/depositos/existencias desde admin_base_sanchez (7745+7873 filas) | 2026-04-29 | TBD      | [260429-rec-recuperar-datos-inventarios-existencias](./quick/260429-rec-recuperar-datos-inventarios-existencias/)    |
+| 260429-rec | Recuperar datos historicos de inventarios/depositos/existencias desde admin_base_sanchez (7745+7873 filas) | 2026-04-29 | b47db5d6 | [260429-rec-recuperar-datos-inventarios-existencias](./quick/260429-rec-recuperar-datos-inventarios-existencias/)    |
 
 ## Session Continuity
 

@@ -3,7 +3,7 @@ plan: 260429-rec
 one_liner: Recuperados datos de inventarios/depositos/existencias desde admin_base_sanchez al nuevo schema en erp_sanchez
 status: complete
 commits:
-  - TBD: 'docs(quick-260429-rec): recover inventarios/depositos/existencias data from admin_base_sanchez'
+  - b47db5d6: 'docs(quick-260429-rec): recover inventarios/depositos/existencias data from admin_base_sanchez'
 deviations: []
 ---
 
