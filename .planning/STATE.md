@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
 status: planning
-last_updated: "2026-04-29T16:10:56.516Z"
+last_updated: "2026-04-29T22:50:00.000Z"
 last_activity: 2026-04-29
 progress:
   total_phases: 9
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Roadmap created, ready for /gsd-discuss-phase 29
+**Current focus:** Phase 29 context capturado, listo para /gsd-plan-phase 29
 
 ## Current Position
 
-Phase: 29 (not started)
+Phase: 29 (context gathered)
 Plan: —
-Status: Roadmap created — 9 phases (29 → 37) covering 37 v1.3 requirements
-Last activity: 2026-04-29 — Roadmap v1.3 created
+Status: CONTEXT.md escrito — 19 decisiones (D-01..D-19), 6 tablas prop_*, calificador text-libre, sku separator '-' con stripSep(codigo). SC#5 diferido a Phase 32.
+Last activity: 2026-04-29 — Phase 29 context gathered
 
 ## Performance Metrics
 
@@ -51,7 +51,9 @@ Last activity: 2026-04-29 — Roadmap v1.3 created
 
 Archived to PROJECT.md Key Decisions table. No active decisions pending.
 
-Pendiente cerrar via /gsd-discuss-phase: 11 gray areas (Q1–Q11) de research/v1.3-design-notes.md.
+Cerradas en discuss-phase 29 (CONTEXT.md): Q1 (set de 6 tablas prop_*), Q2 (FK por id + cache via trigger), Q11 (UI tabs + componente genérico + SC#5 diferido a 32). Adicionalmente: revisión decisión cerrada #4 (sku=stripSep(codigo)).
+
+Pendiente cerrar via /gsd-discuss-phase posteriores: Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10 — distribuidas según ROADMAP.md (Phase 30/31/33/36/37).
 
 ### Pending Todos
 
@@ -86,8 +88,8 @@ None active. All v1.2 blockers resolved.
 ## Session Continuity
 
 Last session: 2026-04-29
-Stopped at: Roadmap v1.3 created (9 phases 29→37, 37 reqs mapped 100%)
-Next action: `/gsd:discuss-phase 29` (cerrar Q1 + Q2 + Q11) o `/gsd:plan-phase 29`
+Stopped at: Phase 29 context capturado en .planning/phases/29-catalogos-de-atributos/29-CONTEXT.md
+Next action: `/gsd:plan-phase 29`
 
 ---
 
