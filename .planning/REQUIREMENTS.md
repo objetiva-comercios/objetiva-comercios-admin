@@ -110,8 +110,46 @@ Explicitly excluded from v1.3. See `PROJECT.md §Out of Scope` for project-wide 
 
 ## Traceability
 
-Mapping of requirements to roadmap phases will be filled by `gsd-roadmapper` during `ROADMAP.md` creation.
+Mapping of requirements to roadmap phases (filled by `gsd-roadmapper` during ROADMAP.md creation).
 
 | Requirement | Phase | Status |
 |---|---|---|
-| _(filled by roadmapper)_ | | |
+| CAT-01 | Phase 29 | Pending |
+| CAT-02 | Phase 29 | Pending |
+| CAT-03 | Phase 29 | Pending |
+| CAT-04 | Phase 29 | Pending |
+| TPL-01 | Phase 30 | Pending |
+| TPL-02 | Phase 30 | Pending |
+| TPL-03 | Phase 30 | Pending |
+| TPL-04 | Phase 30 | Pending |
+| TPL-05 | Phase 30 | Pending |
+| VAR-01 | Phase 32 | Pending |
+| VAR-02 | Phase 32 | Pending |
+| VAR-03 | Phase 32 | Pending |
+| VAR-04 | Phase 32 | Pending |
+| VAR-05 | Phase 32 | Pending |
+| VAR-06 | Phase 32 | Pending |
+| VAR-07 | Phase 32 | Pending |
+| VAR-08 | Phase 32 | Pending |
+| VAR-09 | Phase 32 | Pending |
+| VAR-10 | Phase 31 | Pending |
+| SKU-01 | Phase 33 | Pending |
+| SKU-02 | Phase 33 | Pending |
+| SKU-03 | Phase 33 | Pending |
+| SKU-04 | Phase 33 | Pending |
+| SKU-05 | Phase 33 | Pending |
+| STOCK-01 | Phase 34 | Pending |
+| STOCK-02 | Phase 34 | Pending |
+| STOCK-03 | Phase 34 | Pending |
+| STOCK-04 | Phase 34 | Pending |
+| STOCK-05 | Phase 35 | Pending |
+| STOCK-06 | Phase 35 | Pending |
+| STOCK-07 | Phase 35 | Pending |
+| MIG-01 | Phase 36 | Pending |
+| MIG-02 | Phase 36 | Pending |
+| MIG-03 | Phase 36 | Pending |
+| DEBT-01 | Phase 37 | Pending |
+| DEBT-02 | Phase 37 | Pending |
+| DEBT-03 | Phase 37 | Pending |
+
+**Coverage**: 37/37 v1.3 requirements mapped (100%). No orphans, no duplicates.
