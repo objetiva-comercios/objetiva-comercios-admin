@@ -1,0 +1,196 @@
+'use client'
+
+import { useEffect, useState, type ReactNode } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { createPropiedad } from '@/lib/api.client'
+import { suggestAbrev } from '@/lib/abrev'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
+import { Loader2 } from 'lucide-react'
+import {
+  PROP_LABELS,
+  PROP_NOMBRE_PLACEHOLDERS,
+  type Propiedad,
+  type PropTipo,
+} from '@/types/propiedad'
+
+const schema = z.object({
+  nombre: z
+    .string()
+    .trim()
+    .min(1, 'El nombre es requerido')
+    .max(255, 'Máximo 255 caracteres'),
+  abrev: z
+    .string()
+    .regex(
+      /^[A-Z0-9]{1,8}$/,
+      'La abreviación debe tener 1 a 8 caracteres en mayúsculas o dígitos'
+    ),
+})
+type FormValues = z.infer<typeof schema>
+
+export interface PropiedadCreateDialogProps {
+  /** Tipo de propiedad (drives title, copy, endpoint). */
+  propTipo: PropTipo
+  /** Phase 32 reuse hook — invocado tras éxito con la fila creada. */
+  onCreated?: (created: Propiedad) => void
+  /** Trigger custom — si no se provee, el padre controla open/onOpenChange. */
+  trigger?: ReactNode
+  /** Modo controlled (opcional). */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+export function PropiedadCreateDialog({
+  propTipo,
+  onCreated,
+  trigger,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: PropiedadCreateDialogProps) {
+  const { toast } = useToast()
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen ?? internalOpen
+  const onOpenChange = controlledOnOpenChange ?? setInternalOpen
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [abrevManuallyEdited, setAbrevManuallyEdited] = useState(false)
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { nombre: '', abrev: '' },
+  })
+
+  // Auto-suggest abrev mientras el usuario no la haya editado manualmente.
+  const nombre = form.watch('nombre')
+  useEffect(() => {
+    if (abrevManuallyEdited) return
+    const suggested = suggestAbrev(nombre)
+    if (suggested !== form.getValues('abrev')) {
+      form.setValue('abrev', suggested, { shouldValidate: false })
+    }
+  }, [nombre, abrevManuallyEdited, form])
+
+  // Reset al abrir.
+  useEffect(() => {
+    if (open) {
+      form.reset({ nombre: '', abrev: '' })
+      setAbrevManuallyEdited(false)
+    }
+  }, [open, form])
+
+  const label = PROP_LABELS[propTipo]
+
+  async function onSubmit(values: FormValues) {
+    setIsLoading(true)
+    try {
+      const created = await createPropiedad(propTipo, values)
+      toast({ title: `${label.singular} creada correctamente` })
+      onCreated?.(created)
+      onOpenChange(false)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error desconocido'
+      const lower = message.toLowerCase()
+      if (lower.includes('nombre')) {
+        form.setError('nombre', { message })
+      } else if (lower.includes('abreviación') || lower.includes('abrev')) {
+        form.setError('abrev', { message })
+      } else {
+        toast({
+          title: `No se pudo crear la ${label.singular.toLowerCase()}`,
+          description: message,
+          variant: 'destructive',
+        })
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {trigger}
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Nueva {label.singular}</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="nombre"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={PROP_NOMBRE_PLACEHOLDERS[propTipo]}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="abrev"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Abreviación</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ej: SHI (auto-sugerido)"
+                      {...field}
+                      onChange={e => {
+                        setAbrevManuallyEdited(true)
+                        field.onChange(e.target.value.toUpperCase())
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-xs">
+                    1-8 caracteres, solo mayúsculas y dígitos
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" size="sm" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Crear {label.singular.toLowerCase()}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
