@@ -92,7 +92,7 @@ Plans:
 - [x] 29-01-PLAN.md — Schema Drizzle: 6 tablas prop\_\* + UNIQUE LOWER(nombre) + CHECK abrev regex + custom SQL trigger comentado (Wave 1)
 - [x] 29-02-PLAN.md — [BLOCKING] Schema push: pnpm db:migrate aplica los 2 migrations contra Postgres + smoke tests de constraints (Wave 2)
 - [x] 29-03-PLAN.md — Backend NestJS: PropiedadesModule parametrizado por :tipo (controller + service + 2 DTOs + constants) + RBAC + manejo 23505 + registro en AppModule (Wave 3)
-- [ ] 29-04-PLAN.md — Web infra: types + suggestAbrev TDD (Vitest) + 4 fetchers api.client + entry sidebar Tags (Wave 4)
+- [x] 29-04-PLAN.md — Web infra: types + suggestAbrev TDD (Vitest) + 4 fetchers api.client + entry sidebar Tags (Wave 4)
 - [ ] 29-05-PLAN.md — Web UI: PropiedadCreateDialog standalone reusable (D-19) + Edit/Deactivate dialogs + PropiedadTable genérica + PropiedadesPage (Tabs lazy) + ruta /propiedades (Wave 5)
 - [ ] 29-06-PLAN.md — E2E Playwright cubriendo flujo completo + checkpoint humano UI-SPEC compliance (Wave 6)
 
@@ -359,7 +359,7 @@ Plans:
 | 26. Tech Debt Cleanup v1.2                          | v1.2      | 1/1            | Complete    | 2026-03-12 |
 | 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete    | 2026-03-13 |
 | 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete    | 2026-03-13 |
-| 29. Catálogos de Atributos                          | v1.3      | 3/6            | In Progress |            |
+| 29. Catálogos de Atributos                          | v1.3      | 4/6            | In Progress |            |
 | 30. Templates + Composición SKU/Nombre              | v1.3      | 0/0            | Not started | -          |
 | 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started | -          |
 | 32. Variantes UI                                    | v1.3      | 0/0            | Not started | -          |
