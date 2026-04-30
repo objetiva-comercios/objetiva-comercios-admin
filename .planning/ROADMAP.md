@@ -84,7 +84,17 @@
   4. El admin puede desactivar (soft-delete) un valor; el valor desaparece de los selectores nuevos pero se preserva en datos históricos (queries con `activo=true` por default)
   5. Desde el formulario de artículo, el admin puede agregar un valor nuevo al catálogo sin salir del form (create-on-the-fly) y verlo disponible inmediatamente en el `AtributoSelectField`
 
-**Plans**: TBD
+**Plans**: 6 plans (en 6 waves)
+
+Plans:
+- [ ] 29-01-PLAN.md — Schema Drizzle: 6 tablas prop_* + UNIQUE LOWER(nombre) + CHECK abrev regex + custom SQL trigger comentado (Wave 1)
+- [ ] 29-02-PLAN.md — [BLOCKING] Schema push: pnpm db:migrate aplica los 2 migrations contra Postgres + smoke tests de constraints (Wave 2)
+- [ ] 29-03-PLAN.md — Backend NestJS: PropiedadesModule parametrizado por :tipo (controller + service + 2 DTOs + constants) + RBAC + manejo 23505 + registro en AppModule (Wave 3)
+- [ ] 29-04-PLAN.md — Web infra: types + suggestAbrev TDD (Vitest) + 4 fetchers api.client + entry sidebar Tags (Wave 4)
+- [ ] 29-05-PLAN.md — Web UI: PropiedadCreateDialog standalone reusable (D-19) + Edit/Deactivate dialogs + PropiedadTable genérica + PropiedadesPage (Tabs lazy) + ruta /propiedades (Wave 5)
+- [ ] 29-06-PLAN.md — E2E Playwright cubriendo flujo completo + checkpoint humano UI-SPEC compliance (Wave 6)
+
+**Note**: SC#5 está diferido a Phase 32 por D-19. Phase 29 entrega CAT-02 parcial — el componente PropiedadCreateDialog standalone listo, pero NO cableado al ArticuloForm.
 **UI hint**: yes
 **Open Qs to close in `/gsd-discuss-phase 29`**: Q1 (modelo de columnas para atributos del rubro), Q2 (vincular por id/slug/nombre + cache), Q11 (qué UIs entran)
 **Pitfalls**: P-04 (slug collisions cross-catalog → reglas de slug deterministas + CHECK constraint), P-11 (denorm trigger silent failure → preferir join puro o generated column)

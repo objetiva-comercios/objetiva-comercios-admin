@@ -1419,32 +1419,32 @@ import {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Cómo manejar `?activo=all`?**
    - What we know: el toggle "Mostrar inactivos" debe traer activos+inactivos.
    - What's unclear: convención del query param. Opciones: `?activo=all`, `?activo=` (vacío), `?showInactive=true`, omitir el param.
-   - Recommendation: usar `?activo=all` (3 valores: `true`/`false`/`all`, default `true` cuando ausente). Easy de extender, explícito.
+   - **RESOLVED:** Recommendation: usar `?activo=all` (3 valores: `true`/`false`/`all`, default `true` cuando ausente). Easy de extender, explícito.
 
 2. **¿La página `/propiedades` requiere protección guard adicional para roles?**
    - What we know: backend tiene `RolesGuard`. El frontend hoy NO usa middleware de roles a nivel de ruta — todas las rutas autenticadas son visibles al `viewer`, y cada acción individual es la que se rechaza si carece de rol.
    - What's unclear: si el planner querrá forzar redirect 403 al entrar a `/propiedades` siendo viewer.
-   - Recommendation: NO agregar middleware nuevo. Replicar exactamente el contrato de `/settings/depositos` (visible a viewer, mutaciones bloqueadas en backend).
+   - **RESOLVED:** Recommendation: NO agregar middleware nuevo. Replicar exactamente el contrato de `/settings/depositos` (visible a viewer, mutaciones bloqueadas en backend).
 
 3. **¿El módulo `PropiedadesModule` debe registrarse en `AppModule.imports`?**
    - What we know: sí (todo módulo NestJS debe estar en imports).
    - What's unclear: ningún issue real, solo recordatorio para el planner.
-   - Recommendation: `apps/backend/src/app.module.ts` agrega `PropiedadesModule` en imports.
+   - **RESOLVED:** Recommendation: `apps/backend/src/app.module.ts` agrega `PropiedadesModule` en imports.
 
 4. **¿Fixture initial-data o tabla vacía al primer deploy?**
    - What we know: D-Discretion abierta — usuario sugirió "no seed por defecto".
    - What's unclear: Phase 32 necesitará al menos 1-2 marcas/colores de ejemplo para probar el wireup. ¿Se siembran desde Phase 32 o se asume que el admin las creará vía UI durante UAT?
-   - Recommendation: **No seed en Phase 29.** El admin las crea en `/propiedades` durante UAT. Phase 32 puede agregar un seed si el plan-checker detecta que no se puede testear sin datos.
+   - **RESOLVED:** Recommendation: **No seed en Phase 29.** El admin las crea en `/propiedades` durante UAT. Phase 32 puede agregar un seed si el plan-checker detecta que no se puede testear sin datos.
 
 5. **Web types: ¿agregar también a `packages/types`?**
    - What we know: hoy `apps/web/src/types/propiedad.ts` es suficiente. `packages/types` solo expone `AppRole` y zod schemas auth.
    - What's unclear: si mobile en futuro consumirá propiedades, conviene mover a `packages/types`.
-   - Recommendation: dejar en `apps/web/src/types/` por ahora (consistente con `apps/web/src/types/deposito.ts`). Si Phase 30+ necesita mobile, migrar entonces.
+   - **RESOLVED:** Recommendation: dejar en `apps/web/src/types/` por ahora (consistente con `apps/web/src/types/deposito.ts`). Si Phase 30+ necesita mobile, migrar entonces.
 
 ---
 
