@@ -57,7 +57,7 @@
 
 ### 🚧 v1.3 Variantes y Modelo de Stock (Phases 29-37) — IN PROGRESS
 
-- [ ] **Phase 29: Catálogos de Atributos** — ABM unificado de catálogos FK (marcas, colores, talles, materiales, presentaciones, objetos, calificadores) con slug autogenerado, soft-delete y create-on-the-fly
+- [x] **Phase 29: Catálogos de Atributos** — ABM unificado de catálogos FK (marcas, colores, talles, materiales, presentaciones, objetos, calificadores) con slug autogenerado, soft-delete y create-on-the-fly (completed 2026-04-30)
 - [ ] **Phase 30: Templates + Composición SKU/Nombre** — Tablas `articulos_templates` + `template_atributos`, función pura `composeSku()` + `composeNombre()`, builder UI y seed del template default
 - [ ] **Phase 31: PK Swap codigo→sku + FK rename comprobantes** — Promoción de `sku` a PK de `articulos`, `codigo` agrupador NOT UNIQUE, rename FK en orders/sales/purchases/existencias/inventarios_articulos, webhook payload v2
 - [ ] **Phase 32: Variantes UI** — Split `ArticuloForm` en `ModeloForm` + `VarianteForm`, `AtributoSelectField`, listado agrupado por `codigo`, wizard 3 pasos, edit modelo cascada app-level
@@ -94,7 +94,7 @@ Plans:
 - [x] 29-03-PLAN.md — Backend NestJS: PropiedadesModule parametrizado por :tipo (controller + service + 2 DTOs + constants) + RBAC + manejo 23505 + registro en AppModule (Wave 3)
 - [x] 29-04-PLAN.md — Web infra: types + suggestAbrev TDD (Vitest) + 4 fetchers api.client + entry sidebar Tags (Wave 4)
 - [x] 29-05-PLAN.md — Web UI: PropiedadCreateDialog standalone reusable (D-19) + Edit/Deactivate dialogs + PropiedadTable genérica + PropiedadesPage (Tabs lazy) + ruta /propiedades (Wave 5)
-- [ ] 29-06-PLAN.md — E2E Playwright cubriendo flujo completo + checkpoint humano UI-SPEC compliance (Wave 6)
+- [x] 29-06-PLAN.md — E2E Playwright cubriendo flujo completo + checkpoint humano UI-SPEC compliance (Wave 6)
 
 **Note**: SC#5 está diferido a Phase 32 por D-19. Phase 29 entrega CAT-02 parcial — el componente PropiedadCreateDialog standalone listo, pero NO cableado al ArticuloForm.
 **UI hint**: yes
@@ -359,7 +359,7 @@ Plans:
 | 26. Tech Debt Cleanup v1.2                          | v1.2      | 1/1            | Complete    | 2026-03-12 |
 | 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete    | 2026-03-13 |
 | 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete    | 2026-03-13 |
-| 29. Catálogos de Atributos                          | v1.3      | 5/6            | In Progress |            |
+| 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete    | 2026-04-30 |
 | 30. Templates + Composición SKU/Nombre              | v1.3      | 0/0            | Not started | -          |
 | 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started | -          |
 | 32. Variantes UI                                    | v1.3      | 0/0            | Not started | -          |
