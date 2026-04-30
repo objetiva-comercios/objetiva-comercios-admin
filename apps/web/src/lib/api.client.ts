@@ -2,6 +2,7 @@ import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/clie
 import type { Order } from '@/types/order'
 import type { Articulo } from '@/types/articulo'
 import type { Deposito } from '@/types/deposito'
+import type { Propiedad, PropTipo } from '@/types/propiedad'
 import type { Existencia, ExistenciasKpi, ExistenciaMatrixRow } from '@/types/existencia'
 import type { BusinessSettings } from '@/types/settings'
 import type { ArticulosConfig } from '@/types/articulos-config'
@@ -746,5 +747,83 @@ export async function fetchOrderById(id: number): Promise<Order> {
     },
   })
   if (!response.ok) throw new Error(`API error: ${response.status}`)
+  return response.json()
+}
+
+// ─── Propiedades (Phase 29) ──────────────────────────────────────────────
+//
+// Fetchers parametrizados por `tipo: PropTipo`. La API expone:
+//   GET    /api/propiedades/:tipo            (?activo=true|false|all)
+//   POST   /api/propiedades/:tipo
+//   PATCH  /api/propiedades/:tipo/:id
+//   PATCH  /api/propiedades/:tipo/:id/toggle
+//
+// Convencion del query `activo`:
+//   - sin opts                -> server asume true
+//   - { activo: true }        -> server asume true (no se envia param)
+//   - { activo: false }       -> ?activo=false
+//   - { activo: 'all' }       -> ?activo=all
+
+export async function fetchPropiedades(
+  tipo: PropTipo,
+  opts: { activo?: boolean | 'all' } = {}
+): Promise<Propiedad[]> {
+  const headers = await getAuthHeaders()
+  const params = new URLSearchParams()
+  if (opts.activo === false) params.set('activo', 'false')
+  else if (opts.activo === 'all') params.set('activo', 'all')
+  // default activo=true: no enviar param (server asume true)
+
+  const qs = params.toString()
+  const url = `${API_BASE_URL}/api/propiedades/${tipo}${qs ? `?${qs}` : ''}`
+  const response = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function createPropiedad(
+  tipo: PropTipo,
+  data: { nombre: string; abrev: string }
+): Promise<Propiedad> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/propiedades/${tipo}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function updatePropiedad(
+  tipo: PropTipo,
+  id: number,
+  data: Partial<{ nombre: string; abrev: string }>
+): Promise<Propiedad> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/propiedades/${tipo}/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(data),
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function togglePropiedadActivo(
+  tipo: PropTipo,
+  id: number
+): Promise<Propiedad> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/propiedades/${tipo}/${id}/toggle`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+    }
+  )
+  await throwIfError(response)
   return response.json()
 }

@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Package,
+  Tags,
   ShoppingCart,
   ShoppingBag,
   ClipboardList,
@@ -24,6 +25,11 @@ export const routes: NavRoute[] = [
     label: 'Artículos',
     icon: Package,
     href: '/articulos',
+  },
+  {
+    label: 'Propiedades',
+    icon: Tags,
+    href: '/propiedades',
   },
   {
     label: 'Compras',
