@@ -78,16 +78,18 @@
 **Requirements**: CAT-01, CAT-02, CAT-03, CAT-04
 
 **Success Criteria** (what must be TRUE):
-  1. Admin entra a `/catalogos` y ve listas paginadas de los 7 catálogos (marcas, colores, talles, materiales, presentaciones, objetos, calificadores) con CRUD completo (crear, editar, soft-delete)
-  2. Al crear un valor nuevo en un catálogo, el sistema autogenera el slug desde el nombre (NFD + lowercase + strip diacritics) y lo muestra en preview editable
-  3. Si el admin intenta crear un slug duplicado dentro del mismo catálogo, el sistema rechaza el alta con mensaje legible "slug ya existe en este catálogo"
-  4. El admin puede desactivar (soft-delete) un valor; el valor desaparece de los selectores nuevos pero se preserva en datos históricos (queries con `activo=true` por default)
-  5. Desde el formulario de artículo, el admin puede agregar un valor nuevo al catálogo sin salir del form (create-on-the-fly) y verlo disponible inmediatamente en el `AtributoSelectField`
+
+1. Admin entra a `/catalogos` y ve listas paginadas de los 7 catálogos (marcas, colores, talles, materiales, presentaciones, objetos, calificadores) con CRUD completo (crear, editar, soft-delete)
+2. Al crear un valor nuevo en un catálogo, el sistema autogenera el slug desde el nombre (NFD + lowercase + strip diacritics) y lo muestra en preview editable
+3. Si el admin intenta crear un slug duplicado dentro del mismo catálogo, el sistema rechaza el alta con mensaje legible "slug ya existe en este catálogo"
+4. El admin puede desactivar (soft-delete) un valor; el valor desaparece de los selectores nuevos pero se preserva en datos históricos (queries con `activo=true` por default)
+5. Desde el formulario de artículo, el admin puede agregar un valor nuevo al catálogo sin salir del form (create-on-the-fly) y verlo disponible inmediatamente en el `AtributoSelectField`
 
 **Plans**: 6 plans (en 6 waves)
 
 Plans:
-- [ ] 29-01-PLAN.md — Schema Drizzle: 6 tablas prop_* + UNIQUE LOWER(nombre) + CHECK abrev regex + custom SQL trigger comentado (Wave 1)
+
+- [x] 29-01-PLAN.md — Schema Drizzle: 6 tablas prop\_\* + UNIQUE LOWER(nombre) + CHECK abrev regex + custom SQL trigger comentado (Wave 1)
 - [ ] 29-02-PLAN.md — [BLOCKING] Schema push: pnpm db:migrate aplica los 2 migrations contra Postgres + smoke tests de constraints (Wave 2)
 - [ ] 29-03-PLAN.md — Backend NestJS: PropiedadesModule parametrizado por :tipo (controller + service + 2 DTOs + constants) + RBAC + manejo 23505 + registro en AppModule (Wave 3)
 - [ ] 29-04-PLAN.md — Web infra: types + suggestAbrev TDD (Vitest) + 4 fetchers api.client + entry sidebar Tags (Wave 4)
@@ -110,11 +112,12 @@ Plans:
 **Requirements**: TPL-01, TPL-02, TPL-03, TPL-04, TPL-05
 
 **Success Criteria** (what must be TRUE):
-  1. Admin entra a `/templates` y ve la lista de templates; puede crear, editar y eliminar templates con nombre, descripción y flag `is_default`
-  2. Dentro de un template, admin define qué atributos aplican (drag-drop al builder), marca cada uno como "variante" o "no-variante", y asigna `orden_sku` y `orden_nombre` (NULL = no participa)
-  3. El builder muestra un preview WYSIWYG en vivo: ejemplo de SKU y nombre auto generado con valores de muestra del primer artículo del catálogo
-  4. Al crear un artículo nuevo, el sistema usa automáticamente el template marcado como `is_default` y deja el modelo preparado para multi-template (v1.4+)
-  5. La función pura `composeSku(codigo, atributos, template)` y `composeNombre(atributos, template)` están cubiertas por tests unitarios con casos de slug collision, NFD normalization y atributos faltantes
+
+1. Admin entra a `/templates` y ve la lista de templates; puede crear, editar y eliminar templates con nombre, descripción y flag `is_default`
+2. Dentro de un template, admin define qué atributos aplican (drag-drop al builder), marca cada uno como "variante" o "no-variante", y asigna `orden_sku` y `orden_nombre` (NULL = no participa)
+3. El builder muestra un preview WYSIWYG en vivo: ejemplo de SKU y nombre auto generado con valores de muestra del primer artículo del catálogo
+4. Al crear un artículo nuevo, el sistema usa automáticamente el template marcado como `is_default` y deja el modelo preparado para multi-template (v1.4+)
+5. La función pura `composeSku(codigo, atributos, template)` y `composeNombre(atributos, template)` están cubiertas por tests unitarios con casos de slug collision, NFD normalization y atributos faltantes
 
 **Plans**: TBD
 **UI hint**: yes
@@ -132,11 +135,12 @@ Plans:
 **Requirements**: VAR-10
 
 **Success Criteria** (what must be TRUE):
-  1. `\d articulos` en psql muestra `sku` como PK y `codigo` con índice no único; `SELECT count(*) FROM articulos WHERE sku IS NULL` retorna 0
-  2. Las 5 tablas hijas (`order_items`, `sale_items`, `purchase_items`, `existencias`, `inventarios_articulos`) tienen columna `articulo_sku` con FK válida hacia `articulos.sku`; `articulo_codigo` queda removida en deploy posterior
-  3. Backend split funciona: `findOne(sku)` retorna 1 fila, `findByCodigo(codigo)` retorna N filas (todas las hermanas), y la cutover preserva el comportamiento previo cuando `sku=codigo`
-  4. Webhooks `articulo.created/updated/deleted` siguen disparando con payload v2 que incluye tanto `sku` como `codigo`; los suscriptores existentes reciben "v1.3 cutover notice" antes del deploy
-  5. Tests de integridad referencial post-cutover pasan: `SELECT count(*) FROM order_items oi LEFT JOIN articulos a ON oi.articulo_sku=a.sku WHERE a.sku IS NULL` retorna 0 (idem para existencias, inventarios_articulos, sale_items, purchase_items)
+
+1. `\d articulos` en psql muestra `sku` como PK y `codigo` con índice no único; `SELECT count(*) FROM articulos WHERE sku IS NULL` retorna 0
+2. Las 5 tablas hijas (`order_items`, `sale_items`, `purchase_items`, `existencias`, `inventarios_articulos`) tienen columna `articulo_sku` con FK válida hacia `articulos.sku`; `articulo_codigo` queda removida en deploy posterior
+3. Backend split funciona: `findOne(sku)` retorna 1 fila, `findByCodigo(codigo)` retorna N filas (todas las hermanas), y la cutover preserva el comportamiento previo cuando `sku=codigo`
+4. Webhooks `articulo.created/updated/deleted` siguen disparando con payload v2 que incluye tanto `sku` como `codigo`; los suscriptores existentes reciben "v1.3 cutover notice" antes del deploy
+5. Tests de integridad referencial post-cutover pasan: `SELECT count(*) FROM order_items oi LEFT JOIN articulos a ON oi.articulo_sku=a.sku WHERE a.sku IS NULL` retorna 0 (idem para existencias, inventarios_articulos, sale_items, purchase_items)
 
 **Plans**: TBD
 **Open Qs to close in `/gsd-discuss-phase 31`**: Q5 (preflight: auditar `articulos.sku` actual — ver P-05), Q9 (drift TS↔DB en índices y precision afecta migration generada)
@@ -153,11 +157,12 @@ Plans:
 **Requirements**: VAR-01, VAR-02, VAR-03, VAR-04, VAR-05, VAR-06, VAR-07, VAR-08, VAR-09
 
 **Success Criteria** (what must be TRUE):
-  1. Admin crea un artículo nuevo sin variantes y el sistema setea `sku=codigo` automáticamente; la lista muestra una sola fila plana por ese `codigo`
-  2. Admin convierte un artículo en variantizado: clickea "agregar variante" desde la vista detalle, elige valores de atributos variante distintos, y el sistema genera el SKU concatenando `codigo + slug(atrib1) + slug(atrib2)…` según receta del template
-  3. Cuando un artículo tiene `nombre_auto=true`, el sistema regenera el nombre al guardar concatenando atributos según `orden_nombre`; al editar manualmente el campo `nombre`, el flag se flippea automáticamente a `false` y el nombre manual queda fijo
-  4. La lista `/articulos` ofrece toggle "Vista plana / Vista agrupada"; en agrupada cada `codigo` es una fila master expandible con count de variantes y stock total; expandir muestra las N variantes con sus SKUs y atributos diferenciadores
-  5. Admin abre "Editar datos del modelo" y modifica marca/categoría/etc.; el sistema confirma el count de variantes afectadas y propaga vía `UPDATE WHERE codigo=X`; "Editar datos de la variante" modifica solo `WHERE sku=Y`; cada variante tiene su propio `codigo_barras` UNIQUE y las nuevas NO heredan el de la origen
+
+1. Admin crea un artículo nuevo sin variantes y el sistema setea `sku=codigo` automáticamente; la lista muestra una sola fila plana por ese `codigo`
+2. Admin convierte un artículo en variantizado: clickea "agregar variante" desde la vista detalle, elige valores de atributos variante distintos, y el sistema genera el SKU concatenando `codigo + slug(atrib1) + slug(atrib2)…` según receta del template
+3. Cuando un artículo tiene `nombre_auto=true`, el sistema regenera el nombre al guardar concatenando atributos según `orden_nombre`; al editar manualmente el campo `nombre`, el flag se flippea automáticamente a `false` y el nombre manual queda fijo
+4. La lista `/articulos` ofrece toggle "Vista plana / Vista agrupada"; en agrupada cada `codigo` es una fila master expandible con count de variantes y stock total; expandir muestra las N variantes con sus SKUs y atributos diferenciadores
+5. Admin abre "Editar datos del modelo" y modifica marca/categoría/etc.; el sistema confirma el count de variantes afectadas y propaga vía `UPDATE WHERE codigo=X`; "Editar datos de la variante" modifica solo `WHERE sku=Y`; cada variante tiene su propio `codigo_barras` UNIQUE y las nuevas NO heredan el de la origen
 
 **Plans**: TBD
 **UI hint**: yes
@@ -175,11 +180,12 @@ Plans:
 **Requirements**: SKU-01, SKU-02, SKU-03, SKU-04, SKU-05
 
 **Success Criteria** (what must be TRUE):
-  1. Admin abre `/templates/[id]/edit` y al modificar la receta clickea "Aplicar cambios"; el `SkuPreviewDialog` muestra un diff lado a lado (sku_viejo, sku_nuevo, nombre_viejo, nombre_nuevo) con count total afectado y muestra de hasta 20 filas
-  2. Al confirmar, el cascade ejecuta en una sola transacción: `INSERT articulo_sku_history` (append-only, particionado por mes) → `UPDATE articulos SET sku=nuevo, sku_anterior=sku_viejo` → `UPDATE` en order_items, sale_items, purchase_items, existencias, inventarios_articulos vía mapping; el trigger de `articulos.unidades` queda DISABLE durante la transacción y se recomputa manual al final
-  3. Si la cascade falla a media operación, ROLLBACK restaura el estado previo completo; tests de integridad post-rollback verifican que `SELECT count(*) FROM order_items WHERE articulo_sku NOT IN (SELECT sku FROM articulos)` retorna 0
-  4. Re-aplicar el mismo cambio dos veces es no-op idempotente: el cascade detecta `sku_anterior == old_sku_we_re_about_to_set` y skipea; la mapping `{old→new}` se construye ANTES del UPDATE y si `old==new` para todas las filas, no escribe nada
-  5. Admin puede deshacer el último batch desde `/templates/history`: el sistema lista los últimos 10 batches con timestamp + count + botón "Deshacer"; el rollback ejecuta `UPDATE articulos SET sku=sku_anterior WHERE batch_id=X` + cascade inverso, validando antes que no haya escrituras posteriores que rompan el rollback
+
+1. Admin abre `/templates/[id]/edit` y al modificar la receta clickea "Aplicar cambios"; el `SkuPreviewDialog` muestra un diff lado a lado (sku_viejo, sku_nuevo, nombre_viejo, nombre_nuevo) con count total afectado y muestra de hasta 20 filas
+2. Al confirmar, el cascade ejecuta en una sola transacción: `INSERT articulo_sku_history` (append-only, particionado por mes) → `UPDATE articulos SET sku=nuevo, sku_anterior=sku_viejo` → `UPDATE` en order_items, sale_items, purchase_items, existencias, inventarios_articulos vía mapping; el trigger de `articulos.unidades` queda DISABLE durante la transacción y se recomputa manual al final
+3. Si la cascade falla a media operación, ROLLBACK restaura el estado previo completo; tests de integridad post-rollback verifican que `SELECT count(*) FROM order_items WHERE articulo_sku NOT IN (SELECT sku FROM articulos)` retorna 0
+4. Re-aplicar el mismo cambio dos veces es no-op idempotente: el cascade detecta `sku_anterior == old_sku_we_re_about_to_set` y skipea; la mapping `{old→new}` se construye ANTES del UPDATE y si `old==new` para todas las filas, no escribe nada
+5. Admin puede deshacer el último batch desde `/templates/history`: el sistema lista los últimos 10 batches con timestamp + count + botón "Deshacer"; el rollback ejecuta `UPDATE articulos SET sku=sku_anterior WHERE batch_id=X` + cascade inverso, validando antes que no haya escrituras posteriores que rompan el rollback
 
 **Plans**: TBD
 **UI hint**: yes
@@ -197,11 +203,12 @@ Plans:
 **Requirements**: STOCK-01, STOCK-02, STOCK-03, STOCK-04
 
 **Success Criteria** (what must be TRUE):
-  1. La migración renombra `existencias.columna→ubicacion` e `inventarios_articulos.columna→ubicacion` preservando los datos existentes (RENAME COLUMN, no DROP+ADD); post-migración `SELECT count(*) FROM existencias WHERE ubicacion IS NOT NULL` ≥ count pre-migración
-  2. Admin entra a `/catalogos/ubicaciones` y gestiona ubicaciones físicas (CRUD) por depósito con `(id, deposito_id FK, nombre, codigo, activo)`
-  3. Admin entra a `/catalogos/sectores` y gestiona sectores transversales con `(id, deposito_id FK, nombre, descripcion, activo)`; al editar un sector puede asignar/des-asignar múltiples ubicaciones vía multi-select (tabla pivot `sector_ubicaciones` con PK compuesta)
-  4. La relación es M:N efectiva: una ubicación puede pertenecer a 2+ sectores simultáneamente; el query `SELECT s.nombre FROM sectores s JOIN sector_ubicaciones su ON su.sector_id=s.id WHERE su.ubicacion_id=X` retorna múltiples sectores cuando aplica
-  5. La tabla legacy `inventario_sectores.columnas` JSONB se deprecada: la migración UNNEST de los arrays existentes en filas pivot (con dedup explícito), valida count vs `SUM(jsonb_array_length(columnas))` y mantiene la columna JSONB por 1 deploy como fallback antes de DROP
+
+1. La migración renombra `existencias.columna→ubicacion` e `inventarios_articulos.columna→ubicacion` preservando los datos existentes (RENAME COLUMN, no DROP+ADD); post-migración `SELECT count(*) FROM existencias WHERE ubicacion IS NOT NULL` ≥ count pre-migración
+2. Admin entra a `/catalogos/ubicaciones` y gestiona ubicaciones físicas (CRUD) por depósito con `(id, deposito_id FK, nombre, codigo, activo)`
+3. Admin entra a `/catalogos/sectores` y gestiona sectores transversales con `(id, deposito_id FK, nombre, descripcion, activo)`; al editar un sector puede asignar/des-asignar múltiples ubicaciones vía multi-select (tabla pivot `sector_ubicaciones` con PK compuesta)
+4. La relación es M:N efectiva: una ubicación puede pertenecer a 2+ sectores simultáneamente; el query `SELECT s.nombre FROM sectores s JOIN sector_ubicaciones su ON su.sector_id=s.id WHERE su.ubicacion_id=X` retorna múltiples sectores cuando aplica
+5. La tabla legacy `inventario_sectores.columnas` JSONB se deprecada: la migración UNNEST de los arrays existentes en filas pivot (con dedup explícito), valida count vs `SUM(jsonb_array_length(columnas))` y mantiene la columna JSONB por 1 deploy como fallback antes de DROP
 
 **Plans**: TBD
 **UI hint**: yes
@@ -219,11 +226,12 @@ Plans:
 **Requirements**: STOCK-05, STOCK-06, STOCK-07
 
 **Success Criteria** (what must be TRUE):
-  1. Admin entra a `/articulos/existencias` y filtra por `ubicacion` (multi-select) y/o `sector` (multi-select); la URL refleja los filtros (deep-link) y el listado muestra solo existencias que matchean
-  2. Admin abre `/articulos/existencias/editor` (o similar) y ve una pivot table con filas=artículos, columnas=ubicaciones, celdas=cantidad editable inline; sticky headers, save explícito por celda con feedback visual
-  3. Admin entra a `/dashboard/stock-por-sector` y ve cards con KPIs por sector: total unidades, total SKUs distintos, low-stock count
-  4. Cada card del dashboard tiene drill-down: clickear "Ver existencias" filtra `/articulos/existencias` con `?sector=X` y muestra los detalles en la pivot table
-  5. La query backend `/api/existencias/by-sector` resuelve la agregación en una sola pasada (JOIN existencias × sector_ubicaciones × ubicaciones con `GROUP BY sector_id`) y retorna `[{sectorId, sectorNombre, totalUnidades, totalSkus, lowStockCount}]`
+
+1. Admin entra a `/articulos/existencias` y filtra por `ubicacion` (multi-select) y/o `sector` (multi-select); la URL refleja los filtros (deep-link) y el listado muestra solo existencias que matchean
+2. Admin abre `/articulos/existencias/editor` (o similar) y ve una pivot table con filas=artículos, columnas=ubicaciones, celdas=cantidad editable inline; sticky headers, save explícito por celda con feedback visual
+3. Admin entra a `/dashboard/stock-por-sector` y ve cards con KPIs por sector: total unidades, total SKUs distintos, low-stock count
+4. Cada card del dashboard tiene drill-down: clickear "Ver existencias" filtra `/articulos/existencias` con `?sector=X` y muestra los detalles en la pivot table
+5. La query backend `/api/existencias/by-sector` resuelve la agregación en una sola pasada (JOIN existencias × sector_ubicaciones × ubicaciones con `GROUP BY sector_id`) y retorna `[{sectorId, sectorNombre, totalUnidades, totalSkus, lowStockCount}]`
 
 **Plans**: TBD
 **UI hint**: yes
@@ -241,10 +249,11 @@ Plans:
 **Requirements**: MIG-01, MIG-02, MIG-03
 
 **Success Criteria** (what must be TRUE):
-  1. El script de migración corre y procesa ~7,500 filas estimadas: por cada `articulo` activo con `unidades > 0`, INSERT/UPDATE en `existencias` con `cantidad=unidades` y `ubicacion_id` resuelto vía slugify match contra `sanchez.articulos.columna`; sin match → sentinel `ubicacion_id=NULL` (NO `'0'`, ver P-09)
-  2. El script produce reporte post-ejecución con counts validables: `match_real`, `sentinel_count`, `total_processed`, comparación contra `articulos.unidades`; el ratio `SUM(existencias.cantidad) / SUM(articulos.unidades WHERE activo=true)` está en rango 1.0 ± 5%
-  3. Re-ejecutar el script no duplica filas ni rompe el estado: la operación es idempotente vía UPSERT con `ON CONFLICT (articulo_sku, deposito_id) DO UPDATE` y el script detecta filas ya migradas (con `ubicacion_id NOT NULL` o `migrated_at` flag)
-  4. El reporte se guarda en `.planning/phases/<N>/MIGRATION-REPORT.md` con timestamp, counts, y queries de validación (incluyendo lista de SKUs que cayeron en sentinel) para review humano post-ejecución
+
+1. El script de migración corre y procesa ~7,500 filas estimadas: por cada `articulo` activo con `unidades > 0`, INSERT/UPDATE en `existencias` con `cantidad=unidades` y `ubicacion_id` resuelto vía slugify match contra `sanchez.articulos.columna`; sin match → sentinel `ubicacion_id=NULL` (NO `'0'`, ver P-09)
+2. El script produce reporte post-ejecución con counts validables: `match_real`, `sentinel_count`, `total_processed`, comparación contra `articulos.unidades`; el ratio `SUM(existencias.cantidad) / SUM(articulos.unidades WHERE activo=true)` está en rango 1.0 ± 5%
+3. Re-ejecutar el script no duplica filas ni rompe el estado: la operación es idempotente vía UPSERT con `ON CONFLICT (articulo_sku, deposito_id) DO UPDATE` y el script detecta filas ya migradas (con `ubicacion_id NOT NULL` o `migrated_at` flag)
+4. El reporte se guarda en `.planning/phases/<N>/MIGRATION-REPORT.md` con timestamp, counts, y queries de validación (incluyendo lista de SKUs que cayeron en sentinel) para review humano post-ejecución
 
 **Plans**: TBD
 **Open Qs to close in `/gsd-discuss-phase 36`**: Q8 (sentinel definitivo: NULL vs `'SIN_UBICACION'` — confirmar; NO `'0'` por P-09); validar mapping slugify(`sanchez.articulos.columna`) contra dataset actual (research-phase recomendado por SUMMARY)
@@ -261,10 +270,11 @@ Plans:
 **Requirements**: DEBT-01, DEBT-02, DEBT-03
 
 **Success Criteria** (what must be TRUE):
-  1. Los campos monetarios (`precio`, `costo`, `erp_precio`, `erp_costo`, `precio_lista` y otros identificados) en `articulos` y comprobantes pasan de `doublePrecision` a `numeric(10,2)` con migración hand-authored; tests unitarios de aritmética monetaria (`precio * cantidad`, sumas de subtotales) pasan post-migración
-  2. El schema TypeScript en `apps/backend/src/db/schema.ts` queda alineado con la DB en: (a) nombres de índices coinciden 1:1 (ej: `idx_articulos_marca` en TS y DB), (b) `numeric(10,2)` declarado explícitamente en TS, (c) `timestamp(6)` consistency entre TS y DB
-  3. `pnpm db:generate --check` corre limpio post-cleanup: no detecta diffs entre `schema.ts` y la DB (CI puede agregar este check como pre-deploy guard)
-  4. El comentario placeholder en `apps/web/src/components/header.tsx:20` queda removido; tests de smoke de la header siguen pasando
+
+1. Los campos monetarios (`precio`, `costo`, `erp_precio`, `erp_costo`, `precio_lista` y otros identificados) en `articulos` y comprobantes pasan de `doublePrecision` a `numeric(10,2)` con migración hand-authored; tests unitarios de aritmética monetaria (`precio * cantidad`, sumas de subtotales) pasan post-migración
+2. El schema TypeScript en `apps/backend/src/db/schema.ts` queda alineado con la DB en: (a) nombres de índices coinciden 1:1 (ej: `idx_articulos_marca` en TS y DB), (b) `numeric(10,2)` declarado explícitamente en TS, (c) `timestamp(6)` consistency entre TS y DB
+3. `pnpm db:generate --check` corre limpio post-cleanup: no detecta diffs entre `schema.ts` y la DB (CI puede agregar este check como pre-deploy guard)
+4. El comentario placeholder en `apps/web/src/components/header.tsx:20` queda removido; tests de smoke de la header siguen pasando
 
 **Plans**: TBD
 **Open Qs to close in `/gsd-discuss-phase 37`**: Q9 (drift TS↔DB final cleanup), Q10 (qué tech debt entra — `numeric SÍ`, `header placeholder SÍ`, HOOK-03/06 docs evaluables, POST `/api/existencias` huérfano evaluable)
@@ -295,18 +305,18 @@ Plans:
 **Mapped to phases:** 37 (100%)
 **Orphans:** 0 | **Duplicates:** 0
 
-| Category | Count | Phase |
-|----------|-------|-------|
-| CAT (Catálogos) | 4 | 29 |
-| TPL (Templates) | 5 | 30 |
-| VAR (Variantes) — VAR-10 | 1 | 31 |
-| VAR (Variantes) — VAR-01..09 | 9 | 32 |
-| SKU (Regeneración Masiva) | 5 | 33 |
-| STOCK (Modelo) — STOCK-01..04 | 4 | 34 |
-| STOCK (Modelo) — STOCK-05..07 | 3 | 35 |
-| MIG (Migración Histórica) | 3 | 36 |
-| DEBT (Tech Debt) | 3 | 37 |
-| **Total** | **37** | — |
+| Category                      | Count  | Phase |
+| ----------------------------- | ------ | ----- |
+| CAT (Catálogos)               | 4      | 29    |
+| TPL (Templates)               | 5      | 30    |
+| VAR (Variantes) — VAR-10      | 1      | 31    |
+| VAR (Variantes) — VAR-01..09  | 9      | 32    |
+| SKU (Regeneración Masiva)     | 5      | 33    |
+| STOCK (Modelo) — STOCK-01..04 | 4      | 34    |
+| STOCK (Modelo) — STOCK-05..07 | 3      | 35    |
+| MIG (Migración Histórica)     | 3      | 36    |
+| DEBT (Tech Debt)              | 3      | 37    |
+| **Total**                     | **37** | —     |
 
 ## Notes (v1.3)
 
@@ -319,45 +329,45 @@ Plans:
 
 ## Progress
 
-| Phase                                            | Milestone | Plans Complete | Status      | Completed  |
-| ------------------------------------------------ | --------- | -------------- | ----------- | ---------- |
-| 1. Foundation & Monorepo                         | v1.0      | 4/4            | Complete    | 2026-01-24 |
-| 2. Backend API with Mock Data                    | v1.0      | 5/5            | Complete    | 2026-03-01 |
-| 3. Web Application                               | v1.0      | 8/8            | Complete    | 2026-01-26 |
-| 4. Mobile Application                            | v1.0      | 4/4            | Complete    | 2026-03-02 |
-| 5. Database Integration                          | v1.0      | 3/3            | Complete    | 2026-03-02 |
-| 6. Polish & Production                           | v1.0      | 4/4            | Complete    | 2026-03-02 |
-| 7. Fix Integration Bugs                          | v1.0      | 2/2            | Complete    | 2026-03-02 |
-| 8. Verify & Close Phases 3+4                     | v1.0      | 3/3            | Complete    | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs              | v1.0      | 2/2            | Complete    | 2026-03-02 |
-| 10. Code Quality & Type Safety Cleanup           | v1.0      | 4/4            | Complete    | 2026-03-03 |
-| 11. Fix Sales Detail View Crash                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 12. Fix Dashboard Links & Doc Sync               | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 13. Tech Debt Cleanup                            | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 14. Schema + Articulos + Depositos               | v1.1      | 5/5            | Complete    | 2026-03-05 |
-| 15. Existencias                                  | v1.1      | 3/3            | Complete    | 2026-03-05 |
-| 16. Downstream + Dashboard + Nav                 | v1.1      | 4/4            | Complete    | 2026-03-05 |
-| 17. Inventarios                                  | v1.1      | 5/5            | Complete    | 2026-03-06 |
-| 18. Fix Inventarios Article Count                | v1.1      | 1/1            | Complete    | 2026-03-06 |
-| 19. Articulos CRUD Completo                      | v1.2      | 3/3            | Complete    | 2026-03-11 |
-| 20. Image Upload Backend                         | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 21. Image Upload Frontend + Detalle              | v1.2      | 2/2            | Complete    | 2026-03-12 |
-| 22. Vista Lista Configurable                     | v1.2      | 2/2            | Complete    | 2026-03-12 |
-| 23. API Keys                                     | v1.2      | 2/2            | Complete    | 2026-03-12 |
-| 24. Webhooks                                     | v1.2      | 4/4            | Complete    | 2026-03-12 |
-| 25. Wire Frontend Soft-Delete + Verify           | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 26. Tech Debt Cleanup v1.2                       | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 27. Add objeto to ArticuloForm                   | v1.2      | 1/1            | Complete    | 2026-03-13 |
-| 28. Add objeto to ArticuloSheet                  | v1.2      | 1/1            | Complete    | 2026-03-13 |
-| 29. Catálogos de Atributos                       | v1.3      | 0/0            | Not started | -          |
-| 30. Templates + Composición SKU/Nombre           | v1.3      | 0/0            | Not started | -          |
-| 31. PK Swap codigo→sku + FK rename comprobantes  | v1.3      | 0/0            | Not started | -          |
-| 32. Variantes UI                                 | v1.3      | 0/0            | Not started | -          |
-| 33. Cascade Engine + Audit History               | v1.3      | 0/0            | Not started | -          |
-| 34. Stock Schema (ubicaciones + sectores)        | v1.3      | 0/0            | Not started | -          |
-| 35. Stock UI (filtros + edición visual + dashboard) | v1.3   | 0/0            | Not started | -          |
-| 36. Migración Histórica de Existencias           | v1.3      | 0/0            | Not started | -          |
-| 37. Tech Debt v1.3                               | v1.3      | 0/0            | Not started | -          |
+| Phase                                               | Milestone | Plans Complete | Status      | Completed  |
+| --------------------------------------------------- | --------- | -------------- | ----------- | ---------- |
+| 1. Foundation & Monorepo                            | v1.0      | 4/4            | Complete    | 2026-01-24 |
+| 2. Backend API with Mock Data                       | v1.0      | 5/5            | Complete    | 2026-03-01 |
+| 3. Web Application                                  | v1.0      | 8/8            | Complete    | 2026-01-26 |
+| 4. Mobile Application                               | v1.0      | 4/4            | Complete    | 2026-03-02 |
+| 5. Database Integration                             | v1.0      | 3/3            | Complete    | 2026-03-02 |
+| 6. Polish & Production                              | v1.0      | 4/4            | Complete    | 2026-03-02 |
+| 7. Fix Integration Bugs                             | v1.0      | 2/2            | Complete    | 2026-03-02 |
+| 8. Verify & Close Phases 3+4                        | v1.0      | 3/3            | Complete    | 2026-03-02 |
+| 9. Fix Mobile Purchase & Login Bugs                 | v1.0      | 2/2            | Complete    | 2026-03-02 |
+| 10. Code Quality & Type Safety Cleanup              | v1.0      | 4/4            | Complete    | 2026-03-03 |
+| 11. Fix Sales Detail View Crash                     | v1.0      | 1/1            | Complete    | 2026-03-03 |
+| 12. Fix Dashboard Links & Doc Sync                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
+| 13. Tech Debt Cleanup                               | v1.0      | 1/1            | Complete    | 2026-03-03 |
+| 14. Schema + Articulos + Depositos                  | v1.1      | 5/5            | Complete    | 2026-03-05 |
+| 15. Existencias                                     | v1.1      | 3/3            | Complete    | 2026-03-05 |
+| 16. Downstream + Dashboard + Nav                    | v1.1      | 4/4            | Complete    | 2026-03-05 |
+| 17. Inventarios                                     | v1.1      | 5/5            | Complete    | 2026-03-06 |
+| 18. Fix Inventarios Article Count                   | v1.1      | 1/1            | Complete    | 2026-03-06 |
+| 19. Articulos CRUD Completo                         | v1.2      | 3/3            | Complete    | 2026-03-11 |
+| 20. Image Upload Backend                            | v1.2      | 1/1            | Complete    | 2026-03-12 |
+| 21. Image Upload Frontend + Detalle                 | v1.2      | 2/2            | Complete    | 2026-03-12 |
+| 22. Vista Lista Configurable                        | v1.2      | 2/2            | Complete    | 2026-03-12 |
+| 23. API Keys                                        | v1.2      | 2/2            | Complete    | 2026-03-12 |
+| 24. Webhooks                                        | v1.2      | 4/4            | Complete    | 2026-03-12 |
+| 25. Wire Frontend Soft-Delete + Verify              | v1.2      | 1/1            | Complete    | 2026-03-12 |
+| 26. Tech Debt Cleanup v1.2                          | v1.2      | 1/1            | Complete    | 2026-03-12 |
+| 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete    | 2026-03-13 |
+| 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete    | 2026-03-13 |
+| 29. Catálogos de Atributos                          | v1.3      | 1/6            | In Progress |            |
+| 30. Templates + Composición SKU/Nombre              | v1.3      | 0/0            | Not started | -          |
+| 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started | -          |
+| 32. Variantes UI                                    | v1.3      | 0/0            | Not started | -          |
+| 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started | -          |
+| 34. Stock Schema (ubicaciones + sectores)           | v1.3      | 0/0            | Not started | -          |
+| 35. Stock UI (filtros + edición visual + dashboard) | v1.3      | 0/0            | Not started | -          |
+| 36. Migración Histórica de Existencias              | v1.3      | 0/0            | Not started | -          |
+| 37. Tech Debt v1.3                                  | v1.3      | 0/0            | Not started | -          |
 
 ---
 
