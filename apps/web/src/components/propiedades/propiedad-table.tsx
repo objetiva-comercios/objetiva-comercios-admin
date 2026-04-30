@@ -6,7 +6,7 @@ import {
   togglePropiedadActivo,
 } from '@/lib/api.client'
 import type { Propiedad, PropTipo } from '@/types/propiedad'
-import { PROP_LABELS } from '@/types/propiedad'
+import { PROP_LABELS, copyFor } from '@/types/propiedad'
 import {
   Table,
   TableBody,
@@ -38,6 +38,7 @@ export interface PropiedadTableProps {
 export function PropiedadTable({ propTipo }: PropiedadTableProps) {
   const { toast } = useToast()
   const label = PROP_LABELS[propTipo]
+  const c = copyFor(propTipo)
 
   const [propiedades, setPropiedades] = useState<Propiedad[]>([])
   const [loading, setLoading] = useState(true)
@@ -89,7 +90,7 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
     setDeactivateOpen(false)
     try {
       await togglePropiedadActivo(propTipo, target.id)
-      toast({ title: `${label.singular} desactivada` })
+      toast({ title: `${c.singular} ${c.desactivada}` })
       await loadData()
     } catch (err) {
       toast({
@@ -107,7 +108,7 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
     setTogglingId(p.id)
     try {
       await togglePropiedadActivo(propTipo, p.id)
-      toast({ title: `${label.singular} reactivada` })
+      toast({ title: `${c.singular} ${c.reactivada}` })
       await loadData()
     } catch (err) {
       toast({
@@ -139,7 +140,7 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
         </div>
         <Button size="sm" onClick={() => setCreateOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Nueva {label.singular.toLowerCase()}
+          {c.nuevo} {c.singularLower}
         </Button>
       </div>
 
@@ -180,8 +181,9 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
                   colSpan={5}
                   className="text-center py-8 text-sm text-muted-foreground"
                 >
-                  Sin {label.plural.toLowerCase()}. Usá el botón Nueva{' '}
-                  {label.singular.toLowerCase()} para agregar la primera.
+                  Sin {c.pluralLower}. Usá el botón {c.nuevo}{' '}
+                  {c.singularLower} para agregar {c.articulo}{' '}
+                  {c.primera}.
                 </TableCell>
               </TableRow>
             ) : (
@@ -267,6 +269,7 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
       {deactivating && (
         <PropiedadDeactivateDialog
           propiedad={deactivating}
+          propTipo={propTipo}
           open={deactivateOpen}
           onOpenChange={o => {
             setDeactivateOpen(o)

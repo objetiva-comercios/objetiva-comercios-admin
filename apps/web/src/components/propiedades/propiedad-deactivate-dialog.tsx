@@ -10,10 +10,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import type { Propiedad } from '@/types/propiedad'
+import type { Propiedad, PropTipo } from '@/types/propiedad'
+import { copyFor } from '@/types/propiedad'
 
 export interface PropiedadDeactivateDialogProps {
   propiedad: Propiedad
+  propTipo?: PropTipo
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
@@ -21,10 +23,13 @@ export interface PropiedadDeactivateDialogProps {
 
 export function PropiedadDeactivateDialog({
   propiedad,
+  propTipo,
   open,
   onOpenChange,
   onConfirm,
 }: PropiedadDeactivateDialogProps) {
+  // `propTipo` es opcional para back-compat; sin él asumimos femenino (default histórico).
+  const pronombre = propTipo ? copyFor(propTipo).pronombre : 'la'
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -34,7 +39,7 @@ export function PropiedadDeactivateDialog({
           </AlertDialogTitle>
           <AlertDialogDescription>
             Vas a desactivar &lsquo;{propiedad.nombre}&rsquo;. Los artículos
-            existentes que la usan no se modifican. ¿Confirmás?
+            existentes que {pronombre} usan no se modifican. ¿Confirmás?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

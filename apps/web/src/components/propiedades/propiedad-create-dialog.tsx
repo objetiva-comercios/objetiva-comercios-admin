@@ -9,6 +9,7 @@ import { suggestAbrev } from '@/lib/abrev'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -29,6 +30,7 @@ import { Loader2 } from 'lucide-react'
 import {
   PROP_LABELS,
   PROP_NOMBRE_PLACEHOLDERS,
+  copyFor,
   type Propiedad,
   type PropTipo,
 } from '@/types/propiedad'
@@ -99,12 +101,13 @@ export function PropiedadCreateDialog({
   }, [open, form])
 
   const label = PROP_LABELS[propTipo]
+  const c = copyFor(propTipo)
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true)
     try {
       const created = await createPropiedad(propTipo, values)
-      toast({ title: `${label.singular} creada correctamente` })
+      toast({ title: `${c.singular} ${c.creada} correctamente` })
       onCreated?.(created)
       onOpenChange(false)
     } catch (err) {
@@ -116,7 +119,7 @@ export function PropiedadCreateDialog({
         form.setError('abrev', { message })
       } else {
         toast({
-          title: `No se pudo crear la ${label.singular.toLowerCase()}`,
+          title: `No se pudo crear ${c.articulo} ${c.singularLower}`,
           description: message,
           variant: 'destructive',
         })
@@ -131,7 +134,11 @@ export function PropiedadCreateDialog({
       {trigger}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Nueva {label.singular}</DialogTitle>
+          <DialogTitle>{c.nuevo} {label.singular}</DialogTitle>
+          <DialogDescription className="text-xs">
+            Completá nombre y abreviación. La abreviación se sugiere
+            automáticamente a partir del nombre.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -185,7 +192,7 @@ export function PropiedadCreateDialog({
               </Button>
               <Button type="submit" size="sm" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Crear {label.singular.toLowerCase()}
+                Crear {c.singularLower}
               </Button>
             </DialogFooter>
           </form>

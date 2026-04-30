@@ -8,6 +8,7 @@ import { updatePropiedad } from '@/lib/api.client'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,7 +26,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
-import { PROP_LABELS, type Propiedad, type PropTipo } from '@/types/propiedad'
+import { PROP_LABELS, copyFor, type Propiedad, type PropTipo } from '@/types/propiedad'
 
 const schema = z.object({
   nombre: z
@@ -60,6 +61,7 @@ export function PropiedadEditDialog({
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const label = PROP_LABELS[propTipo]
+  const c = copyFor(propTipo)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -77,7 +79,7 @@ export function PropiedadEditDialog({
     setIsLoading(true)
     try {
       await updatePropiedad(propTipo, propiedad.id, values)
-      toast({ title: `${label.singular} actualizada correctamente` })
+      toast({ title: `${c.singular} ${c.actualizada} correctamente` })
       onOpenChange(false)
       onSuccess()
     } catch (err) {
@@ -104,6 +106,10 @@ export function PropiedadEditDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Editar {label.singular}</DialogTitle>
+          <DialogDescription className="text-xs">
+            Modificá nombre o abreviación. Para activar/desactivar usá las
+            acciones de la fila.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
