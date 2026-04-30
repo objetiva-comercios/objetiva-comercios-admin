@@ -127,18 +127,21 @@ export class PropiedadesService {
     tipo: PropTipo,
     dto: { nombre?: string; abrev?: string },
   ) {
+    // Drizzle 0.45 wraps postgres.js errors in DrizzleQueryError; the original
+    // PG error (with `.code`, `.constraint_name`, `.detail`) lives on `.cause`.
+    const pgError = (error as Record<string, unknown> | undefined)?.cause ?? error
     if (
-      !(error instanceof Error) ||
-      !('code' in error) ||
-      (error as Record<string, unknown>).code !== '23505'
+      !(pgError instanceof Error) ||
+      !('code' in pgError) ||
+      (pgError as Record<string, unknown>).code !== '23505'
     ) {
       return
     }
 
-    const detail = String((error as Record<string, unknown>).detail ?? '')
+    const detail = String((pgError as Record<string, unknown>).detail ?? '')
     const constraint = String(
-      (error as Record<string, unknown>).constraint_name ??
-        (error as Record<string, unknown>).constraint ??
+      (pgError as Record<string, unknown>).constraint_name ??
+        (pgError as Record<string, unknown>).constraint ??
         '',
     )
     const label = PROP_LABELS[tipo]
