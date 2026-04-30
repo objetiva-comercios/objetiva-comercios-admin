@@ -1,10 +1,11 @@
 ---
 phase: 29
 slug: catalogos-de-atributos
-status: draft
+status: approved
 shadcn_initialized: true
 preset: "slate base / cssVariables / rsc / tsx"
 created: 2026-04-30
+reviewed_at: 2026-04-30T00:00:00Z
 ---
 
 # Phase 29 — UI Design Contract: Catálogos de Atributos (Propiedades)
