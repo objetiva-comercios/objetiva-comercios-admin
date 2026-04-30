@@ -12,7 +12,10 @@ import {
   boolean,
   jsonb,
   primaryKey,
+  check,
+  type AnyPgColumn,
 } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
 import { DEFAULT_ARTICULOS_CONFIG } from '../modules/settings/articulos-config'
 import type { ArticulosConfig } from '../modules/settings/articulos-config'
 
@@ -501,3 +504,53 @@ export type NewWebhook = typeof webhooks.$inferInsert
 
 export type WebhookDelivery = typeof webhookDeliveries.$inferSelect
 export type NewWebhookDelivery = typeof webhookDeliveries.$inferInsert
+
+// === Phase 29: Propiedades (catálogos de atributos) ===
+// 6 tablas independientes (D-01) con shape mínima (D-03), prefijo prop_ (D-04),
+// UNIQUE LOWER(nombre) (D-05) y CHECK abrev ~ '^[A-Z0-9]{1,8}$' (D-06).
+
+function lower(col: AnyPgColumn) {
+  return sql`lower(${col})`
+}
+
+const ABREV_REGEX_SQL = sql`abrev ~ '^[A-Z0-9]{1,8}$'`
+
+function definePropTable(tableName: string, indexPrefix: string) {
+  return pgTable(
+    tableName,
+    {
+      id: serial('id').primaryKey(),
+      nombre: text('nombre').notNull(),
+      abrev: text('abrev').notNull(),
+      activo: boolean('activo').notNull().default(true),
+      createdAt: timestamp('created_at').notNull().defaultNow(),
+      updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    },
+    table => [
+      uniqueIndex(`${indexPrefix}_nombre_lower_uniq`).on(lower(table.nombre)),
+      uniqueIndex(`${indexPrefix}_abrev_uniq`).on(table.abrev),
+      check(`${indexPrefix}_abrev_format_chk`, ABREV_REGEX_SQL),
+      index(`${indexPrefix}_activo_idx`).on(table.activo),
+    ]
+  )
+}
+
+export const propMarca = definePropTable('prop_marca', 'prop_marca')
+export const propColor = definePropTable('prop_color', 'prop_color')
+export const propTalle = definePropTable('prop_talle', 'prop_talle')
+export const propMaterial = definePropTable('prop_material', 'prop_material')
+export const propPresentacion = definePropTable('prop_presentacion', 'prop_presentacion')
+export const propObjeto = definePropTable('prop_objeto', 'prop_objeto')
+
+export type PropMarca = typeof propMarca.$inferSelect
+export type NewPropMarca = typeof propMarca.$inferInsert
+export type PropColor = typeof propColor.$inferSelect
+export type NewPropColor = typeof propColor.$inferInsert
+export type PropTalle = typeof propTalle.$inferSelect
+export type NewPropTalle = typeof propTalle.$inferInsert
+export type PropMaterial = typeof propMaterial.$inferSelect
+export type NewPropMaterial = typeof propMaterial.$inferInsert
+export type PropPresentacion = typeof propPresentacion.$inferSelect
+export type NewPropPresentacion = typeof propPresentacion.$inferInsert
+export type PropObjeto = typeof propObjeto.$inferSelect
+export type NewPropObjeto = typeof propObjeto.$inferInsert
