@@ -5,6 +5,9 @@ type: summary
 status: human-verify-pending
 ---
 
+> **Update 2026-04-30 22:32** — User approved fix género + a11y. Both
+> applied in commit `8702273c`. Pending Actions section updated below.
+
 # Plan 29-06 — Summary
 
 ## Objetivo cumplido (parcialmente)
@@ -145,10 +148,12 @@ Ninguno. El flujo CAT-01..04 funciona end-to-end después del fix de Deviation #
 
 ## Pending Actions
 
-1. **Decisión del usuario sobre el bug de género** (issue #1 arriba). Si se aprueba el fix, se hace en una pasada antes de cerrar Phase 29 o se difiere a un quick task.
-2. **Cleanup de filas E2E** (`E2EMarca…_edit` ID 5, `Shimano_…` ID 6 en `prop_marca`) — manual via SQL.
-3. **Decidir si el A11y warning del DialogContent es bloqueante** (probablemente no, es trivial).
-4. **Confirmar que el toggle activo solo via DropdownMenu (sin Switch en Edit dialog) es deseado** — vs reabrir Plan 29-05.
+1. ~~Decisión del usuario sobre el bug de género~~ → **Resuelto** (commit `8702273c`).
+2. **Cleanup de filas E2E** en la DB local — manual via SQL:
+   - `prop_marca`: ID 5 (`E2EMarca1777587073_edit`), ID 6 (`Shimano_1777587073`)
+   - `prop_color`: ID 1 (`E2EColor1777588291`)
+3. ~~A11y warning DialogContent~~ → **Resuelto** (commit `8702273c`, agregada `DialogDescription` a Create + Edit dialogs).
+4. **Confirmar que el toggle activo solo via DropdownMenu (sin Switch en Edit dialog) es deseado** — vs reabrir Plan 29-05. Diferido al checkpoint humano final.
 
 ## Resume signal
 
