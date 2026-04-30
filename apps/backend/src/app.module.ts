@@ -11,6 +11,7 @@ import { PurchasesModule } from './modules/purchases/purchases.module'
 import { DashboardModule } from './modules/dashboard/dashboard.module'
 import { SettingsModule } from './modules/settings/settings.module'
 import { ArticulosModule } from './modules/articulos/articulos.module'
+import { PropiedadesModule } from './modules/propiedades/propiedades.module'
 import { DepositosModule } from './modules/depositos/depositos.module'
 import { ExistenciasModule } from './modules/existencias/existencias.module'
 import { InventariosModule } from './modules/inventarios/inventarios.module'
@@ -30,6 +31,7 @@ import { CompositeAuthGuard } from './common/guards/composite-auth.guard'
     DashboardModule,
     SettingsModule,
     ArticulosModule,
+    PropiedadesModule,
     DepositosModule,
     ExistenciasModule,
     InventariosModule,
