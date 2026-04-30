@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
-status: planning
-last_updated: "2026-04-29T22:50:00.000Z"
-last_activity: 2026-04-29
+status: "CONTEXT.md escrito — 19 decisiones (D-01..D-19), 6 tablas prop_*, calificador text-libre, sku separator '-' con stripSep(codigo). SC#5 diferido a Phase 32."
+stopped_at: Phase 29 UI-SPEC approved
+last_updated: "2026-04-30T11:45:18.318Z"
+last_activity: 2026-04-29 — Phase 29 context gathered
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
 ---
 
 # Project State
@@ -87,8 +87,8 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-04-29
-Stopped at: Phase 29 context capturado en .planning/phases/29-catalogos-de-atributos/29-CONTEXT.md
+Last session: 2026-04-30T11:45:18.267Z
+Stopped at: Phase 29 UI-SPEC approved
 Next action: `/gsd:plan-phase 29`
 
 ---
