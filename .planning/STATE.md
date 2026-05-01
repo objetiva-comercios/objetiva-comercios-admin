@@ -56,6 +56,10 @@ Cerradas en discuss-phase 29 (CONTEXT.md): Q1 (set de 6 tablas prop\_\*), Q2 (FK
 
 Pendiente cerrar via /gsd-discuss-phase posteriores: Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10 — distribuidas según ROADMAP.md (Phase 30/31/33/36/37).
 
+### Roadmap Evolution
+
+- 2026-05-01: Phase 38 added — Reconciliar drift sistemico de DB de produccion (reactiva, post-detección durante smoke phase 29). Recomendado ejecutar antes de Phase 37.
+
 ### Pending Todos
 
 - [auditar-desfase-sistemico-db-de-produccion](./todos/pending/2026-05-01-auditar-desfase-sistemico-db-de-produccion.md) — DB prod tiene `__drizzle_migrations` registrando hashes pero múltiples tablas faltan (`business_settings`, `inv_articulos`, `prop_*` antes del fix manual). Detectado durante smoke /propiedades → 500. Posible relación con quick task `260409-jwl Sync Drizzle schema with production DB` (parcial). Requiere reconciliación full antes del próximo `db:push`.

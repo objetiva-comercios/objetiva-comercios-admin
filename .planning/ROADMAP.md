@@ -369,6 +369,34 @@ Plans:
 | 36. Migración Histórica de Existencias              | v1.3      | 0/0            | Not started | -          |
 | 37. Tech Debt v1.3                                  | v1.3      | 0/0            | Not started | -          |
 
+### Phase 38: Reconciliar drift sistemico de DB de produccion
+
+**Goal:** Eliminar el drift entre `__drizzle_migrations` y el estado real del schema en la DB de producción del VPS. La tabla de migraciones registra hashes (0000-0002, 0004-0005) pero múltiples tablas no existen físicamente: `business_settings` (definida en 0002), `inv_articulos` (alterada en 0003), `prop_*` (creadas manualmente vía psql el 2026-05-01 durante smoke de phase 29). Probable causa: drift acumulado desde la migración Prisma→Drizzle (convive `_prisma_migrations` legacy). Cualquier `db:push` o `db:migrate` futuro skipea silenciosamente porque drizzle confía en los hashes registrados. **Prerequisito para futuras migraciones de DB.**
+
+**Requirements**: TBD (no mapeado a v1.3 — phase reactiva post-detección, no parte del milestone original)
+
+**Depends on:** Ninguna estricta. Phase 37 (tech debt v1.3) toca columnas/tipos pero no schema lifecycle. **Recomendación:** ejecutar Phase 38 ANTES de 37 para no aplicar tech debt sobre un DB inconsistente.
+
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 38 to break down)
+
+**Plan tentativo (a refinar en plan-phase):**
+
+1. **Pre-flight**: `pg_dump erp_sanchez` + verificar restore en DB temporal. Sin esto no se avanza.
+2. **Diagnóstico**: comparar `\dt` real vs schema esperado (`apps/backend/src/db/schema.ts` + `meta/_journal.json`). Output: tabla `tabla_esperada | estado | acción`.
+3. **Decisión** (consensuada con humano):
+   - Catch-up incremental (aplicar SQL de cada migration faltante vía psql, preserva data)
+   - Reset full (dump → drop schema → replay → restore data, más limpio si drift es grande)
+4. **Aplicación + verificación**: ejecutar opción elegida, `\dt` debe matchear journal.
+5. **Smoke playwright multi-módulo**: /articulos /orders /sales /purchases /propiedades /dispositivos /webhooks /api-keys /inventarios /settings — reporte verde/rojo por módulo.
+
+**Detectado por:** smoke playwright `/propiedades` → 500 Internal server error (2026-05-01)
+**Todo asociado:** [auditar-desfase-sistemico-db-de-produccion](../todos/pending/2026-05-01-auditar-desfase-sistemico-db-de-produccion.md)
+**Antecedente:** quick task `260409-jwl Sync Drizzle schema with production DB` (2026-04-09) — resolución parcial; el drift volvió.
+
 ---
 
 _Roadmap created: 2026-01-23_
