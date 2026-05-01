@@ -8,14 +8,7 @@
  * los registros (`PROP_LABELS`, `PROP_NOMBRE_PLACEHOLDERS`).
  */
 
-export const PROP_TIPOS = [
-  'marca',
-  'color',
-  'talle',
-  'material',
-  'presentacion',
-  'objeto',
-] as const
+export const PROP_TIPOS = ['marca', 'color', 'talle', 'material', 'presentacion', 'objeto'] as const
 
 export type PropTipo = (typeof PROP_TIPOS)[number]
 
@@ -76,8 +69,10 @@ export function copyFor(tipo: PropTipo) {
     pronombre: f ? 'la' : 'lo',
     /** "la" o "el" — artículo definido para frases como "crear la marca / el color". */
     articulo: f ? 'la' : 'el',
-    /** "primera" o "primero" — empty state "agregar la primera / el primero". */
-    primera: f ? 'primera' : 'primero',
+    /** "primera" o "primero" — empty state "agregar la primera / el primero".
+     *  Nota: la key `ordinalPrimero` es genérica para no engañar al lector
+     *  cuando se renderiza para género masculino. */
+    ordinalPrimero: f ? 'primera' : 'primero',
   }
 }
 

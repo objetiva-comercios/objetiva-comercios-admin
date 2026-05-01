@@ -4,7 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common'
-import { eq, asc } from 'drizzle-orm'
+import { eq, asc, sql } from 'drizzle-orm'
 import { DrizzleService } from '../../db/index'
 import { PROP_TABLES, PROP_LABELS, type PropTipo } from './propiedades.constants'
 import { CreatePropiedadDto } from './dto/create-propiedad.dto'
@@ -95,16 +95,16 @@ export class PropiedadesService {
 
   async toggleActive(tipo: PropTipo, id: number) {
     const table = this.tableFor(tipo)
-    const existing = await this.findOne(tipo, id)
-    if (!existing) {
+    // Atomic flip in 1 roundtrip: NOT activo evaluated server-side, no race window.
+    const rows = await this.drizzle.db
+      .update(table)
+      .set({ activo: sql`NOT ${table.activo}`, updatedAt: new Date() })
+      .where(eq(table.id, id))
+      .returning()
+    if (!rows[0]) {
       const label = PROP_LABELS[tipo].singular
       throw new NotFoundException(`${capitalize(label)} con ID ${id} no encontrada`)
     }
-    const rows = await this.drizzle.db
-      .update(table)
-      .set({ activo: !existing.activo, updatedAt: new Date() })
-      .where(eq(table.id, id))
-      .returning()
     return rows[0]
   }
 
@@ -125,7 +125,7 @@ export class PropiedadesService {
   private handleUniqueViolation(
     error: unknown,
     tipo: PropTipo,
-    dto: { nombre?: string; abrev?: string },
+    dto: { nombre?: string; abrev?: string }
   ) {
     // Drizzle 0.45 wraps postgres.js errors in DrizzleQueryError; the original
     // PG error (with `.code`, `.constraint_name`, `.detail`) lives on `.cause`.
@@ -142,21 +142,17 @@ export class PropiedadesService {
     const constraint = String(
       (pgError as Record<string, unknown>).constraint_name ??
         (pgError as Record<string, unknown>).constraint ??
-        '',
+        ''
     )
     const label = PROP_LABELS[tipo]
 
     // UNIQUE LOWER(nombre)
     if (constraint.includes('nombre_lower_uniq') || detail.toLowerCase().includes('lower')) {
-      throw new ConflictException(
-        `Ya existe una ${label.singular} con el nombre "${dto.nombre}"`,
-      )
+      throw new ConflictException(`Ya existe una ${label.singular} con el nombre "${dto.nombre}"`)
     }
     // UNIQUE(abrev)
     if (constraint.includes('abrev_uniq') || detail.includes('abrev')) {
-      throw new ConflictException(
-        `La abreviación "${dto.abrev}" ya existe en ${label.plural}`,
-      )
+      throw new ConflictException(`La abreviación "${dto.abrev}" ya existe en ${label.plural}`)
     }
     // Fallback genérico
     throw new ConflictException(`Conflicto de unicidad en ${label.plural}`)

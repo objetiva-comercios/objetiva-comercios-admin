@@ -1,10 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import {
-  fetchPropiedades,
-  togglePropiedadActivo,
-} from '@/lib/api.client'
+import { fetchPropiedades, togglePropiedadActivo } from '@/lib/api.client'
 import type { Propiedad, PropTipo } from '@/types/propiedad'
 import { PROP_LABELS, copyFor } from '@/types/propiedad'
 import {
@@ -177,24 +174,15 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
               ))
             ) : propiedades.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="text-center py-8 text-sm text-muted-foreground"
-                >
-                  Sin {c.pluralLower}. Usá el botón {c.nuevo}{' '}
-                  {c.singularLower} para agregar {c.articulo}{' '}
-                  {c.primera}.
+                <TableCell colSpan={5} className="text-center py-8 text-sm text-muted-foreground">
+                  Sin {c.pluralLower}. Usá el botón {c.nuevo} {c.singularLower} para agregar{' '}
+                  {c.articulo} {c.ordinalPrimero}.
                 </TableCell>
               </TableRow>
             ) : (
               propiedades.map(p => (
-                <TableRow
-                  key={p.id}
-                  className={p.activo ? '' : 'text-muted-foreground'}
-                >
-                  <TableCell className="font-mono text-sm text-muted-foreground">
-                    {p.id}
-                  </TableCell>
+                <TableRow key={p.id} className={p.activo ? '' : 'text-muted-foreground'}>
+                  <TableCell className="font-mono text-sm text-muted-foreground">{p.id}</TableCell>
                   <TableCell className="font-medium text-sm">{p.nombre}</TableCell>
                   <TableCell className="font-mono text-sm">{p.abrev}</TableCell>
                   <TableCell>
@@ -222,9 +210,7 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
                             Editar
                           </DropdownMenuItem>
                           {p.activo ? (
-                            <DropdownMenuItem
-                              onClick={() => handleDeactivateRequest(p)}
-                            >
+                            <DropdownMenuItem onClick={() => handleDeactivateRequest(p)}>
                               Desactivar
                             </DropdownMenuItem>
                           ) : (

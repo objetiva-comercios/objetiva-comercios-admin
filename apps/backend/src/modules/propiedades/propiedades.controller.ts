@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseGuards,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common'
 import { PropiedadesService } from './propiedades.service'
 import { CreatePropiedadDto } from './dto/create-propiedad.dto'
@@ -33,13 +34,17 @@ export class PropiedadesController {
     // 'true' → true
     // 'false'→ false
     // (sin query) → true (default per D-18)
-    // (valor desconocido) → true (default seguro)
+    // (cualquier otro valor) → 400 (input mal-formado, no silenciar)
     let activoFilter: boolean | undefined
     if (activo === undefined) activoFilter = true
     else if (activo === 'all') activoFilter = undefined
     else if (activo === 'true') activoFilter = true
     else if (activo === 'false') activoFilter = false
-    else activoFilter = true
+    else {
+      throw new BadRequestException(
+        `Query param 'activo' debe ser 'true', 'false' o 'all' (recibido: '${activo}')`
+      )
+    }
     return this.service.findAll(tipo, { activo: activoFilter })
   }
 
@@ -67,7 +72,7 @@ export class PropiedadesController {
   update(
     @Param('tipo') tipo: string,
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdatePropiedadDto,
+    @Body() dto: UpdatePropiedadDto
   ) {
     this.assertValidTipo(tipo)
     return this.service.update(tipo, id, dto)
@@ -81,10 +86,11 @@ export class PropiedadesController {
     return this.service.toggleActive(tipo, id)
   }
 
-  /** Valida el URL param `tipo` contra PROP_TIPOS, narrowing a PropTipo. */
+  /** Valida el URL param `tipo` contra PROP_TIPOS, narrowing a PropTipo.
+   *  Lanza 400 (input inválido) — alineado con `tableFor` en el service. */
   private assertValidTipo(tipo: string): asserts tipo is PropTipo {
     if (!(PROP_TIPOS as readonly string[]).includes(tipo)) {
-      throw new NotFoundException(`Tipo de propiedad inválido: ${tipo}`)
+      throw new BadRequestException(`Tipo de propiedad inválido: ${tipo}`)
     }
   }
 }

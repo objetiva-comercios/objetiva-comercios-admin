@@ -32,11 +32,14 @@ const DIACRITICS_RE = new RegExp(
 )
 
 export function suggestAbrev(nombre: string, takeChars = 4): string {
+  // El cap absoluto (8) está primero para que cualquier valor de `takeChars`
+  // (incluso > 8) quede acotado por la regla del CHECK constraint del DB.
+  // El override del caller solo puede REDUCIR, no expandir.
+  const cap = Math.min(takeChars, 8)
   return (nombre ?? '')
     .normalize('NFD')
     .replace(DIACRITICS_RE, '')
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, '')
-    .slice(0, takeChars)
-    .slice(0, 8) // hard cap defense-in-depth
+    .slice(0, cap)
 }

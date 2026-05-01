@@ -29,17 +29,10 @@ import { Loader2 } from 'lucide-react'
 import { PROP_LABELS, copyFor, type Propiedad, type PropTipo } from '@/types/propiedad'
 
 const schema = z.object({
-  nombre: z
-    .string()
-    .trim()
-    .min(1, 'El nombre es requerido')
-    .max(255, 'Máximo 255 caracteres'),
+  nombre: z.string().trim().min(1, 'El nombre es requerido').max(255, 'Máximo 255 caracteres'),
   abrev: z
     .string()
-    .regex(
-      /^[A-Z0-9]{1,8}$/,
-      'La abreviación debe tener 1 a 8 caracteres en mayúsculas o dígitos'
-    ),
+    .regex(/^[A-Z0-9]{1,8}$/, 'La abreviación debe tener 1 a 8 caracteres en mayúsculas o dígitos'),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -80,15 +73,16 @@ export function PropiedadEditDialog({
     try {
       await updatePropiedad(propTipo, propiedad.id, values)
       toast({ title: `${c.singular} ${c.actualizada} correctamente` })
-      onOpenChange(false)
       onSuccess()
+      onOpenChange(false)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error desconocido'
       const lower = message.toLowerCase()
-      if (lower.includes('nombre')) {
-        form.setError('nombre', { message })
-      } else if (lower.includes('abreviación') || lower.includes('abrev')) {
+      // Match palabras completas: `abrev` antes que `nombre` por especificidad.
+      if (/\babrev(?:iación)?\b/.test(lower)) {
         form.setError('abrev', { message })
+      } else if (/\bnombre\b/.test(lower)) {
+        form.setError('nombre', { message })
       } else {
         toast({
           title: 'No se pudieron guardar los cambios',
@@ -107,8 +101,7 @@ export function PropiedadEditDialog({
         <DialogHeader>
           <DialogTitle>Editar {label.singular}</DialogTitle>
           <DialogDescription className="text-xs">
-            Modificá nombre o abreviación. Para activar/desactivar usá las
-            acciones de la fila.
+            Modificá nombre o abreviación. Para activar/desactivar usá las acciones de la fila.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -146,12 +139,7 @@ export function PropiedadEditDialog({
               )}
             />
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
               <Button type="submit" size="sm" disabled={isLoading}>

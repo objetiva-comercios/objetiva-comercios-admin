@@ -19,6 +19,12 @@
 CREATE OR REPLACE FUNCTION cache_nombre_prop()
 RETURNS TRIGGER AS $$
 BEGIN
+  -- SEGURIDAD: usar `%I` (identifier-quote) NO `%s` ni concatenación de strings.
+  -- `%I` quote-encloses el identifier según las reglas SQL (Postgres `format`),
+  -- bloqueando SQLi vía nombres maliciosos. Los TG_ARGV vienen de la definición
+  -- estática del CREATE TRIGGER (controlada por dev), pero `%I` aplica
+  -- defense-in-depth. NO refactorizar a `%s` ni a `'... ' || TG_ARGV[0] || ' ...'`.
+  --
   -- Solo actuar si el nombre cambió.
   IF NEW.nombre IS DISTINCT FROM OLD.nombre THEN
     EXECUTE format(

@@ -15,7 +15,7 @@ import { copyFor } from '@/types/propiedad'
 
 export interface PropiedadDeactivateDialogProps {
   propiedad: Propiedad
-  propTipo?: PropTipo
+  propTipo: PropTipo
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
@@ -28,18 +28,15 @@ export function PropiedadDeactivateDialog({
   onOpenChange,
   onConfirm,
 }: PropiedadDeactivateDialogProps) {
-  // `propTipo` es opcional para back-compat; sin él asumimos femenino (default histórico).
-  const pronombre = propTipo ? copyFor(propTipo).pronombre : 'la'
+  const pronombre = copyFor(propTipo).pronombre
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            Desactivar &lsquo;{propiedad.nombre}&rsquo;
-          </AlertDialogTitle>
+          <AlertDialogTitle>Desactivar &lsquo;{propiedad.nombre}&rsquo;</AlertDialogTitle>
           <AlertDialogDescription>
-            Vas a desactivar &lsquo;{propiedad.nombre}&rsquo;. Los artículos
-            existentes que {pronombre} usan no se modifican. ¿Confirmás?
+            Vas a desactivar &lsquo;{propiedad.nombre}&rsquo;. Los artículos existentes que{' '}
+            {pronombre} usan no se modifican. ¿Confirmás?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

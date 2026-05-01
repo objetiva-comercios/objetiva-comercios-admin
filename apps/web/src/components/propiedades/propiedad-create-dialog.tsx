@@ -36,17 +36,10 @@ import {
 } from '@/types/propiedad'
 
 const schema = z.object({
-  nombre: z
-    .string()
-    .trim()
-    .min(1, 'El nombre es requerido')
-    .max(255, 'Máximo 255 caracteres'),
+  nombre: z.string().trim().min(1, 'El nombre es requerido').max(255, 'Máximo 255 caracteres'),
   abrev: z
     .string()
-    .regex(
-      /^[A-Z0-9]{1,8}$/,
-      'La abreviación debe tener 1 a 8 caracteres en mayúsculas o dígitos'
-    ),
+    .regex(/^[A-Z0-9]{1,8}$/, 'La abreviación debe tener 1 a 8 caracteres en mayúsculas o dígitos'),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -113,10 +106,13 @@ export function PropiedadCreateDialog({
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error desconocido'
       const lower = message.toLowerCase()
-      if (lower.includes('nombre')) {
-        form.setError('nombre', { message })
-      } else if (lower.includes('abreviación') || lower.includes('abrev')) {
+      // Match palabras completas para evitar colisiones (ej. "abreviación del nombre"
+      // que contiene "nombre" como substring). `abrev` debe matchearse antes que
+      // `nombre` por especificidad.
+      if (/\babrev(?:iación)?\b/.test(lower)) {
         form.setError('abrev', { message })
+      } else if (/\bnombre\b/.test(lower)) {
+        form.setError('nombre', { message })
       } else {
         toast({
           title: `No se pudo crear ${c.articulo} ${c.singularLower}`,
@@ -134,10 +130,12 @@ export function PropiedadCreateDialog({
       {trigger}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{c.nuevo} {label.singular}</DialogTitle>
+          <DialogTitle>
+            {c.nuevo} {label.singular}
+          </DialogTitle>
           <DialogDescription className="text-xs">
-            Completá nombre y abreviación. La abreviación se sugiere
-            automáticamente a partir del nombre.
+            Completá nombre y abreviación. La abreviación se sugiere automáticamente a partir del
+            nombre.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -149,10 +147,7 @@ export function PropiedadCreateDialog({
                 <FormItem>
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={PROP_NOMBRE_PLACEHOLDERS[propTipo]}
-                      {...field}
-                    />
+                    <Input placeholder={PROP_NOMBRE_PLACEHOLDERS[propTipo]} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,12 +177,7 @@ export function PropiedadCreateDialog({
               )}
             />
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
               <Button type="submit" size="sm" disabled={isLoading}>

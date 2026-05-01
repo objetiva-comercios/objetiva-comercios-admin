@@ -12,6 +12,7 @@ export class UpdatePropiedadDto {
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toUpperCase() : value))
   @Matches(/^[A-Z0-9]{1,8}$/, {
     message: 'La abreviación debe tener 1 a 8 caracteres en mayúsculas o dígitos',
   })
