@@ -58,7 +58,7 @@ Pendiente cerrar via /gsd-discuss-phase posteriores: Q3, Q4, Q5, Q6, Q7, Q8, Q9,
 
 ### Pending Todos
 
-None.
+- [auditar-desfase-sistemico-db-de-produccion](./todos/pending/2026-05-01-auditar-desfase-sistemico-db-de-produccion.md) — DB prod tiene `__drizzle_migrations` registrando hashes pero múltiples tablas faltan (`business_settings`, `inv_articulos`, `prop_*` antes del fix manual). Detectado durante smoke /propiedades → 500. Posible relación con quick task `260409-jwl Sync Drizzle schema with production DB` (parcial). Requiere reconciliación full antes del próximo `db:push`.
 
 ### Blockers/Concerns
 
