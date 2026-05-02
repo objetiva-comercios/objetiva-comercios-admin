@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
 status: executing
-stopped_at: Phase 38 context gathered (repair journal-only)
-last_updated: '2026-05-02T18:44:09.745Z'
-last_activity: 2026-05-02 -- Phase 38 planning complete
+stopped_at: Phase 38 paused after pre-flight detected prod data wipe — restored via quick task 260502-tqf
+last_updated: "2026-05-02T21:35:00.000Z"
+last_activity: 2026-05-02 -- Quick task 260502-tqf complete (selective restore of 16 prod tables)
 progress:
   total_phases: 10
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 29 — catalogos-de-atributos
+**Current focus:** Phase 38 PAUSED post-incidente — pendiente decisión sobre abortar/replanificar
 
 ## Current Position
 
-Phase: 29 (catalogos-de-atributos) — EXECUTING
-Plan: 1 of 6
-Status: Ready to execute
-Last activity: 2026-05-02 -- Phase 38 planning complete
+Phase: 38 (reconciliar-drift-sistemico-de-db-de-produccion) — PAUSED
+Plan: 1 of 6 (Plan 38-01 Task 1 commit; Task 2 superseded por incidente)
+Status: Paused — pre-flight reveló data wipe en prod (no journal drift). Resuelto via quick task 260502-tqf.
+Last activity: 2026-05-02 -- Quick task 260502-tqf complete (selective restore of 16 prod tables)
 
 ## Performance Metrics
 
@@ -89,12 +89,13 @@ None active. All v1.2 blockers resolved.
 | 260410-juo | Ensanchar sheet detalle articulo a max-w-[35rem]                                                           | 2026-04-10 | fa80a0d3 | [260410-juo-ensanchar-sheet-detalle-articulo-a-max-w](./quick/260410-juo-ensanchar-sheet-detalle-articulo-a-max-w/)         |
 | 260428-mig | Aplicar migration-prod.sql pendiente desde Abr 9: restaurar 16 tablas y 2 columnas en produccion           | 2026-04-28 | db558335 | [260428-mig-aplicar-migration-prod-pendiente](./quick/260428-mig-aplicar-migration-prod-pendiente/)                         |
 | 260429-rec | Recuperar datos historicos de inventarios/depositos/existencias desde admin_base_sanchez (7745+7873 filas) | 2026-04-29 | b47db5d6 | [260429-rec-recuperar-datos-inventarios-existencias](./quick/260429-rec-recuperar-datos-inventarios-existencias/)           |
+| 260502-tqf | Restore selectivo prod erp_sanchez: 16 tablas recuperadas desde backup Apr 30 post-incidente data wipe     | 2026-05-02 | 775c91bd | [260502-tqf-restore-selectivo-prod-erp-sanchez-16-ta](./quick/260502-tqf-restore-selectivo-prod-erp-sanchez-16-ta/)         |
 
 ## Session Continuity
 
-Last session: 2026-05-01T21:11:56.650Z
-Stopped at: Phase 38 context gathered (repair journal-only)
-Next action: `/gsd-execute-phase 29`
+Last session: 2026-05-02T21:35:00.000Z
+Stopped at: Phase 38 paused — quick task 260502-tqf restored 16 prod tables; pending: smoke admin manual + decisión sobre Phase 38
+Next action: smoke manual del admin (login + /articulos /inventarios /configuracion). Luego decidir: abortar Phase 38, replanificarla con CONTEXT.md fresco, o continuar con resto de v1.3.
 
 ---
 
