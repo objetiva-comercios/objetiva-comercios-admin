@@ -906,37 +906,51 @@ For each: navigate, wait for `networkidle`, assert HTTP 200, check backend logs 
 
 10. **ADR file path conflicts with future ADRs.** `0001-migration-discipline.md` implies a numbered ADR system — must commit to either keeping that pattern (creating `0002-`, etc.) or use date-based naming (`2026-05-02-migration-discipline.md`). Decide upfront.
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+> Las 6 preguntas se cerraron antes del lock-in del plan. Cada una tiene un `**RESOLVED:**` line con la decisión final y el plan/task que la codifica.
 
 1. **Should the dummy snapshots reflect post-state or stay as copies of 0002?**
    - What we know: copies of 0002 = simple but produces non-empty `0006_baseline.sql` with CREATE TABLE for already-existing tables. Hand-edited progressive snapshots = more work, fragile, but produces empty `0006_baseline.sql`.
    - What's unclear: User preference. CONTEXT.md D-02 says "copies", which we honor. The stamp-only mitigation handles the consequence cleanly.
    - Recommendation: **Proceed with copies + stamp-only header + dev SUMMARY note.** Simpler, lower risk of journal corruption.
+   - **RESOLVED:** copies of `0002_snapshot.json` + UUID regen (`crypto.randomUUID()`) + `prevId` rechain (0003.prevId=0002.id, 0004.prevId=0003.id, 0005.prevId=0004.id). Codificado en **38-02 Task 1 Pasos A-D**. Trade-off aceptado: `0006_baseline.sql` contendrá `CREATE TABLE prop_*` para tablas ya existentes en prod, mitigado por la disciplina STAMP-ONLY (no se ejecuta) + header explícito.
 
 2. **What `created_at` value goes in the INSERT for entries 0003/0004/0005?**
    - What we know: Drizzle uses `journal.entries[i].when` (ms epoch). For 0003/0004/0005, those values are: 1777569630018 (apr29 ms ish, but actually the value already in journal for 0004), 1777569630018 (0004 actual), 1777569630019 (0005 actual). Plus 0003 needs a new `when`.
    - What's unclear: Should `when` reflect when the migration FILE was created or when it was APPLIED to prod? CONTEXT.md D-03 says "timestamps que reflejen cuándo se aplicó realmente". Both interpretations work for skip-logic (only ordering matters).
    - Recommendation: Use realistic application timestamps from quick task SUMMARYs: 0003=`260429-rec` (Apr 29 ~22:00 UTC ms), 0004=`260501-smoke` (May 1 ms), 0005=`260501-smoke` +1ms (force ordering). 0006 uses `Date.now()` at INSERT time. Document the chosen timestamps in the plan as constants.
+   - **RESOLVED:** Cada `created_at` es el `when` del entry correspondiente en `_journal.json` post-Plan 38-02 (no `Date.now()` al INSERT). Valores fijos:
+     - 0000/0001/0002: `1772422128557 / 1772469220121 / 1772627204469` (= apr 28 ~12:00 UTC, valores históricos preservados).
+     - 0003: epoch-ms de `2026-04-29T14:00:00Z` (= `1777809600000`) — alineado con la fecha real del quick task `260429-rec`.
+     - 0004: epoch-ms de `2026-05-01T16:00:00Z` (= `1777989600000`) — May 1 smoke phase 29.
+     - 0005: epoch-ms de `2026-05-01T16:00:00Z` + 1 (= `1777989600001`) — fuerza ordering relativo a 0004.
+     - 0006: epoch-ms del momento del INSERT (`Date.now()` capturado durante ejecución del audit script — referencia "today's timestamp"). Se commitea al SUMMARY de 38-03 para auditoría.
+   - Codificado como template SQL en **38-03 Task 2** (audit script lee `_journal.json`, no hardcodea — pero los valores arriba son los que el journal debe contener post-38-02).
 
 3. **Should `app.controller.ts` lose `/health` to `HealthController`?**
    - What we know: Both can coexist (`@Controller()` raíz + `@Controller('health')` child) but routing semantics get confusing — `@Get('health')` from raíz vs `@Get()` from `/health` child both resolve to the same path, NestJS may complain.
    - What's unclear: Intent — keep backward-compat with current `/api/health` consumers (Traefik, monitoring, etc.).
    - Recommendation: **Move `/health` into HealthController.** `@Controller('health')` + `@Get()` for liveness + `@Get('db')` for DB. Remove from `app.controller.ts`. This is cleaner. Verify nothing in Traefik labels or external monitoring breaks.
+   - **RESOLVED:** Sí, mover `/health` de `app.controller.ts` a `HealthController` (`@Controller('health')` + `@Get()` liveness + `@Get('db')` deep check, ambos `@Public()`). Codificado en **38-05 Task 1 Paso "Editar apps/backend/src/app.controller.ts"**. La ruta resultante (`/api/health` y `/api/health/db`) es backward-compat con Traefik y monitoring externos.
 
-4. **What's the correct behavior for `/api/health/db` when one of the 5 tables doesn't exist (the very scenario this is meant to detect)?** Should it 503 immediately or per-table aggregate?
+4. **What's the correct behavior for `/api/health/db` when one of the 5 tables doesn't exist?** Should it 503 immediately or per-table aggregate?
    - What we know: Current proposed implementation aggregates: returns 503 with full per-table detail, so operator can see which table(s) fail.
    - What's unclear: Some monitoring tools want hard 5xx fast (low timeout) and don't parse body.
    - Recommendation: **Aggregate + 503**, as specced. Keep the response body so future debugging is easier. Confirm Traefik default healthcheck timeout (probably 5s) > our query latency (5 SELECTs + LIMIT 0 against an indexed table = <100ms).
+   - **RESOLVED:** Aggregate-503. Response shape `{ ok: boolean, tables: [{name, status: 'ok'|'fail'}, ...] }`, status `200` si todas pasan, `503` (HttpException SERVICE_UNAVAILABLE) si alguna falla. El body siempre incluye el detalle por tabla. En producción NO se devuelve `error.message` (privacy: ver T-38-10 + W6 fix en 38-05). Codificado en **38-05 Task 1 health.service.ts + health.controller.ts**.
 
 5. **ADR file location: `.planning/decisions/`, `docs/adr/`, or somewhere else?**
    - What we know: Repo has no existing ADR; `.planning/` already contains `research/`, `phases/`, `quick/`. `docs/` does not exist at repo root.
    - What's unclear: Future intent — will more ADRs come?
    - Recommendation: `.planning/decisions/0001-migration-discipline.md`. Numbered + descriptive, future-friendly. Aligned with CONTEXT.md proposal.
+   - **RESOLVED:** `.planning/decisions/0001-migration-discipline.md`. Naming `NNNN-kebab-slug.md` (4-digit prefix matching phase numbering precedent). Codificado en **38-06 Task 2 Paso A-B**.
 
 6. **What constitutes "synthetic drift" for the CI gate test?**
    - What we know: Adding a column to `schema.ts` and not generating a migration → `drizzle-kit generate --check` exits 1.
    - What's unclear: Does `drizzle-kit check` (without `generate --check`) catch all relevant drifts? It only catches journal/snapshot inconsistency, not schema-vs-snapshot drift.
    - Recommendation: The `db:check` script combines BOTH (`drizzle-kit check && drizzle-kit generate --check`). Synthetic drift PR test should specifically modify `schema.ts` (e.g., add a temp column) and verify CI fails on `generate --check`. Document this manual test as part of W6 acceptance.
+   - **RESOLVED:** Mecánica del synthetic drift PR test: (a) crear branch temporal `test/phase38-synthetic-drift`, (b) agregar una columna throwaway al final de cualquier `pgTable` en `apps/backend/src/db/schema.ts` (ej: `_phase38_test: text('_phase38_test'),`), (c) commit + push + abrir PR vía `gh pr create` o web UI, (d) verificar que el job `drizzle-drift-check` del workflow CI **falla** (red X), (e) cerrar el PR sin merge + borrar la branch. El criterio de aceptación es la falla observada en CI, no un test automatizado. Codificado como acceptance criteria en **38-06 Task 1 Paso D** (verificación manual post-merge del workflow).
 
 ## Environment Availability
 
