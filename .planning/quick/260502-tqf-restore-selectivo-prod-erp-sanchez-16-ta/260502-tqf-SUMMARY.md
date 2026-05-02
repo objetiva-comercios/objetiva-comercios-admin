@@ -258,3 +258,13 @@ Y actualizar `MEMORY.md` agregando una línea en la sección `## Feedback`:
 - **Planes relacionados:**
   - `.planning/phases/38-reconciliar-drift-sistemico-de-db-de-produccion/38-01-PLAN.md` (Plan donde se detectó el wipe)
   - `.planning/phases/38-reconciliar-drift-sistemico-de-db-de-produccion/38-VALIDATION.md`
+
+## Self-Check: PASSED
+
+- `scripts/restore-selectivo-260502.sh` existe y es ejecutable (`-x`)
+- `bash -n scripts/restore-selectivo-260502.sh` exit 0 (sintaxis válida)
+- 9/9 verificaciones automatizadas del plan PASSED (single-transaction, EJECUTAR DE NUEVO guard, ON_ERROR_STOP=1, huérfanos, frontmatter, secciones, refs a backups)
+- 8 secciones obligatorias del SUMMARY presentes en orden
+- Commit Task 1: `82601dfe` (script forense)
+- Commit Task 2: `5e88d2c5` (SUMMARY)
+- 0 comandos `docker exec`, `psql`, `pg_dump`, `pg_restore` ejecutados durante la quick task (consistente con scope forense — solo escritura de archivos)
