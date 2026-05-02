@@ -377,11 +377,16 @@ Plans:
 
 **Depends on:** Ninguna estricta. Phase 37 (tech debt v1.3) toca columnas/tipos pero no schema lifecycle. **Recomendación:** ejecutar Phase 38 ANTES de 37 para no aplicar tech debt sobre un DB inconsistente.
 
-**Plans:** 0 plans
+**Plans:** 6 plans (en 5 waves)
 
 Plans:
 
-- [ ] TBD (run /gsd-plan-phase 38 to break down)
+- [ ] 38-01-PLAN.md — Pre-flight backup + restore-test (D-05) — autonomous: false (Wave 1)
+- [ ] 38-02-PLAN.md — Local journal repair + 0006_baseline generation stamped-only (D-02) — autonomous: false (Wave 2)
+- [ ] 38-03-PLAN.md — Prod audit + INSERT idempotente en drizzle.\_\_drizzle_migrations (D-03) — autonomous: false (Wave 3)
+- [ ] 38-04-PLAN.md — Triple verification + drift residual report + non-destructive schema.ts patch (D-04, D-08) — autonomous: false (Wave 4)
+- [ ] 38-05-PLAN.md — Healthcheck NestJS endpoint /api/health/db + docker-compose healthcheck (D-10) — autonomous: false (Wave 5)
+- [ ] 38-06-PLAN.md — CI workflow drizzle drift check + ADR + CLAUDE.md (D-09, D-11) — autonomous: true (Wave 5)
 
 **Plan tentativo (a refinar en plan-phase):**
 
