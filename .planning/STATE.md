@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
 status: executing
-stopped_at: Phase 38 paused after pre-flight detected prod data wipe — restored via quick task 260502-tqf
-last_updated: "2026-05-02T21:35:00.000Z"
-last_activity: 2026-05-02 -- Quick task 260502-tqf complete (selective restore of 16 prod tables)
+stopped_at: Smoke admin completo + bug categoria/subcategoria fixeado via migration 0006
+last_updated: "2026-05-15T23:35:00.000Z"
+last_activity: 2026-05-15 -- Smoke admin con playwright-cli PASSED + bug schema drift articulos solucionado (commit e5358502)
 progress:
   total_phases: 10
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 38 PAUSED post-incidente — pendiente decisión sobre abortar/replanificar
+**Current focus:** Phase 38 PAUSED — incidente del 2026-05-01 resuelto via quick task 260502-tqf + bug schema drift articulos resuelto 2026-05-15. Pendiente decisión sobre destino de Phase 38.
 
 ## Current Position
 
 Phase: 38 (reconciliar-drift-sistemico-de-db-de-produccion) — PAUSED
 Plan: 1 of 6 (Plan 38-01 Task 1 commit; Task 2 superseded por incidente)
-Status: Paused — pre-flight reveló data wipe en prod (no journal drift). Resuelto via quick task 260502-tqf.
-Last activity: 2026-05-02 -- Quick task 260502-tqf complete (selective restore of 16 prod tables)
+Status: Paused. Incidente data wipe del 2026-05-01 resuelto (quick task 260502-tqf). Bug colateral schema drift articulos.categoria/subcategoria resuelto 2026-05-15 (migration 0006, commit e5358502). Admin web /articulos volvio a funcionar tras ~2 meses roto silenciosamente.
+Last activity: 2026-05-15 -- Smoke admin PASSED + migration 0006 aplicada a prod
 
 ## Performance Metrics
 
@@ -93,9 +93,15 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-05-02T21:35:00.000Z
-Stopped at: Phase 38 paused — quick task 260502-tqf restored 16 prod tables; pending: smoke admin manual + decisión sobre Phase 38
-Next action: smoke manual del admin (login + /articulos /inventarios /configuracion). Luego decidir: abortar Phase 38, replanificarla con CONTEXT.md fresco, o continuar con resto de v1.3.
+Last session: 2026-05-15T23:35:00.000Z
+Stopped at: Smoke admin completo via playwright-cli (PASSED en /articulos, /articulos/inventarios, /settings/business). Bug schema drift fixeado (migration 0006).
+Pending Actions del SUMMARY 260502-tqf — estado actualizado:
+  [x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli (resultado en commit e5358502)
+  [ ] #2 Decidir destino de Phase 38 — pendiente
+  [ ] #3 Forensics del wipe Apr 30→May 1 — pendiente (13 dias despues, bash history probablemente rotado)
+  [x] #4 Feedback global anti-patron db:push --force — COMPLETO 2026-05-15 (`feedback_db_push_force_prod.md`)
+Nuevo aprendizaje: schema TS sin migration rompe queries silenciosamente. Documentado en `feedback_schema_drift_silencioso.md`. 10 errors React #425 (hydration mismatch) en /articulos/inventarios — bug separado del frontend, no bloqueante, queda como TODO.
+Next action: decidir destino de Phase 38 (abortar / replanificar / continuar) y luego forensics si vale el tiempo.
 
 ---
 
