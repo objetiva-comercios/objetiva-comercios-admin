@@ -541,6 +541,31 @@ export const propTalle = definePropTable('prop_talle', 'prop_talle')
 export const propMaterial = definePropTable('prop_material', 'prop_material')
 export const propPresentacion = definePropTable('prop_presentacion', 'prop_presentacion')
 export const propObjeto = definePropTable('prop_objeto', 'prop_objeto')
+export const propCategoria = definePropTable('prop_categoria', 'prop_categoria')
+
+// propSubcategoria sigue el mismo patron de Phase 29 pero con FK a prop_categoria.
+// nombre/abrev son UNIQUE per (categoria_id, ...) — permite "Cables" bajo "Electricidad" y bajo "Audio".
+export const propSubcategoria = pgTable(
+  'prop_subcategoria',
+  {
+    id: serial('id').primaryKey(),
+    categoriaId: integer('categoria_id')
+      .notNull()
+      .references(() => propCategoria.id, { onDelete: 'restrict' }),
+    nombre: text('nombre').notNull(),
+    abrev: text('abrev').notNull(),
+    activo: boolean('activo').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    uniqueIndex('prop_subcategoria_nombre_lower_uniq').on(table.categoriaId, lower(table.nombre)),
+    uniqueIndex('prop_subcategoria_abrev_uniq').on(table.categoriaId, table.abrev),
+    check('prop_subcategoria_abrev_format_chk', ABREV_REGEX_SQL),
+    index('prop_subcategoria_categoria_id_idx').on(table.categoriaId),
+    index('prop_subcategoria_activo_idx').on(table.activo),
+  ]
+)
 
 export type PropMarca = typeof propMarca.$inferSelect
 export type NewPropMarca = typeof propMarca.$inferInsert
@@ -554,3 +579,7 @@ export type PropPresentacion = typeof propPresentacion.$inferSelect
 export type NewPropPresentacion = typeof propPresentacion.$inferInsert
 export type PropObjeto = typeof propObjeto.$inferSelect
 export type NewPropObjeto = typeof propObjeto.$inferInsert
+export type PropCategoria = typeof propCategoria.$inferSelect
+export type NewPropCategoria = typeof propCategoria.$inferInsert
+export type PropSubcategoria = typeof propSubcategoria.$inferSelect
+export type NewPropSubcategoria = typeof propSubcategoria.$inferInsert

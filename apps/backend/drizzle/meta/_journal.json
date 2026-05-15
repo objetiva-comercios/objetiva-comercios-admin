@@ -36,6 +36,13 @@
       "when": 1777569630019,
       "tag": "0005_phase29_cache_trigger",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778887117772,
+      "tag": "0006_categorias_subcategorias",
+      "breakpoints": true
     }
   ]
 }
