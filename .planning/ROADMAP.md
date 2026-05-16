@@ -119,7 +119,15 @@ Plans:
 4. Al crear un artículo nuevo, el sistema usa automáticamente el template marcado como `is_default` y deja el modelo preparado para multi-template (v1.4+)
 5. La función pura `composeSku(codigo, atributos, template)` y `composeNombre(atributos, template)` están cubiertas por tests unitarios con casos de slug collision, NFD normalization y atributos faltantes
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+- [ ] 30-01-PLAN.md — Shared composer (types + utils + tests RED-GREEN) (Wave 0)
+- [ ] 30-02-PLAN.md — [BLOCKING] Migration 0008: prop_familia + prop_aplicacion + articulos_templates + template_atributos + DROP legacy (Wave 1)
+- [ ] 30-03-PLAN.md — Backend module templates + extensión propiedades (familia + aplicacion) (Wave 2)
+- [ ] 30-04-PLAN.md — Frontend tabs Familias + Aplicaciones + extensión PropiedadTable/Dialog (Wave 3)
+
 **UI hint**: yes
 **Open Qs to close in `/gsd-discuss-phase 30`**: Q4 (atributos finales del template default), Q6 (`categoria/subcategoria/rubro/subrubro/adjetivo` taxonomía vs atributos)
 **Pitfalls**: P-13 (cascade idempotency → mapping `{old→new}` antes de UPDATE), P-17 (`nombre_auto` vs manual edit interaction), P-18 (preview accuracy bajo edits concurrentes)
@@ -360,7 +368,7 @@ Plans:
 | 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete    | 2026-03-13 |
 | 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete    | 2026-03-13 |
 | 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete    | 2026-04-30 |
-| 30. Templates + Composición SKU/Nombre              | v1.3      | 0/0            | Not started | -          |
+| 30. Templates + Composición SKU/Nombre              | v1.3      | 0/4            | Not started | -          |
 | 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started | -          |
 | 32. Variantes UI                                    | v1.3      | 0/0            | Not started | -          |
 | 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started | -          |
