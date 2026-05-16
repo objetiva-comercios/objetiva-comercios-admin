@@ -271,3 +271,76 @@ Lo que falta no es código perdido sino **fases nunca arrancadas** del milestone
 ---
 
 _Generado: 2026-05-15 ~21:00 (sesión post-restore + post-fix schema drift). Walkthrough con `objetiva-smoke` playwright-cli session. HEAD del repo: `9fd85eb6`._
+
+---
+
+## Adendum 2026-05-16 ~02:30 — Operativo nocturno desatendido completo
+
+Tras este reporte, el usuario pidió ejecutar TODOS los ítems pendientes desatendido durante la noche. Resultado:
+
+### Fixes aplicados (6 commits)
+
+| Commit | Scope | Issue cerrada |
+|---|---|---|
+| `ef08197c` | chore | Untrack 78 archivos legacy de `.playwright-cli/` |
+| `1eff4b2f` | fix(db) | drop `sector_id` huérfana + sync journal 0003 (CR-01) |
+| `41fe819d` | chore(web) | vitest jsdom + setupFiles polyfills (CR-02) |
+| `adf5ee18` | fix(web) | sanitize `"NULL"` string + clean DB datos BI062-40 |
+| `03ae61bf` | fix(web) | hydration React #425 con `formatDateES`/`formatDateTimeES` + mount-flag next-themes |
+| `27f7f14c` | docs | Phase 38 ABORTED + 29-REVIEW addendum + STATE.md + SUMMARY addendum |
+
+### 29-REVIEW.md auditoría: 15/15 findings cerrados
+
+- **2 BLOCKERs**: cerrados en este pase (journal sync, vitest setup)
+- **9 WARNINGs**: ya estaban resueltos en código por iteraciones previas (verificado file-by-file). El REVIEW.md de 2026-04-30 estaba desactualizado.
+- **4 INFOs**: 2 ya resueltos, 2 N/A (`seed-e2e.ts` ya no existe).
+
+### Re-verificación post-fixes con playwright (sesión `objetiva-smoke`)
+
+Container `erp-web` rebuilt + recreated (~5 min). Re-smoke completo de 18 URLs:
+
+| URL | Console errors antes | Console errors después | Δ |
+|---|---:|---:|---|
+| `/articulos/inventarios` | 10 | **0** | -10 |
+| `/articulos/inventarios/[id]` | 11 | **0** | -11 |
+| `/settings/appearance` | 11 | **0** | -11 |
+| `/articulos/[codigo]/editar` | 1 | **0** | -1 |
+| 14 URLs control | 0 | 0 | 0 |
+| **Total** | **33** | **0** | **-33** |
+
+0 HTTP 500. 0 network failures. 0 console errors. 0 hydration warnings.
+
+### Phase 38 ABORTED
+
+Scope superado por las acciones reactivas (quick task 260502-tqf + commit e5358502 + commit 1eff4b2f). Solo Plan 38-01 ejecutado; Plans 38-02..38-06 nunca se ejecutaron y no se ejecutarán. Marcada como ABORTED en ROADMAP + archivo `38-ABORTED.md`.
+
+### Pending Actions del SUMMARY 260502-tqf — ESTADO FINAL
+
+| # | Pending | Estado final |
+|---|---|---|
+| 1 | Smoke admin manual | ✅ COMPLETO (2026-05-15) |
+| 2 | Decidir destino Phase 38 | ✅ COMPLETO (ABORTED, 2026-05-15) |
+| 3 | Forensics del wipe Apr 30→May 1 | ✅ CERRADO ("no determinable" — 15 días después, bash history rotado) |
+| 4 | Feedback global anti-patrón db:push --force | ✅ COMPLETO (2026-05-15) |
+
+### Discrepancias documentación vs realidad
+
+- SUMMARY 260502-tqf addendum agregado documentando los 2 items omitidos (categoria/subcategoria + journal 0003).
+- 29-REVIEW.md addendum agregado confirmando cierre de 15/15 findings.
+- STATE.md refleja status final del ciclo.
+
+### Sistema post-operativo
+
+- 0 HTTP 500 en backend
+- 0 console errors en frontend
+- 0 drift schema TS vs DB
+- 0 datos sucios conocidos
+- 8 migrations registradas correctamente en journal + `__drizzle_migrations`
+- 12/12 vitest tests passing
+- TypeScript compila limpio (web + backend)
+- Phase 29 cerrada (REVIEW 15/15)
+- Phase 38 cerrada (ABORTED)
+
+**Next action**: `/gsd-discuss-phase 30` (templates de composición SKU/Nombre).
+
+_Adendum: 2026-05-16 02:30 (operativo nocturno desatendido)_
