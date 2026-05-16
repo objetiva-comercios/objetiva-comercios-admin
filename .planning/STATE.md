@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
 status: executing
-stopped_at: Smoke admin completo + bug categoria/subcategoria fixeado via migration 0006
-last_updated: "2026-05-15T23:35:00.000Z"
-last_activity: 2026-05-15 -- Smoke admin con playwright-cli PASSED + bug schema drift articulos solucionado (commit e5358502)
+stopped_at: Operativo nocturno completo 2026-05-15 — Phase 38 abortada, 2 BLOCKERs + 9 WARNINGs + 4 INFOs cerrados (29-REVIEW), hydration + URL bug + sector_id huerfana fixeados, journal 0003 sincronizado
+last_updated: "2026-05-16T02:00:00.000Z"
+last_activity: 2026-05-15 noche -- Cleanup completo post-incidente; ready para Phase 30
 progress:
   total_phases: 10
   completed_phases: 1
@@ -21,14 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 38 PAUSED — incidente del 2026-05-01 resuelto via quick task 260502-tqf + bug schema drift articulos resuelto 2026-05-15. Pendiente decisión sobre destino de Phase 38.
+**Current focus:** Cleanup completo del ciclo del incidente (2026-05-01..05-15). Phase 29 totalmente cerrada (REVIEW addendum). Phase 38 ABORTADA (scope superado). Ready para arrancar Phase 30 cuando se decida.
 
 ## Current Position
 
-Phase: 38 (reconciliar-drift-sistemico-de-db-de-produccion) — PAUSED
-Plan: 1 of 6 (Plan 38-01 Task 1 commit; Task 2 superseded por incidente)
-Status: Paused. Incidente data wipe del 2026-05-01 resuelto (quick task 260502-tqf). Bug colateral schema drift articulos.categoria/subcategoria resuelto 2026-05-15 (migration 0006, commit e5358502). Admin web /articulos volvio a funcionar tras ~2 meses roto silenciosamente.
-Last activity: 2026-05-15 -- Smoke admin PASSED + migration 0006 aplicada a prod
+Phase: 29 (DONE) → siguiente Phase 30 (NOT STARTED, sin CONTEXT.md)
+Status: Milestone v1.3 con 1 phase done. Phase 38 aborted. Sistema operativo, sin drift de schema, 0 HTTP 500.
+Last activity: 2026-05-15 noche -- Operativo nocturno desatendido: Phase 38 aborted, 29-REVIEW addendum (15/15 findings cerrados), journal 0003 sync, sector_id drop, hydration #425 fix, URL malformada fix, datos sucios DB limpiados.
 
 ## Performance Metrics
 
@@ -93,15 +92,16 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-05-15T23:35:00.000Z
-Stopped at: Smoke admin completo via playwright-cli (PASSED en /articulos, /articulos/inventarios, /settings/business). Bug schema drift fixeado (migration 0006).
-Pending Actions del SUMMARY 260502-tqf — estado actualizado:
-  [x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli (resultado en commit e5358502)
-  [ ] #2 Decidir destino de Phase 38 — pendiente
-  [ ] #3 Forensics del wipe Apr 30→May 1 — pendiente (13 dias despues, bash history probablemente rotado)
-  [x] #4 Feedback global anti-patron db:push --force — COMPLETO 2026-05-15 (`feedback_db_push_force_prod.md`)
-Nuevo aprendizaje: schema TS sin migration rompe queries silenciosamente. Documentado en `feedback_schema_drift_silencioso.md`. 10 errors React #425 (hydration mismatch) en /articulos/inventarios — bug separado del frontend, no bloqueante, queda como TODO.
-Next action: decidir destino de Phase 38 (abortar / replanificar / continuar) y luego forensics si vale el tiempo.
+Last session: 2026-05-16T02:00:00.000Z
+Stopped at: Operativo nocturno desatendido completo. Sistema limpio.
+Pending Actions del SUMMARY 260502-tqf — estado final:
+  [x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli
+  [x] #2 Decidir destino de Phase 38 — COMPLETO 2026-05-15 (ABORTED, ver 38-ABORTED.md)
+  [x] #3 Forensics del wipe Apr 30→May 1 — CERRADO como "no determinable" (14 dias despues, bash history rotado)
+  [x] #4 Feedback global anti-patron db:push --force — COMPLETO 2026-05-15
+29-REVIEW (Phase 29 code review): **15/15 findings cerrados** (2 BLOCKER + 9 WARNING + 4 INFO). Ver addendum en 29-REVIEW.md.
+Operativo nocturno 2026-05-15 cerro: hydration React #425, URL malformada (datos sucios DB + frontend hardening), sector_id huerfana, journal 0003 sync, discrepancias docs.
+Next action: `/gsd-discuss-phase 30` para arrancar Phase 30 (templates de composicion SKU/Nombre).
 
 ---
 

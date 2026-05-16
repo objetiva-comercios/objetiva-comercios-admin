@@ -368,10 +368,13 @@ Plans:
 | 35. Stock UI (filtros + edición visual + dashboard) | v1.3      | 0/0            | Not started | -          |
 | 36. Migración Histórica de Existencias              | v1.3      | 0/0            | Not started | -          |
 | 37. Tech Debt v1.3                                  | v1.3      | 0/0            | Not started | -          |
+| 38. Reconciliar drift sistemico DB prod             | v1.3      | 1/6            | **ABORTED** 2026-05-15 | scope superado por 260502-tqf + e5358502 |
 
-### Phase 38: Reconciliar drift sistemico de DB de produccion
+### Phase 38: Reconciliar drift sistemico de DB de produccion — ABORTADA (2026-05-15)
 
-**Goal:** Eliminar el drift entre `__drizzle_migrations` y el estado real del schema en la DB de producción del VPS. La tabla de migraciones registra hashes (0000-0002, 0004-0005) pero múltiples tablas no existen físicamente: `business_settings` (definida en 0002), `inv_articulos` (alterada en 0003), `prop_*` (creadas manualmente vía psql el 2026-05-01 durante smoke de phase 29). Probable causa: drift acumulado desde la migración Prisma→Drizzle (convive `_prisma_migrations` legacy). Cualquier `db:push` o `db:migrate` futuro skipea silenciosamente porque drizzle confía en los hashes registrados. **Prerequisito para futuras migraciones de DB.**
+> **Estado:** ABORTED. Ver `.planning/phases/38-reconciliar-drift-sistemico-de-db-de-produccion/38-ABORTED.md` para detalle. El scope original quedó superado por las acciones reactivas al data wipe del 2026-05-01: quick task `260502-tqf` (restore selectivo), commit `e5358502` (migration 0006 categoria/subcategoria), y la sincronización del journal 0003 del 2026-05-15. Sólo se ejecutó Plan 38-01 (pre-flight backup, commit `e9557311`); Plans 38-02..38-06 NUNCA se ejecutaron y no se ejecutarán.
+
+**Goal original:** Eliminar el drift entre `__drizzle_migrations` y el estado real del schema en la DB de producción del VPS. La tabla de migraciones registra hashes (0000-0002, 0004-0005) pero múltiples tablas no existen físicamente: `business_settings` (definida en 0002), `inv_articulos` (alterada en 0003), `prop_*` (creadas manualmente vía psql el 2026-05-01 durante smoke de phase 29). Probable causa: drift acumulado desde la migración Prisma→Drizzle (convive `_prisma_migrations` legacy). Cualquier `db:push` o `db:migrate` futuro skipea silenciosamente porque drizzle confía en los hashes registrados. **Prerequisito para futuras migraciones de DB.**
 
 **Requirements**: TBD (no mapeado a v1.3 — phase reactiva post-detección, no parte del milestone original)
 

@@ -537,3 +537,31 @@ La query usa `crypt()` y `gen_salt('bf')` que requieren `CREATE EXTENSION pgcryp
 _Reviewed: 2026-04-30_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
+
+---
+
+## Addendum 2026-05-15 — Estado de los findings
+
+Auditoria desatendida del 2026-05-15 verifico el codigo actual contra cada finding del review original. Estado de cierre:
+
+| Finding | Severidad | Estado 2026-05-15 | Resolucion |
+|---|---|---|---|
+| CR-01 Drizzle journal drift | BLOCKER | **CERRADO** | `_journal.json` ahora lista las 8 entries (0000-0007) en orden. `drizzle.__drizzle_migrations` en prod tiene 8 registros con hashes alineados. Pendiente: regenerar snapshots 0003/0004/0005/0006/0007 con `db:generate` cuando arranque Phase 30. |
+| CR-02 vitest sin jsdom + setupFiles | BLOCKER | **CERRADO** | `apps/web/vitest.config.ts` ahora declara `setupFiles: ['./src/test-setup.ts']`. `src/test-setup.ts` incluye polyfills hasPointerCapture/releasePointerCapture/scrollIntoView/ResizeObserver + import `@testing-library/jest-dom/vitest`. `pnpm --filter @objetiva/web test` corre 12/12 green. |
+| WR-01 Race en toggleActive | WARNING | **CERRADO (anterior)** | `propiedades.service.ts` ya tiene flip atomico: `set({ activo: sql\`NOT ${table.activo}\` })`. Comentario inline lo documenta. |
+| WR-02 DTO abrev sin trim/upper | WARNING | **CERRADO (anterior)** | `create-propiedad.dto.ts` y `update-propiedad.dto.ts` ambos tienen `@Transform(.trim().toUpperCase())` en abrev. |
+| WR-03 seed-e2e password hardcoded | WARNING | **N/A** | `apps/backend/src/db/seed-e2e.ts` ya no existe en el repo. Eliminado (probable cleanup post-Phase 29). |
+| WR-04 Trigger SQL %I sin documentar | WARNING | **CERRADO (anterior)** | `0005_phase29_cache_trigger.sql` lineas 22-26 explican el rationale de `%I` vs `%s` con bloque "SEGURIDAD: ... NO refactorizar a `%s` ni a `'...' \|\| TG_ARGV[0] \|\| ...'`". |
+| WR-05 Empty state `c.primera` confuso | WARNING | **CERRADO (anterior)** | `types/propiedad.ts` renombro la key a `ordinalPrimero` con comentario explicativo. |
+| WR-06 Doble slice en suggestAbrev | WARNING | **CERRADO (anterior)** | `lib/abrev.ts` ahora usa `const cap = Math.min(takeChars, 8)` y un solo `slice(0, cap)`. Comentario explica el orden. |
+| WR-07 Substring matching errores | WARNING | **CERRADO (anterior)** | Ambos dialogs usan regex `\babrev(?:iación)?\b` y `\bnombre\b` con word boundaries, y matchean abrev antes que nombre por especificidad. |
+| WR-08 assertValidTipo 404 vs tableFor 400 | WARNING | **CERRADO (anterior)** | `propiedades.controller.ts` ahora lanza `BadRequestException` (400) en `assertValidTipo`, alineado con `tableFor` del service. |
+| WR-09 ?activo= silencioso | WARNING | **CERRADO (anterior)** | `propiedades.controller.ts` ahora lanza `BadRequestException` para valores no en ['true', 'false', 'all']. |
+| IN-01 Migration SQL sin IF NOT EXISTS | INFO | **DOCUMENTADO** | Sin cambio en migrations (drizzle-kit no genera IF NOT EXISTS). Comentado como tech-debt en `29-VALIDATION.md`. |
+| IN-02 propTipo opcional en deactivate-dialog | INFO | **CERRADO (anterior)** | `propiedad-deactivate-dialog.tsx` ahora declara `propTipo: PropTipo` (requerido, sin opcional). |
+| IN-03 onSuccess order inconsistente | INFO | **CERRADO (anterior)** | `propiedad-edit-dialog.tsx` ahora invoca `onSuccess()` antes de `onOpenChange(false)`, mismo orden que create-dialog. |
+| IN-04 pgcrypto sin validar | INFO | **N/A** | `seed-e2e.ts` ya no existe. |
+
+**Resumen:** 2 BLOCKERs cerrados en este pase (CR-01, CR-02). Los 9 WARNINGs + 4 INFOs ya estaban resueltos en codigo por iteraciones previas no registradas en STATE.md. 0 findings remanentes. **REVIEW de Phase 29 totalmente cerrado.**
+
+_Addendum: 2026-05-15 (auditoria desatendida post-reconstruccion)_

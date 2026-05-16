@@ -268,3 +268,22 @@ Y actualizar `MEMORY.md` agregando una línea en la sección `## Feedback`:
 - Commit Task 1: `82601dfe` (script forense)
 - Commit Task 2: `5e88d2c5` (SUMMARY)
 - 0 comandos `docker exec`, `psql`, `pg_dump`, `pg_restore` ejecutados durante la quick task (consistente con scope forense — solo escritura de archivos)
+
+---
+
+## Addendum 2026-05-15 — Drift residual NO documentado originalmente
+
+Auditoria desatendida del 2026-05-15 detecto que la seccion 5 "Drift residual conocido" del SUMMARY omitio dos items adicionales que estaban presentes al momento del restore:
+
+1. **`articulos.categoria` y `articulos.subcategoria` faltaban en DB pero estaban en schema TS** desde quick task 260319-od3 (2026-03-19). Endpoint `/articulos` devolvia 500 silencioso por aprox 2 meses. **Resuelto:** commit `e5358502` (migration 0006 — agrega columnas + crea catalogos `prop_categoria`/`prop_subcategoria` con FK jerarquica).
+
+2. **`drizzle.__drizzle_migrations` no registraba la migration 0003** aunque el archivo `.sql` existia y la columna `columna` estaba aplicada en DB. **Resuelto:** commit del 2026-05-15 (INSERT idempotente en `drizzle.__drizzle_migrations` + reorden de `_journal.json`).
+
+Bugs colaterales tambien atendidos en la misma sesion:
+- `inventarios_articulos.sector_id` huerfana → drop via migration 0007.
+- Datos sucios: `articulos.imagenes_producto` con string literal `"NULL"` (en BI062-40) → UPDATE con `array_replace`. Frontend tambien hardeado contra strings "NULL"/"null".
+- Hydration React #425 en `/articulos/inventarios` y `/settings/appearance` → helpers `formatDateES`/`formatDateTimeES` + mount-flag para next-themes.
+
+El "drift residual conocido" original (3 items) queda completo si se le suman estos. Total drift identificado en el ciclo del incidente: 5 items, todos cerrados al 2026-05-15.
+
+_Addendum: 2026-05-15 (auditoria desatendida post-reconstruccion)_
