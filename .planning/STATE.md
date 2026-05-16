@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
-status: executing
-stopped_at: Operativo nocturno completo 2026-05-15 — Phase 38 abortada, 2 BLOCKERs + 9 WARNINGs + 4 INFOs cerrados (29-REVIEW), hydration + URL bug + sector_id huerfana fixeados, journal 0003 sincronizado
-last_updated: "2026-05-16T02:00:00.000Z"
-last_activity: 2026-05-15 noche -- Cleanup completo post-incidente; ready para Phase 30
+status: completed
+stopped_at: Phase 30 context gathered
+last_updated: "2026-05-16T20:33:06.293Z"
+last_activity: "2026-05-15 noche -- Operativo nocturno desatendido: Phase 38 aborted, 29-REVIEW addendum (15/15 findings cerrados), journal 0003 sync, sector_id drop, hydration #425 fix, URL malformada fix, datos sucios DB limpiados."
 progress:
   total_phases: 10
   completed_phases: 1
   total_plans: 12
-  completed_plans: 6
-  percent: 50
+  completed_plans: 7
+  percent: 58
 ---
 
 # Project State
@@ -92,8 +92,8 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-05-16T02:00:00.000Z
-Stopped at: Operativo nocturno desatendido completo. Sistema limpio.
+Last session: 2026-05-16T20:33:06.264Z
+Stopped at: Phase 30 context gathered
 Pending Actions del SUMMARY 260502-tqf — estado final:
   [x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli
   [x] #2 Decidir destino de Phase 38 — COMPLETO 2026-05-15 (ABORTED, ver 38-ABORTED.md)
