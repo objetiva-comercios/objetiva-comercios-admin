@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -7,6 +8,14 @@ import { Monitor, Moon, Sun } from 'lucide-react'
 
 export default function AppearancePage() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // next-themes lee localStorage y resuelve el tema solo client-side.
+  // Renderizamos el RadioGroup solo despues del mount para evitar
+  // hydration mismatch (React #425) entre el tema server-default y el cliente.
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -22,42 +31,51 @@ export default function AppearancePage() {
             <p className="text-sm text-muted-foreground">Seleccioná el tema para la aplicación.</p>
           </div>
 
-          <RadioGroup value={theme} onValueChange={setTheme} className="grid gap-4">
-            <div className="flex items-center space-x-4 rounded-lg border p-4 cursor-pointer hover:bg-accent">
-              <RadioGroupItem value="light" id="light" />
-              <Label htmlFor="light" className="flex items-center gap-3 cursor-pointer flex-1">
-                <Sun className="h-5 w-5" />
-                <div>
-                  <div className="font-medium">Claro</div>
-                  <div className="text-sm text-muted-foreground">Tema en modo claro</div>
-                </div>
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-4 rounded-lg border p-4 cursor-pointer hover:bg-accent">
-              <RadioGroupItem value="dark" id="dark" />
-              <Label htmlFor="dark" className="flex items-center gap-3 cursor-pointer flex-1">
-                <Moon className="h-5 w-5" />
-                <div>
-                  <div className="font-medium">Oscuro</div>
-                  <div className="text-sm text-muted-foreground">Tema en modo oscuro</div>
-                </div>
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-4 rounded-lg border p-4 cursor-pointer hover:bg-accent">
-              <RadioGroupItem value="system" id="system" />
-              <Label htmlFor="system" className="flex items-center gap-3 cursor-pointer flex-1">
-                <Monitor className="h-5 w-5" />
-                <div>
-                  <div className="font-medium">Sistema</div>
-                  <div className="text-sm text-muted-foreground">
-                    Usar la configuración de tema del sistema
+          {mounted ? (
+            <RadioGroup value={theme} onValueChange={setTheme} className="grid gap-4">
+              <div className="flex items-center space-x-4 rounded-lg border p-4 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="light" id="light" />
+                <Label htmlFor="light" className="flex items-center gap-3 cursor-pointer flex-1">
+                  <Sun className="h-5 w-5" />
+                  <div>
+                    <div className="font-medium">Claro</div>
+                    <div className="text-sm text-muted-foreground">Tema en modo claro</div>
                   </div>
-                </div>
-              </Label>
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-4 rounded-lg border p-4 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="dark" id="dark" />
+                <Label htmlFor="dark" className="flex items-center gap-3 cursor-pointer flex-1">
+                  <Moon className="h-5 w-5" />
+                  <div>
+                    <div className="font-medium">Oscuro</div>
+                    <div className="text-sm text-muted-foreground">Tema en modo oscuro</div>
+                  </div>
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-4 rounded-lg border p-4 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="system" id="system" />
+                <Label htmlFor="system" className="flex items-center gap-3 cursor-pointer flex-1">
+                  <Monitor className="h-5 w-5" />
+                  <div>
+                    <div className="font-medium">Sistema</div>
+                    <div className="text-sm text-muted-foreground">
+                      Usar la configuración de tema del sistema
+                    </div>
+                  </div>
+                </Label>
+              </div>
+            </RadioGroup>
+          ) : (
+            // Placeholder durante SSR para evitar layout shift.
+            <div className="grid gap-4">
+              <div className="h-16 rounded-lg border" />
+              <div className="h-16 rounded-lg border" />
+              <div className="h-16 rounded-lg border" />
             </div>
-          </RadioGroup>
+          )}
         </div>
       </div>
     </div>

@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { formatDateES } from '@/lib/dates'
 import {
   fetchApiKeys,
   createApiKey,
@@ -146,10 +147,10 @@ export function ApiKeysClient() {
                       </code>
                     </td>
                     <td className="py-3 px-4 text-muted-foreground">
-                      {new Date(key.createdAt).toLocaleDateString('es-MX')}
+                      {formatDateES(key.createdAt)}
                     </td>
                     <td className="py-3 px-4 text-muted-foreground">
-                      {key.lastUsedAt ? new Date(key.lastUsedAt).toLocaleDateString('es-MX') : '—'}
+                      {formatDateES(key.lastUsedAt)}
                     </td>
                     <td className="py-3 px-4">
                       <Button

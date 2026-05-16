@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import type { Inventario } from '@/types/inventario'
 import type { Deposito } from '@/types/deposito'
 import { InventarioDialog } from '@/components/inventarios/inventario-dialog'
+import { formatDateES } from '@/lib/dates'
 import {
   Table,
   TableBody,
@@ -149,7 +150,7 @@ export function InventarioList({ inventarios, depositos }: InventarioListProps) 
                       </Link>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {new Date(inventario.fecha).toLocaleDateString('es-MX')}
+                      {formatDateES(inventario.fecha)}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {inventario.depositoNombre || '—'}

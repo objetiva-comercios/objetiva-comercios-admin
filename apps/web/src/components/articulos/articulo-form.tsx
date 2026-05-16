@@ -8,6 +8,7 @@ import { ChevronRight, Loader2 } from 'lucide-react'
 
 import type { Articulo } from '@/types/articulo'
 import { createArticulo, updateArticulo } from '@/lib/api.client'
+import { formatDateTimeES } from '@/lib/dates'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -598,7 +599,7 @@ export function ArticuloForm({
                   {mode === 'edit' && articulo?.originSyncedAt && (
                     <div className="text-sm text-muted-foreground">
                       Ultima sincronizacion:{' '}
-                      {new Date(articulo.originSyncedAt).toLocaleString('es-MX')}
+                      {formatDateTimeES(articulo.originSyncedAt)}
                     </div>
                   )}
                 </CollapsibleContent>

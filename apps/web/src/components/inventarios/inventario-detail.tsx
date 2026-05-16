@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { Inventario, InventarioSector } from '@/types/inventario'
 import { transitionInventarioEstado } from '@/lib/api.client'
+import { formatDateES } from '@/lib/dates'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -187,7 +188,7 @@ export function InventarioDetail({ inventario, sectores }: InventarioDetailProps
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <dt className="font-medium text-muted-foreground">Fecha</dt>
-              <dd>{new Date(inventario.fecha).toLocaleDateString('es-MX')}</dd>
+              <dd>{formatDateES(inventario.fecha)}</dd>
             </div>
             <div>
               <dt className="font-medium text-muted-foreground">Deposito</dt>
@@ -199,7 +200,7 @@ export function InventarioDetail({ inventario, sectores }: InventarioDetailProps
             </div>
             <div>
               <dt className="font-medium text-muted-foreground">Creado</dt>
-              <dd>{new Date(inventario.createdAt).toLocaleDateString('es-MX')}</dd>
+              <dd>{formatDateES(inventario.createdAt)}</dd>
             </div>
           </dl>
         </CardContent>

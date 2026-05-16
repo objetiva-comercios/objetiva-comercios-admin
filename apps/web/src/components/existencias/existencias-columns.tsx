@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { Existencia, StockStatus } from '@/types/existencia'
 import { getStockStatus } from '@/types/existencia'
+import { formatDateES } from '@/lib/dates'
 
 const statusConfig: Record<
   StockStatus,
@@ -114,15 +115,7 @@ export const createExistenciasColumns = (
     cell: ({ row }) => {
       const date = row.getValue('updatedAt') as string
       if (!date) return <div className="text-sm text-muted-foreground">-</div>
-      return (
-        <div className="text-sm text-muted-foreground">
-          {new Date(date).toLocaleDateString('es-MX', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          })}
-        </div>
-      )
+      return <div className="text-sm text-muted-foreground">{formatDateES(date)}</div>
     },
   },
 ]

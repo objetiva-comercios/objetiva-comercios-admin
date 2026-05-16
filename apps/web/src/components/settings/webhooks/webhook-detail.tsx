@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ArrowLeft, Check, CheckCircle, Copy, Loader2, XCircle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { formatDateTimeES } from '@/lib/dates'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -37,13 +38,7 @@ const ENTITY_LABELS: Record<string, string> = {
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('es-MX', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  return formatDateTimeES(iso)
 }
 
 interface DeliveryRowProps {
