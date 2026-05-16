@@ -81,9 +81,11 @@ export default function EditarArticuloPage() {
   function openLightbox(tipo: 'etiqueta' | 'producto', slotIndex: number) {
     if (!articulo) return
     const urls = tipo === 'producto' ? articulo.imagenesProducto : articulo.imagenesEtiqueta
-    const nonNullUrls = urls.filter((u): u is string => u != null)
+    const nonNullUrls = urls.filter(
+      (u): u is string => typeof u === 'string' && u.length > 0 && u.toLowerCase() !== 'null'
+    )
     const url = urls[slotIndex]
-    if (!url) return
+    if (!url || url.toLowerCase() === 'null') return
     const indexInFiltered = nonNullUrls.indexOf(url)
     setLightbox({ images: nonNullUrls, initialIndex: Math.max(0, indexInFiltered) })
   }

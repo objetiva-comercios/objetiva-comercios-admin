@@ -14,6 +14,10 @@ function getThumbUrl(url: string): string {
   return url.replace('_detail.webp', '_thumb.webp')
 }
 
+function isValidImageUrl(url: string | null | undefined): url is string {
+  return typeof url === 'string' && url.length > 0 && url.toLowerCase() !== 'null'
+}
+
 const SLOT_LABELS: Record<'etiqueta' | 'producto', Record<number, string>> = {
   etiqueta: {
     1: 'Etiqueta 1',
@@ -134,7 +138,7 @@ export function ImagenSlot({
     )
   }
 
-  if (url) {
+  if (isValidImageUrl(url)) {
     return (
       <div
         className={`${baseClass} border-transparent cursor-pointer group`}

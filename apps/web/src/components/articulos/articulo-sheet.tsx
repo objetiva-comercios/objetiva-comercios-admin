@@ -30,6 +30,10 @@ function getThumbUrl(detailUrl: string): string {
   return detailUrl.replace('_detail.webp', '_thumb.webp')
 }
 
+function isValidImageUrl(url: string | null | undefined): url is string {
+  return typeof url === 'string' && url.length > 0 && url.toLowerCase() !== 'null'
+}
+
 interface ArticuloSheetProps {
   articulo: Articulo | null
   open: boolean
@@ -114,15 +118,15 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
 
   function openLightboxForType(_tipo: 'etiqueta' | 'producto', clickedUrl: string) {
     if (!articulo) return
-    const productoUrls = articulo.imagenesProducto.filter((u): u is string => u != null)
-    const etiquetaUrls = articulo.imagenesEtiqueta.filter((u): u is string => u != null)
+    const productoUrls = articulo.imagenesProducto.filter(isValidImageUrl)
+    const etiquetaUrls = articulo.imagenesEtiqueta.filter(isValidImageUrl)
     const allImages = [...productoUrls, ...etiquetaUrls]
     const clickedIndex = allImages.indexOf(clickedUrl)
     setLightbox({ images: allImages, initialIndex: Math.max(0, clickedIndex) })
   }
 
   function renderSlot(tipo: 'producto' | 'etiqueta', index: number, url: string | null | undefined) {
-    const hasImage = url != null
+    const hasImage = isValidImageUrl(url)
     if (hasImage) {
       return (
         <button
