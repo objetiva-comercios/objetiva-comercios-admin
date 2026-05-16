@@ -675,21 +675,24 @@ El API client `fetchPropiedades` deberá retornar el campo `subcategoriaId` para
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`template_id` en `articulos` — NULL o default apuntando al seed?**
    - Lo que sabemos: D-07 dice "NULL o seed con `template_default.id` — planner decide".
    - Lo que no está claro: si `template_id` es NULL en todos los artículos actuales, la lógica de Phase 32 (que lea el template para componer SKU/nombre) necesita un fallback "si es NULL, usar template 'default'". Si en cambio se backfilla `template_id` en los 101k artículos al momento de la migration, se evita el fallback pero la migration es más lenta.
    - Recomendación: dejar NULL por ahora, agregar fallback en el service de Phase 32. La migration 0008 no necesita UPDATE masivo.
+   - **Decisión:** NULL (sin backfill en Phase 30). Phase 32 cablea el fallback "si `template_id IS NULL` usar template con `nombre='default'`" en el service de composer. Evita UPDATE masivo sobre 101k filas.
 
 2. **`atributo_tipo` en `template_atributos` — qué strings válidos?**
    - Lo que sabemos: el template default usa `objeto`, `marca`, `modelo`, `medida`, `custom_1`.
    - Lo que no está claro: ¿hay un CHECK constraint sobre `atributo_tipo`? Los tipos posibles son los de `PROP_TIPOS` + `modelo` + `medida` + `custom_1/2/3`. Sin CHECK, un typo en el seed no se detecta hasta runtime.
    - Recomendación: No poner CHECK en DB (los tipos cambian entre milestones). Validación en la capa de aplicación al crear/editar template_atributos.
+   - **Decisión:** Solo aplicación (sin CHECK en DB). Mantiene flexibilidad para nuevos tipos custom (`custom_2`, `custom_3`, futuras propiedades) sin migration extra. Validación se hace en `templates.service.ts` al hacer `replaceAtributos` contra la unión de `PROP_TIPOS ∪ {modelo, medida, custom_1, custom_2, custom_3}`.
 
 3. **Select de subcategoria en el Dialog de Familias — ¿solo activas o todas?**
    - El `fetchPropiedades('subcategoria', { activo: true })` podría devolver subcategorías inactivas si el admin las desactivó. Si una subcategoría se desactiva, las familias bajo ella quedan sin poder asignarse.
    - Recomendación: mostrar todas las subcategorías activas en el select, con badge visual si alguna tiene solo inactivas. Simplicidad primero.
+   - **Decisión:** Solo activas (filtrar `activo=true`). Reduce ruido visual y consolida el patrón "el admin reactiva si necesita reasignar". Plan 04 invoca `fetchPropiedades('subcategoria', { activo: true })` para poblar el select.
 
 ---
 
