@@ -56,10 +56,23 @@ export class PropiedadesService {
 
   async create(tipo: PropTipo, dto: CreatePropiedadDto) {
     const table = this.tableFor(tipo)
+    const values: Record<string, unknown> = { nombre: dto.nombre, abrev: dto.abrev }
+    // Phase 30: `familia` requiere FK a prop_subcategoria. Los demás tipos
+    // (incluyendo `aplicacion`) ignoran `parentId` aunque venga en el body.
+    if (tipo === 'familia') {
+      if (dto.parentId === undefined || dto.parentId === null) {
+        throw new BadRequestException('subcategoria_id requerido para familia')
+      }
+      values.subcategoriaId = dto.parentId
+    }
     try {
+      // Cast a `any` localizado: PROP_TABLES es un union heterogéneo (familia tiene
+      // subcategoriaId, los otros 7 no), por lo que la inferencia de `.values()`
+      // colapsa a la intersección. La validación de runtime la hace Drizzle + PG.
       const rows = await this.drizzle.db
         .insert(table)
-        .values({ nombre: dto.nombre, abrev: dto.abrev })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .values(values as any)
         .returning()
       return rows[0]
     } catch (error: unknown) {

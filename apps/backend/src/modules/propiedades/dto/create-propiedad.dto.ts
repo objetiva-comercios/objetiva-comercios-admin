@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, MaxLength, Matches } from 'class-validator'
+import { IsString, IsNotEmpty, IsInt, IsOptional, MaxLength, Matches } from 'class-validator'
 import { Transform } from 'class-transformer'
 
 export class CreatePropiedadDto {
@@ -14,4 +14,11 @@ export class CreatePropiedadDto {
     message: 'La abreviación debe tener 1 a 8 caracteres en mayúsculas o dígitos',
   })
   abrev!: string
+
+  // Phase 30: requerido solo para `tipo === 'familia'` (FK a prop_subcategoria.id).
+  // La validación condicional vive en `PropiedadesService.create` — el DTO acepta
+  // opcionalmente el campo para los 7 tipos restantes (ignorado).
+  @IsOptional()
+  @IsInt()
+  parentId?: number
 }
