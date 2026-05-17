@@ -4,14 +4,14 @@ milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
 status: executing
 stopped_at: Phase 30 Plan 01 completo (Wave 0)
-last_updated: '2026-05-17T03:31:59.720Z'
+last_updated: '2026-05-17T15:08:54.585Z'
 last_activity: 2026-05-17
 progress:
   total_phases: 10
   completed_phases: 1
   total_plans: 16
-  completed_plans: 9
-  percent: 56
+  completed_plans: 10
+  percent: 63
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 ## Current Position
 
 Phase: 30 (templates-composici-n-sku-nombre) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-05-17
 
@@ -47,6 +47,7 @@ Last activity: 2026-05-17
 | v1.3         | 9      | TBD     | (planning) |
 | Phase 30 P01 | 6min   | 4 tasks | 8 files    |
 | Phase 30 P02 | 7min   | 3 tasks | 3 files    |
+| Phase 30 P03 | 8min   | 3 tasks | 10 files   |
 
 ## Accumulated Context
 
@@ -59,6 +60,7 @@ Cerradas en discuss-phase 29 (CONTEXT.md): Q1 (set de 6 tablas prop\_\*), Q2 (FK
 Pendiente cerrar via /gsd-discuss-phase posteriores: Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10 — distribuidas según ROADMAP.md (Phase 30/31/33/36/37).
 
 - [Phase ?]: Wave 0 (Plan 30-01): composer puro en @objetiva/utils + tipos en @objetiva/types; packages/utils declara @objetiva/types explícitamente para evitar hoisting accidental (lección feedback_schema_drift_silencioso.md)
+- [Phase ?]: Plan 30-03: nombre='default' resuelve template default (sin columna is_default, D-13). replaceAtributos = DELETE+INSERT en transacción Drizzle con validación previa de existencia del template. Cast localizado as-any en .values() para PROP_TABLES heterogéneo (familia tiene subcategoriaId).
 
 ### Roadmap Evolution
 
@@ -97,7 +99,7 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-05-17T03:31:55.146Z
+Last session: 2026-05-17T15:08:50.350Z
 Stopped at: Phase 30 Plan 01 completo (Wave 0)
 Pending Actions del SUMMARY 260502-tqf — estado final:
 [x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli
