@@ -110,7 +110,7 @@ export default function TemplateDetailPage() {
         title: 'ID de template inválido',
         variant: 'destructive',
       })
-      router.push('/templates')
+      router.push('/settings/articulos/templates')
       return
     }
     let cancelled = false
@@ -191,7 +191,7 @@ export default function TemplateDetailPage() {
     <div className="space-y-4">
       <div>
         <Link
-          href="/templates"
+          href="/settings/articulos/templates"
           className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-1 h-3.5 w-3.5" />

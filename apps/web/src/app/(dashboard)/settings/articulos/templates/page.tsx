@@ -62,16 +62,12 @@ export default function TemplatesPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-medium">Templates</h2>
+      <div className="flex items-start justify-between gap-4">
         <p className="text-sm text-muted-foreground">
           Plantillas de composición SKU/Nombre para artículos. Phase 30 entrega solo el template{' '}
           <code className="font-mono">default</code>; la creación de templates adicionales queda
           diferida.
         </p>
-      </div>
-
-      <div className="flex justify-end">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -144,7 +140,7 @@ export default function TemplatesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Link href={`/templates/${t.id}`}>
+                    <Link href={`/settings/articulos/templates/${t.id}`}>
                       <Button variant="ghost" size="sm" className="h-8">
                         <Pencil className="mr-2 h-3.5 w-3.5" />
                         Editar
