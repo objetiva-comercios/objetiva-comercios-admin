@@ -53,6 +53,30 @@ export interface PropiedadCreateDialogProps {
   /** Modo controlled (opcional). */
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  /**
+   * Phase 30 — slot opcional para inyectar controles extra (ej. select de
+   * subcategoría para el dialog de Familias). Se renderiza entre el FormField
+   * de `abrev` y el DialogFooter.
+   *
+   * **Estética Tabler:** los controles inyectados deben respetar `h-9`, border-
+   * radius `md`, `text-sm` y `bg` explícito en form controls (per
+   * shadcn-tabler-mcp). Para el control padre conviene wrappear en un
+   * `<div className="space-y-2">` para mantener consistencia visual con los
+   * FormField de shadcn/ui.
+   */
+  extraFields?: ReactNode
+  /**
+   * Phase 30 — contribuye keys/values al body del POST al backend además de
+   * `{nombre, abrev}`. Ejemplo Familias: `() => ({ parentId: subcategoriaId })`.
+   * Si retorna `undefined`/`{}` el body queda como `{nombre, abrev}` (default).
+   */
+  buildExtraPayload?: () => Record<string, unknown>
+  /**
+   * Phase 30 — validación cliente del estado de `extraFields`. Si retorna un
+   * string no-null se muestra como error y NO se envía el submit. Ejemplo
+   * Familias: `() => parentId == null ? 'Seleccioná una subcategoría' : null`.
+   */
+  validateExtra?: () => string | null
 }
 
 export function PropiedadCreateDialog({
@@ -61,6 +85,9 @@ export function PropiedadCreateDialog({
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  extraFields,
+  buildExtraPayload,
+  validateExtra,
 }: PropiedadCreateDialogProps) {
   const { toast } = useToast()
   const [internalOpen, setInternalOpen] = useState(false)
@@ -97,9 +124,24 @@ export function PropiedadCreateDialog({
   const c = copyFor(propTipo)
 
   async function onSubmit(values: FormValues) {
+    // Phase 30 — validación cliente del slot extra antes de tocar el backend.
+    if (validateExtra) {
+      const extraError = validateExtra()
+      if (extraError) {
+        toast({
+          title: `No se pudo crear ${c.articulo} ${c.singularLower}`,
+          description: extraError,
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+
     setIsLoading(true)
     try {
-      const created = await createPropiedad(propTipo, values)
+      const extra = buildExtraPayload?.() ?? {}
+      const body = { ...values, ...extra }
+      const created = await createPropiedad(propTipo, body)
       toast({ title: `${c.singular} ${c.creada} correctamente` })
       onCreated?.(created)
       onOpenChange(false)
@@ -176,6 +218,8 @@ export function PropiedadCreateDialog({
                 </FormItem>
               )}
             />
+            {/* Phase 30 — slot opcional para controles extra (ej. select de subcategoría en Familias). */}
+            {extraFields ?? null}
             <DialogFooter>
               <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>
                 Cancelar

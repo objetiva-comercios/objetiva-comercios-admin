@@ -785,7 +785,9 @@ export async function fetchPropiedades(
 
 export async function createPropiedad(
   tipo: PropTipo,
-  data: { nombre: string; abrev: string }
+  // Phase 30: el body puede incluir campos extra (ej. `parentId` para `familia`).
+  // El backend valida el shape exacto según el tipo (CreatePropiedadDto).
+  data: { nombre: string; abrev: string } & Record<string, unknown>
 ): Promise<Propiedad> {
   const headers = await getAuthHeaders()
   const response = await fetch(`${API_BASE_URL}/api/propiedades/${tipo}`, {
@@ -812,18 +814,12 @@ export async function updatePropiedad(
   return response.json()
 }
 
-export async function togglePropiedadActivo(
-  tipo: PropTipo,
-  id: number
-): Promise<Propiedad> {
+export async function togglePropiedadActivo(tipo: PropTipo, id: number): Promise<Propiedad> {
   const headers = await getAuthHeaders()
-  const response = await fetch(
-    `${API_BASE_URL}/api/propiedades/${tipo}/${id}/toggle`,
-    {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...headers },
-    }
-  )
+  const response = await fetch(`${API_BASE_URL}/api/propiedades/${tipo}/${id}/toggle`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
   await throwIfError(response)
   return response.json()
 }

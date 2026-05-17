@@ -51,9 +51,24 @@ export interface PropiedadTableProps {
    * de Phase 29.
    */
   extraColumns?: ExtraColumn[]
+  /**
+   * Phase 30 — props extra que se reenvían al `<PropiedadCreateDialog>`
+   * interno cuando el padre necesita inyectar campos adicionales (ej. select
+   * de subcategoría en el dialog de Familias). Mantener `undefined` para los
+   * 6 tabs originales.
+   */
+  createDialogExtras?: {
+    extraFields?: ReactNode
+    buildExtraPayload?: () => Record<string, unknown>
+    validateExtra?: () => string | null
+  }
 }
 
-export function PropiedadTable({ propTipo, extraColumns }: PropiedadTableProps) {
+export function PropiedadTable({
+  propTipo,
+  extraColumns,
+  createDialogExtras,
+}: PropiedadTableProps) {
   const { toast } = useToast()
   const label = PROP_LABELS[propTipo]
   const c = copyFor(propTipo)
@@ -268,12 +283,15 @@ export function PropiedadTable({ propTipo, extraColumns }: PropiedadTableProps) 
         </Table>
       </div>
 
-      {/* Create Dialog (controlled). createDialogExtras se conecta en Task 2. */}
+      {/* Create Dialog (controlled). createDialogExtras (Phase 30) inyecta slots opcionales. */}
       <PropiedadCreateDialog
         propTipo={propTipo}
         open={createOpen}
         onOpenChange={setCreateOpen}
         onCreated={() => loadData()}
+        extraFields={createDialogExtras?.extraFields}
+        buildExtraPayload={createDialogExtras?.buildExtraPayload}
+        validateExtra={createDialogExtras?.validateExtra}
       />
 
       {/* Edit Dialog */}
