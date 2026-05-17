@@ -195,9 +195,7 @@ export const articulos = pgTable(
     // Classification
     categoria: text('categoria'),
     subcategoria: text('subcategoria'),
-    rubro: text('rubro'),
-    subrubro: text('subrubro'),
-    adjetivo: text('adjetivo'),
+    familia: text('familia'),
 
     // Properties
     marca: text('marca'),
@@ -208,11 +206,12 @@ export const articulos = pgTable(
     presentacion: text('presentacion'),
     medida: text('medida'),
     objeto: text('objeto'),
-    propAux1: text('prop_aux_1'),
-    propAux2: text('prop_aux_2'),
-    propAux3: text('prop_aux_3'),
-    propAux4: text('prop_aux_4'),
-    propAux5: text('prop_aux_5'),
+    custom1: text('custom_1'),
+    custom2: text('custom_2'),
+    custom3: text('custom_3'),
+    templateId: integer('template_id').references((): AnyPgColumn => articulosTemplates.id, {
+      onDelete: 'set null',
+    }),
     unidades: integer('unidades').default(0),
 
     // Prices
@@ -583,3 +582,72 @@ export type PropCategoria = typeof propCategoria.$inferSelect
 export type NewPropCategoria = typeof propCategoria.$inferInsert
 export type PropSubcategoria = typeof propSubcategoria.$inferSelect
 export type NewPropSubcategoria = typeof propSubcategoria.$inferInsert
+
+// === Phase 30: Templates + Composicion SKU/Nombre + Taxonomia 3er nivel ===
+// 4 tablas nuevas (D-08 propFamilia, factory propAplicacion, articulosTemplates + templateAtributos
+// para recetas de composicion). PropFamilia FK a propSubcategoria con UNIQUE compuesto (categoria_id,
+// lower(nombre)) y abrev. articulosTemplates identifica default por nombre='default' (D-13, NO is_default).
+
+export const propFamilia = pgTable(
+  'prop_familia',
+  {
+    id: serial('id').primaryKey(),
+    subcategoriaId: integer('subcategoria_id')
+      .notNull()
+      .references(() => propSubcategoria.id, { onDelete: 'restrict' }),
+    nombre: text('nombre').notNull(),
+    abrev: text('abrev').notNull(),
+    activo: boolean('activo').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [
+    uniqueIndex('prop_familia_nombre_lower_uniq').on(table.subcategoriaId, lower(table.nombre)),
+    uniqueIndex('prop_familia_abrev_uniq').on(table.subcategoriaId, table.abrev),
+    check('prop_familia_abrev_format_chk', ABREV_REGEX_SQL),
+    index('prop_familia_subcategoria_id_idx').on(table.subcategoriaId),
+    index('prop_familia_activo_idx').on(table.activo),
+  ]
+)
+
+export const propAplicacion = definePropTable('prop_aplicacion', 'prop_aplicacion')
+
+export const articulosTemplates = pgTable(
+  'articulos_templates',
+  {
+    id: serial('id').primaryKey(),
+    nombre: text('nombre').notNull().unique(),
+    descripcion: text('descripcion'),
+    activo: boolean('activo').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => [index('articulos_templates_activo_idx').on(table.activo)]
+)
+
+export const templateAtributos = pgTable(
+  'template_atributos',
+  {
+    templateId: integer('template_id')
+      .notNull()
+      .references(() => articulosTemplates.id, { onDelete: 'cascade' }),
+    atributoTipo: text('atributo_tipo').notNull(),
+    ordenNombre: integer('orden_nombre'),
+    ordenSku: integer('orden_sku'),
+    esVariante: boolean('es_variante').notNull().default(false),
+    customSlot: integer('custom_slot'),
+  },
+  table => [
+    primaryKey({ columns: [table.templateId, table.atributoTipo] }),
+    index('template_atributos_template_id_idx').on(table.templateId),
+  ]
+)
+
+export type PropFamilia = typeof propFamilia.$inferSelect
+export type NewPropFamilia = typeof propFamilia.$inferInsert
+export type PropAplicacion = typeof propAplicacion.$inferSelect
+export type NewPropAplicacion = typeof propAplicacion.$inferInsert
+export type ArticulosTemplate = typeof articulosTemplates.$inferSelect
+export type NewArticulosTemplate = typeof articulosTemplates.$inferInsert
+export type TemplateAtributo = typeof templateAtributos.$inferSelect
+export type NewTemplateAtributo = typeof templateAtributos.$inferInsert
