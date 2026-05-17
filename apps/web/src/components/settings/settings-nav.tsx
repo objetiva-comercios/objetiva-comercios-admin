@@ -31,7 +31,7 @@ const settingsNavItems = [
     title: 'Artículos',
     href: '/settings/articulos',
     icon: Package,
-    description: 'Configurá qué campos de artículos se muestran',
+    description: 'Visibilidad de campos, propiedades y templates de composición',
   },
   {
     title: 'Depositos',
@@ -76,7 +76,7 @@ export function SettingsNav({ userRole }: { userRole: string }) {
   return (
     <nav className="space-y-1">
       {visibleItems.map(item => {
-        const isActive = pathname === item.href
+        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
         const Icon = item.icon
 
         return (
