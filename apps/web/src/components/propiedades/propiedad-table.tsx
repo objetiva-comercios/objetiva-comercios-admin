@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { fetchPropiedades, togglePropiedadActivo } from '@/lib/api.client'
 import type { Propiedad, PropTipo } from '@/types/propiedad'
 import { PROP_LABELS, copyFor } from '@/types/propiedad'
@@ -28,11 +28,32 @@ import { PropiedadCreateDialog } from './propiedad-create-dialog'
 import { PropiedadEditDialog } from './propiedad-edit-dialog'
 import { PropiedadDeactivateDialog } from './propiedad-deactivate-dialog'
 
-export interface PropiedadTableProps {
-  propTipo: PropTipo
+/**
+ * Columna extra opcional para casos como Familias (Phase 30), que necesita
+ * mostrar la subcategoría asociada (lookup local). Se renderiza entre
+ * "Abrev" y "Estado" en el orden del array.
+ *
+ * **Estética Tabler:** los nodos devueltos por `cell` deben respetar el sizing
+ * de las filas (`text-sm`, padding consistente). Para badges, usar
+ * `px-1.5 py-0 text-[11px]` como el badge "Activo".
+ */
+export interface ExtraColumn {
+  header: string
+  cell: (row: Propiedad) => ReactNode
+  className?: string
 }
 
-export function PropiedadTable({ propTipo }: PropiedadTableProps) {
+export interface PropiedadTableProps {
+  propTipo: PropTipo
+  /**
+   * Columnas extra opcionales. Se renderizan entre "Abrev" y "Estado".
+   * Si no se provee, el render es 100% backward-compatible con los 6 tabs
+   * de Phase 29.
+   */
+  extraColumns?: ExtraColumn[]
+}
+
+export function PropiedadTable({ propTipo, extraColumns }: PropiedadTableProps) {
   const { toast } = useToast()
   const label = PROP_LABELS[propTipo]
   const c = copyFor(propTipo)
@@ -149,6 +170,11 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
               <TableHead className="w-[60px]">ID</TableHead>
               <TableHead>Nombre</TableHead>
               <TableHead className="w-[100px]">Abrev</TableHead>
+              {extraColumns?.map((col, idx) => (
+                <TableHead key={`extra-h-${idx}`} className={col.className}>
+                  {col.header}
+                </TableHead>
+              ))}
               <TableHead className="w-[80px]">Estado</TableHead>
               <TableHead className="w-[40px] text-right"></TableHead>
             </TableRow>
@@ -166,6 +192,11 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
                   <TableCell>
                     <Skeleton className="h-5 w-12" />
                   </TableCell>
+                  {extraColumns?.map((_, idx) => (
+                    <TableCell key={`sk-extra-${idx}`}>
+                      <Skeleton className="h-5 w-20" />
+                    </TableCell>
+                  ))}
                   <TableCell>
                     <Skeleton className="h-5 w-16" />
                   </TableCell>
@@ -174,7 +205,10 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
               ))
             ) : propiedades.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-sm text-muted-foreground">
+                <TableCell
+                  colSpan={5 + (extraColumns?.length ?? 0)}
+                  className="text-center py-8 text-sm text-muted-foreground"
+                >
                   Sin {c.pluralLower}. Usá el botón {c.nuevo} {c.singularLower} para agregar{' '}
                   {c.articulo} {c.ordinalPrimero}.
                 </TableCell>
@@ -185,6 +219,11 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
                   <TableCell className="font-mono text-sm text-muted-foreground">{p.id}</TableCell>
                   <TableCell className="font-medium text-sm">{p.nombre}</TableCell>
                   <TableCell className="font-mono text-sm">{p.abrev}</TableCell>
+                  {extraColumns?.map((col, idx) => (
+                    <TableCell key={`extra-c-${p.id}-${idx}`} className={col.className}>
+                      {col.cell(p)}
+                    </TableCell>
+                  ))}
                   <TableCell>
                     <Badge
                       variant={p.activo ? 'default' : 'secondary'}
@@ -229,7 +268,7 @@ export function PropiedadTable({ propTipo }: PropiedadTableProps) {
         </Table>
       </div>
 
-      {/* Create Dialog (controlled) */}
+      {/* Create Dialog (controlled). createDialogExtras se conecta en Task 2. */}
       <PropiedadCreateDialog
         propTipo={propTipo}
         open={createOpen}

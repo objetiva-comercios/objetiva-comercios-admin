@@ -1,14 +1,29 @@
 /**
- * Tipos compartidos para Propiedades (Phase 29 - Catalogos de Atributos).
+ * Tipos compartidos para Propiedades (Phase 29 + Phase 30 - Catalogos de Atributos).
  *
- * Las 6 tablas (`prop_marca`, `prop_color`, `prop_talle`, `prop_material`,
- * `prop_presentacion`, `prop_objeto`) comparten el mismo shape de fila
- * (`Propiedad`). El tipo `PropTipo` se deriva de la tupla canonica `PROP_TIPOS`
- * para garantizar que las 6 keys siempre estan exhaustivamente cubiertas en
- * los registros (`PROP_LABELS`, `PROP_NOMBRE_PLACEHOLDERS`).
+ * Phase 29: 6 tablas (`prop_marca`, `prop_color`, `prop_talle`, `prop_material`,
+ * `prop_presentacion`, `prop_objeto`) que comparten el mismo shape de fila
+ * (`Propiedad`).
+ *
+ * Phase 30: se agregan `prop_familia` (con FK a `prop_subcategoria`) y
+ * `prop_aplicacion` al catálogo. El shape sigue siendo `Propiedad`; solo
+ * `familia` puede traer `subcategoriaId` populado por el backend.
+ *
+ * El tipo `PropTipo` se deriva de la tupla canónica `PROP_TIPOS` para garantizar
+ * que las 8 keys siempre estén exhaustivamente cubiertas en los registros
+ * (`PROP_LABELS`, `PROP_NOMBRE_PLACEHOLDERS`).
  */
 
-export const PROP_TIPOS = ['marca', 'color', 'talle', 'material', 'presentacion', 'objeto'] as const
+export const PROP_TIPOS = [
+  'marca',
+  'color',
+  'talle',
+  'material',
+  'presentacion',
+  'objeto',
+  'familia',
+  'aplicacion',
+] as const
 
 export type PropTipo = (typeof PROP_TIPOS)[number]
 
@@ -19,6 +34,12 @@ export interface Propiedad {
   activo: boolean
   createdAt: string
   updatedAt: string
+  /**
+   * Phase 30: solo presente en filas de tipo `familia` — el backend lo retorna
+   * porque `prop_familia` tiene FK NOT NULL a `prop_subcategoria(id)`. En el
+   * resto de los tipos es `undefined`.
+   */
+  subcategoriaId?: number
 }
 
 // Etiquetas en español (es-MX) para copy en componentes.
@@ -34,6 +55,8 @@ export const PROP_LABELS: Record<
   material: { singular: 'Material', plural: 'Materiales', gender: 'm' },
   presentacion: { singular: 'Presentación', plural: 'Presentaciones', gender: 'f' },
   objeto: { singular: 'Objeto', plural: 'Objetos', gender: 'm' },
+  familia: { singular: 'Familia', plural: 'Familias', gender: 'f' },
+  aplicacion: { singular: 'Aplicación', plural: 'Aplicaciones', gender: 'f' },
 }
 
 /**
@@ -84,4 +107,6 @@ export const PROP_NOMBRE_PLACEHOLDERS: Record<PropTipo, string> = {
   material: 'Ej: Cuero',
   presentacion: 'Ej: Caja',
   objeto: 'Ej: Casco',
+  familia: 'Ej: Amortiguadores delanteros',
+  aplicacion: 'Ej: Fiat Cronos 1.3 2020-2024',
 }
