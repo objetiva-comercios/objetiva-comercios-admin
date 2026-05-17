@@ -39,3 +39,6 @@ export function getPasswordStrength(pwd: string): 'weak' | 'fair' | 'strong' {
   if (score <= 2) return 'fair'
   return 'strong'
 }
+
+// Phase 30 — Templates + Composición SKU/Nombre
+export * from './template'
