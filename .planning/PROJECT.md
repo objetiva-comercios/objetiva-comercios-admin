@@ -62,6 +62,8 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 - ✓ Vista detalle en panel lateral (ArticuloSheet) con todos los campos e imágenes — v1.2
 - ✓ API Keys: CompositeAuthGuard (JWT + Bearer), CRUD en Settings, SHA-256 hashing — v1.2
 - ✓ Webhooks: CRUD + HMAC-SHA256 + retry backoff + delivery log + test ping, artículos events — v1.2
+- ✓ Catálogos de atributos FK (marcas, colores, talles, materiales, presentaciones, objetos, calificadores) con slug autogenerado, soft-delete, create-on-the-fly — v1.3 Phase 29
+- ✓ Templates de composición SKU/Nombre: 4 tablas (prop_familia, prop_aplicacion, articulos_templates, template_atributos), composer puro (`composeSku`/`composeNombre`) en `@objetiva/utils` con 17 tests Vitest, seed template default automotor, edit UI de atributos del default, 8 tabs en /propiedades — v1.3 Phase 30 (UAT visual pendiente)
 
 ### Active
 
@@ -83,7 +85,7 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ## Context
 
-**Current state:** Shipped v1.2 with ~23,600 LOC TypeScript across 128+ modified files. Full artículos CRUD with images, API keys for external integrations, and webhook notifications for articulo events.
+**Current state:** Shipped v1.2 with ~23,600 LOC TypeScript across 128+ modified files. Full artículos CRUD with images, API keys for external integrations, and webhook notifications for articulo events. v1.3 en curso: Phase 29 (catálogos FK) complete, Phase 30 (templates + composer puro) ready_for_uat — composer + 4 tablas DB + módulo NestJS templates + UI propiedades extendida desplegada en main (UAT visual pendiente).
 
 **Tech stack:**
 
@@ -115,32 +117,32 @@ A solid, reusable foundation that can be extended confidently — cohesive UI, r
 
 ## Key Decisions
 
-| Decision                                             | Rationale                                             | Outcome                                                 |
-| ---------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------- |
-| Supabase for auth only, separate PostgreSQL for data | Clean separation of concerns                          | ✓ Good — clean auth/data boundary                       |
-| pnpm + Turborepo over Nx                             | Simpler mental model, less abstraction                | ✓ Good — fast builds, minimal config                    |
-| Platform-specific UI with shared design language     | Avoid cross-platform abstractions                     | ✓ Good — each platform feels native                     |
-| Backend serves mock data → replaced by real DB       | Validates contract early                              | ✓ Good — frontend required zero changes                 |
-| Bottom tabs + drawer pattern for mobile              | Tabs for high-frequency, drawer for secondary         | ✓ Good — clear nav mental model                         |
-| HashRouter for Capacitor mobile                      | file:// protocol where BrowserRouter fails            | ✓ Good — works on iOS/Android native                    |
-| Drizzle ORM over TypeORM/Prisma                      | Lightweight, SQL-like, good TS inference              | ✓ Good — clean migrations, fast queries                 |
-| jose for JWT validation                              | Async JWKS, no Supabase SDK dependency                | ✓ Good — lightweight, handles key rotation              |
-| Global JWT guard with @Public() opt-out              | Deny-by-default auth                                  | ✓ Good — prevented auth gaps                            |
-| PK articulos is `codigo` (text), not numeric ID      | Real business model uses ERP codes as identifiers     | ✓ Good — natural alignment with ERP data                |
-| Existencias split from articulos                     | Multi-deposito support requires separate stock table  | ✓ Good — clean per-location stock tracking              |
-| Inventarios = periodic physical counts               | Distinct from stock/existencias — events with sectors | ✓ Good — clear domain separation                        |
-| doublePrecision for monetary fields                  | Returns JS numbers, no string parsing                 | ⚠️ Revisit — may need numeric() for financial precision |
-| Clean-cut migration (db:push + re-seed)              | No production data to preserve in dev                 | ✓ Good — fast iteration without migration complexity    |
-| Filesystem local for article images                  | Simple, no CDN/cloud needed at current scale          | ✓ Good — zero external dependencies                     |
-| sharp for image processing (WebP + resize)           | Quality thumbnails, single dependency                 | ✓ Good — fast in-memory pipeline                        |
-| CompositeAuthGuard (JWT + API key)                   | External systems need auth without Supabase           | ✓ Good — clean fallback chain                           |
-| @nestjs/event-emitter for webhook dispatch           | Lightweight, in-process, no message queue needed      | ✓ Good — adequate for 10-50 webhooks/day                |
-| HMAC-SHA256 for webhook signatures                   | Industry standard, verifiable by consumers            | ✓ Good — secure payload verification                    |
-| DB-driven column visibility (JSONB in settings)      | Global config, no per-user tables                     | ✓ Good — simple, immediate-persist UX                   |
-| objeto field as plain Input (no Select/Combobox)     | Parameter table integration deferred                  | ✓ Good — pragmatic, extensible later                    |
-| Variantes de artículos: revertir decisión flat de v1.0 | Negocio (rubrería de repuestos) requiere modelado fino con catálogos compartidos para SKU/nombre automático y consistencia entre artículos del mismo modelo | v1.3 — en construcción |
-| SKU como identificador universal en comprobantes      | `codigo` deja de ser PK, `sku` PK desde el día 1; `sku=codigo` cuando no hay variantes | v1.3 — en construcción |
-| Atributos como FK a catálogos (no JSONB)              | Simplicidad de queries, vista cruda elocuente, IA-friendly, performance; modelo plano single-table con datos comunes duplicados aceptados | v1.3 — en construcción |
+| Decision                                               | Rationale                                                                                                                                                   | Outcome                                                 |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Supabase for auth only, separate PostgreSQL for data   | Clean separation of concerns                                                                                                                                | ✓ Good — clean auth/data boundary                       |
+| pnpm + Turborepo over Nx                               | Simpler mental model, less abstraction                                                                                                                      | ✓ Good — fast builds, minimal config                    |
+| Platform-specific UI with shared design language       | Avoid cross-platform abstractions                                                                                                                           | ✓ Good — each platform feels native                     |
+| Backend serves mock data → replaced by real DB         | Validates contract early                                                                                                                                    | ✓ Good — frontend required zero changes                 |
+| Bottom tabs + drawer pattern for mobile                | Tabs for high-frequency, drawer for secondary                                                                                                               | ✓ Good — clear nav mental model                         |
+| HashRouter for Capacitor mobile                        | file:// protocol where BrowserRouter fails                                                                                                                  | ✓ Good — works on iOS/Android native                    |
+| Drizzle ORM over TypeORM/Prisma                        | Lightweight, SQL-like, good TS inference                                                                                                                    | ✓ Good — clean migrations, fast queries                 |
+| jose for JWT validation                                | Async JWKS, no Supabase SDK dependency                                                                                                                      | ✓ Good — lightweight, handles key rotation              |
+| Global JWT guard with @Public() opt-out                | Deny-by-default auth                                                                                                                                        | ✓ Good — prevented auth gaps                            |
+| PK articulos is `codigo` (text), not numeric ID        | Real business model uses ERP codes as identifiers                                                                                                           | ✓ Good — natural alignment with ERP data                |
+| Existencias split from articulos                       | Multi-deposito support requires separate stock table                                                                                                        | ✓ Good — clean per-location stock tracking              |
+| Inventarios = periodic physical counts                 | Distinct from stock/existencias — events with sectors                                                                                                       | ✓ Good — clear domain separation                        |
+| doublePrecision for monetary fields                    | Returns JS numbers, no string parsing                                                                                                                       | ⚠️ Revisit — may need numeric() for financial precision |
+| Clean-cut migration (db:push + re-seed)                | No production data to preserve in dev                                                                                                                       | ✓ Good — fast iteration without migration complexity    |
+| Filesystem local for article images                    | Simple, no CDN/cloud needed at current scale                                                                                                                | ✓ Good — zero external dependencies                     |
+| sharp for image processing (WebP + resize)             | Quality thumbnails, single dependency                                                                                                                       | ✓ Good — fast in-memory pipeline                        |
+| CompositeAuthGuard (JWT + API key)                     | External systems need auth without Supabase                                                                                                                 | ✓ Good — clean fallback chain                           |
+| @nestjs/event-emitter for webhook dispatch             | Lightweight, in-process, no message queue needed                                                                                                            | ✓ Good — adequate for 10-50 webhooks/day                |
+| HMAC-SHA256 for webhook signatures                     | Industry standard, verifiable by consumers                                                                                                                  | ✓ Good — secure payload verification                    |
+| DB-driven column visibility (JSONB in settings)        | Global config, no per-user tables                                                                                                                           | ✓ Good — simple, immediate-persist UX                   |
+| objeto field as plain Input (no Select/Combobox)       | Parameter table integration deferred                                                                                                                        | ✓ Good — pragmatic, extensible later                    |
+| Variantes de artículos: revertir decisión flat de v1.0 | Negocio (rubrería de repuestos) requiere modelado fino con catálogos compartidos para SKU/nombre automático y consistencia entre artículos del mismo modelo | v1.3 — en construcción                                  |
+| SKU como identificador universal en comprobantes       | `codigo` deja de ser PK, `sku` PK desde el día 1; `sku=codigo` cuando no hay variantes                                                                      | v1.3 — en construcción                                  |
+| Atributos como FK a catálogos (no JSONB)               | Simplicidad de queries, vista cruda elocuente, IA-friendly, performance; modelo plano single-table con datos comunes duplicados aceptados                   | v1.3 — en construcción                                  |
 
 ## Evolution
 
@@ -163,4 +165,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-04-29 starting v1.3 milestone_
+_Last updated: 2026-05-17 — Phase 30 (Templates + Composición SKU/Nombre) executed (UAT visual pendiente)_
