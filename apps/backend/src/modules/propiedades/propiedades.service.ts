@@ -57,13 +57,19 @@ export class PropiedadesService {
   async create(tipo: PropTipo, dto: CreatePropiedadDto) {
     const table = this.tableFor(tipo)
     const values: Record<string, unknown> = { nombre: dto.nombre, abrev: dto.abrev }
-    // Phase 30: `familia` requiere FK a prop_subcategoria. Los demás tipos
-    // (incluyendo `aplicacion`) ignoran `parentId` aunque venga en el body.
+    // Phase 30: `familia` requiere FK a prop_subcategoria; `subcategoria`
+    // requiere FK a prop_categoria. Los demás tipos (incluyendo `aplicacion` y
+    // `categoria`) ignoran `parentId` aunque venga en el body.
     if (tipo === 'familia') {
       if (dto.parentId === undefined || dto.parentId === null) {
         throw new BadRequestException('subcategoria_id requerido para familia')
       }
       values.subcategoriaId = dto.parentId
+    } else if (tipo === 'subcategoria') {
+      if (dto.parentId === undefined || dto.parentId === null) {
+        throw new BadRequestException('categoria_id requerido para subcategoria')
+      }
+      values.categoriaId = dto.parentId
     }
     try {
       // Cast a `any` localizado: PROP_TABLES es un union heterogéneo (familia tiene
