@@ -62,6 +62,9 @@ importers:
       '@objetiva/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@objetiva/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -297,7 +300,7 @@ importers:
         version: 7.71.1(react@18.3.1)
       recharts:
         specifier: ^3.7.0
-        version: 3.7.0(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react-is@16.13.1)(react@18.3.1)(redux@5.0.1)
+        version: 3.7.0(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react-is@17.0.2)(react@18.3.1)(redux@5.0.1)
       tailwind-merge:
         specifier: ^2.2.0
         version: 2.6.0
@@ -375,6 +378,10 @@ importers:
         version: 5.9.3
 
   packages/utils:
+    dependencies:
+      '@objetiva/types':
+        specifier: workspace:*
+        version: link:../types
     devDependencies:
       typescript:
         specifier: ^5.3.0
@@ -10096,7 +10103,7 @@ snapshots:
     dependencies:
       picomatch: 2.3.1
 
-  recharts@3.7.0(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react-is@16.13.1)(react@18.3.1)(redux@5.0.1):
+  recharts@3.7.0(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react-is@17.0.2)(react@18.3.1)(redux@5.0.1):
     dependencies:
       '@reduxjs/toolkit': 2.11.2(react-redux@9.2.0(@types/react@18.3.27)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
       clsx: 2.1.1
@@ -10106,7 +10113,7 @@ snapshots:
       immer: 10.2.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      react-is: 16.13.1
+      react-is: 17.0.2
       react-redux: 9.2.0(@types/react@18.3.27)(react@18.3.1)(redux@5.0.1)
       reselect: 5.1.1
       tiny-invariant: 1.3.3

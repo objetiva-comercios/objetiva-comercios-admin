@@ -15,6 +15,9 @@
     "dev": "tsc --watch",
     "type-check": "tsc --noEmit"
   },
+  "dependencies": {
+    "@objetiva/types": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.3.0"
   }
