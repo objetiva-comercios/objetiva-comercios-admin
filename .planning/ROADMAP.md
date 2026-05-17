@@ -58,7 +58,7 @@
 ### 🚧 v1.3 Variantes y Modelo de Stock (Phases 29-37) — IN PROGRESS
 
 - [x] **Phase 29: Catálogos de Atributos** — ABM unificado de catálogos FK (marcas, colores, talles, materiales, presentaciones, objetos, calificadores) con slug autogenerado, soft-delete y create-on-the-fly (completed 2026-04-30)
-- [ ] **Phase 30: Templates + Composición SKU/Nombre** — Tablas `articulos_templates` + `template_atributos`, función pura `composeSku()` + `composeNombre()`, builder UI y seed del template default
+- [x] **Phase 30: Templates + Composición SKU/Nombre** — Tablas `articulos_templates` + `template_atributos`, función pura `composeSku()` + `composeNombre()`, builder UI y seed del template default (completed 2026-05-17)
 - [ ] **Phase 31: PK Swap codigo→sku + FK rename comprobantes** — Promoción de `sku` a PK de `articulos`, `codigo` agrupador NOT UNIQUE, rename FK en orders/sales/purchases/existencias/inventarios_articulos, webhook payload v2
 - [ ] **Phase 32: Variantes UI** — Split `ArticuloForm` en `ModeloForm` + `VarianteForm`, `AtributoSelectField`, listado agrupado por `codigo`, wizard 3 pasos, edit modelo cascada app-level
 - [ ] **Phase 33: Cascade Engine + Audit History** — Preview de impacto, transacción atómica con advisory lock + trigger guard, `articulo_sku_history` append-only particionada, idempotencia vía `sku_anterior`, undo last batch
@@ -126,7 +126,7 @@ Plans:
 - [x] 30-01-PLAN.md — Shared composer (types + utils + tests RED-GREEN) (Wave 0)
 - [x] 30-02-PLAN.md — [BLOCKING] Migration 0008: prop_familia + prop_aplicacion + articulos_templates + template_atributos + DROP legacy (Wave 1)
 - [x] 30-03-PLAN.md — Backend module templates + extensión propiedades (familia + aplicacion) (Wave 2)
-- [ ] 30-04-PLAN.md — Frontend tabs Familias + Aplicaciones + extensión PropiedadTable/Dialog (Wave 3)
+- [x] 30-04-PLAN.md — Frontend tabs Familias + Aplicaciones + extensión PropiedadTable/Dialog (Wave 3)
 
 **UI hint**: yes
 **Open Qs to close in `/gsd-discuss-phase 30`**: Q4 (atributos finales del template default), Q6 (`categoria/subcategoria/rubro/subrubro/adjetivo` taxonomía vs atributos)
@@ -368,7 +368,7 @@ Plans:
 | 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete               | 2026-03-13                               |
 | 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete               | 2026-03-13                               |
 | 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete               | 2026-04-30                               |
-| 30. Templates + Composición SKU/Nombre              | v1.3      | 3/4            | In Progress            |                                          |
+| 30. Templates + Composición SKU/Nombre              | v1.3      | 4/4            | Complete               | 2026-05-17                               |
 | 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started            | -                                        |
 | 32. Variantes UI                                    | v1.3      | 0/0            | Not started            | -                                        |
 | 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started            | -                                        |

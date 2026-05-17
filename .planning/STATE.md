@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
-status: executing
+status: verifying
 stopped_at: Phase 30 Plan 01 completo (Wave 0)
-last_updated: '2026-05-17T15:08:54.585Z'
+last_updated: '2026-05-17T15:34:13.377Z'
 last_activity: 2026-05-17
 progress:
   total_phases: 10
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 16
-  completed_plans: 10
-  percent: 63
+  completed_plans: 11
+  percent: 69
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 
 Phase: 30 (templates-composici-n-sku-nombre) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-05-17
 
 ## Performance Metrics
@@ -39,15 +39,16 @@ Last activity: 2026-05-17
 
 **By Milestone:**
 
-| Milestone    | Phases | Plans   | Shipped    |
-| ------------ | ------ | ------- | ---------- |
-| v1.0         | 13     | 42      | 2026-03-04 |
-| v1.1         | 5      | 18      | 2026-03-10 |
-| v1.2         | 10     | 18      | 2026-03-13 |
-| v1.3         | 9      | TBD     | (planning) |
-| Phase 30 P01 | 6min   | 4 tasks | 8 files    |
-| Phase 30 P02 | 7min   | 3 tasks | 3 files    |
-| Phase 30 P03 | 8min   | 3 tasks | 10 files   |
+| Milestone              | Phases | Plans   | Shipped    |
+| ---------------------- | ------ | ------- | ---------- |
+| v1.0                   | 13     | 42      | 2026-03-04 |
+| v1.1                   | 5      | 18      | 2026-03-10 |
+| v1.2                   | 10     | 18      | 2026-03-13 |
+| v1.3                   | 9      | TBD     | (planning) |
+| Phase 30 P01           | 6min   | 4 tasks | 8 files    |
+| Phase 30 P02           | 7min   | 3 tasks | 3 files    |
+| Phase 30 P03           | 8min   | 3 tasks | 10 files   |
+| Phase Phase 30 P04 P04 | ~50min | 4 tasks | 10 files   |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ Pendiente cerrar via /gsd-discuss-phase posteriores: Q3, Q4, Q5, Q6, Q7, Q8, Q9,
 
 - [Phase ?]: Wave 0 (Plan 30-01): composer puro en @objetiva/utils + tipos en @objetiva/types; packages/utils declara @objetiva/types explícitamente para evitar hoisting accidental (lección feedback_schema_drift_silencioso.md)
 - [Phase ?]: Plan 30-03: nombre='default' resuelve template default (sin columna is_default, D-13). replaceAtributos = DELETE+INSERT en transacción Drizzle con validación previa de existencia del template. Cast localizado as-any en .values() para PROP_TABLES heterogéneo (familia tiene subcategoriaId).
+- [Phase ?]: Phase 30 Plan 04: composición externa (FamiliasTab wraps PropiedadTable con extraColumns + createDialogExtras) en lugar de duplicar tabla. Reutiliza componente genérico al 100%.
+- [Phase ?]: Phase 30 Plan 04 deviation Rule 2: backend expose categoria/subcategoria via endpoint dinámico (prop_subcategoria ya existía desde quick 260319-od3 pero módulo dinámico no la conocía).
 
 ### Roadmap Evolution
 
@@ -99,7 +102,7 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-05-17T15:08:50.350Z
+Last session: 2026-05-17T15:34:07.141Z
 Stopped at: Phase 30 Plan 01 completo (Wave 0)
 Pending Actions del SUMMARY 260502-tqf — estado final:
 [x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli
