@@ -124,7 +124,7 @@ Plans:
 Plans:
 
 - [x] 30-01-PLAN.md — Shared composer (types + utils + tests RED-GREEN) (Wave 0)
-- [ ] 30-02-PLAN.md — [BLOCKING] Migration 0008: prop_familia + prop_aplicacion + articulos_templates + template_atributos + DROP legacy (Wave 1)
+- [x] 30-02-PLAN.md — [BLOCKING] Migration 0008: prop_familia + prop_aplicacion + articulos_templates + template_atributos + DROP legacy (Wave 1)
 - [ ] 30-03-PLAN.md — Backend module templates + extensión propiedades (familia + aplicacion) (Wave 2)
 - [ ] 30-04-PLAN.md — Frontend tabs Familias + Aplicaciones + extensión PropiedadTable/Dialog (Wave 3)
 
@@ -368,7 +368,7 @@ Plans:
 | 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete               | 2026-03-13                               |
 | 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete               | 2026-03-13                               |
 | 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete               | 2026-04-30                               |
-| 30. Templates + Composición SKU/Nombre              | v1.3      | 1/4            | In Progress            |                                          |
+| 30. Templates + Composición SKU/Nombre              | v1.3      | 2/4            | In Progress            |                                          |
 | 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started            | -                                        |
 | 32. Variantes UI                                    | v1.3      | 0/0            | Not started            | -                                        |
 | 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started            | -                                        |

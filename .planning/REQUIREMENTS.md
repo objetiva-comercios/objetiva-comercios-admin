@@ -16,11 +16,11 @@ Requirements for milestone v1.3 — Variantes y Modelo de Stock. Each maps to ro
 
 ### TPL — Templates de Artículo
 
-- [ ] **TPL-01**: Admin puede crear y editar templates que definen qué atributos aplican a un grupo de artículos
+- [x] **TPL-01**: Admin puede crear y editar templates que definen qué atributos aplican a un grupo de artículos
 - [ ] **TPL-02**: Admin puede marcar atributos como "variante" (genera SKUs distintos) o "no-variante" (compartido entre filas hermanas)
 - [x] **TPL-03**: Admin puede definir cuáles atributos componen el SKU y en qué orden
 - [x] **TPL-04**: Admin puede definir cuáles atributos componen el nombre auto y en qué orden
-- [ ] **TPL-05**: Sistema usa el template default automáticamente al crear un artículo (1 template hoy; modelo soporta multi-template para v1.4+)
+- [x] **TPL-05**: Sistema usa el template default automáticamente al crear un artículo (1 template hoy; modelo soporta multi-template para v1.4+)
 
 ### VAR — Variantes de Artículo
 
@@ -118,11 +118,11 @@ Mapping of requirements to roadmap phases (filled by `gsd-roadmapper` during ROA
 | CAT-02      | Phase 29 | Pending  |
 | CAT-03      | Phase 29 | Pending  |
 | CAT-04      | Phase 29 | Pending  |
-| TPL-01      | Phase 30 | Pending  |
+| TPL-01      | Phase 30 | Complete |
 | TPL-02      | Phase 30 | Pending  |
 | TPL-03      | Phase 30 | Complete |
 | TPL-04      | Phase 30 | Complete |
-| TPL-05      | Phase 30 | Pending  |
+| TPL-05      | Phase 30 | Complete |
 | VAR-01      | Phase 32 | Pending  |
 | VAR-02      | Phase 32 | Pending  |
 | VAR-03      | Phase 32 | Pending  |
