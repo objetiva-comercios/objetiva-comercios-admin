@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Package,
   Tags,
+  Layers,
   ShoppingCart,
   ShoppingBag,
   ClipboardList,
@@ -30,6 +31,11 @@ export const routes: NavRoute[] = [
     label: 'Propiedades',
     icon: Tags,
     href: '/propiedades',
+  },
+  {
+    label: 'Templates',
+    icon: Layers,
+    href: '/templates',
   },
   {
     label: 'Compras',

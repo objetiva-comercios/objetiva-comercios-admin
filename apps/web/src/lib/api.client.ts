@@ -13,6 +13,7 @@ import type {
   InventarioSector,
 } from '@/types/inventario'
 import type { DispositivoMovil } from '@/types/dispositivo'
+import type { TemplateAtributo } from '@objetiva/types'
 
 interface PaginatedResponse<T> {
   data: T[]
@@ -819,6 +820,67 @@ export async function togglePropiedadActivo(tipo: PropTipo, id: number): Promise
   const response = await fetch(`${API_BASE_URL}/api/propiedades/${tipo}/${id}/toggle`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+// ─── Templates (Phase 30) ────────────────────────────────────────────────
+//
+// El shape de `@objetiva/types::Template` (id+nombre+atributos) está
+// optimizado para el composer puro. La API expone columnas extra
+// (`descripcion`, `activo`, timestamps) por lo que definimos un tipo local
+// específico para la lista y otro para el detalle (template + atributos).
+
+export interface ArticulosTemplate {
+  id: number
+  nombre: string
+  descripcion: string | null
+  activo: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ArticulosTemplateWithAtributos extends ArticulosTemplate {
+  atributos: TemplateAtributo[]
+}
+
+export async function fetchTemplates(
+  opts: { activo?: boolean | 'all' } = {}
+): Promise<ArticulosTemplate[]> {
+  const headers = await getAuthHeaders()
+  const params = new URLSearchParams()
+  if (opts.activo === false) params.set('activo', 'false')
+  else if (opts.activo === 'all') params.set('activo', 'all')
+  // default activo=true: no enviar param (server asume true)
+
+  const qs = params.toString()
+  const url = `${API_BASE_URL}/api/templates${qs ? `?${qs}` : ''}`
+  const response = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function fetchTemplate(id: number): Promise<ArticulosTemplateWithAtributos> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/templates/${id}`, {
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
+  await throwIfError(response)
+  return response.json()
+}
+
+export async function patchTemplateAtributos(
+  id: number,
+  atributos: TemplateAtributo[]
+): Promise<TemplateAtributo[]> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/templates/${id}/atributos`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify({ atributos }),
   })
   await throwIfError(response)
   return response.json()
