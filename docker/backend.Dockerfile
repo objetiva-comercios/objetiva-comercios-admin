@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
 COPY packages/types/package.json ./packages/types/
+COPY packages/utils/package.json ./packages/utils/
 
 RUN pnpm install --frozen-lockfile
 
@@ -17,12 +18,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/backend/node_modules ./apps/backend/node_modules
 COPY --from=deps /app/packages/types/node_modules ./packages/types/node_modules
+COPY --from=deps /app/packages/utils/node_modules ./packages/utils/node_modules
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.json ./
 COPY packages/types/ ./packages/types/
+COPY packages/utils/ ./packages/utils/
 COPY apps/backend/ ./apps/backend/
 
 RUN pnpm --filter @objetiva/types build
+RUN pnpm --filter @objetiva/utils build
 RUN pnpm --filter @objetiva/backend build
 
 # Prune dev dependencies
