@@ -721,7 +721,7 @@ propiedades.map(p => (
 - En el `<TableHeader>` agregar las `<TableHead>` de `extraColumns` antes de la columna "Estado".
 - En el `<TableBody>` agregar las `<TableCell>` de `extraColumns` en las mismas posiciones.
 - Los 6 tabs existentes no pasan `extraColumns` → comportamiento idéntico al actual (extensión backward-compatible).
-- El tab "Familias" pasará `extraColumns={[{ header: 'Subcategoría', cell: row => row.subcategoriaNombre ?? '—' }]}`.
+- El tab "Familias" construye un lookup local `Map<id, nombre>` cargando subcategorías vía `fetchPropiedades('subcategoria', { activo: true })` al montar y mapea `row.subcategoriaId → subcategoriaLookup.get(row.subcategoriaId) ?? '—'`. El backend NO hace JOIN — devuelve solo `subcategoriaId: number`. La columna se inyecta con `extraColumns={[{ header: 'Subcategoría', cell: row => subcategoriaLookup.get(row.subcategoriaId ?? -1) ?? '—' }]}`. Ver Plan 04 Task 3 para la implementación.
 
 ---
 
