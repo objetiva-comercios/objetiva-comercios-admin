@@ -123,7 +123,7 @@ Plans:
 
 Plans:
 
-- [ ] 30-01-PLAN.md — Shared composer (types + utils + tests RED-GREEN) (Wave 0)
+- [x] 30-01-PLAN.md — Shared composer (types + utils + tests RED-GREEN) (Wave 0)
 - [ ] 30-02-PLAN.md — [BLOCKING] Migration 0008: prop_familia + prop_aplicacion + articulos_templates + template_atributos + DROP legacy (Wave 1)
 - [ ] 30-03-PLAN.md — Backend module templates + extensión propiedades (familia + aplicacion) (Wave 2)
 - [ ] 30-04-PLAN.md — Frontend tabs Familias + Aplicaciones + extensión PropiedadTable/Dialog (Wave 3)
@@ -337,45 +337,45 @@ Plans:
 
 ## Progress
 
-| Phase                                               | Milestone | Plans Complete | Status      | Completed  |
-| --------------------------------------------------- | --------- | -------------- | ----------- | ---------- |
-| 1. Foundation & Monorepo                            | v1.0      | 4/4            | Complete    | 2026-01-24 |
-| 2. Backend API with Mock Data                       | v1.0      | 5/5            | Complete    | 2026-03-01 |
-| 3. Web Application                                  | v1.0      | 8/8            | Complete    | 2026-01-26 |
-| 4. Mobile Application                               | v1.0      | 4/4            | Complete    | 2026-03-02 |
-| 5. Database Integration                             | v1.0      | 3/3            | Complete    | 2026-03-02 |
-| 6. Polish & Production                              | v1.0      | 4/4            | Complete    | 2026-03-02 |
-| 7. Fix Integration Bugs                             | v1.0      | 2/2            | Complete    | 2026-03-02 |
-| 8. Verify & Close Phases 3+4                        | v1.0      | 3/3            | Complete    | 2026-03-02 |
-| 9. Fix Mobile Purchase & Login Bugs                 | v1.0      | 2/2            | Complete    | 2026-03-02 |
-| 10. Code Quality & Type Safety Cleanup              | v1.0      | 4/4            | Complete    | 2026-03-03 |
-| 11. Fix Sales Detail View Crash                     | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 12. Fix Dashboard Links & Doc Sync                  | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 13. Tech Debt Cleanup                               | v1.0      | 1/1            | Complete    | 2026-03-03 |
-| 14. Schema + Articulos + Depositos                  | v1.1      | 5/5            | Complete    | 2026-03-05 |
-| 15. Existencias                                     | v1.1      | 3/3            | Complete    | 2026-03-05 |
-| 16. Downstream + Dashboard + Nav                    | v1.1      | 4/4            | Complete    | 2026-03-05 |
-| 17. Inventarios                                     | v1.1      | 5/5            | Complete    | 2026-03-06 |
-| 18. Fix Inventarios Article Count                   | v1.1      | 1/1            | Complete    | 2026-03-06 |
-| 19. Articulos CRUD Completo                         | v1.2      | 3/3            | Complete    | 2026-03-11 |
-| 20. Image Upload Backend                            | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 21. Image Upload Frontend + Detalle                 | v1.2      | 2/2            | Complete    | 2026-03-12 |
-| 22. Vista Lista Configurable                        | v1.2      | 2/2            | Complete    | 2026-03-12 |
-| 23. API Keys                                        | v1.2      | 2/2            | Complete    | 2026-03-12 |
-| 24. Webhooks                                        | v1.2      | 4/4            | Complete    | 2026-03-12 |
-| 25. Wire Frontend Soft-Delete + Verify              | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 26. Tech Debt Cleanup v1.2                          | v1.2      | 1/1            | Complete    | 2026-03-12 |
-| 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete    | 2026-03-13 |
-| 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete    | 2026-03-13 |
-| 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete    | 2026-04-30 |
-| 30. Templates + Composición SKU/Nombre              | v1.3      | 0/4            | Not started | -          |
-| 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started | -          |
-| 32. Variantes UI                                    | v1.3      | 0/0            | Not started | -          |
-| 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started | -          |
-| 34. Stock Schema (ubicaciones + sectores)           | v1.3      | 0/0            | Not started | -          |
-| 35. Stock UI (filtros + edición visual + dashboard) | v1.3      | 0/0            | Not started | -          |
-| 36. Migración Histórica de Existencias              | v1.3      | 0/0            | Not started | -          |
-| 37. Tech Debt v1.3                                  | v1.3      | 0/0            | Not started | -          |
+| Phase                                               | Milestone | Plans Complete | Status                 | Completed                                |
+| --------------------------------------------------- | --------- | -------------- | ---------------------- | ---------------------------------------- |
+| 1. Foundation & Monorepo                            | v1.0      | 4/4            | Complete               | 2026-01-24                               |
+| 2. Backend API with Mock Data                       | v1.0      | 5/5            | Complete               | 2026-03-01                               |
+| 3. Web Application                                  | v1.0      | 8/8            | Complete               | 2026-01-26                               |
+| 4. Mobile Application                               | v1.0      | 4/4            | Complete               | 2026-03-02                               |
+| 5. Database Integration                             | v1.0      | 3/3            | Complete               | 2026-03-02                               |
+| 6. Polish & Production                              | v1.0      | 4/4            | Complete               | 2026-03-02                               |
+| 7. Fix Integration Bugs                             | v1.0      | 2/2            | Complete               | 2026-03-02                               |
+| 8. Verify & Close Phases 3+4                        | v1.0      | 3/3            | Complete               | 2026-03-02                               |
+| 9. Fix Mobile Purchase & Login Bugs                 | v1.0      | 2/2            | Complete               | 2026-03-02                               |
+| 10. Code Quality & Type Safety Cleanup              | v1.0      | 4/4            | Complete               | 2026-03-03                               |
+| 11. Fix Sales Detail View Crash                     | v1.0      | 1/1            | Complete               | 2026-03-03                               |
+| 12. Fix Dashboard Links & Doc Sync                  | v1.0      | 1/1            | Complete               | 2026-03-03                               |
+| 13. Tech Debt Cleanup                               | v1.0      | 1/1            | Complete               | 2026-03-03                               |
+| 14. Schema + Articulos + Depositos                  | v1.1      | 5/5            | Complete               | 2026-03-05                               |
+| 15. Existencias                                     | v1.1      | 3/3            | Complete               | 2026-03-05                               |
+| 16. Downstream + Dashboard + Nav                    | v1.1      | 4/4            | Complete               | 2026-03-05                               |
+| 17. Inventarios                                     | v1.1      | 5/5            | Complete               | 2026-03-06                               |
+| 18. Fix Inventarios Article Count                   | v1.1      | 1/1            | Complete               | 2026-03-06                               |
+| 19. Articulos CRUD Completo                         | v1.2      | 3/3            | Complete               | 2026-03-11                               |
+| 20. Image Upload Backend                            | v1.2      | 1/1            | Complete               | 2026-03-12                               |
+| 21. Image Upload Frontend + Detalle                 | v1.2      | 2/2            | Complete               | 2026-03-12                               |
+| 22. Vista Lista Configurable                        | v1.2      | 2/2            | Complete               | 2026-03-12                               |
+| 23. API Keys                                        | v1.2      | 2/2            | Complete               | 2026-03-12                               |
+| 24. Webhooks                                        | v1.2      | 4/4            | Complete               | 2026-03-12                               |
+| 25. Wire Frontend Soft-Delete + Verify              | v1.2      | 1/1            | Complete               | 2026-03-12                               |
+| 26. Tech Debt Cleanup v1.2                          | v1.2      | 1/1            | Complete               | 2026-03-12                               |
+| 27. Add objeto to ArticuloForm                      | v1.2      | 1/1            | Complete               | 2026-03-13                               |
+| 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete               | 2026-03-13                               |
+| 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete               | 2026-04-30                               |
+| 30. Templates + Composición SKU/Nombre              | v1.3      | 1/4            | In Progress            |                                          |
+| 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started            | -                                        |
+| 32. Variantes UI                                    | v1.3      | 0/0            | Not started            | -                                        |
+| 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started            | -                                        |
+| 34. Stock Schema (ubicaciones + sectores)           | v1.3      | 0/0            | Not started            | -                                        |
+| 35. Stock UI (filtros + edición visual + dashboard) | v1.3      | 0/0            | Not started            | -                                        |
+| 36. Migración Histórica de Existencias              | v1.3      | 0/0            | Not started            | -                                        |
+| 37. Tech Debt v1.3                                  | v1.3      | 0/0            | Not started            | -                                        |
 | 38. Reconciliar drift sistemico DB prod             | v1.3      | 1/6            | **ABORTED** 2026-05-15 | scope superado por 260502-tqf + e5358502 |
 
 ### Phase 38: Reconciliar drift sistemico de DB de produccion — ABORTADA (2026-05-15)

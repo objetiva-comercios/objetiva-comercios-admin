@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
-status: completed
-stopped_at: Phase 30 context gathered
-last_updated: "2026-05-16T20:33:06.293Z"
-last_activity: "2026-05-15 noche -- Operativo nocturno desatendido: Phase 38 aborted, 29-REVIEW addendum (15/15 findings cerrados), journal 0003 sync, sector_id drop, hydration #425 fix, URL malformada fix, datos sucios DB limpiados."
+status: executing
+stopped_at: Phase 30 Plan 01 completo (Wave 0)
+last_updated: '2026-05-17T03:22:32.934Z'
+last_activity: 2026-05-17
 progress:
   total_phases: 10
   completed_phases: 1
-  total_plans: 12
-  completed_plans: 7
-  percent: 58
+  total_plans: 16
+  completed_plans: 8
+  percent: 50
 ---
 
 # Project State
@@ -21,13 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Cleanup completo del ciclo del incidente (2026-05-01..05-15). Phase 29 totalmente cerrada (REVIEW addendum). Phase 38 ABORTADA (scope superado). Ready para arrancar Phase 30 cuando se decida.
+**Current focus:** Phase 30 — templates-composici-n-sku-nombre
 
 ## Current Position
 
-Phase: 29 (DONE) → siguiente Phase 30 (NOT STARTED, sin CONTEXT.md)
-Status: Milestone v1.3 con 1 phase done. Phase 38 aborted. Sistema operativo, sin drift de schema, 0 HTTP 500.
-Last activity: 2026-05-15 noche -- Operativo nocturno desatendido: Phase 38 aborted, 29-REVIEW addendum (15/15 findings cerrados), journal 0003 sync, sector_id drop, hydration #425 fix, URL malformada fix, datos sucios DB limpiados.
+Phase: 30 (templates-composici-n-sku-nombre) — EXECUTING
+Plan: 2 of 4
+Status: Ready to execute
+Last activity: 2026-05-17
 
 ## Performance Metrics
 
@@ -38,12 +39,13 @@ Last activity: 2026-05-15 noche -- Operativo nocturno desatendido: Phase 38 abor
 
 **By Milestone:**
 
-| Milestone | Phases | Plans | Shipped    |
-| --------- | ------ | ----- | ---------- |
-| v1.0      | 13     | 42    | 2026-03-04 |
-| v1.1      | 5      | 18    | 2026-03-10 |
-| v1.2      | 10     | 18    | 2026-03-13 |
-| v1.3      | 9      | TBD   | (planning) |
+| Milestone    | Phases | Plans   | Shipped    |
+| ------------ | ------ | ------- | ---------- |
+| v1.0         | 13     | 42      | 2026-03-04 |
+| v1.1         | 5      | 18      | 2026-03-10 |
+| v1.2         | 10     | 18      | 2026-03-13 |
+| v1.3         | 9      | TBD     | (planning) |
+| Phase 30 P01 | 6min   | 4 tasks | 8 files    |
 
 ## Accumulated Context
 
@@ -54,6 +56,8 @@ Archived to PROJECT.md Key Decisions table. No active decisions pending.
 Cerradas en discuss-phase 29 (CONTEXT.md): Q1 (set de 6 tablas prop\_\*), Q2 (FK por id + cache via trigger), Q11 (UI tabs + componente genérico + SC#5 diferido a 32). Adicionalmente: revisión decisión cerrada #4 (sku=stripSep(codigo)).
 
 Pendiente cerrar via /gsd-discuss-phase posteriores: Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10 — distribuidas según ROADMAP.md (Phase 30/31/33/36/37).
+
+- [Phase ?]: Wave 0 (Plan 30-01): composer puro en @objetiva/utils + tipos en @objetiva/types; packages/utils declara @objetiva/types explícitamente para evitar hoisting accidental (lección feedback_schema_drift_silencioso.md)
 
 ### Roadmap Evolution
 
@@ -92,13 +96,13 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-05-16T20:33:06.264Z
-Stopped at: Phase 30 context gathered
+Last session: 2026-05-17T03:22:32.907Z
+Stopped at: Phase 30 Plan 01 completo (Wave 0)
 Pending Actions del SUMMARY 260502-tqf — estado final:
-  [x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli
-  [x] #2 Decidir destino de Phase 38 — COMPLETO 2026-05-15 (ABORTED, ver 38-ABORTED.md)
-  [x] #3 Forensics del wipe Apr 30→May 1 — CERRADO como "no determinable" (14 dias despues, bash history rotado)
-  [x] #4 Feedback global anti-patron db:push --force — COMPLETO 2026-05-15
+[x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli
+[x] #2 Decidir destino de Phase 38 — COMPLETO 2026-05-15 (ABORTED, ver 38-ABORTED.md)
+[x] #3 Forensics del wipe Apr 30→May 1 — CERRADO como "no determinable" (14 dias despues, bash history rotado)
+[x] #4 Feedback global anti-patron db:push --force — COMPLETO 2026-05-15
 29-REVIEW (Phase 29 code review): **15/15 findings cerrados** (2 BLOCKER + 9 WARNING + 4 INFO). Ver addendum en 29-REVIEW.md.
 Operativo nocturno 2026-05-15 cerro: hydration React #425, URL malformada (datos sucios DB + frontend hardening), sector_id huerfana, journal 0003 sync, discrepancias docs.
 Next action: `/gsd-discuss-phase 30` para arrancar Phase 30 (templates de composicion SKU/Nombre).

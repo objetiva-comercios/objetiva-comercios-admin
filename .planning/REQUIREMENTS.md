@@ -18,8 +18,8 @@ Requirements for milestone v1.3 — Variantes y Modelo de Stock. Each maps to ro
 
 - [ ] **TPL-01**: Admin puede crear y editar templates que definen qué atributos aplican a un grupo de artículos
 - [ ] **TPL-02**: Admin puede marcar atributos como "variante" (genera SKUs distintos) o "no-variante" (compartido entre filas hermanas)
-- [ ] **TPL-03**: Admin puede definir cuáles atributos componen el SKU y en qué orden
-- [ ] **TPL-04**: Admin puede definir cuáles atributos componen el nombre auto y en qué orden
+- [x] **TPL-03**: Admin puede definir cuáles atributos componen el SKU y en qué orden
+- [x] **TPL-04**: Admin puede definir cuáles atributos componen el nombre auto y en qué orden
 - [ ] **TPL-05**: Sistema usa el template default automáticamente al crear un artículo (1 template hoy; modelo soporta multi-template para v1.4+)
 
 ### VAR — Variantes de Artículo
@@ -98,58 +98,58 @@ Deferred to future milestones. Tracked but not in current roadmap.
 
 Explicitly excluded from v1.3. See `PROJECT.md §Out of Scope` for project-wide exclusions.
 
-| Feature | Reason |
-|---------|--------|
-| Vehículos compatibles / fitment data | Diferido a v1.4 — feature grande por sí misma (catálogo + UI + búsqueda inversa + posible import externo) |
-| Variant matrix combinatorial UI (size × color = N child SKUs vista) | Modelo flat single-table no usa matriz; cada variante es entidad de primera clase |
-| Multi-currency / multi-locale | Ya excluido en PROJECT.md — single locale es-MX/MXN |
-| JSONB para atributos | Decisión cerrada: FK a catálogos (vista cruda elocuente, IA-friendly, queries simples) |
-| Variant-level pricing tiers / modificadores | Decisión cerrada: precio absoluto por variante; modificadores diferidos |
-| Sectores por inventario (sectores no transversales) | Decisión cerrada: sectores agrupan ubicaciones físicas, no por evento de inventario |
-| Image override por variante en v1.3 | Q12 abierto; deferido a milestone posterior una vez consolidado el modelo flat |
+| Feature                                                             | Reason                                                                                                    |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Vehículos compatibles / fitment data                                | Diferido a v1.4 — feature grande por sí misma (catálogo + UI + búsqueda inversa + posible import externo) |
+| Variant matrix combinatorial UI (size × color = N child SKUs vista) | Modelo flat single-table no usa matriz; cada variante es entidad de primera clase                         |
+| Multi-currency / multi-locale                                       | Ya excluido en PROJECT.md — single locale es-MX/MXN                                                       |
+| JSONB para atributos                                                | Decisión cerrada: FK a catálogos (vista cruda elocuente, IA-friendly, queries simples)                    |
+| Variant-level pricing tiers / modificadores                         | Decisión cerrada: precio absoluto por variante; modificadores diferidos                                   |
+| Sectores por inventario (sectores no transversales)                 | Decisión cerrada: sectores agrupan ubicaciones físicas, no por evento de inventario                       |
+| Image override por variante en v1.3                                 | Q12 abierto; deferido a milestone posterior una vez consolidado el modelo flat                            |
 
 ## Traceability
 
 Mapping of requirements to roadmap phases (filled by `gsd-roadmapper` during ROADMAP.md creation).
 
-| Requirement | Phase | Status |
-|---|---|---|
-| CAT-01 | Phase 29 | Pending |
-| CAT-02 | Phase 29 | Pending |
-| CAT-03 | Phase 29 | Pending |
-| CAT-04 | Phase 29 | Pending |
-| TPL-01 | Phase 30 | Pending |
-| TPL-02 | Phase 30 | Pending |
-| TPL-03 | Phase 30 | Pending |
-| TPL-04 | Phase 30 | Pending |
-| TPL-05 | Phase 30 | Pending |
-| VAR-01 | Phase 32 | Pending |
-| VAR-02 | Phase 32 | Pending |
-| VAR-03 | Phase 32 | Pending |
-| VAR-04 | Phase 32 | Pending |
-| VAR-05 | Phase 32 | Pending |
-| VAR-06 | Phase 32 | Pending |
-| VAR-07 | Phase 32 | Pending |
-| VAR-08 | Phase 32 | Pending |
-| VAR-09 | Phase 32 | Pending |
-| VAR-10 | Phase 31 | Pending |
-| SKU-01 | Phase 33 | Pending |
-| SKU-02 | Phase 33 | Pending |
-| SKU-03 | Phase 33 | Pending |
-| SKU-04 | Phase 33 | Pending |
-| SKU-05 | Phase 33 | Pending |
-| STOCK-01 | Phase 34 | Pending |
-| STOCK-02 | Phase 34 | Pending |
-| STOCK-03 | Phase 34 | Pending |
-| STOCK-04 | Phase 34 | Pending |
-| STOCK-05 | Phase 35 | Pending |
-| STOCK-06 | Phase 35 | Pending |
-| STOCK-07 | Phase 35 | Pending |
-| MIG-01 | Phase 36 | Pending |
-| MIG-02 | Phase 36 | Pending |
-| MIG-03 | Phase 36 | Pending |
-| DEBT-01 | Phase 37 | Pending |
-| DEBT-02 | Phase 37 | Pending |
-| DEBT-03 | Phase 37 | Pending |
+| Requirement | Phase    | Status   |
+| ----------- | -------- | -------- |
+| CAT-01      | Phase 29 | Pending  |
+| CAT-02      | Phase 29 | Pending  |
+| CAT-03      | Phase 29 | Pending  |
+| CAT-04      | Phase 29 | Pending  |
+| TPL-01      | Phase 30 | Pending  |
+| TPL-02      | Phase 30 | Pending  |
+| TPL-03      | Phase 30 | Complete |
+| TPL-04      | Phase 30 | Complete |
+| TPL-05      | Phase 30 | Pending  |
+| VAR-01      | Phase 32 | Pending  |
+| VAR-02      | Phase 32 | Pending  |
+| VAR-03      | Phase 32 | Pending  |
+| VAR-04      | Phase 32 | Pending  |
+| VAR-05      | Phase 32 | Pending  |
+| VAR-06      | Phase 32 | Pending  |
+| VAR-07      | Phase 32 | Pending  |
+| VAR-08      | Phase 32 | Pending  |
+| VAR-09      | Phase 32 | Pending  |
+| VAR-10      | Phase 31 | Pending  |
+| SKU-01      | Phase 33 | Pending  |
+| SKU-02      | Phase 33 | Pending  |
+| SKU-03      | Phase 33 | Pending  |
+| SKU-04      | Phase 33 | Pending  |
+| SKU-05      | Phase 33 | Pending  |
+| STOCK-01    | Phase 34 | Pending  |
+| STOCK-02    | Phase 34 | Pending  |
+| STOCK-03    | Phase 34 | Pending  |
+| STOCK-04    | Phase 34 | Pending  |
+| STOCK-05    | Phase 35 | Pending  |
+| STOCK-06    | Phase 35 | Pending  |
+| STOCK-07    | Phase 35 | Pending  |
+| MIG-01      | Phase 36 | Pending  |
+| MIG-02      | Phase 36 | Pending  |
+| MIG-03      | Phase 36 | Pending  |
+| DEBT-01     | Phase 37 | Pending  |
+| DEBT-02     | Phase 37 | Pending  |
+| DEBT-03     | Phase 37 | Pending  |
 
 **Coverage**: 37/37 v1.3 requirements mapped (100%). No orphans, no duplicates.
