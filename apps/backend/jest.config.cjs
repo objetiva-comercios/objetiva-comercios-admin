@@ -13,7 +13,6 @@ module.exports = {
       },
     ],
   },
-  setupFilesAfterFramework: [],
   setupFilesAfterEnv: ['<rootDir>/test/jest-setup.ts'],
   testTimeout: 30000,
   collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts', '!src/main.ts'],

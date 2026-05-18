@@ -19,7 +19,7 @@
 // TODO(Plan-31-03): desbloquear imports cuando la app tenga la ruta /by-codigo
 // import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
-import * as supertest from 'supertest'
+import request from 'supertest'
 
 // TODO(Plan-31-03): importar AppModule o un TestModule reducido
 // import { AppModule } from '../src/app.module'
@@ -27,8 +27,10 @@ import * as supertest from 'supertest'
 /**
  * Placeholder de app para el skeleton.
  * Se reemplaza con el bootstrap real en Plan 31-03.
+ * Definite assignment assertion (!) — el bootstrap real se hace en beforeAll
+ * cuando Plan 31-03 desbloquee los tests.
  */
-let app: INestApplication
+let app!: INestApplication
 
 describe('Phase 31 - Articulos rekey + webhook payload v2', () => {
   beforeAll(async () => {
@@ -53,14 +55,13 @@ describe('Phase 31 - Articulos rekey + webhook payload v2', () => {
   // SC#3a — GET /api/articulos/:sku retorna 1 fila (ruta existente, post PK swap)
   // Depende de: Plan 31-02 (sku asignado) + Plan 31-03 (ruta refactorizada)
   // ---------------------------------------------------------------------------
-  it.skip('SC#3a: GET /api/articulos/:sku retorna 1 fila con campo sku', // TODO(Plan-31-03): implementar con:
-  //   supertest(app.getHttpServer())
+  it.skip('SC#3a: GET /api/articulos/:sku retorna 1 fila con campo sku', //   request(app.getHttpServer()) // TODO(Plan-31-03): implementar con:
   //     .get('/api/articulos/ABC001')
   //     .set('Authorization', `Bearer ${testJwt}`)
   //     .expect(200)
   //     .then(res => { expect(res.body.sku).toBe('ABC001') })
   async () => {
-    const response = await supertest(app.getHttpServer()).get('/api/articulos/ABC001').expect(200)
+    const response = await request(app.getHttpServer()).get('/api/articulos/ABC001').expect(200)
 
     expect(response.body).toHaveProperty('sku')
     expect(response.body.sku).toBe('ABC001')
@@ -70,8 +71,7 @@ describe('Phase 31 - Articulos rekey + webhook payload v2', () => {
   // SC#3b — GET /api/articulos/by-codigo/:codigo retorna array de hermanas
   // Depende de: Plan 31-03 (nueva ruta /by-codigo/:codigo)
   // ---------------------------------------------------------------------------
-  it.skip('SC#3b: GET /api/articulos/by-codigo/:codigo retorna array de articulos con sku y codigo', // TODO(Plan-31-03): implementar con:
-  //   supertest(app.getHttpServer())
+  it.skip('SC#3b: GET /api/articulos/by-codigo/:codigo retorna array de articulos con sku y codigo', //   request(app.getHttpServer()) // TODO(Plan-31-03): implementar con:
   //     .get('/api/articulos/by-codigo/ABC-001')
   //     .set('Authorization', `Bearer ${testJwt}`)
   //     .expect(200)
@@ -81,7 +81,7 @@ describe('Phase 31 - Articulos rekey + webhook payload v2', () => {
   //       expect(res.body[0]).toHaveProperty('codigo')
   //     })
   async () => {
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .get('/api/articulos/by-codigo/ABC-001')
       .expect(200)
 
@@ -96,8 +96,7 @@ describe('Phase 31 - Articulos rekey + webhook payload v2', () => {
   // Depende de: Plan 31-02 (overwrite sku = stripSep(codigo) aplicado)
   //             y el webhook service emite payload v2 con campo sku
   // ---------------------------------------------------------------------------
-  it.skip('SC#4: POST /api/articulos emite evento articulo.created con payload.articulo.sku no-null', // TODO(Plan-31-02): implementar con:
-  //   1. POST /api/articulos con dto valido
+  it.skip('SC#4: POST /api/articulos emite evento articulo.created con payload.articulo.sku no-null', //   1. POST /api/articulos con dto valido // TODO(Plan-31-02): implementar con:
   //   2. Esperar 1s para que el webhook dispatch procese
   //   3. Query directa a webhook_deliveries via DrizzleService
   //   4. Assert ultima fila donde event_type = 'articulo.created'
@@ -110,7 +109,7 @@ describe('Phase 31 - Articulos rekey + webhook payload v2', () => {
       activo: true,
     }
 
-    const createResponse = await supertest(app.getHttpServer())
+    const createResponse = await request(app.getHttpServer())
       .post('/api/articulos')
       .set('Authorization', `Bearer ${process.env['TEST_ADMIN_JWT'] ?? ''}`)
       .send(createDto)
