@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
 status: executing
-stopped_at: Phase 31 context gathered
-last_updated: '2026-05-18T19:27:16.756Z'
-last_activity: 2026-05-18 -- Phase 31 planning complete
+stopped_at: 'Phase 31-01 checkpoint:human-action Task 3 — pnpm install + pg_dump + 31-CUTOVER-CALENDAR.md'
+last_updated: '2026-05-18T22:30:00.000Z'
+last_activity: 2026-05-18 -- Phase 31 Plan 01 Tasks 1+2 completed, awaiting human Task 3
 progress:
   total_phases: 10
   completed_phases: 2
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 31 — PK swap codigo→sku + FK rename comprobantes (siguiente a planificar)
+**Current focus:** Phase 31 — pk-swap-codigo-sku-fk-rename-en-comprobantes
 
 ## Current Position
 
-Phase: 31
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-05-18 -- Phase 31 planning complete
+Phase: 31 (pk-swap-codigo-sku-fk-rename-en-comprobantes) — EXECUTING
+Plan: 1 of 4 (Tasks 1+2 done, awaiting human action for Task 3)
+Status: Blocked at checkpoint:human-action (Task 3 — pnpm install + pg_dump + cutover calendar)
+Last activity: 2026-05-18 -- Phase 31-01 Tasks 1+2 committed (93702fbc, 38b35edf)
 
 ## Performance Metrics
 
