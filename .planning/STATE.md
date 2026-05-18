@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Variantes y Modelo de Stock
 status: ready_to_plan
-stopped_at: Phase 30 Plan 01 completo (Wave 0)
-last_updated: '2026-05-17T15:34:13.377Z'
-last_activity: 2026-05-17
+stopped_at: Phase 30 UAT cerrado 10/10 passed — siguiente accion /gsd-discuss-phase 31
+last_updated: '2026-05-18T14:35:00.000Z'
+last_activity: 2026-05-18
 progress:
   total_phases: 10
   completed_phases: 3
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** A solid, reusable foundation that can be extended confidently — cohesive UI, real auth flow, working navigation, and backend integration from day one
-**Current focus:** Phase 30 — templates-composici-n-sku-nombre
+**Current focus:** Phase 31 — PK swap codigo→sku + FK rename comprobantes (siguiente a planificar)
 
 ## Current Position
 
-Phase: 38
+Phase: 31
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-05-17
+Status: Ready to plan (sin CONTEXT.md todavía)
+Last activity: 2026-05-18 (UAT visual Phase 30 cerrado 10/10 passed)
 
 ## Performance Metrics
 
@@ -103,16 +103,15 @@ None active. All v1.2 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-05-17T15:34:07.141Z
-Stopped at: Phase 30 Plan 01 completo (Wave 0)
-Pending Actions del SUMMARY 260502-tqf — estado final:
-[x] #1 Smoke admin manual — COMPLETO 2026-05-15 con playwright-cli
-[x] #2 Decidir destino de Phase 38 — COMPLETO 2026-05-15 (ABORTED, ver 38-ABORTED.md)
-[x] #3 Forensics del wipe Apr 30→May 1 — CERRADO como "no determinable" (14 dias despues, bash history rotado)
-[x] #4 Feedback global anti-patron db:push --force — COMPLETO 2026-05-15
-29-REVIEW (Phase 29 code review): **15/15 findings cerrados** (2 BLOCKER + 9 WARNING + 4 INFO). Ver addendum en 29-REVIEW.md.
-Operativo nocturno 2026-05-15 cerro: hydration React #425, URL malformada (datos sucios DB + frontend hardening), sector_id huerfana, journal 0003 sync, discrepancias docs.
-Next action: `/gsd-discuss-phase 30` para arrancar Phase 30 (templates de composicion SKU/Nombre).
+Last session: 2026-05-18T14:35:00.000Z
+Stopped at: Phase 30 UAT visual 10/10 passed (HUMAN-UAT.md actualizado). Quick task 260517-i9d consolidó /propiedades y /templates bajo /settings/articulos.
+Phase 30 ROADMAP marca: completed 2026-05-17. UAT visual cerrado 2026-05-18.
+Findings no bloqueantes de Phase 30 UAT (ver 30-HUMAN-UAT.md sección "Findings adicionales"):
+
+- Warning React Select uncontrolled→controlled en dialog Familias (deuda menor)
+- prop_categoria/prop_subcategoria con 0 filas en prod (seed pendiente para activar Familias)
+- erp.sanchezrepuestos.com.ar solo HTTP (infra debt preexistente)
+  Next action: `/gsd-discuss-phase 31` para arrancar Phase 31 (PK Swap codigo→sku + FK rename en orders/sales/purchases/existencias/inventarios_articulos + webhook payload v2).
 
 ---
 
