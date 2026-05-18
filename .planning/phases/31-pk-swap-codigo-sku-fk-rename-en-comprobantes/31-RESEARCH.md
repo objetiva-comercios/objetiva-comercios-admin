@@ -105,7 +105,7 @@ Phase 31 promueve `articulos.sku` a PK desde el día siguiente al cutover y reno
 
 **Scope:**
 
-- Overwrite `articulos.sku := stripSep(codigo)` para las 101.021 filas (decisión cerrada via Discretion #4 = Deploy 1, ver §"Open Decisions Closed By Research").
+- Overwrite `articulos.sku := stripSep(codigo)` para las 101.021 filas (decisión cerrada via Discretion #4 = Deploy 1, ver §"Open Questions (RESOLVED)").
 - Agregar columna `articulo_sku TEXT` nullable en las 5 hijas (`order_items`, `sale_items`, `purchase_items`, `existencias`, `inventarios_articulos`).
 - Backfill `<hija>.articulo_sku := articulos.sku` vía JOIN.
 - Validación post-backfill: 5 queries que retornen 0 huérfanos.
@@ -555,7 +555,6 @@ async update(sku: string, dto: UpdateArticuloDto) {
    ```tsx
    import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
    import { Info } from 'lucide-react'
-
    ;<Alert>
      <Info className="h-4 w-4" />
      <AlertTitle>Cambio en el payload de articulo.* desde v1.3</AlertTitle>
@@ -628,7 +627,7 @@ END $$;
 
 ---
 
-## Open Decisions Closed By Research
+## Open Questions (RESOLVED)
 
 ### 1. Overwrite location (Discretion #4) → **Deploy 1**
 
@@ -641,7 +640,7 @@ END $$;
 
 ### 2. Naming + path del script de auditoría preflight (Discretion #1)
 
-**Decisión:** Bash script en `apps/backend/scripts/phase31-preflight-audit.sh` que invoca psql con un heredoc SQL y guarda output en el plan dir.
+**Decisión:** Bash script en `scripts/phase31-preflight-audit.sh` que invoca psql con un heredoc SQL y guarda output en el plan dir.
 
 ```bash
 #!/usr/bin/env bash
@@ -655,7 +654,7 @@ cat > "$OUT" <<EOF
 # Phase 31 — Preflight Audit
 
 **Generado:** $TS
-**Origen:** \`apps/backend/scripts/phase31-preflight-audit.sh\`
+**Origen:** \`scripts/phase31-preflight-audit.sh\`
 **Status:** Informativo (NO bloquea cutover por D-01)
 
 ## Counts pre-cutover
@@ -689,7 +688,7 @@ cat >> "$OUT" <<EOF
 
 Por D-02 (overwrite ciego), Deploy 1 va a ejecutar UPDATE sin importar estos counts.
 Si sku_dupes > 0 después de simular stripSep, esto MUST ser resuelto antes del cutover
-(ver query en \`apps/backend/scripts/phase31-preflight-audit.sh\` línea N).
+(ver query en \`scripts/phase31-preflight-audit.sh\` línea N).
 EOF
 
 echo "Preflight audit guardado en $OUT"
@@ -831,14 +830,14 @@ Verificar en Wave 2: agregar test E2E que dispare `POST /api/articulos`, capture
 
 ### Migrations / DB
 
-| Path                                              | Status                         |
-| ------------------------------------------------- | ------------------------------ |
-| `apps/backend/drizzle/0009_phase31_expand.sql`    | NEW Wave 1                     |
-| `apps/backend/drizzle/0010_phase31_switch.sql`    | NEW Wave 2                     |
-| `apps/backend/drizzle/0011_phase31_contract.sql`  | NEW Wave 3                     |
-| `apps/backend/drizzle/meta/_journal.json`         | UPDATE 3 veces (idx 9, 10, 11) |
-| `apps/backend/scripts/phase31-preflight-audit.sh` | NEW Wave 0                     |
-| `.planning/phases/31-.../31-PREFLIGHT-AUDIT.md`   | NEW Wave 0 (output del script) |
+| Path                                             | Status                         |
+| ------------------------------------------------ | ------------------------------ |
+| `apps/backend/drizzle/0009_phase31_expand.sql`   | NEW Wave 1                     |
+| `apps/backend/drizzle/0010_phase31_switch.sql`   | NEW Wave 2                     |
+| `apps/backend/drizzle/0011_phase31_contract.sql` | NEW Wave 3                     |
+| `apps/backend/drizzle/meta/_journal.json`        | UPDATE 3 veces (idx 9, 10, 11) |
+| `scripts/phase31-preflight-audit.sh`             | NEW Wave 0                     |
+| `.planning/phases/31-.../31-PREFLIGHT-AUDIT.md`  | NEW Wave 0 (output del script) |
 
 ---
 
@@ -1008,24 +1007,24 @@ async upsert(dto: CreateExistenciaDto) {
 
 ### Phase Requirements → Test Map (cobertura de los 5 SC del ROADMAP)
 
-| SC#  | Behavior                                                                                         | Test Type   | Automated Command                                                                                                                                            | File Exists?                                                   |
-| ---- | ------------------------------------------------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| SC#1 | `\d articulos` muestra sku como PK; `count(*) WHERE sku IS NULL` = 0                             | smoke SQL   | `psql -tAc "SELECT a.attname FROM pg_attribute a JOIN pg_constraint c ON a.attnum = ANY(c.conkey) WHERE c.conrelid='articulos'::regclass AND c.contype='p'"` | ❌ Wave 0 — crear `apps/backend/scripts/phase31-validation.sh` |
-| SC#2 | 5 hijas con `articulo_sku` FK; `articulo_codigo` eliminado post-Deploy-3                         | smoke SQL   | `psql -tAc "SELECT conname FROM pg_constraint WHERE conname LIKE '%_articulo_sku_fkey'"` (esperado: 5 filas)                                                 | ❌ Wave 0                                                      |
-| SC#3 | `findOne(sku)` retorna 1, `findByCodigo(codigo)` retorna N, comportamiento preservado sku=codigo | integration | `pnpm --filter backend test -- articulos.controller.e2e-spec.ts`                                                                                             | ❌ Wave 0 — crear test E2E                                     |
-| SC#4 | Webhook payload v2 incluye sku                                                                   | E2E         | Test: POST a `/api/articulos`, esperar delivery en webhook_deliveries, assert `payload.articulo.sku !== null`                                                | ❌ Wave 0                                                      |
-| SC#5 | Integridad referencial post-cutover (5 queries)                                                  | smoke SQL   | `apps/backend/scripts/phase31-validation.sh integrity`                                                                                                       | ❌ Wave 0                                                      |
+| SC#  | Behavior                                                                                         | Test Type   | Automated Command                                                                                                                                            | File Exists?                                      |
+| ---- | ------------------------------------------------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| SC#1 | `\d articulos` muestra sku como PK; `count(*) WHERE sku IS NULL` = 0                             | smoke SQL   | `psql -tAc "SELECT a.attname FROM pg_attribute a JOIN pg_constraint c ON a.attnum = ANY(c.conkey) WHERE c.conrelid='articulos'::regclass AND c.contype='p'"` | ❌ Wave 0 — crear `scripts/phase31-validation.sh` |
+| SC#2 | 5 hijas con `articulo_sku` FK; `articulo_codigo` eliminado post-Deploy-3                         | smoke SQL   | `psql -tAc "SELECT conname FROM pg_constraint WHERE conname LIKE '%_articulo_sku_fkey'"` (esperado: 5 filas)                                                 | ❌ Wave 0                                         |
+| SC#3 | `findOne(sku)` retorna 1, `findByCodigo(codigo)` retorna N, comportamiento preservado sku=codigo | integration | `pnpm --filter backend test -- articulos.controller.e2e-spec.ts`                                                                                             | ❌ Wave 0 — crear test E2E                        |
+| SC#4 | Webhook payload v2 incluye sku                                                                   | E2E         | Test: POST a `/api/articulos`, esperar delivery en webhook_deliveries, assert `payload.articulo.sku !== null`                                                | ❌ Wave 0                                         |
+| SC#5 | Integridad referencial post-cutover (5 queries)                                                  | smoke SQL   | `scripts/phase31-validation.sh integrity`                                                                                                                    | ❌ Wave 0                                         |
 
 ### Sampling Rate
 
 - **Per task commit:** `pnpm --filter backend typecheck && pnpm --filter web typecheck`
 - **Per wave merge:** correr el test E2E de articulos + las 5 queries SC#5 contra DB local
-- **Phase gate (entre deploys):** `apps/backend/scripts/phase31-validation.sh` con `--check=integrity` debe retornar exit 0
+- **Phase gate (entre deploys):** `scripts/phase31-validation.sh` con `--check=integrity` debe retornar exit 0
 
 ### Wave 0 Gaps (a crear antes de implementación)
 
-- [ ] `apps/backend/scripts/phase31-preflight-audit.sh` — Bash script de auditoría D-01
-- [ ] `apps/backend/scripts/phase31-validation.sh` — Bash + psql con sub-comandos `integrity`, `pk-swap`, `triggers`
+- [ ] `scripts/phase31-preflight-audit.sh` — Bash script de auditoría D-01
+- [ ] `scripts/phase31-validation.sh` — Bash + psql con sub-comandos `integrity`, `pk-swap`, `triggers`
 - [ ] `apps/backend/test/articulos-phase31.e2e-spec.ts` — Test E2E que cubre SC#3 y SC#4 (findByCodigo + webhook payload v2)
 - [ ] `apps/backend/src/modules/articulos/__tests__/articulos-helper.spec.ts` — Unit test para `resolveSku()` (cubre happy path + sku-null)
 - [ ] Reusar `packages/utils/__tests__/composer.spec.ts` para verificar `stripSep()` (ya existe desde Phase 30)
@@ -1034,7 +1033,7 @@ async upsert(dto: CreateExistenciaDto) {
 
 **Plan 31-01 (Wave 0 — Preflight & Safety Net):**
 
-- Run `apps/backend/scripts/phase31-preflight-audit.sh` y commit del `31-PREFLIGHT-AUDIT.md` output.
+- Run `scripts/phase31-preflight-audit.sh` y commit del `31-PREFLIGHT-AUDIT.md` output.
 - Run `pg_dump` y verificar tamaño no-cero del archivo.
 - Smoke: dump restoreable a una DB temporal (`createdb erp_phase31_smoke && pg_restore -d erp_phase31_smoke /var/backups/.../pre_deploy2_X.dump && psql -d erp_phase31_smoke -tAc "SELECT count(*) FROM articulos"` → 101.021).
 
@@ -1246,7 +1245,7 @@ async upsert(dto: CreateExistenciaDto) {
 
 ## Open Questions
 
-Ninguna abierta a nivel research. Las 7 áreas de Claude's Discretion están cerradas con propuesta concreta en §"Open Decisions Closed By Research" — el planner las traduce a plan checkpoints sin necesidad de re-research.
+Ninguna abierta a nivel research. Las 7 áreas de Claude's Discretion están cerradas con propuesta concreta en §"Open Questions (RESOLVED)" — el planner las traduce a plan checkpoints sin necesidad de re-research.
 
 ---
 
@@ -1297,7 +1296,7 @@ Ninguna abierta a nivel research. Las 7 áreas de Claude's Discretion están cer
 
 ### Open Questions
 
-Ninguna abierta. Las 7 áreas de Claude's Discretion están cerradas con propuesta concreta en §"Open Decisions Closed By Research".
+Ninguna abierta. Las 7 áreas de Claude's Discretion están cerradas con propuesta concreta en §"Open Questions (RESOLVED)".
 
 ### Ready for Planning
 

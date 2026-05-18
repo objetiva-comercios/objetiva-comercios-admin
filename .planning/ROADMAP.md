@@ -150,7 +150,23 @@ Plans:
 4. Webhooks `articulo.created/updated/deleted` siguen disparando con payload v2 que incluye tanto `sku` como `codigo`; los suscriptores existentes reciben "v1.3 cutover notice" antes del deploy
 5. Tests de integridad referencial post-cutover pasan: `SELECT count(*) FROM order_items oi LEFT JOIN articulos a ON oi.articulo_sku=a.sku WHERE a.sku IS NULL` retorna 0 (idem para existencias, inventarios_articulos, sale_items, purchase_items)
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+**Wave 1**
+
+- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+
+**Wave 2** _(blocked on Wave 1 completion)_
+
+- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+
+**Wave 3** _(blocked on Wave 2 completion)_
+
+- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+
 **Open Qs to close in `/gsd-discuss-phase 31`**: Q5 (preflight: auditar `articulos.sku` actual — ver P-05), Q9 (drift TS↔DB en índices y precision afecta migration generada)
 **Pitfalls**: P-01 (PK swap rompe 4 FK simultáneas → 7-step ordered transaction con LOCK ACCESS EXCLUSIVE), P-02 (trigger `260429-rec` feedback loop → DISABLE TRIGGER + recompute manual + ENABLE), P-05 (data legacy en `articulos.sku` → audit script obligatorio pre-migración), P-19 (webhook contract change → bump version + notice)
 
@@ -172,7 +188,15 @@ Plans:
 4. La lista `/articulos` ofrece toggle "Vista plana / Vista agrupada"; en agrupada cada `codigo` es una fila master expandible con count de variantes y stock total; expandir muestra las N variantes con sus SKUs y atributos diferenciadores
 5. Admin abre "Editar datos del modelo" y modifica marca/categoría/etc.; el sistema confirma el count de variantes afectadas y propaga vía `UPDATE WHERE codigo=X`; "Editar datos de la variante" modifica solo `WHERE sku=Y`; cada variante tiene su propio `codigo_barras` UNIQUE y las nuevas NO heredan el de la origen
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+
 **UI hint**: yes
 **Open Qs to close in `/gsd-discuss-phase 32`**: Q7 (`codigo` manual o autogen), Q11 (qué UIs entran — wizard 3 pasos, edit cascada modelo, listado agrupado), P-12 (image ownership: codigo-prefix vs sku-prefix folder)
 **Pitfalls**: P-04 (slug collisions en composición → validar SKU uniqueness pre-write), P-06 (`codigo_barras` UNIQUE constraint + UI enforce que nuevas no heredan), P-10 (divergencia silent entre hermanas → backend split `updateModel` vs `updateVariant` + nightly drift check), P-12 (image ownership por `codigo`-prefix folder, no mover archivos en cutover), P-15 (N+1 en grouped list → `jsonb_agg` server-side)
@@ -195,7 +219,15 @@ Plans:
 4. Re-aplicar el mismo cambio dos veces es no-op idempotente: el cascade detecta `sku_anterior == old_sku_we_re_about_to_set` y skipea; la mapping `{old→new}` se construye ANTES del UPDATE y si `old==new` para todas las filas, no escribe nada
 5. Admin puede deshacer el último batch desde `/templates/history`: el sistema lista los últimos 10 batches con timestamp + count + botón "Deshacer"; el rollback ejecuta `UPDATE articulos SET sku=sku_anterior WHERE batch_id=X` + cascade inverso, validando antes que no haya escrituras posteriores que rompan el rollback
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+
 **UI hint**: yes
 **Open Qs to close in `/gsd-discuss-phase 33`**: confirmación final del trigger `260429-rec` exact behavior (validar contra DB live antes de comenzar)
 **Pitfalls**: P-02 (trigger feedback loop → 3-layer defense: DISABLE TRIGGER + `pg_trigger_depth()` guard + session GUC), P-03 (bulk UPDATE sin batching → chunks de 500-1000 con `FOR UPDATE SKIP LOCKED` + advisory lock por `codigo`), P-13 (idempotency via `sku_anterior` key), P-16 (history bloat → `PARTITION BY RANGE (created_at)` mensual + retención 12-24 meses), P-18 (preview accuracy bajo edits concurrentes → `LOCK TABLE … IN SHARE MODE` o snapshot timestamp)
@@ -218,7 +250,15 @@ Plans:
 4. La relación es M:N efectiva: una ubicación puede pertenecer a 2+ sectores simultáneamente; el query `SELECT s.nombre FROM sectores s JOIN sector_ubicaciones su ON su.sector_id=s.id WHERE su.ubicacion_id=X` retorna múltiples sectores cuando aplica
 5. La tabla legacy `inventario_sectores.columnas` JSONB se deprecada: la migración UNNEST de los arrays existentes en filas pivot (con dedup explícito), valida count vs `SUM(jsonb_array_length(columnas))` y mantiene la columna JSONB por 1 deploy como fallback antes de DROP
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+
 **UI hint**: yes
 **Open Qs to close in `/gsd-discuss-phase 34`**: Q11 (qué UIs entran en stock); confirmar tipo de columna en `inventarios_articulos.columna` (integer) vs `existencias.columna` (text) — pueden requerir manejo distinto
 **Pitfalls**: P-07 (Drizzle rename → DROP+ADD en CI no-TTY → hand-edit migration con `RENAME COLUMN` y verificar SQL diff antes de commit), P-08 (JSONB columnas → pivot dedup con `DISTINCT btrim()` + audit pre-migración)
@@ -241,7 +281,15 @@ Plans:
 4. Cada card del dashboard tiene drill-down: clickear "Ver existencias" filtra `/articulos/existencias` con `?sector=X` y muestra los detalles en la pivot table
 5. La query backend `/api/existencias/by-sector` resuelve la agregación en una sola pasada (JOIN existencias × sector_ubicaciones × ubicaciones con `GROUP BY sector_id`) y retorna `[{sectorId, sectorNombre, totalUnidades, totalSkus, lowStockCount}]`
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+
 **UI hint**: yes
 **Open Qs to close in `/gsd-discuss-phase 35`**: Q11 (alcance exacto del editor visual y dashboard — TS-26 y TS-27 P1 vs P2)
 **Pitfalls**: P-15 (N+1 en pivot → server-side grouping con `jsonb_agg`)
@@ -263,7 +311,15 @@ Plans:
 3. Re-ejecutar el script no duplica filas ni rompe el estado: la operación es idempotente vía UPSERT con `ON CONFLICT (articulo_sku, deposito_id) DO UPDATE` y el script detecta filas ya migradas (con `ubicacion_id NOT NULL` o `migrated_at` flag)
 4. El reporte se guarda en `.planning/phases/<N>/MIGRATION-REPORT.md` con timestamp, counts, y queries de validación (incluyendo lista de SKUs que cayeron en sentinel) para review humano post-ejecución
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+
 **Open Qs to close in `/gsd-discuss-phase 36`**: Q8 (sentinel definitivo: NULL vs `'SIN_UBICACION'` — confirmar; NO `'0'` por P-09); validar mapping slugify(`sanchez.articulos.columna`) contra dataset actual (research-phase recomendado por SUMMARY)
 **Pitfalls**: P-09 (sentinel ambiguity → usar NULL o string clearly-non-real, agregar CHECK constraint y view `vw_existencias_sin_ubicacion`)
 
@@ -284,7 +340,15 @@ Plans:
 3. `pnpm db:generate --check` corre limpio post-cleanup: no detecta diffs entre `schema.ts` y la DB (CI puede agregar este check como pre-deploy guard)
 4. El comentario placeholder en `apps/web/src/components/header.tsx:20` queda removido; tests de smoke de la header siguen pasando
 
-**Plans**: TBD
+**Plans**: 4 plans (en 4 waves)
+
+Plans:
+
+- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+
 **Open Qs to close in `/gsd-discuss-phase 37`**: Q9 (drift TS↔DB final cleanup), Q10 (qué tech debt entra — `numeric SÍ`, `header placeholder SÍ`, HOOK-03/06 docs evaluables, POST `/api/existencias` huérfano evaluable)
 **Pitfalls**: P-14 (TS↔DB drift post-manual SQL → schema parity check + `db:generate --check` en CI), P-20 (numeric retorna string en Drizzle → audit `grep -rE '(precio|costo|subtotal|total)\s*[\*\+\-]'` y choose: parse explícito vs custom Drizzle type vs revertir a doublePrecision)
 
