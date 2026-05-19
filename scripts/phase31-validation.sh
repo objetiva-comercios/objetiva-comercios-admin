@@ -111,7 +111,7 @@ check_integrity() {
 check_pk_swap() {
   echo "--- pk-swap: PK column de articulos ---"
   local VAL
-  VAL=$(run_query "SELECT a.attname FROM pg_attribute a JOIN pg_constraint c ON a.attnum = ANY(c.conkey) WHERE c.conrelid='articulos'::regclass AND c.contype='p';")
+  VAL=$(run_query "SELECT a.attname FROM pg_attribute a JOIN pg_constraint c ON a.attnum = ANY(c.conkey) AND a.attrelid = c.conrelid WHERE c.conrelid='articulos'::regclass AND c.contype='p';")
 
   if [ "$VAL" = "sku" ]; then
     echo "  ✓ pk-swap: sku (PK correcto post-Deploy-2)"
