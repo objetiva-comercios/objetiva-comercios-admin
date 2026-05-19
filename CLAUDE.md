@@ -260,3 +260,17 @@ Cuando multiples herramientas aplican, usar este orden:
 - DB: PostgreSQL con Drizzle ORM (datos de negocio)
 - Roles: `admin` (lectura/escritura) y `viewer` (solo lectura) desde `app_metadata.role`
 - Commits: conventional commits en ingles
+
+## Contrato de schema con consumidores externos
+
+La DB `erp_sanchez` es compartida con `sanchez-pedidos-backend` (Pedidos a Proveedores), que la consume read-only via `pg.Pool` directo desde la red docker `sanchez_docker_network`. **No existe HTTP API ni webhook entre ambos sistemas — el contrato es schema-as-API.**
+
+Antes de renombrar, dropear o cambiar el tipo de cualquier columna listada en `.planning/SCHEMA-CONTRACT.md`, revisar el contrato. Tablas afectadas:
+
+- `articulos` (especialmente `sku`, `codigo`, `unidades`, `categoria`, `subcategoria`, `familia`)
+- `existencias` (`articulo_sku`, `deposito_id`, `cantidad`)
+- `inventarios` (`fecha`, `estado`)
+- `inventarios_articulos` (`articulo_sku`, `cantidad_contada`, `updated_at`)
+- Trigger `trg_update_articulo_unidades` (mantiene `articulos.unidades` denormalizado)
+
+Si el cambio es necesario, agregarlo al changelog en el mismo doc y avisar al equipo de Pedidos antes del merge.
