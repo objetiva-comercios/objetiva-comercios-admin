@@ -156,8 +156,8 @@ Plans:
 
 **Wave 1**
 
-- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
-- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [x] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [x] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
 
 **Wave 2** _(blocked on Wave 1 completion)_
 
@@ -433,7 +433,7 @@ Plans:
 | 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete               | 2026-03-13                               |
 | 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete               | 2026-04-30                               |
 | 30. Templates + Composición SKU/Nombre              | v1.3      | 4/4            | Complete               | 2026-05-17                               |
-| 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 0/0            | Not started            | -                                        |
+| 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 2/4            | In Progress            |                                          |
 | 32. Variantes UI                                    | v1.3      | 0/0            | Not started            | -                                        |
 | 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started            | -                                        |
 | 34. Stock Schema (ubicaciones + sectores)           | v1.3      | 0/0            | Not started            | -                                        |

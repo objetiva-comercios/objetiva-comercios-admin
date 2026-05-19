@@ -33,7 +33,7 @@ Requirements for milestone v1.3 — Variantes y Modelo de Stock. Each maps to ro
 - [ ] **VAR-07**: Admin puede editar "datos del modelo" (campos comunes) propagando a todas las filas con mismo `codigo`
 - [ ] **VAR-08**: Admin puede editar "datos de la variante" (atributos variante, precio, stock) sin afectar hermanas
 - [ ] **VAR-09**: Admin asigna `codigo_barras` único por variante (variantes nuevas NO heredan el de la origen)
-- [ ] **VAR-10**: Comprobantes (orders, sales, purchases, existencias, inventarios_articulos) referencian `sku` como identificador universal
+- [x] **VAR-10**: Comprobantes (orders, sales, purchases, existencias, inventarios_articulos) referencian `sku` como identificador universal
 
 ### SKU — Regeneración Masiva
 
@@ -132,7 +132,7 @@ Mapping of requirements to roadmap phases (filled by `gsd-roadmapper` during ROA
 | VAR-07      | Phase 32 | Pending  |
 | VAR-08      | Phase 32 | Pending  |
 | VAR-09      | Phase 32 | Pending  |
-| VAR-10      | Phase 31 | Pending  |
+| VAR-10      | Phase 31 | Complete |
 | SKU-01      | Phase 33 | Pending  |
 | SKU-02      | Phase 33 | Pending  |
 | SKU-03      | Phase 33 | Pending  |
