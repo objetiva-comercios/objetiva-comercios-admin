@@ -193,14 +193,14 @@ export function ExistenciasClient({ depositos, initialData, initialKpi }: Existe
   }
 
   const handleMatrixStockUpdate = async (
-    articuloCodigo: string,
+    articuloSku: string,
     depositoId: number,
     newValue: number
   ) => {
     // Optimistic update on matrix data
     setMatrixData(prev =>
       prev.map(row => {
-        if (row.articuloCodigo !== articuloCodigo) return row
+        if (row.articuloSku !== articuloSku) return row
         const oldValue = row.stock[depositoId] ?? 0
         const diff = newValue - oldValue
         return {
@@ -211,14 +211,15 @@ export function ExistenciasClient({ depositos, initialData, initialKpi }: Existe
       })
     )
 
-    await updateExistenciaClient(articuloCodigo, depositoId, { cantidad: newValue })
+    // Phase 31 Deploy 3: el endpoint PATCH acepta sku como path param (backward compat)
+    await updateExistenciaClient(articuloSku, depositoId, { cantidad: newValue })
 
     // Refetch KPI after edit
     fetchKpi()
   }
 
   const handleStockUpdate = async (
-    articuloCodigo: string,
+    articuloSku: string,
     depositoId: number,
     field: 'cantidad' | 'stockMinimo' | 'stockMaximo',
     value: number
@@ -226,13 +227,14 @@ export function ExistenciasClient({ depositos, initialData, initialKpi }: Existe
     // Optimistic update
     setData(prev =>
       prev.map(item =>
-        item.articuloCodigo === articuloCodigo && item.depositoId === depositoId
+        item.articuloSku === articuloSku && item.depositoId === depositoId
           ? { ...item, [field]: value }
           : item
       )
     )
 
-    await updateExistenciaClient(articuloCodigo, depositoId, { [field]: value })
+    // Phase 31 Deploy 3: el endpoint PATCH acepta sku como path param (backward compat)
+    await updateExistenciaClient(articuloSku, depositoId, { [field]: value })
 
     // Refetch KPI after edit
     fetchKpi()

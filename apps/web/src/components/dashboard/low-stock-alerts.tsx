@@ -37,7 +37,7 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
         <div className="space-y-4">
           {items.slice(0, 5).map(item => (
             <div
-              key={item.articuloCodigo}
+              key={item.articuloSku}
               className="flex items-center justify-between rounded-lg border p-3"
             >
               <div className="flex items-center gap-3">
@@ -45,7 +45,7 @@ export function LowStockAlerts({ items }: LowStockAlertsProps) {
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">{item.articuloNombre}</p>
                   <p className="text-xs text-muted-foreground">
-                    {item.articuloCodigo} — Cantidad: {item.totalCantidad}
+                    {item.articuloSku} — Cantidad: {item.totalCantidad}
                   </p>
                 </div>
               </div>

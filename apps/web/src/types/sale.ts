@@ -1,7 +1,6 @@
 export interface SaleItem {
   id: number
-  articuloCodigo: string
-  // Phase 31 Deploy 2: articuloSku coexiste con articuloCodigo hasta Deploy 3
+  // Phase 31 Deploy 3 (contract): articuloCodigo eliminado, solo articuloSku
   articuloSku: string
   articuloNombre: string
   quantity: number

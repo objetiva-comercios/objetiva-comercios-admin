@@ -21,7 +21,7 @@ const statusConfig: Record<
 }
 
 export type OnStockUpdate = (
-  articuloCodigo: string,
+  articuloSku: string,
   depositoId: number,
   field: 'cantidad' | 'stockMinimo' | 'stockMaximo',
   value: number
@@ -31,10 +31,10 @@ export const createExistenciasColumns = (
   onStockUpdate?: OnStockUpdate
 ): ColumnDef<Existencia>[] => [
   {
-    accessorKey: 'articuloCodigo',
-    header: 'Codigo',
+    accessorKey: 'articuloSku',
+    header: 'SKU',
     size: 120,
-    cell: ({ row }) => <div className="font-mono text-sm">{row.getValue('articuloCodigo')}</div>,
+    cell: ({ row }) => <div className="font-mono text-sm">{row.getValue('articuloSku')}</div>,
   },
   {
     accessorKey: 'articuloNombre',

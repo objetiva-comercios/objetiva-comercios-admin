@@ -417,7 +417,7 @@ export async function transitionInventarioEstado(id: number, estado: string): Pr
 export async function addInventarioArticulo(
   inventarioId: number,
   data: {
-    articuloCodigo: string
+    articuloSku: string
     cantidadContada?: number
     dispositivoId?: number
     sectorId?: number

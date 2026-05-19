@@ -18,7 +18,7 @@ interface ExistenciasPorArticuloProps {
   depositos: Deposito[]
   data: ExistenciaMatrixRow[]
   isLoading: boolean
-  onStockUpdate: (articuloCodigo: string, depositoId: number, newValue: number) => Promise<void>
+  onStockUpdate: (articuloSku: string, depositoId: number, newValue: number) => Promise<void>
   pageCount: number
   currentPage: number
   onPageChange: (page: number) => void
@@ -46,12 +46,12 @@ export function ExistenciasPorArticulo({
         <table className="w-full text-sm">
           <thead>
             <tr>
-              {/* Frozen: Codigo */}
+              {/* Frozen: SKU */}
               <th
                 className="sticky left-0 z-10 bg-muted/50 h-8 px-2 text-left font-medium text-muted-foreground whitespace-nowrap border-b"
                 style={{ width: CODIGO_WIDTH, minWidth: CODIGO_WIDTH }}
               >
-                Codigo
+                SKU
               </th>
               {/* Frozen: Articulo */}
               <th
@@ -121,13 +121,13 @@ export function ExistenciasPorArticulo({
               </tr>
             ) : (
               data.map(row => (
-                <tr key={row.articuloCodigo} className="hover:bg-muted/30">
-                  {/* Frozen: Codigo */}
+                <tr key={row.articuloSku} className="hover:bg-muted/30">
+                  {/* Frozen: SKU */}
                   <td
                     className="sticky left-0 z-10 bg-background h-9 px-2 border-b whitespace-nowrap font-mono text-sm"
                     style={{ width: CODIGO_WIDTH, minWidth: CODIGO_WIDTH }}
                   >
-                    {row.articuloCodigo}
+                    {row.articuloSku}
                   </td>
                   {/* Frozen: Articulo */}
                   <td
@@ -147,7 +147,7 @@ export function ExistenciasPorArticulo({
                       <InlineEditCell
                         value={row.stock[dep.id] ?? 0}
                         onSave={async (newValue: number) => {
-                          await onStockUpdate(row.articuloCodigo, dep.id, newValue)
+                          await onStockUpdate(row.articuloSku, dep.id, newValue)
                         }}
                       />
                     </td>

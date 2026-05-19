@@ -74,10 +74,11 @@ export function ArticuloSearch({
   }, [])
 
   const handleSelect = async (articulo: Articulo) => {
+    if (!articulo.sku) return
     setAdding(true)
     try {
       await addInventarioArticulo(inventarioId, {
-        articuloCodigo: articulo.codigo,
+        articuloSku: articulo.sku,
         cantidadContada: 0,
       })
       toast({ title: 'Articulo agregado', description: articulo.nombre })

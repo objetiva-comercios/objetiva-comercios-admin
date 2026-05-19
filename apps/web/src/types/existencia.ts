@@ -1,6 +1,5 @@
 export interface Existencia {
-  articuloCodigo: string
-  // Phase 31 Deploy 2: articuloSku es NOT NULL (era string | null en Deploy 1)
+  // Phase 31 Deploy 3 (contract): articuloCodigo eliminado, solo articuloSku
   articuloSku: string
   depositoId: number
   cantidad: number
@@ -28,7 +27,8 @@ export interface ExistenciasKpi {
 }
 
 export interface ExistenciaMatrixRow {
-  articuloCodigo: string
+  // Phase 31 Deploy 3 (contract): articuloCodigo eliminado, agrupador es articuloSku
+  articuloSku: string
   articuloNombre: string
   stock: Record<number, number>
   total: number

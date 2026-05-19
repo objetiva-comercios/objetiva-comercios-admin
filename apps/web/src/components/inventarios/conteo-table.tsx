@@ -72,7 +72,7 @@ export function ConteoTable({ inventarioId, estado }: ConteoTableProps) {
     return articulos.filter(a => a.diferencia !== 0)
   }, [articulos, showOnlyDiscrepancies])
 
-  const existingCodigos = useMemo(() => new Set(articulos.map(a => a.articuloCodigo)), [articulos])
+  const existingCodigos = useMemo(() => new Set(articulos.map(a => a.articuloSku)), [articulos])
 
   const totalDiscrepancies = useMemo(
     () => articulos.filter(a => a.diferencia !== 0).length,
@@ -166,8 +166,8 @@ export function ConteoTable({ inventarioId, estado }: ConteoTableProps) {
                 <TableRow key={articulo.id}>
                   <TableCell>
                     <div>
-                      <span className="text-xs text-muted-foreground">
-                        {articulo.articuloCodigo}
+                      <span className="text-xs text-muted-foreground font-mono">
+                        {articulo.articuloSku}
                       </span>
                       <p className="text-sm font-medium leading-tight">{articulo.articuloNombre}</p>
                     </div>
@@ -200,7 +200,7 @@ export function ConteoTable({ inventarioId, estado }: ConteoTableProps) {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Eliminar articulo del conteo</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Se eliminara {articulo.articuloNombre} ({articulo.articuloCodigo}) de
+                              Se eliminara {articulo.articuloNombre} ({articulo.articuloSku}) de
                               este conteo. Esta accion no se puede deshacer.
                             </AlertDialogDescription>
                           </AlertDialogHeader>

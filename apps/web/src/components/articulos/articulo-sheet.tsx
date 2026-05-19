@@ -323,7 +323,7 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
                       const status = getStockStatus(e.cantidad, e.stockMinimo)
                       const config = stockStatusConfig[status]
                       return (
-                        <tr key={`${e.articuloCodigo}-${e.depositoId}`} className="border-t">
+                        <tr key={`${e.articuloSku}-${e.depositoId}`} className="border-t">
                           <td className="h-8 px-3">{e.depositoNombre ?? `Dep. ${e.depositoId}`}</td>
                           <td className="h-8 px-3 text-right tabular-nums">{e.cantidad}</td>
                           <td className="h-8 px-3 text-right tabular-nums text-muted-foreground">

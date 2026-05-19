@@ -53,7 +53,7 @@ export function ExistenciasPorDeposito({
                 value={existencia[field]}
                 onSave={async (newValue: number) => {
                   await onStockUpdate(
-                    existencia.articuloCodigo,
+                    existencia.articuloSku,
                     existencia.depositoId,
                     field,
                     newValue

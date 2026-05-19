@@ -170,8 +170,8 @@ export class ExistenciasService {
   }
 
   // Phase 31 Deploy 3: findByArticulo toma articuloCodigo (agrupador) como param de path.
-  // Internamente filtra por articulo.codigo para retornar todas las existencias de
-  // variantes del mismo codigo (en Phase 31 = 1 articulo; Phase 32 = N variantes).
+  // Internamente filtra por articulo.codigo (o sku si coincide) para retornar todas las
+  // existencias de variantes del mismo codigo (Phase 31 = 1 articulo; Phase 32 = N variantes).
   async findByArticulo(articuloCodigo: string) {
     const data = await this.drizzle.db
       .select({
@@ -185,9 +185,9 @@ export class ExistenciasService {
       })
       .from(existencias)
       .innerJoin(depositos, eq(existencias.depositoId, depositos.id))
-      // Join con articulos para filtrar por codigo (agrupador)
+      // Join con articulos para filtrar por codigo (agrupador) o sku (post-Deploy-3)
       .innerJoin(articulos, eq(existencias.articuloSku, articulos.sku))
-      .where(eq(articulos.codigo, articuloCodigo))
+      .where(or(eq(articulos.codigo, articuloCodigo), eq(articulos.sku, articuloCodigo))!)
       .orderBy(depositos.nombre)
 
     return data
@@ -242,19 +242,19 @@ export class ExistenciasService {
     return rows[0]
   }
 
-  // Phase 31 Deploy 2: update toma articuloCodigo como agrupador (path param se mantiene).
-  // Internamente resuelve el sku via JOIN con articulos para usar la PK nueva.
+  // Phase 31 Deploy 3: update acepta articuloCodigo (agrupador por codigo) o articuloSku
+  // (path param se mantiene para backward compat; frontend puede pasar codigo o sku).
   async update(articuloCodigo: string, depositoId: number, dto: UpdateExistenciaDto) {
     const updateData: Record<string, unknown> = { updatedAt: new Date() }
     if (dto.cantidad !== undefined) updateData.cantidad = dto.cantidad
     if (dto.stockMinimo !== undefined) updateData.stockMinimo = dto.stockMinimo
     if (dto.stockMaximo !== undefined) updateData.stockMaximo = dto.stockMaximo
 
-    // Resolver el sku del articulo via codigo (agrupador)
+    // Resolver el sku del articulo via codigo (agrupador) o sku directo (post-Deploy-3)
     const articuloRows = await this.drizzle.db
       .select({ sku: articulos.sku })
       .from(articulos)
-      .where(eq(articulos.codigo, articuloCodigo))
+      .where(or(eq(articulos.codigo, articuloCodigo), eq(articulos.sku, articuloCodigo))!)
       .limit(1)
 
     if (!articuloRows[0]) {
