@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { eq, ilike, or, and, desc, asc, count, sql, Column } from 'drizzle-orm'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { codigoToSku } from '@objetiva/utils'
 import { DrizzleService } from '../../db/index'
 import { articulos } from '../../db/schema'
 import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
@@ -95,9 +96,13 @@ export class ArticulosService {
   }
 
   async create(dto: CreateArticuloDto) {
+    // Phase 31 D-17: sku is the canonical PK (post Deploy 2). Auto-derive from
+    // codigo when the caller didn't supply one so new rows never land with sku=null.
+    const sku = dto.sku ?? codigoToSku(dto.codigo)
+
     const rows = await this.drizzle.db
       .insert(articulos)
-      .values(dto as typeof articulos.$inferInsert)
+      .values({ ...dto, sku } as typeof articulos.$inferInsert)
       .returning()
 
     const articulo = rows[0]
