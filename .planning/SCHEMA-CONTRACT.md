@@ -43,12 +43,12 @@ PK compuesta: `(articulo_sku, deposito_id)` (post Phase 31 Deploy 3; antes era `
 ### `inventarios`
 
 | Columna       | Tipo                                     | Garantia                                         |
-| ------------- | ---------------------------------------- | ------------------------------------------------ | -------- | ------------ |
+| ------------- | ---------------------------------------- | ------------------------------------------------ |
 | `id`          | integer NOT NULL, PK                     | Sin cambios planeados.                           |
 | `nombre`      | varchar(255) NOT NULL                    | Sin cambios planeados.                           |
 | `fecha`       | timestamp NOT NULL                       | Fecha NOMINAL del inventario. Asignada al crear. |
 | `deposito_id` | integer NOT NULL, FK a `depositos.id`    | Sin cambios planeados.                           |
-| `estado`      | varchar(20) NOT NULL default 'pendiente' | `pendiente                                       | en_curso | finalizado`. |
+| `estado`      | varchar(20) NOT NULL default 'pendiente' | Valores: `pendiente`, `en_curso`, `finalizado`.  |
 | `created_at`  | timestamp NOT NULL default now()         | Cuando se creo el registro contenedor.           |
 | `updated_at`  | timestamp NOT NULL default now()         | Ultima modificacion del header.                  |
 
