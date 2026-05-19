@@ -14,6 +14,8 @@ export interface DashboardStats {
 
 export interface LowStockItem {
   articuloCodigo: string
+  // Phase 31 Deploy 2: articuloSku coexiste con articuloCodigo hasta Deploy 3
+  articuloSku: string
   articuloNombre: string
   totalCantidad: number
   minStockMinimo: number

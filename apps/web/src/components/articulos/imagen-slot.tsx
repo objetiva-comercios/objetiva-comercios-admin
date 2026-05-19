@@ -38,7 +38,8 @@ interface ImagenSlotProps {
   tipo: 'etiqueta' | 'producto'
   slot: number
   url: string | null
-  articuloCodigo: string
+  // Phase 31 Deploy 2: prop renombrada de articuloCodigo a articuloSku
+  articuloSku: string
   onUpdated: (articulo: Articulo) => void
   onPreview: () => void
 }
@@ -47,7 +48,7 @@ export function ImagenSlot({
   tipo,
   slot,
   url,
-  articuloCodigo,
+  articuloSku,
   onUpdated,
   onPreview,
 }: ImagenSlotProps) {
@@ -62,7 +63,8 @@ export function ImagenSlot({
     if (!file) return
     setIsUploading(true)
     try {
-      const result = await uploadArticuloImagen(articuloCodigo, tipo, slot, file)
+      // Phase 31 Deploy 2: usar articuloSku en lugar de articuloCodigo
+      const result = await uploadArticuloImagen(articuloSku, tipo, slot, file)
       onUpdated(result)
       toast({ title: 'Imagen subida', description: `${label} actualizada correctamente.` })
     } catch (err) {
@@ -79,7 +81,8 @@ export function ImagenSlot({
   async function handleDelete(e: React.MouseEvent) {
     e.stopPropagation()
     try {
-      const result = await deleteArticuloImagen(articuloCodigo, tipo, slot)
+      // Phase 31 Deploy 2: usar articuloSku en lugar de articuloCodigo
+      const result = await deleteArticuloImagen(articuloSku, tipo, slot)
       onUpdated(result)
       toast({ title: 'Imagen eliminada', description: `${label} eliminada correctamente.` })
     } catch (err) {

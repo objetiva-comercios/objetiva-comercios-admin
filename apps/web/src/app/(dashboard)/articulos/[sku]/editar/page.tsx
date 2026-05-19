@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 
 import type { Articulo } from '@/types/articulo'
-import { fetchArticuloByCodigoClient, toggleArticuloActivo, deleteArticulo } from '@/lib/api.client'
+import { fetchArticuloBySkuClient, toggleArticuloActivo, deleteArticulo } from '@/lib/api.client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -26,10 +26,11 @@ import { ImagenLightbox } from '@/components/articulos/imagen-lightbox'
 import { useToast } from '@/hooks/use-toast'
 
 export default function EditarArticuloPage() {
-  const params = useParams<{ codigo: string }>()
+  // Phase 31 Deploy 2: param renombrado de codigo a sku (route param)
+  const params = useParams<{ sku: string }>()
   const router = useRouter()
   const { toast } = useToast()
-  const codigo = decodeURIComponent(params.codigo)
+  const sku = decodeURIComponent(params.sku)
 
   const [articulo, setArticulo] = useState<Articulo | null>(null)
   const [loading, setLoading] = useState(true)
@@ -40,14 +41,15 @@ export default function EditarArticuloPage() {
 
   const loadArticulo = useCallback(async () => {
     try {
-      const data = await fetchArticuloByCodigoClient(codigo)
+      // Phase 31 Deploy 2: fetchArticuloBySkuClient (era fetchArticuloByCodigoClient)
+      const data = await fetchArticuloBySkuClient(sku)
       setArticulo(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar el articulo')
     } finally {
       setLoading(false)
     }
-  }, [codigo])
+  }, [sku])
 
   useEffect(() => {
     loadArticulo()
@@ -58,14 +60,16 @@ export default function EditarArticuloPage() {
     setShowToggleDialog(false)
     try {
       if (articulo.activo) {
-        await deleteArticulo(articulo.codigo)
+        // Phase 31 Deploy 2: deleteArticulo keyea por sku
+        await deleteArticulo(articulo.sku!)
         toast({
           title: 'Articulo desactivado',
           description: `"${articulo.nombre}" fue desactivado.`,
         })
         router.push('/articulos')
       } else {
-        const updated = await toggleArticuloActivo(articulo.codigo)
+        // Phase 31 Deploy 2: toggleArticuloActivo keyea por sku
+        const updated = await toggleArticuloActivo(articulo.sku!)
         setArticulo(updated)
         toast({ title: 'Articulo reactivado', description: `"${articulo.nombre}" fue reactivado.` })
       }
@@ -190,17 +194,18 @@ export default function EditarArticuloPage() {
 
         {/* Right: Image grids */}
         <div className="space-y-4">
+          {/* Phase 31 Deploy 2: articuloSku reemplaza articuloCodigo en ImagenSlotGrid */}
           <ImagenSlotGrid
             tipo="producto"
             urls={articulo.imagenesProducto}
-            articuloCodigo={articulo.codigo}
+            articuloSku={articulo.sku!}
             onUpdated={setArticulo}
             onPreview={index => openLightbox('producto', index)}
           />
           <ImagenSlotGrid
             tipo="etiqueta"
             urls={articulo.imagenesEtiqueta}
-            articuloCodigo={articulo.codigo}
+            articuloSku={articulo.sku!}
             onUpdated={setArticulo}
             onPreview={index => openLightbox('etiqueta', index)}
           />

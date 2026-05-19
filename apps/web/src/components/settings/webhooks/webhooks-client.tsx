@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Webhook, Copy, Check } from 'lucide-react'
+import { Webhook, Copy, Check, Info } from 'lucide-react'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
 import { WebhookDetail } from './webhook-detail'
 import { Button } from '@/components/ui/button'
@@ -271,6 +272,19 @@ export function WebhooksClient() {
 
   return (
     <div className="space-y-4">
+      {/* Phase 31 Deploy 2: Notice de cambio de payload v2 para suscriptores */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertTitle>Cambio en el payload de articulo.* desde v1.3</AlertTitle>
+        <AlertDescription>
+          Los eventos <strong>articulo.created</strong>, <strong>articulo.updated</strong> y{' '}
+          <strong>articulo.deleted</strong> ahora incluyen el campo <code>sku</code> dentro del
+          objeto <code>articulo</code>, ademas del <code>codigo</code> existente. <code>sku</code>{' '}
+          es el identificador unico de cada fila; <code>codigo</code> puede agrupar variantes cuando
+          una misma referencia tiene atributos multiples. Los suscriptores que solo leen{' '}
+          <code>codigo</code> siguen funcionando sin cambios.
+        </AlertDescription>
+      </Alert>
       {webhooks.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center">
           <Webhook className="h-8 w-8 text-muted-foreground mb-3" />

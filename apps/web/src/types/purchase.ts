@@ -1,6 +1,8 @@
 export interface PurchaseItem {
   id: number
   articuloCodigo: string
+  // Phase 31 Deploy 2: articuloSku coexiste con articuloCodigo hasta Deploy 3
+  articuloSku: string
   articuloNombre: string
   quantity: number
   unitCost: number

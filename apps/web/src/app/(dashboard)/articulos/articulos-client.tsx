@@ -151,7 +151,8 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
 
   const handleEdit = useCallback(
     (articulo: Articulo) => {
-      router.push(`/articulos/${encodeURIComponent(articulo.codigo)}/editar`)
+      // Phase 31 Deploy 2: navegar por sku (PK) en lugar de codigo
+      router.push(`/articulos/${encodeURIComponent(articulo.sku!)}/editar`)
     },
     [router]
   )

@@ -125,11 +125,27 @@ export async function fetchArticulosClient(params?: {
   return response.json()
 }
 
-export async function fetchArticuloByCodigoClient(codigo: string): Promise<Articulo> {
+// Phase 31 Deploy 2: fetchArticuloBySkuClient (era fetchArticuloByCodigoClient)
+// URL: /api/articulos/:sku (GET por sku — PK)
+export async function fetchArticuloBySkuClient(sku: string): Promise<Articulo> {
   const headers = await getAuthHeaders()
-  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}`, {
+  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(sku)}`, {
     headers: { 'Content-Type': 'application/json', ...headers },
   })
+  await throwIfError(response)
+  return response.json()
+}
+
+// Phase 31 Deploy 2: nueva función para buscar por codigo (agrupador)
+// URL: /api/articulos/by-codigo/:codigo (retorna array de variantes)
+export async function fetchArticulosByCodigoClient(codigo: string): Promise<Articulo[]> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(
+    `${API_BASE_URL}/api/articulos/by-codigo/${encodeURIComponent(codigo)}`,
+    {
+      headers: { 'Content-Type': 'application/json', ...headers },
+    }
+  )
   await throwIfError(response)
   return response.json()
 }
@@ -145,12 +161,13 @@ export async function createArticulo(data: Record<string, unknown>): Promise<Art
   return response.json()
 }
 
+// Phase 31 Deploy 2: updateArticulo keyea por sku
 export async function updateArticulo(
-  codigo: string,
+  sku: string,
   data: Record<string, unknown>
 ): Promise<Articulo> {
   const headers = await getAuthHeaders()
-  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}`, {
+  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(sku)}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify(data),
@@ -159,22 +176,21 @@ export async function updateArticulo(
   return response.json()
 }
 
-export async function toggleArticuloActivo(codigo: string): Promise<Articulo> {
+// Phase 31 Deploy 2: toggleArticuloActivo keyea por sku
+export async function toggleArticuloActivo(sku: string): Promise<Articulo> {
   const headers = await getAuthHeaders()
-  const response = await fetch(
-    `${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}/toggle`,
-    {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...headers },
-    }
-  )
+  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(sku)}/toggle`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+  })
   await throwIfError(response)
   return response.json()
 }
 
-export async function deleteArticulo(codigo: string): Promise<Articulo> {
+// Phase 31 Deploy 2: deleteArticulo keyea por sku
+export async function deleteArticulo(sku: string): Promise<Articulo> {
   const headers = await getAuthHeaders()
-  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}`, {
+  const response = await fetch(`${API_BASE_URL}/api/articulos/${encodeURIComponent(sku)}`, {
     method: 'DELETE',
     headers,
   })
@@ -182,8 +198,9 @@ export async function deleteArticulo(codigo: string): Promise<Articulo> {
   return response.json()
 }
 
+// Phase 31 Deploy 2: uploadArticuloImagen keyea por sku
 export async function uploadArticuloImagen(
-  codigo: string,
+  sku: string,
   tipo: 'etiqueta' | 'producto',
   slot: number,
   file: File
@@ -194,7 +211,7 @@ export async function uploadArticuloImagen(
   formData.append('tipo', tipo)
   formData.append('slot', slot.toString())
   const response = await fetch(
-    `${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}/imagenes`,
+    `${API_BASE_URL}/api/articulos/${encodeURIComponent(sku)}/imagenes`,
     {
       method: 'POST',
       headers,
@@ -205,14 +222,15 @@ export async function uploadArticuloImagen(
   return response.json()
 }
 
+// Phase 31 Deploy 2: deleteArticuloImagen keyea por sku
 export async function deleteArticuloImagen(
-  codigo: string,
+  sku: string,
   tipo: 'etiqueta' | 'producto',
   slot: number
 ): Promise<Articulo> {
   const headers = await getAuthHeaders()
   const response = await fetch(
-    `${API_BASE_URL}/api/articulos/${encodeURIComponent(codigo)}/imagenes/${tipo}/${slot}`,
+    `${API_BASE_URL}/api/articulos/${encodeURIComponent(sku)}/imagenes/${tipo}/${slot}`,
     {
       method: 'DELETE',
       headers,

@@ -1,12 +1,13 @@
 export interface Existencia {
   articuloCodigo: string
+  // Phase 31 Deploy 2: articuloSku es NOT NULL (era string | null en Deploy 1)
+  articuloSku: string
   depositoId: number
   cantidad: number
   stockMinimo: number
   stockMaximo: number
   updatedAt: string
-  articuloNombre: string
-  articuloSku: string | null
+  articuloNombre?: string
   depositoNombre?: string
 }
 

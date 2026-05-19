@@ -125,7 +125,11 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
     setLightbox({ images: allImages, initialIndex: Math.max(0, clickedIndex) })
   }
 
-  function renderSlot(tipo: 'producto' | 'etiqueta', index: number, url: string | null | undefined) {
+  function renderSlot(
+    tipo: 'producto' | 'etiqueta',
+    index: number,
+    url: string | null | undefined
+  ) {
     const hasImage = isValidImageUrl(url)
     if (hasImage) {
       return (
@@ -195,8 +199,9 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               <Badge variant={articulo.activo ? 'default' : 'secondary'}>
                 {articulo.activo ? 'Activo' : 'Inactivo'}
               </Badge>
+              {/* Phase 31 Deploy 2: link usa sku (PK) */}
               <Button asChild variant="outline" size="sm" className="h-8 text-sm">
-                <Link href={`/articulos/${encodeURIComponent(articulo.codigo)}/editar`}>
+                <Link href={`/articulos/${encodeURIComponent(articulo.sku!)}/editar`}>
                   <PencilIcon className="mr-1.5 h-3.5 w-3.5" />
                   Editar
                 </Link>
@@ -231,7 +236,9 @@ export function ArticuloSheet({ articulo, open, onOpenChange }: ArticuloSheetPro
               <div>
                 <p className="text-[10px] text-muted-foreground mb-1">Producto</p>
                 <div className="flex gap-1">
-                  {[0, 1, 2, 3, 4, 5].map(i => renderSlot('producto', i, articulo.imagenesProducto[i]))}
+                  {[0, 1, 2, 3, 4, 5].map(i =>
+                    renderSlot('producto', i, articulo.imagenesProducto[i])
+                  )}
                 </div>
               </div>
               {/* Separador vertical */}

@@ -15,6 +15,8 @@ export interface InventarioArticulo {
   id: number
   inventarioId: number
   articuloCodigo: string
+  // Phase 31 Deploy 2: articuloSku coexiste con articuloCodigo hasta Deploy 3
+  articuloSku: string
   cantidadContada: number
   dispositivoId: number | null
   sectorId: number | null

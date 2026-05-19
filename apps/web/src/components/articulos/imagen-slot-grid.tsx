@@ -16,7 +16,8 @@ const TITLES: Record<'etiqueta' | 'producto', string> = {
 interface ImagenSlotGridProps {
   tipo: 'etiqueta' | 'producto'
   urls: (string | null)[]
-  articuloCodigo: string
+  // Phase 31 Deploy 2: prop renombrada de articuloCodigo a articuloSku
+  articuloSku: string
   onUpdated: (articulo: Articulo) => void
   onPreview: (index: number) => void
 }
@@ -24,7 +25,7 @@ interface ImagenSlotGridProps {
 export function ImagenSlotGrid({
   tipo,
   urls,
-  articuloCodigo,
+  articuloSku,
   onUpdated,
   onPreview,
 }: ImagenSlotGridProps) {
@@ -41,7 +42,7 @@ export function ImagenSlotGrid({
             tipo={tipo}
             slot={index + 1}
             url={urls[index] ?? null}
-            articuloCodigo={articuloCodigo}
+            articuloSku={articuloSku}
             onUpdated={onUpdated}
             onPreview={() => onPreview(index)}
           />
