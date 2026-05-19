@@ -57,11 +57,16 @@ export const orderItems = pgTable(
       .references(() => articulos.codigo, { onDelete: 'restrict' }),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
+    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
+    articuloSku: text('articulo_sku'),
     quantity: integer('quantity').notNull(),
     price: doublePrecision('price').notNull(),
     subtotal: doublePrecision('subtotal').notNull(),
   },
-  table => [index('order_items_order_id_idx').on(table.orderId)]
+  table => [
+    index('order_items_order_id_idx').on(table.orderId),
+    index('order_items_articulo_sku_idx').on(table.articuloSku),
+  ]
 )
 
 // ─── Sales ────────────────────────────────────────────────────────────────────
@@ -103,11 +108,16 @@ export const saleItems = pgTable(
       .references(() => articulos.codigo, { onDelete: 'restrict' }),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
+    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
+    articuloSku: text('articulo_sku'),
     quantity: integer('quantity').notNull(),
     price: doublePrecision('price').notNull(),
     subtotal: doublePrecision('subtotal').notNull(),
   },
-  table => [index('sale_items_sale_id_idx').on(table.saleId)]
+  table => [
+    index('sale_items_sale_id_idx').on(table.saleId),
+    index('sale_items_articulo_sku_idx').on(table.articuloSku),
+  ]
 )
 
 // ─── Purchases ────────────────────────────────────────────────────────────────
@@ -151,11 +161,16 @@ export const purchaseItems = pgTable(
       .references(() => articulos.codigo, { onDelete: 'restrict' }),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
+    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
+    articuloSku: text('articulo_sku'),
     quantity: integer('quantity').notNull(),
     unitCost: doublePrecision('unit_cost').notNull(),
     subtotal: doublePrecision('subtotal').notNull(),
   },
-  table => [index('purchase_items_purchase_id_idx').on(table.purchaseId)]
+  table => [
+    index('purchase_items_purchase_id_idx').on(table.purchaseId),
+    index('purchase_items_articulo_sku_idx').on(table.articuloSku),
+  ]
 )
 
 // ─── Business Settings ───────────────────────────────────────────────────────
@@ -289,11 +304,14 @@ export const existencias = pgTable(
     stockMinimo: integer('stock_minimo').notNull().default(0),
     stockMaximo: integer('stock_maximo').notNull().default(0),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
+    articuloSku: text('articulo_sku'),
   },
   table => [
     primaryKey({ columns: [table.articuloCodigo, table.depositoId] }),
     index('existencias_deposito_id_idx').on(table.depositoId),
     index('existencias_articulo_codigo_idx').on(table.articuloCodigo),
+    index('existencias_articulo_sku_idx').on(table.articuloSku),
   ]
 )
 
@@ -376,12 +394,15 @@ export const inventariosArticulos = pgTable(
     observaciones: text('observaciones'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
+    articuloSku: text('articulo_sku'),
   },
   table => [
     index('inv_articulos_inventario_id_idx').on(table.inventarioId),
     index('inv_articulos_articulo_codigo_idx').on(table.articuloCodigo),
     index('inv_articulos_dispositivo_id_idx').on(table.dispositivoId),
     uniqueIndex('inv_articulos_unique_idx').on(table.inventarioId, table.articuloCodigo),
+    index('inv_articulos_articulo_sku_idx').on(table.articuloSku),
   ]
 )
 

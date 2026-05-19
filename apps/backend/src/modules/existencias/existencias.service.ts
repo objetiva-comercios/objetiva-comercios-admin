@@ -6,10 +6,14 @@ import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto'
 import { ExistenciaQueryDto } from './dto/existencia-query.dto'
 import { CreateExistenciaDto } from './dto/create-existencia.dto'
 import { UpdateExistenciaDto } from './dto/update-existencia.dto'
+import { ArticulosHelper } from '../articulos/articulos-helper'
 
 @Injectable()
 export class ExistenciasService {
-  constructor(private readonly drizzle: DrizzleService) {}
+  constructor(
+    private readonly drizzle: DrizzleService,
+    private readonly articulosHelper: ArticulosHelper
+  ) {}
 
   async findByDeposito(depositoId: number, query: ExistenciaQueryDto) {
     const page = query.page ?? 1
@@ -207,10 +211,14 @@ export class ExistenciasService {
   }
 
   async upsert(dto: CreateExistenciaDto) {
+    // Phase 31 Deploy 1: doble-escritura articulo_codigo + articulo_sku (T-31-05)
+    const articuloSku = await this.articulosHelper.resolveSku(dto.articuloCodigo)
+
     const rows = await this.drizzle.db
       .insert(existencias)
       .values({
         articuloCodigo: dto.articuloCodigo,
+        articuloSku,
         depositoId: dto.depositoId,
         cantidad: dto.cantidad ?? 0,
         stockMinimo: dto.stockMinimo ?? 0,
@@ -219,6 +227,7 @@ export class ExistenciasService {
       .onConflictDoUpdate({
         target: [existencias.articuloCodigo, existencias.depositoId],
         set: {
+          articuloSku: sql`EXCLUDED.articulo_sku`,
           cantidad: sql`EXCLUDED.cantidad`,
           stockMinimo: sql`EXCLUDED.stock_minimo`,
           stockMaximo: sql`EXCLUDED.stock_maximo`,

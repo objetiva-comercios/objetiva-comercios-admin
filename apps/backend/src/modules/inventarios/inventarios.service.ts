@@ -19,6 +19,7 @@ import { UpdateInventarioDto } from './dto/update-inventario.dto'
 import { InventarioQueryDto } from './dto/inventario-query.dto'
 import { CreateInventarioArticuloDto } from './dto/create-inventario-articulo.dto'
 import { UpdateInventarioArticuloDto } from './dto/update-inventario-articulo.dto'
+import { ArticulosHelper } from '../articulos/articulos-helper'
 
 // Valid status transitions
 const TRANSITION_MAP: Record<string, string[]> = {
@@ -30,7 +31,10 @@ const TRANSITION_MAP: Record<string, string[]> = {
 
 @Injectable()
 export class InventariosService {
-  constructor(private readonly drizzle: DrizzleService) {}
+  constructor(
+    private readonly drizzle: DrizzleService,
+    private readonly articulosHelper: ArticulosHelper
+  ) {}
 
   async findAll(query: InventarioQueryDto) {
     const page = query.page ?? 1
@@ -244,12 +248,16 @@ export class InventariosService {
   async addArticulo(inventarioId: number, dto: CreateInventarioArticuloDto) {
     await this.assertEventEditable(inventarioId)
 
+    // Phase 31 Deploy 1: doble-escritura articulo_codigo + articulo_sku (T-31-05)
+    const articuloSku = await this.articulosHelper.resolveSku(dto.articuloCodigo)
+
     try {
       const rows = await this.drizzle.db
         .insert(inventariosArticulos)
         .values({
           inventarioId,
           articuloCodigo: dto.articuloCodigo,
+          articuloSku,
           cantidadContada: dto.cantidadContada ?? 0,
           columna: dto.columna,
           dispositivoId: dto.dispositivoId,

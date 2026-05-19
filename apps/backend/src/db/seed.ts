@@ -92,6 +92,9 @@ async function seed() {
   const depositoIds = insertedDepositos.map(d => d.id)
   const articuloCodigos = articulosData.map(a => a.codigo)
 
+  // Mapa codigo → sku para doble-escritura en hijas (Phase 31 Deploy 1)
+  const articuloSkuMap = new Map(articulosData.map(a => [a.codigo, a.sku]))
+
   const existenciasData = generateExistencias(articuloCodigos, depositoIds)
   console.log(`Seeding ${existenciasData.length} existencias...`)
 
@@ -100,6 +103,7 @@ async function seed() {
     await db.insert(schema.existencias).values(
       batch.map(e => ({
         articuloCodigo: e.articuloCodigo,
+        articuloSku: articuloSkuMap.get(e.articuloCodigo) ?? null,
         depositoId: e.depositoId,
         cantidad: e.cantidad,
         stockMinimo: e.stockMinimo,
@@ -167,6 +171,7 @@ async function seed() {
       batch.map(ia => ({
         inventarioId: insertedInventarioIds[ia.inventarioIdx],
         articuloCodigo: ia.articuloCodigo,
+        articuloSku: articuloSkuMap.get(ia.articuloCodigo) ?? null,
         cantidadContada: ia.cantidadContada,
         columna: ia.columna,
         dispositivoId: ia.dispositivoId,
@@ -203,6 +208,7 @@ async function seed() {
         order.items.map(item => ({
           orderId: insertedOrder.id,
           articuloCodigo: item.articuloCodigo,
+          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? null,
           articuloNombre: item.articuloNombre,
           sku: item.sku,
           quantity: item.quantity,
@@ -241,6 +247,7 @@ async function seed() {
         sale.items.map(item => ({
           saleId: insertedSale.id,
           articuloCodigo: item.articuloCodigo,
+          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? null,
           articuloNombre: item.articuloNombre,
           sku: item.sku,
           quantity: item.quantity,
@@ -282,6 +289,7 @@ async function seed() {
         purchase.items.map(item => ({
           purchaseId: insertedPurchase.id,
           articuloCodigo: item.articuloCodigo,
+          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? null,
           articuloNombre: item.articuloNombre,
           sku: item.sku,
           quantity: item.quantity,
