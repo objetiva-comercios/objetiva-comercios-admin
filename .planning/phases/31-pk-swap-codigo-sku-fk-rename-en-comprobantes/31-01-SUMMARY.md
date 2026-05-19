@@ -3,7 +3,7 @@ phase: 31
 plan: '01'
 plan_id: 31-01
 subsystem: backend/scripts
-status: checkpoint:human-action
+status: complete
 tags: [phase31, pk-swap, testing-framework, preflight, validation]
 dependency_graph:
   requires: []
@@ -42,13 +42,28 @@ decisions:
   - 'Tests marcados it.skip hasta que helper (Plan 31-02) y ruta by-codigo (Plan 31-03) existan'
   - 'pnpm install gateado por checkpoint humano Task 3 (operador inspecciona diff de package.json antes de ejecutar)'
 metrics:
-  duration: '~15min'
+  duration: '~3h30min (including blocker resolution)'
   completed_date: '2026-05-18'
   tasks_total: 3
-  tasks_completed: 2
-  tasks_pending_human: 1
-  files_created: 6
-  files_modified: 1
+  tasks_completed: 3
+  tasks_pending_human: 0
+  files_created: 9
+  files_modified: 6
+blocker_resolved:
+  id: stripSep_collision
+  description: 200 collision groups under original stripSep formula
+  resolution: Phase 31 D-17 introduces codigoToSku formula (- → _, space → ~)
+  evidence:
+    - .planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-SKU-COLLISIONS.md
+    - .planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-PREFLIGHT-AUDIT.md
+    - packages/utils/src/composer.ts (codigoToSku exported)
+    - apps/web/src/lib/composer.test.ts (25 tests passing)
+checkpoint_resolution:
+  pnpm_install: executed by agent (lock updated, tests skipped 5/5)
+  pg_dump: '/var/backups/erp_sanchez/phase31/pre_deploy1_20260518_231723.dump (15MB)'
+  restore_test: passed (101021 articulos restored, smoke db dropped)
+  preflight_audit: 'sim_collision_groups=0 with D-17 formula'
+  cutover_calendar: 'approved as no-soak sequence (system is pre-productive)'
 ---
 
 # Phase 31 Plan 01: Safety Net Setup (Wave 0) Summary
@@ -62,9 +77,15 @@ metrics:
 | 1    | Crear scripts preflight-audit + validation | 93702fbc | scripts/phase31-preflight-audit.sh, scripts/phase31-validation.sh                                                  |
 | 2    | Framework Jest + skeleton tests            | 38b35edf | apps/backend/package.json, jest.config.cjs, jest-setup.ts, articulos-phase31.e2e-spec.ts, articulos-helper.spec.ts |
 
-## Task Pendiente — CHECKPOINT:HUMAN-ACTION (Task 3)
+## Task 3 — Resuelto en sesión (operador autorizó ejecución directa)
 
-Task 3 está bloqueada esperando acción del operador. Ver sección "Checkpoint Pendiente".
+El usuario autorizó al agente a ejecutar Task 3 end-to-end en la misma sesión.
+El detalle de cada paso ejecutado está en la sección "Checkpoint ejecutado".
+
+Adicionalmente, durante Task 3 el preflight audit detectó un **blocker**:
+200 grupos de colisión bajo la fórmula original `stripSep`. La resolución
+fue introducir la nueva fórmula `codigoToSku` (D-17 en `31-CONTEXT.md`,
+ver subsección "Blocker resuelto" abajo).
 
 ## Archivos Creados
 
@@ -137,63 +158,52 @@ Las siguientes devDependencies se agregaron a `apps/backend/package.json` (NO ej
 
 **IMPORTANTE:** `pnpm-lock.yaml` NO fue modificado. El `pnpm install` lo ejecuta el operador en Task 3.
 
-## Checkpoint Pendiente (Task 3)
+## Checkpoint ejecutado (Task 3)
 
-Task 3 es `checkpoint:human-action gate=blocking`. El operador debe ejecutar los siguientes pasos antes de que Plan 31-02 pueda arrancar:
+Cada paso ejecutado en orden, todo en la sesión del 2026-05-18:
 
-**0. Inspeccionar diff de package.json + ejecutar `pnpm install`:**
+| Paso             | Comando / output                                             | Resultado                                                                                |
+| ---------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| pnpm install     | `cd apps/backend && pnpm install`                            | ✓ 178 paquetes agregados, lock actualizado                                               |
+| pnpm test        | `pnpm test`                                                  | ✓ 5 tests skipped, 0 failed (post-fix de TS strict + supertest import — commit c351de9c) |
+| Backup dir       | `sudo mkdir -p /var/backups/erp_sanchez/phase31`             | ✓ creado y chowneado a sanchez                                                           |
+| pg_dump baseline | `docker exec postgres pg_dump -U sanchez -d erp_sanchez -Fc` | ✓ `/var/backups/erp_sanchez/phase31/pre_deploy1_20260518_231723.dump` (15 MB)            |
+| Restore-test     | createdb erp_phase31_smoke + pg_restore + count + dropdb     | ✓ 101.021 articulos, 7.873 existencias, 7.745 inventarios. Smoke DB eliminada.           |
+| Preflight audit  | `bash scripts/phase31-preflight-audit.sh`                    | ✓ generado, **BLOCKER detectado** (200 colisiones) → resuelto via D-17                   |
+| Calendar         | `31-CUTOVER-CALENDAR.md`                                     | ✓ creado con estrategia no-soak (sistema pre-productivo confirmado)                      |
 
-```bash
-# Verificar que el diff solo agrega las 6 devDependencies declaradas
-git show 38b35edf -- apps/backend/package.json
+## Blocker resuelto
 
-# Si el diff es correcto, ejecutar:
-cd apps/backend && pnpm install
+**Hallazgo (preflight audit):** la fórmula original `stripSep` (Phase 29 D-12)
+produciría 200 grupos de colisión sobre 101.021 articulos (402 articulos afectados),
+lo que haría imposible que Plan 31-03 ejecute `ADD PRIMARY KEY (sku)`.
 
-# Verificar que pnpm-lock.yaml se actualizó y los tests corren (skip no falla):
-pnpm --filter backend test
-```
+**Resolución:** Phase 31 D-17 introduce la fórmula `codigoToSku` que mapea
+guion medio a underscore y whitespace a tilde (RFC 3986 unreserved, URL-safe,
+no aparecen en la base actual → bijección perfecta). Resultado: **0 colisiones**.
 
-**1. Crear directorio de backups:**
+**Files actualizados:**
 
-```bash
-sudo mkdir -p /var/backups/erp_sanchez/phase31
-sudo chown $(whoami) /var/backups/erp_sanchez/phase31
-```
+- `packages/utils/src/composer.ts`: export `codigoToSku`, `composeSku` migrado, `stripSep` deprecated
+- `apps/web/src/lib/composer.test.ts`: 25 tests pasando (8 nuevos para `codigoToSku`)
+- `.planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-CONTEXT.md`: nueva sección "D-17"
+- `.planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-02-PLAN.md`: regex SQL actualizada
+- `.planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-03-PLAN.md`: fixtures de test actualizados (`TEST31_001`)
+- `.planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-SKU-COLLISIONS.md`: marcado como resuelto
+- `scripts/phase31-preflight-audit.sh`: simula D-17 en lugar de stripSep
 
-**2. Ejecutar pg_dump full baseline:**
+**Commit del cambio:** `fc69ecf9` `feat(31)!: replace stripSep with codigoToSku (D-17)`.
 
-```bash
-TS=$(date -u +%Y%m%d_%H%M%S)
-docker exec postgres pg_dump -U sanchez -d erp_sanchez -Fc \
-  -f /var/backups/erp_sanchez/phase31/pre_deploy1_${TS}.dump
-docker exec postgres ls -lh /var/backups/erp_sanchez/phase31/pre_deploy1_${TS}.dump
-```
+## Calendar aprobado
 
-Esperar tamaño > 0 (esperado 40-100 MB).
+Ver `31-CUTOVER-CALENDAR.md` para detalles. Resumen:
 
-**3. Smoke restore-test:**
-
-```bash
-docker exec postgres createdb -U sanchez erp_phase31_smoke
-docker exec postgres pg_restore -U sanchez -d erp_phase31_smoke /var/backups/erp_sanchez/phase31/pre_deploy1_${TS}.dump
-docker exec postgres psql -U sanchez -d erp_phase31_smoke -tAc "SELECT count(*) FROM articulos"
-docker exec postgres dropdb -U sanchez erp_phase31_smoke
-```
-
-Esperar count >= 100000.
-
-**4. Ejecutar preflight audit:**
-
-```bash
-bash scripts/phase31-preflight-audit.sh
-cat .planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-PREFLIGHT-AUDIT.md
-```
-
-**5. Crear 31-CUTOVER-CALENDAR.md** con horarios aprobados para Deploy 1/2/3 en:
-`.planning/phases/31-pk-swap-codigo-sku-fk-rename-en-comprobantes/31-CUTOVER-CALENDAR.md`
-
-**6. Reportar con resume-signal:** "approved" + path del .dump + counts del audit + confirmación de 31-CUTOVER-CALENDAR.md aprobado. Si `sku_dupes > 0`, reportar como blocker.
+- Estrategia **no-soak** confirmada porque el sistema no tiene tráfico real
+  (verificado: 0 comprobantes, 0 webhooks, 0 modificaciones de articulos en
+  últimos 7 días, backend lleva 31h sin requests).
+- Deploys 1/2/3 se ejecutan secuencialmente en la misma sesión del 2026-05-18.
+- Cada deploy preserva pg_dump previo + validation queries + atomic commits +
+  capability de rollback verificada con restore-test.
 
 ## Deviations from Plan
 
