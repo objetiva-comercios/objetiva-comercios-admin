@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { stripSep, composeSku, composeNombre } from '@objetiva/utils'
+import { codigoToSku, stripSep, composeSku, composeNombre } from '@objetiva/utils'
 import type { Template } from '@objetiva/types'
 
 /**
@@ -18,7 +18,7 @@ import type { Template } from '@objetiva/types'
 
 // Fixture: template default automotor (D-13, D-14).
 // Receta nombre: [objeto, marca, modelo, medida, custom_1] ordenNombre 1..5.
-// Receta SKU: vacía (esVariante=false en todos los atributos) → sku = stripSep(codigo) (D-15).
+// Receta SKU: vacía (esVariante=false en todos los atributos) → sku = codigoToSku(codigo) (D-15, Phase 31).
 const templateDefault: Template = {
   id: 1,
   nombre: 'default',
@@ -91,7 +91,44 @@ const templateConVariantes: Template = {
   ],
 }
 
-describe('stripSep', () => {
+describe('codigoToSku (Phase 31)', () => {
+  it('maps hyphen to underscore: AMOR-001 -> AMOR_001', () => {
+    expect(codigoToSku('AMOR-001')).toBe('AMOR_001')
+  })
+
+  it('maps whitespace to tilde: AMOR 001 -> AMOR~001', () => {
+    expect(codigoToSku('AMOR 001')).toBe('AMOR~001')
+  })
+
+  it('preserves dots: X.001.A -> X.001.A', () => {
+    expect(codigoToSku('X.001.A')).toBe('X.001.A')
+  })
+
+  it('preserves existing underscores: A_B_C -> A_B_C', () => {
+    expect(codigoToSku('A_B_C')).toBe('A_B_C')
+  })
+
+  it('preserves forward slashes: AC/30-RA C18 -> AC/30_RA~C18', () => {
+    expect(codigoToSku('AC/30-RA C18')).toBe('AC/30_RA~C18')
+  })
+
+  it('disambiguates three codes that previously collided under stripSep', () => {
+    // Pre Phase 31 stripSep -> '2137RAX' x3 (colision blocker).
+    expect(codigoToSku('2137-RA X')).toBe('2137_RA~X')
+    expect(codigoToSku('2137-RA-X')).toBe('2137_RA_X')
+    expect(codigoToSku('2137-RAX')).toBe('2137_RAX')
+  })
+
+  it('collapses consecutive whitespace to a single tilde', () => {
+    expect(codigoToSku('AB   C')).toBe('AB~C')
+  })
+
+  it('does NOT collapse consecutive hyphens (each maps independently)', () => {
+    expect(codigoToSku('AB--C')).toBe('AB__C')
+  })
+})
+
+describe('stripSep (Phase 29 D-12, deprecated by Phase 31)', () => {
   it('removes hyphens from codigo: AMOR-001 -> AMOR001', () => {
     expect(stripSep('AMOR-001')).toBe('AMOR001')
   })
@@ -152,18 +189,18 @@ describe('composeNombre', () => {
 })
 
 describe('composeSku', () => {
-  it('returns stripSep(codigo) shortcut when template has no variantes (caso 5 VALIDATION + D-15)', () => {
-    expect(composeSku('AMOR-001', {}, templateDefault)).toBe('AMOR001')
+  it('returns codigoToSku(codigo) shortcut when template has no variantes (caso 5 VALIDATION + D-15)', () => {
+    expect(composeSku('AMOR-001', {}, templateDefault)).toBe('AMOR_001')
   })
 
-  it('returns stripSep(codigo) shortcut when template has empty atributos array', () => {
+  it('returns codigoToSku(codigo) shortcut when template has empty atributos array', () => {
     const emptyTemplate: Template = { id: 99, nombre: 'empty', atributos: [] }
-    expect(composeSku('XY.99', { objeto: 'Foo' }, emptyTemplate)).toBe('XY99')
+    expect(composeSku('XY.99', { objeto: 'Foo' }, emptyTemplate)).toBe('XY.99')
   })
 
   it('concatenates variant values with hyphens when template has variantes', () => {
     const atributos = { talle: 'M', color: 'Rojo' }
-    expect(composeSku('XYZ-100', atributos, templateConVariantes)).toBe('XYZ100-M-Rojo')
+    expect(composeSku('XYZ-100', atributos, templateConVariantes)).toBe('XYZ_100-M-Rojo')
   })
 
   it('handles cross-prop value collision without conflict (caso 7 VALIDATION)', () => {
@@ -175,17 +212,17 @@ describe('composeSku', () => {
   it('omits es_variante atributos with undefined value without error (caso 8 VALIDATION)', () => {
     // talle definido, color undefined → solo aparece talle
     const atributos = { talle: 'M', color: undefined }
-    expect(composeSku('XYZ-001', atributos, templateConVariantes)).toBe('XYZ001-M')
+    expect(composeSku('XYZ-001', atributos, templateConVariantes)).toBe('XYZ_001-M')
   })
 
   it('omits es_variante atributos with empty string value', () => {
     const atributos = { talle: 'M', color: '' }
-    expect(composeSku('XYZ-001', atributos, templateConVariantes)).toBe('XYZ001-M')
+    expect(composeSku('XYZ-001', atributos, templateConVariantes)).toBe('XYZ_001-M')
   })
 
-  it('returns stripSep(codigo) only when all variant values are missing', () => {
+  it('returns codigoToSku(codigo) only when all variant values are missing', () => {
     const atributos = { talle: undefined, color: undefined }
-    expect(composeSku('XYZ-001', atributos, templateConVariantes)).toBe('XYZ001')
+    expect(composeSku('XYZ-001', atributos, templateConVariantes)).toBe('XYZ_001')
   })
 
   it('respects ordenSku ascending when building SKU parts', () => {
@@ -210,8 +247,6 @@ describe('composeSku', () => {
         },
       ],
     }
-    expect(composeSku('XYZ', { talle: 'M', color: 'Rojo' }, reversedTemplate)).toBe(
-      'XYZ-Rojo-M'
-    )
+    expect(composeSku('XYZ', { talle: 'M', color: 'Rojo' }, reversedTemplate)).toBe('XYZ-Rojo-M')
   })
 })

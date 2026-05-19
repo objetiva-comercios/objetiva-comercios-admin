@@ -2,13 +2,41 @@
 generated: 2026-05-18T23:21:46Z
 query: D-01 simulacion stripSep(codigo) sobre articulos
 blocker: true
+resolved: 2026-05-18
+resolution: Phase 31 D-17 (sobreescribe Phase 29 D-12) — nueva formula codigoToSku produce 0 colisiones
 phase: 31
 plan_blocked: 31-02
 ---
 
 # 31-SKU-COLLISIONS — Reporte de colisiones del overwrite D-02
 
-**Status:** 🚨 BLOCKER ANTES DE PLAN 31-02
+**Status:** ✅ RESUELTO via D-17 (2026-05-18)
+
+> El blocker original aplicaba a la formula `stripSep` (Phase 29 D-12). La nueva
+> formula `codigoToSku` (`-` → `_`, espacio → `~`) introducida en Phase 31 D-17
+> produce **0 colisiones** sobre los mismos 101.021 codigos. Este archivo se
+> conserva como evidencia del analisis que llevo al cambio de formula.
+
+## Resolucion adoptada (cierre 2026-05-18)
+
+- **D-17** en `31-CONTEXT.md`: La transformacion canonica codigo → sku ahora reemplaza
+  guion medio por underscore y whitespace por tilde, manteniendo todos los demas
+  caracteres sin cambio. Esto evita las 200 colisiones documentadas abajo sin
+  perder ningun articulo, sin modificar codigo de negocio, y sin tener que decidir
+  caso-por-caso cual articulo es "ganador".
+- **Codigo:** `packages/utils/src/composer.ts` exporta `codigoToSku`. `composeSku`
+  fue migrado a usar la nueva funcion. `stripSep` queda marcada como deprecated.
+- **Tests:** `apps/web/src/lib/composer.test.ts` cubre tanto `codigoToSku` como los
+  outputs actualizados de `composeSku`.
+- **Plans:** 31-02 y 31-03 fueron actualizados para usar la nueva regex SQL y los
+  fixtures de test (`TEST31_001` en lugar de `TEST31001`).
+- **Preflight audit re-corrido** con la formula nueva: `sim_collision_groups: 0`,
+  `sim_articulos_afectados: 0`. El audit guardado en `31-PREFLIGHT-AUDIT.md`
+  confirma la resolucion.
+
+---
+
+## (Historico) Estado original del blocker bajo stripSep
 
 ## Resumen ejecutivo
 

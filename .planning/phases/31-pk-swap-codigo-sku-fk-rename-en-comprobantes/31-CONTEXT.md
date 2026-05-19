@@ -34,7 +34,7 @@ Promueve `articulos.sku` a PK desde el día siguiente al deploy del cutover; dej
 ### Preflight & safety net (Q5 + P-05)
 
 - **D-01: Auditoría preflight informativa pero non-blocking.** El plan ejecuta un script SQL de auditoría sobre `articulos.sku` ANTES del cutover (`SELECT count(*) FILTER (WHERE sku IS NULL) AS null_sku, count(*) FILTER (WHERE sku = codigo) AS sku_eq_codigo, count(*) FILTER (WHERE sku IS NOT NULL AND sku != codigo) AS sku_diff_codigo, count(*) FILTER (WHERE sku IS NOT NULL) - count(DISTINCT sku) FILTER (WHERE sku IS NOT NULL) AS sku_dupes`). Guarda el output en `.planning/phases/31-.../31-PREFLIGHT-AUDIT.md` como evidencia. **NO bloquea el cutover** aunque encuentre `sku_diff_codigo > 0` o `sku_dupes > 0`.
-- **D-02: Overwrite ciego de `articulos.sku`.** Tras el preflight informativo, la migration de Deploy 2 ejecuta `UPDATE articulos SET sku = stripSep(codigo)` para las 101.021 filas — cualquier valor preexistente en `articulos.sku` se considera ruido sin valor de negocio y se sobreescribe. El audit del D-01 deja papel de qué se borró.
+- **D-02: Overwrite ciego de `articulos.sku`.** Tras el preflight informativo, la migration de Deploy 2 ejecuta `UPDATE articulos SET sku = codigoToSku(codigo)` para las 101.021 filas — cualquier valor preexistente en `articulos.sku` se considera ruido sin valor de negocio y se sobreescribe. El audit del D-01 deja papel de qué se borró. **La fórmula `codigoToSku` fue introducida en D-17 (cierre 2026-05-18) porque la fórmula original `stripSep` de Phase 29 D-12 producía 200 grupos de colisión sobre la base actual (ver 31-SKU-COLLISIONS.md).**
 - **D-03: codigo_barras UNIQUE WHERE NOT NULL queda fuera de Phase 31.** El constraint es prerequisito de variantes (Phase 32) y de momento no se incluye ni se audita en el preflight de Phase 31. Si más adelante se detectan dupes, Phase 32 los aborda.
 - **D-04: pg_dump full automatizado como safety net pre-cutover.** Cada migration de Deploy 2 (y opcionalmente Deploy 3) incluye un paso prep que ejecuta `pg_dump` completo de la DB y lo deja con timestamp en una carpeta acordada. Rollback = restore desde dump. Patrón heredado del operativo del 2026-05-15 post incidente de `db:push --force`. El planner decide path exacto (`backups/`, `~/`, o ubicación montada).
 
@@ -66,6 +66,37 @@ Promueve `articulos.sku` a PK desde el día siguiente al deploy del cutover; dej
 - **D-14: Mismo nombre de trigger y mismo nombre de función.** No se versiona con sufijo `_v2`. `CREATE OR REPLACE FUNCTION update_articulo_unidades()` mantiene el nombre original — el cuerpo cambia para usar sku y articulos.sku. El trigger `trg_update_articulo_unidades` queda apuntando a la misma función ya reemplazada. Tras `ENABLE`, las escrituras post-cutover funcionan inmediatamente.
 - **D-15: WHEN clause del trigger se mantiene en `AFTER INSERT OR UPDATE OF cantidad OR DELETE`.** No se agrega `UPDATE OF articulo_sku` al WHEN. Razón: Phase 31 no introduce UPDATE de `articulo_sku` en existencias (cada existencia queda con su sku asignado al INSERT). Phase 33 (cascade engine) es la que va a hacer UPDATE masivo de `articulo_sku` y va a manejar el WHEN clause + guard `pg_trigger_depth()` defensivo en su propia migration.
 - **D-16: Sin guard `pg_trigger_depth() > 1` ni session GUC `gsd.skip_unidades_trigger`.** El patrón P-02 capa 1 (DISABLE/ENABLE) es suficiente para Phase 31. Las capas 2 y 3 quedan diferidas a Phase 33 si ahí se necesitan para el cascade engine.
+
+### Fórmula codigo → sku (cierre 2026-05-18, sobreescribe Phase 29 D-12)
+
+- **D-17: La transformación canónica `codigoToSku` reemplaza `stripSep` en todo el sistema.** Razón: el preflight audit de Plan 31-01 detectó 200 grupos de colisión (402 artículos sobre 101.021) bajo la fórmula original `regex_replace(codigo, '[-_.\s]+', '', 'g')`. Aplicar el overwrite ciego D-02 con `stripSep` haría imposible `ADD PRIMARY KEY (sku)` en Plan 31-03 (Postgres tiraría duplicate key error). La fórmula nueva produce 0 colisiones sobre la misma base.
+
+  **Definición:**
+
+  ```ts
+  // packages/utils/src/composer.ts
+  export function codigoToSku(codigo: string): string {
+    return codigo.replace(/-/g, '_').replace(/\s+/g, '~')
+  }
+  ```
+
+  **Equivalente SQL:**
+
+  ```sql
+  regexp_replace(regexp_replace(codigo, '-', '_', 'g'), '[[:space:]]+', '~', 'g')
+  ```
+
+  **Reglas:**
+  - `-` (guion medio) → `_` (underscore). Razón: deja el `-` libre para usarse como separador de partes en variantes (D-13 Phase 29 sigue válido: `sku = codigoToSku(codigo) + '-' + abrev1 + ...`).
+  - whitespace (espacio, tab) colapsado → `~` (tilde, RFC 3986 unreserved, URL-safe).
+  - `.`, `/`, `(`, `)`, `+`, `,`, `=`, `'` y alfanuméricos → sin cambio.
+  - `_` y `~` no aparecen en ninguno de los 101.021 códigos actuales (verificado pre-cutover) → transformación bijectiva sobre la base existente.
+
+  **Implicaciones cross-phase:**
+  - Phase 29 D-12 (`stripSep`) queda deprecated. La función se mantiene exportada en `@objetiva/utils` para no romper imports antiguos pero su uso de runtime se migra a `codigoToSku`.
+  - Phase 30 D-15/D-16 (`composeSku`) usa internamente `codigoToSku` en lugar de `stripSep` desde el commit que aplica D-17. La regla "sin variantes → sku = base; con variantes → sku = base + '-' + partes" sigue siendo válida; `base` ahora es `codigoToSku(codigo)`.
+  - Plan 31-02 ejecuta el overwrite con la nueva regex SQL. Plan 31-02 también renombra el helper backend para que la fuente única de verdad sea `codigoToSku`.
+  - El test suite `composer.test.ts` se extiende con casos para `codigoToSku` y los assertions de `composeSku` se actualizan al nuevo output.
 
 ### Claude's Discretion
 

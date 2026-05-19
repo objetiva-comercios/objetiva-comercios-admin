@@ -36,10 +36,11 @@ SKU_DIFF_CODIGO=$(echo "$RESULT" | cut -d'|' -f4)
 SKU_DUPES=$(echo "$RESULT" | cut -d'|' -f5)
 TOTAL=$(echo "$RESULT" | cut -d'|' -f6)
 
-# Simular el overwrite D-02 y detectar colisiones que romperian el PK swap (Plan 31-03)
+# Simular el overwrite D-02 con la formula codigoToSku (Phase 31 D-17 — sobreescribe stripSep)
+# y detectar colisiones que romperian el PK swap (Plan 31-03).
 SIM_RESULT=$(docker exec postgres psql -U sanchez -d erp_sanchez -tA -F'|' -c "
 WITH stripsim AS (
-  SELECT regexp_replace(codigo, '[-_.[:space:]]+', '', 'g') AS sku_sim
+  SELECT regexp_replace(regexp_replace(codigo, '-', '_', 'g'), '[[:space:]]+', '~', 'g') AS sku_sim
   FROM articulos
 ),
 groupsim AS (
@@ -67,7 +68,7 @@ echo "  sku_diff_codigo:         ${SKU_DIFF_CODIGO}"
 echo "  sku_dupes (actual):      ${SKU_DUPES}"
 echo "  total:                   ${TOTAL}"
 echo ""
-echo "Simulacion del overwrite D-02 (sku := stripSep(codigo)):"
+echo "Simulacion del overwrite D-02 (sku := codigoToSku(codigo) — Phase 31 D-17):"
 echo "  sim_collision_groups:    ${SIM_COLLISION_GROUPS}"
 echo "  sim_articulos_afectados: ${SIM_ARTICULOS_AFECTADOS}"
 echo "  sim_max_dup_count:       ${SIM_MAX_DUP_COUNT}"
@@ -99,9 +100,11 @@ blocking: false
 | sku_dupes        | ${SKU_DUPES}        |
 | total            | ${TOTAL}            |
 
-## Simulacion del overwrite D-02 (sku := stripSep(codigo))
+## Simulacion del overwrite D-02 (sku := codigoToSku(codigo) — Phase 31 D-17)
 
-Aplica regexp_replace en memoria sobre \`articulos.codigo\` para detectar colisiones que romperian el PK swap (Plan 31-03 \`ADD PRIMARY KEY (sku)\` fallaria con duplicate key).
+Aplica la formula \`codigoToSku\` (\`-\` -> \`_\`, espacio -> \`~\`, resto sin cambio) en memoria sobre \`articulos.codigo\` para detectar colisiones que romperian el PK swap (Plan 31-03 \`ADD PRIMARY KEY (sku)\` fallaria con duplicate key).
+
+La formula original \`stripSep\` de Phase 29 D-12 fue sobreescrita en Phase 31 (cierre 2026-05-18) porque producia 200 grupos de colision sobre 101k filas; \`codigoToSku\` produce 0 colisiones sobre la misma base.
 
 | Columna                  | Valor           |
 | ------------------------ | --------------- |
@@ -116,14 +119,14 @@ Aplica regexp_replace en memoria sobre \`articulos.codigo\` para detectar colisi
 - **sku_eq_stripsep**: Articulos donde \`sku\` ya coincide con \`stripSep(codigo)\`. Idealmente = total post-D-02. Pre-cutover indica cuantos ya estan en estado final.
 - **sku_diff_codigo**: Articulos donde \`sku\` fue seteado manualmente distinto al codigo. ATENCION: el overwrite D-02 los sobreescribe; si este numero es grande, investigar antes de continuar.
 - **sku_dupes**: Duplicados de sku *en el estado actual*. Casi siempre 0 porque la mayoria de los sku son NULL pre-cutover.
-- **sim_collision_groups**: Grupos de codigos que colisionarian al mismo sku post-overwrite D-02. CRITICO: si > 0, el PK swap (Plan 31-03) fallaria con duplicate key.
+- **sim_collision_groups**: Grupos de codigos que colisionarian al mismo sku post-overwrite D-02 bajo la formula codigoToSku. CRITICO: si > 0, el PK swap (Plan 31-03) fallaria con duplicate key.
 - **sim_articulos_afectados**: Total de filas involucradas en los grupos de colision.
 - **total**: Total de filas en tabla articulos.
 
 ## Decision
 
-- Plan 31-02 ejecuta \`UPDATE articulos SET sku = regexp_replace(codigo, '[-_.[:space:]]+', '', 'g')\` (overwrite ciego segun D-02).
-- Si **sim_collision_groups > 0**, existen codigos que colisionan tras stripSep. Esto BLOQUEA el PK swap. Escalar al usuario — la fase no avanza hasta resolver manualmente las colisiones (mergear duplicados, renombrar codigos, o cambiar la formula de sku).
+- Plan 31-02 ejecuta \`UPDATE articulos SET sku = regexp_replace(regexp_replace(codigo, '-', '_', 'g'), '[[:space:]]+', '~', 'g')\` (overwrite D-02 con formula D-17).
+- Si **sim_collision_groups > 0**, existen codigos que colisionan tras la transformacion. Esto BLOQUEA el PK swap. Escalar al usuario — la fase no avanza hasta resolver manualmente las colisiones.
 - Este script siempre exit 0 (informativo, no-blocking por decision D-01 cerrada en CONTEXT.md). El blocker se gestiona via reporte manual al planner.
 MARKDOWN
 
