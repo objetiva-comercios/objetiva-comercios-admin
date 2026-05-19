@@ -149,7 +149,8 @@ export function ArticuloForm({
           description: `El articulo "${values.nombre}" se creo correctamente.`,
         })
       } else {
-        await updateArticulo(articulo!.codigo, payload)
+        // Phase 31 Deploy 2: PK is sku now; UpdateArticuloDto path keys by sku.
+        await updateArticulo(articulo!.sku!, payload)
         toast({
           title: 'Articulo actualizado',
           description: `El articulo "${values.nombre}" se actualizo correctamente.`,

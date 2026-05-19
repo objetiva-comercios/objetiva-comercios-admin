@@ -242,10 +242,13 @@ export function ArticulosClient({ initialData }: ArticulosClientProps) {
     }
 
     try {
+      // Phase 31 Deploy 2: API keys by sku now; deleteArticulo/toggleArticuloActivo
+      // accept the sku, not codigo.
+      const targetKey = target.sku ?? target.codigo
       if (target.activo) {
-        await deleteArticulo(target.codigo) // DELETE — emits articulo.deleted
+        await deleteArticulo(targetKey) // DELETE — emits articulo.deleted
       } else {
-        await toggleArticuloActivo(target.codigo) // PATCH toggle — emits articulo.updated
+        await toggleArticuloActivo(targetKey) // PATCH toggle — emits articulo.updated
       }
       toast({
         title: target.activo ? 'Articulo desactivado' : 'Articulo activado',
