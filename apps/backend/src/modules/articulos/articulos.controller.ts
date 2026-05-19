@@ -28,11 +28,18 @@ export class ArticulosController {
     return this.articulosService.findAll(query)
   }
 
-  @Get(':codigo')
-  async findOne(@Param('codigo') codigo: string) {
-    const articulo = await this.articulosService.findOne(codigo)
+  // IMPORTANTE: by-codigo/:codigo debe declararse ANTES de :sku para que NestJS
+  // no interprete "by-codigo" como un valor de :sku (path-specificity T-31-15).
+  @Get('by-codigo/:codigo')
+  findByCodigo(@Param('codigo') codigo: string) {
+    return this.articulosService.findByCodigo(codigo)
+  }
+
+  @Get(':sku')
+  async findOne(@Param('sku') sku: string) {
+    const articulo = await this.articulosService.findOne(sku)
     if (!articulo) {
-      throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
+      throw new NotFoundException(`Articulo con sku ${sku} no encontrado`)
     }
     return articulo
   }
@@ -46,23 +53,23 @@ export class ArticulosController {
 
   @UseGuards(RolesGuard)
   @Roles('admin')
-  @Patch(':codigo')
-  update(@Param('codigo') codigo: string, @Body() dto: UpdateArticuloDto) {
-    return this.articulosService.update(codigo, dto)
+  @Patch(':sku')
+  update(@Param('sku') sku: string, @Body() dto: UpdateArticuloDto) {
+    return this.articulosService.update(sku, dto)
   }
 
   @UseGuards(RolesGuard)
   @Roles('admin')
-  @Patch(':codigo/toggle')
-  toggleActive(@Param('codigo') codigo: string) {
-    return this.articulosService.toggleActive(codigo)
+  @Patch(':sku/toggle')
+  toggleActive(@Param('sku') sku: string) {
+    return this.articulosService.toggleActive(sku)
   }
 
   @UseGuards(RolesGuard)
   @Roles('admin')
-  @Delete(':codigo')
+  @Delete(':sku')
   @HttpCode(HttpStatus.OK)
-  softDelete(@Param('codigo') codigo: string) {
-    return this.articulosService.softDelete(codigo)
+  softDelete(@Param('sku') sku: string) {
+    return this.articulosService.softDelete(sku)
   }
 }

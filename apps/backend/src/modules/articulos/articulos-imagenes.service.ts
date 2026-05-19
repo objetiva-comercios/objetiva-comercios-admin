@@ -12,18 +12,18 @@ import { ImportImagenUrlDto } from './dto/import-imagen-url.dto'
 export class ArticulosImagenesService {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  private sanitizeCodigo(codigo: string): string {
-    return codigo
+  private sanitizeSku(sku: string): string {
+    return sku
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // strip diacritics
+      .replace(/[̀-ͯ]/g, '') // strip diacritics
       .replace(/[^a-zA-Z0-9]+/g, '_') // replace non-alphanumeric with _
       .replace(/_+/g, '_') // collapse consecutive _
       .replace(/^_+|_+$/g, '') // trim leading/trailing _
       .toUpperCase()
   }
 
-  private buildFileName(codigo: string, slot: number, size: 'thumb' | 'detail'): string {
-    return `${this.sanitizeCodigo(codigo)}_${slot}_${size}.webp`
+  private buildFileName(sku: string, slot: number, size: 'thumb' | 'detail'): string {
+    return `${this.sanitizeSku(sku)}_${slot}_${size}.webp`
   }
 
   private getOutputDir(tipo: 'etiqueta' | 'producto'): string {
@@ -35,12 +35,12 @@ export class ArticulosImagenesService {
     return tipo === 'producto' ? 'imagenesProducto' : 'imagenesEtiqueta'
   }
 
-  async uploadImagen(codigo: string, buffer: Buffer, dto: UploadImagenDto) {
-    // 1. Verify articulo exists
-    const rows = await this.drizzle.db.select().from(articulos).where(eq(articulos.codigo, codigo))
+  async uploadImagen(sku: string, buffer: Buffer, dto: UploadImagenDto) {
+    // 1. Verify articulo exists (by sku — Phase 31 Deploy 2)
+    const rows = await this.drizzle.db.select().from(articulos).where(eq(articulos.sku, sku))
 
     if (!rows.length) {
-      throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
+      throw new NotFoundException(`Articulo con sku ${sku} no encontrado`)
     }
 
     const articulo = rows[0]
@@ -54,8 +54,8 @@ export class ArticulosImagenesService {
     }
 
     const outputDir = this.getOutputDir(dto.tipo)
-    const thumbFileName = this.buildFileName(codigo, dto.slot, 'thumb')
-    const detailFileName = this.buildFileName(codigo, dto.slot, 'detail')
+    const thumbFileName = this.buildFileName(sku, dto.slot, 'thumb')
+    const detailFileName = this.buildFileName(sku, dto.slot, 'detail')
 
     // 3. Process with sharp (also validates image bytes)
     let thumbBuffer: Buffer
@@ -94,11 +94,11 @@ export class ArticulosImagenesService {
     }
     currentArr[dto.slot - 1] = detailUrl
 
-    // 7. Persist and return updated articulo
+    // 7. Persist and return updated articulo (keyed by sku — Phase 31 Deploy 2)
     const updated = await this.drizzle.db
       .update(articulos)
       .set({ [dbField]: currentArr, updatedAt: new Date() })
-      .where(eq(articulos.codigo, codigo))
+      .where(eq(articulos.sku, sku))
       .returning()
 
     return updated[0]
@@ -106,7 +106,7 @@ export class ArticulosImagenesService {
 
   private readonly logger = new Logger(ArticulosImagenesService.name)
 
-  async importFromUrl(codigo: string, dto: ImportImagenUrlDto) {
+  async importFromUrl(sku: string, dto: ImportImagenUrlDto) {
     // 1. Download image from external URL
     let buffer: Buffer
     try {
@@ -118,36 +118,38 @@ export class ArticulosImagenesService {
       }
       const contentType = response.headers.get('content-type') || ''
       if (!contentType.startsWith('image/')) {
-        throw new BadRequestException(
-          `URL no retorna una imagen (content-type: ${contentType})`
-        )
+        throw new BadRequestException(`URL no retorna una imagen (content-type: ${contentType})`)
       }
       buffer = Buffer.from(await response.arrayBuffer())
     } catch (err) {
       if (err instanceof BadRequestException) throw err
-      throw new BadRequestException(`Error descargando imagen desde ${dto.url}: ${(err as Error).message}`)
+      throw new BadRequestException(
+        `Error descargando imagen desde ${dto.url}: ${(err as Error).message}`
+      )
     }
 
-    this.logger.log(`Imagen descargada desde ${dto.url} (${buffer.length} bytes) → ${codigo} ${dto.tipo} slot ${dto.slot}`)
+    this.logger.log(
+      `Imagen descargada desde ${dto.url} (${buffer.length} bytes) → ${sku} ${dto.tipo} slot ${dto.slot}`
+    )
 
     // 2. Reuse existing upload pipeline
-    return this.uploadImagen(codigo, buffer, { tipo: dto.tipo, slot: dto.slot })
+    return this.uploadImagen(sku, buffer, { tipo: dto.tipo, slot: dto.slot })
   }
 
-  async deleteImagen(codigo: string, tipo: 'etiqueta' | 'producto', slot: number) {
-    // 1. Verify articulo exists
-    const rows = await this.drizzle.db.select().from(articulos).where(eq(articulos.codigo, codigo))
+  async deleteImagen(sku: string, tipo: 'etiqueta' | 'producto', slot: number) {
+    // 1. Verify articulo exists (by sku — Phase 31 Deploy 2)
+    const rows = await this.drizzle.db.select().from(articulos).where(eq(articulos.sku, sku))
 
     if (!rows.length) {
-      throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
+      throw new NotFoundException(`Articulo con sku ${sku} no encontrado`)
     }
 
     const articulo = rows[0]
 
     // 2. Build file paths
     const outputDir = this.getOutputDir(tipo)
-    const thumbPath = join(outputDir, this.buildFileName(codigo, slot, 'thumb'))
-    const detailPath = join(outputDir, this.buildFileName(codigo, slot, 'detail'))
+    const thumbPath = join(outputDir, this.buildFileName(sku, slot, 'thumb'))
+    const detailPath = join(outputDir, this.buildFileName(sku, slot, 'detail'))
 
     // 3. Delete files (ignore ENOENT — idempotent)
     await unlink(thumbPath).catch(err => {
@@ -168,7 +170,7 @@ export class ArticulosImagenesService {
     const updated = await this.drizzle.db
       .update(articulos)
       .set({ [dbField]: currentArr, updatedAt: new Date() })
-      .where(eq(articulos.codigo, codigo))
+      .where(eq(articulos.sku, sku))
       .returning()
 
     return updated[0]

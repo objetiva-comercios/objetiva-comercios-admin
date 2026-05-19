@@ -35,7 +35,7 @@ export class ArticulosImagenesController {
 
   @UseGuards(RolesGuard)
   @Roles('admin')
-  @Post(':codigo/imagenes')
+  @Post(':sku/imagenes')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
@@ -44,34 +44,31 @@ export class ArticulosImagenesController {
     })
   )
   uploadImagen(
-    @Param('codigo') codigo: string,
+    @Param('sku') sku: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadImagenDto
   ) {
     if (!file) {
       throw new BadRequestException('Archivo requerido')
     }
-    return this.articulosImagenesService.uploadImagen(codigo, file.buffer, dto)
+    return this.articulosImagenesService.uploadImagen(sku, file.buffer, dto)
   }
 
   @UseGuards(RolesGuard)
   @Roles('admin')
-  @Post(':codigo/imagenes/from-url')
-  importFromUrl(
-    @Param('codigo') codigo: string,
-    @Body() dto: ImportImagenUrlDto
-  ) {
-    return this.articulosImagenesService.importFromUrl(codigo, dto)
+  @Post(':sku/imagenes/from-url')
+  importFromUrl(@Param('sku') sku: string, @Body() dto: ImportImagenUrlDto) {
+    return this.articulosImagenesService.importFromUrl(sku, dto)
   }
 
   @UseGuards(RolesGuard)
   @Roles('admin')
-  @Delete(':codigo/imagenes/:tipo/:slot')
+  @Delete(':sku/imagenes/:tipo/:slot')
   deleteImagen(
-    @Param('codigo') codigo: string,
+    @Param('sku') sku: string,
     @Param('tipo') tipo: string,
     @Param('slot', ParseIntPipe) slot: number
   ) {
-    return this.articulosImagenesService.deleteImagen(codigo, tipo as 'etiqueta' | 'producto', slot)
+    return this.articulosImagenesService.deleteImagen(sku, tipo as 'etiqueta' | 'producto', slot)
   }
 }

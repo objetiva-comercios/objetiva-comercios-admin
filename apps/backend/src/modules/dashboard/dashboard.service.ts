@@ -21,6 +21,8 @@ interface DashboardStats {
 
 interface LowStockItem {
   articuloCodigo: string
+  // Phase 31 Deploy 2: articuloSku agregado al lado de articuloCodigo (coexistencia hasta Deploy 3)
+  articuloSku: string
   articuloNombre: string | null
   totalCantidad: number
   minStockMinimo: number

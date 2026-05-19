@@ -220,6 +220,7 @@ export class InventariosService {
       .select({
         id: inventariosArticulos.id,
         articuloCodigo: inventariosArticulos.articuloCodigo,
+        articuloSku: inventariosArticulos.articuloSku,
         articuloNombre: articulos.nombre,
         cantidadContada: inventariosArticulos.cantidadContada,
         stockSistema: sql<number>`COALESCE(${existencias.cantidad}, 0)`,
@@ -228,11 +229,13 @@ export class InventariosService {
         observaciones: inventariosArticulos.observaciones,
       })
       .from(inventariosArticulos)
-      .innerJoin(articulos, eq(inventariosArticulos.articuloCodigo, articulos.codigo))
+      // Phase 31 Deploy 2: join por articuloSku → articulos.sku (PK)
+      .innerJoin(articulos, eq(inventariosArticulos.articuloSku, articulos.sku))
       .leftJoin(
         existencias,
         and(
-          eq(existencias.articuloCodigo, inventariosArticulos.articuloCodigo),
+          // Phase 31 Deploy 2: existencias PK es (articuloSku, depositoId)
+          eq(existencias.articuloSku, inventariosArticulos.articuloSku),
           eq(existencias.depositoId, depositoId)
         )
       )

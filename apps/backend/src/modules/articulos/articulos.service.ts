@@ -89,10 +89,20 @@ export class ArticulosService {
     return new PaginatedResponseDto(data, { total, page, limit, totalPages })
   }
 
-  async findOne(codigo: string) {
-    const rows = await this.drizzle.db.select().from(articulos).where(eq(articulos.codigo, codigo))
-
+  // Phase 31 Deploy 2: findOne keyea por sku (PK)
+  async findOne(sku: string) {
+    const rows = await this.drizzle.db.select().from(articulos).where(eq(articulos.sku, sku))
     return rows[0] ?? null
+  }
+
+  // Phase 31 Deploy 2: nuevo método — retorna todas las filas con ese codigo (agrupador)
+  // En Phase 31 tipicamente 1 fila; Phase 32 puede ser N variantes.
+  async findByCodigo(codigo: string): Promise<(typeof articulos.$inferSelect)[]> {
+    return this.drizzle.db
+      .select()
+      .from(articulos)
+      .where(eq(articulos.codigo, codigo))
+      .orderBy(asc(articulos.sku))
   }
 
   async create(dto: CreateArticuloDto) {
@@ -111,15 +121,16 @@ export class ArticulosService {
     return articulo
   }
 
-  async update(codigo: string, dto: UpdateArticuloDto) {
+  // Phase 31 Deploy 2: update keyea por sku
+  async update(sku: string, dto: UpdateArticuloDto) {
     const rows = await this.drizzle.db
       .update(articulos)
       .set({ ...(dto as Partial<typeof articulos.$inferInsert>), updatedAt: new Date() })
-      .where(eq(articulos.codigo, codigo))
+      .where(eq(articulos.sku, sku))
       .returning()
 
     if (!rows[0]) {
-      throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
+      throw new NotFoundException(`Articulo con sku ${sku} no encontrado`)
     }
 
     // Fire and forget — non-blocking
@@ -127,16 +138,17 @@ export class ArticulosService {
     return rows[0]
   }
 
-  async toggleActive(codigo: string) {
-    const existing = await this.findOne(codigo)
+  // Phase 31 Deploy 2: toggleActive keyea por sku
+  async toggleActive(sku: string) {
+    const existing = await this.findOne(sku)
     if (!existing) {
-      throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
+      throw new NotFoundException(`Articulo con sku ${sku} no encontrado`)
     }
 
     const rows = await this.drizzle.db
       .update(articulos)
       .set({ activo: !existing.activo, updatedAt: new Date() })
-      .where(eq(articulos.codigo, codigo))
+      .where(eq(articulos.sku, sku))
       .returning()
 
     const result = rows[0]
@@ -145,16 +157,17 @@ export class ArticulosService {
     return result
   }
 
-  async softDelete(codigo: string) {
-    const existing = await this.findOne(codigo)
+  // Phase 31 Deploy 2: softDelete keyea por sku
+  async softDelete(sku: string) {
+    const existing = await this.findOne(sku)
     if (!existing) {
-      throw new NotFoundException(`Articulo con codigo ${codigo} no encontrado`)
+      throw new NotFoundException(`Articulo con sku ${sku} no encontrado`)
     }
 
     const rows = await this.drizzle.db
       .update(articulos)
       .set({ activo: false, updatedAt: new Date() })
-      .where(eq(articulos.codigo, codigo))
+      .where(eq(articulos.sku, sku))
       .returning()
 
     const articulo = rows[0]
