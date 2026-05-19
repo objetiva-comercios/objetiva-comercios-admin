@@ -52,13 +52,13 @@ export const orderItems = pgTable(
     orderId: integer('order_id')
       .notNull()
       .references(() => orders.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo')
-      .notNull()
-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    articuloCodigo: text('articulo_codigo').notNull(),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
-    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
-    articuloSku: text('articulo_sku'),
+    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
+    articuloSku: text('articulo_sku')
+      .notNull()
+      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
     quantity: integer('quantity').notNull(),
     price: doublePrecision('price').notNull(),
     subtotal: doublePrecision('subtotal').notNull(),
@@ -103,13 +103,13 @@ export const saleItems = pgTable(
     saleId: integer('sale_id')
       .notNull()
       .references(() => sales.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo')
-      .notNull()
-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    articuloCodigo: text('articulo_codigo').notNull(),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
-    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
-    articuloSku: text('articulo_sku'),
+    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
+    articuloSku: text('articulo_sku')
+      .notNull()
+      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
     quantity: integer('quantity').notNull(),
     price: doublePrecision('price').notNull(),
     subtotal: doublePrecision('subtotal').notNull(),
@@ -156,13 +156,13 @@ export const purchaseItems = pgTable(
     purchaseId: integer('purchase_id')
       .notNull()
       .references(() => purchases.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo')
-      .notNull()
-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    articuloCodigo: text('articulo_codigo').notNull(),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
-    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
-    articuloSku: text('articulo_sku'),
+    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
+    articuloSku: text('articulo_sku')
+      .notNull()
+      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
     quantity: integer('quantity').notNull(),
     unitCost: doublePrecision('unit_cost').notNull(),
     subtotal: doublePrecision('subtotal').notNull(),
@@ -194,12 +194,12 @@ export const businessSettings = pgTable('business_settings', {
 export const articulos = pgTable(
   'articulos',
   {
-    // PK
-    codigo: text('codigo').primaryKey(),
+    // Phase 31 Deploy 2 (switch): sku es ahora el PRIMARY KEY; codigo queda nullable como agrupador
+    codigo: text('codigo'),
 
     // Identification
     nombre: text('nombre'),
-    sku: text('sku'),
+    sku: text('sku').notNull(),
     codigoBarras: text('codigo_barras'),
     observaciones: text('observaciones'),
     codigoEquivalencia: text('codigo_equivalencia'),
@@ -264,8 +264,11 @@ export const articulos = pgTable(
     updatedAt: timestamp('actualizado').notNull().defaultNow(),
   },
   table => [
+    // Phase 31 Deploy 2 (switch): sku es PK (declarado abajo). articulos_sku_idx ELIMINADO (redundante con PK).
+    // articulos_codigo_idx es NO UNIQUE — codigo es agrupador para variantes (Phase 32).
+    primaryKey({ columns: [table.sku] }),
     index('articulos_nombre_idx').on(table.nombre),
-    index('articulos_sku_idx').on(table.sku),
+    index('articulos_codigo_idx').on(table.codigo),
     index('articulos_codigo_barras_idx').on(table.codigoBarras),
     index('articulos_erp_codigo_idx').on(table.erpCodigo),
     index('articulos_activo_idx').on(table.activo),
@@ -294,9 +297,7 @@ export const depositos = pgTable(
 export const existencias = pgTable(
   'existencias',
   {
-    articuloCodigo: text('articulo_codigo')
-      .notNull()
-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    articuloCodigo: text('articulo_codigo').notNull(),
     depositoId: integer('deposito_id')
       .notNull()
       .references(() => depositos.id, { onDelete: 'restrict' }),
@@ -304,11 +305,14 @@ export const existencias = pgTable(
     stockMinimo: integer('stock_minimo').notNull().default(0),
     stockMaximo: integer('stock_maximo').notNull().default(0),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
-    articuloSku: text('articulo_sku'),
+    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku. PK compuesta cambia.
+    articuloSku: text('articulo_sku')
+      .notNull()
+      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
   },
   table => [
-    primaryKey({ columns: [table.articuloCodigo, table.depositoId] }),
+    // Phase 31 Deploy 2: PK compuesta cambia de (articuloCodigo, depositoId) a (articuloSku, depositoId)
+    primaryKey({ columns: [table.articuloSku, table.depositoId] }),
     index('existencias_deposito_id_idx').on(table.depositoId),
     index('existencias_articulo_codigo_idx').on(table.articuloCodigo),
     index('existencias_articulo_sku_idx').on(table.articuloSku),
@@ -383,9 +387,7 @@ export const inventariosArticulos = pgTable(
     inventarioId: integer('inventario_id')
       .notNull()
       .references(() => inventarios.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo')
-      .notNull()
-      .references(() => articulos.codigo, { onDelete: 'restrict' }),
+    articuloCodigo: text('articulo_codigo').notNull(),
     cantidadContada: integer('cantidad_contada').notNull().default(0),
     columna: integer('columna'),
     dispositivoId: integer('dispositivo_id').references(() => dispositivosMoviles.id, {
@@ -394,14 +396,17 @@ export const inventariosArticulos = pgTable(
     observaciones: text('observaciones'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    // Phase 31 Deploy 1 (expand): columna de coexistencia para el PK swap
-    articuloSku: text('articulo_sku'),
+    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
+    articuloSku: text('articulo_sku')
+      .notNull()
+      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
   },
   table => [
     index('inv_articulos_inventario_id_idx').on(table.inventarioId),
     index('inv_articulos_articulo_codigo_idx').on(table.articuloCodigo),
     index('inv_articulos_dispositivo_id_idx').on(table.dispositivoId),
-    uniqueIndex('inv_articulos_unique_idx').on(table.inventarioId, table.articuloCodigo),
+    // Phase 31 Deploy 2: unique index ahora sobre (inventarioId, articuloSku)
+    uniqueIndex('inv_articulos_unique_idx').on(table.inventarioId, table.articuloSku),
     index('inv_articulos_articulo_sku_idx').on(table.articuloSku),
   ]
 )

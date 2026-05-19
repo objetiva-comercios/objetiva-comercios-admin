@@ -11,6 +11,7 @@ import { generatePurchases } from './generators/purchase.generator'
 import { generateExistencias } from './generators/existencia.generator'
 import { generateDispositivos } from './generators/dispositivo.generator'
 import { generateInventarioSectores, generateInventarios } from './generators/inventario.generator'
+import { codigoToSku } from '@objetiva/utils'
 
 const client = postgres(process.env.DATABASE_URL!)
 const db = drizzle(client, { schema })
@@ -52,7 +53,8 @@ async function seed() {
       batch.map(a => ({
         codigo: a.codigo,
         nombre: a.nombre,
-        sku: a.sku,
+        // Phase 31 Deploy 2: sku es NOT NULL. Derivar de codigo si el generador produjo null.
+        sku: a.sku ?? codigoToSku(a.codigo),
         codigoBarras: a.codigoBarras,
         observaciones: a.observaciones,
         marca: a.marca,
@@ -92,8 +94,8 @@ async function seed() {
   const depositoIds = insertedDepositos.map(d => d.id)
   const articuloCodigos = articulosData.map(a => a.codigo)
 
-  // Mapa codigo → sku para doble-escritura en hijas (Phase 31 Deploy 1)
-  const articuloSkuMap = new Map(articulosData.map(a => [a.codigo, a.sku]))
+  // Mapa codigo → sku para FK hijas (Phase 31 Deploy 2: articuloSku es NOT NULL)
+  const articuloSkuMap = new Map(articulosData.map(a => [a.codigo, a.sku ?? codigoToSku(a.codigo)]))
 
   const existenciasData = generateExistencias(articuloCodigos, depositoIds)
   console.log(`Seeding ${existenciasData.length} existencias...`)
@@ -103,7 +105,8 @@ async function seed() {
     await db.insert(schema.existencias).values(
       batch.map(e => ({
         articuloCodigo: e.articuloCodigo,
-        articuloSku: articuloSkuMap.get(e.articuloCodigo) ?? null,
+        // Phase 31 Deploy 2: articuloSku es NOT NULL
+        articuloSku: articuloSkuMap.get(e.articuloCodigo) ?? codigoToSku(e.articuloCodigo),
         depositoId: e.depositoId,
         cantidad: e.cantidad,
         stockMinimo: e.stockMinimo,
@@ -171,7 +174,8 @@ async function seed() {
       batch.map(ia => ({
         inventarioId: insertedInventarioIds[ia.inventarioIdx],
         articuloCodigo: ia.articuloCodigo,
-        articuloSku: articuloSkuMap.get(ia.articuloCodigo) ?? null,
+        // Phase 31 Deploy 2: articuloSku es NOT NULL
+        articuloSku: articuloSkuMap.get(ia.articuloCodigo) ?? codigoToSku(ia.articuloCodigo),
         cantidadContada: ia.cantidadContada,
         columna: ia.columna,
         dispositivoId: ia.dispositivoId,
@@ -208,7 +212,8 @@ async function seed() {
         order.items.map(item => ({
           orderId: insertedOrder.id,
           articuloCodigo: item.articuloCodigo,
-          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? null,
+          // Phase 31 Deploy 2: articuloSku es NOT NULL
+          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? codigoToSku(item.articuloCodigo),
           articuloNombre: item.articuloNombre,
           sku: item.sku,
           quantity: item.quantity,
@@ -247,7 +252,8 @@ async function seed() {
         sale.items.map(item => ({
           saleId: insertedSale.id,
           articuloCodigo: item.articuloCodigo,
-          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? null,
+          // Phase 31 Deploy 2: articuloSku es NOT NULL
+          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? codigoToSku(item.articuloCodigo),
           articuloNombre: item.articuloNombre,
           sku: item.sku,
           quantity: item.quantity,
@@ -289,7 +295,8 @@ async function seed() {
         purchase.items.map(item => ({
           purchaseId: insertedPurchase.id,
           articuloCodigo: item.articuloCodigo,
-          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? null,
+          // Phase 31 Deploy 2: articuloSku es NOT NULL
+          articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? codigoToSku(item.articuloCodigo),
           articuloNombre: item.articuloNombre,
           sku: item.sku,
           quantity: item.quantity,
