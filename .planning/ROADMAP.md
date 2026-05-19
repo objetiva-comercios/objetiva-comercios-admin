@@ -59,7 +59,7 @@
 
 - [x] **Phase 29: Catálogos de Atributos** — ABM unificado de catálogos FK (marcas, colores, talles, materiales, presentaciones, objetos, calificadores) con slug autogenerado, soft-delete y create-on-the-fly (completed 2026-04-30)
 - [x] **Phase 30: Templates + Composición SKU/Nombre** — Tablas `articulos_templates` + `template_atributos`, función pura `composeSku()` + `composeNombre()`, builder UI y seed del template default (completed 2026-05-17)
-- [ ] **Phase 31: PK Swap codigo→sku + FK rename comprobantes** — Promoción de `sku` a PK de `articulos`, `codigo` agrupador NOT UNIQUE, rename FK en orders/sales/purchases/existencias/inventarios_articulos, webhook payload v2
+- [x] **Phase 31: PK Swap codigo→sku + FK rename comprobantes** — Promoción de `sku` a PK de `articulos`, `codigo` agrupador NOT UNIQUE, rename FK en orders/sales/purchases/existencias/inventarios_articulos, webhook payload v2 (completed 2026-05-19)
 - [ ] **Phase 32: Variantes UI** — Split `ArticuloForm` en `ModeloForm` + `VarianteForm`, `AtributoSelectField`, listado agrupado por `codigo`, wizard 3 pasos, edit modelo cascada app-level
 - [ ] **Phase 33: Cascade Engine + Audit History** — Preview de impacto, transacción atómica con advisory lock + trigger guard, `articulo_sku_history` append-only particionada, idempotencia vía `sku_anterior`, undo last batch
 - [ ] **Phase 34: Stock Schema (ubicaciones + sectores)** — Rename `columna→ubicacion`, CRUD ubicaciones físicas, sectores transversales con pivot M:N, deprecación de `inventario_sectores.columnas` JSONB
@@ -165,7 +165,7 @@ Plans:
 
 **Wave 3** _(blocked on Wave 2 completion)_
 
-- [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
+- [x] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
 
 **Open Qs to close in `/gsd-discuss-phase 31`**: Q5 (preflight: auditar `articulos.sku` actual — ver P-05), Q9 (drift TS↔DB en índices y precision afecta migration generada)
 **Pitfalls**: P-01 (PK swap rompe 4 FK simultáneas → 7-step ordered transaction con LOCK ACCESS EXCLUSIVE), P-02 (trigger `260429-rec` feedback loop → DISABLE TRIGGER + recompute manual + ENABLE), P-05 (data legacy en `articulos.sku` → audit script obligatorio pre-migración), P-19 (webhook contract change → bump version + notice)
@@ -194,7 +194,7 @@ Plans:
 
 - [x] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
 - [x] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
-- [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
+- [x] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
 - [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
 
 **UI hint**: yes
@@ -223,8 +223,8 @@ Plans:
 
 Plans:
 
-- [ ] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
-- [ ] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
+- [x] 31-01-PLAN.md — Wave 0: Preflight & Safety Net (scripts audit/validation + framework testing + pg_dump baseline + cutover calendar)
+- [x] 31-02-PLAN.md — Wave 1: Deploy 1 expand (migration 0009 + ArticulosHelper + doble-escribe + 24-48h soak)
 - [ ] 31-03-PLAN.md — Wave 2: Deploy 2 switch (migration 0010 9-step transaction + backend/frontend rekey + notice + 24-48h soak)
 - [ ] 31-04-PLAN.md — Wave 3: Deploy 3 contract (migration 0011 DROP COLUMN + cleanup helper/DTOs/types)
 
@@ -433,7 +433,7 @@ Plans:
 | 28. Add objeto to ArticuloSheet                     | v1.2      | 1/1            | Complete               | 2026-03-13                               |
 | 29. Catálogos de Atributos                          | v1.3      | 6/6            | Complete               | 2026-04-30                               |
 | 30. Templates + Composición SKU/Nombre              | v1.3      | 4/4            | Complete               | 2026-05-17                               |
-| 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 3/4            | In Progress            |                                          |
+| 31. PK Swap codigo→sku + FK rename comprobantes     | v1.3      | 4/4            | Complete               | 2026-05-19                               |
 | 32. Variantes UI                                    | v1.3      | 0/0            | Not started            | -                                        |
 | 33. Cascade Engine + Audit History                  | v1.3      | 0/0            | Not started            | -                                        |
 | 34. Stock Schema (ubicaciones + sectores)           | v1.3      | 0/0            | Not started            | -                                        |
