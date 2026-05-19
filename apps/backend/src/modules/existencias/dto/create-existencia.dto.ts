@@ -3,7 +3,7 @@ import { IsString, IsNotEmpty, IsNumber, Min, IsOptional } from 'class-validator
 export class CreateExistenciaDto {
   @IsString()
   @IsNotEmpty()
-  articuloCodigo!: string
+  articuloSku!: string
 
   @IsNumber()
   depositoId!: number

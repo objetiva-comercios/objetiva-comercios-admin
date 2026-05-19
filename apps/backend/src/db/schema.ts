@@ -52,10 +52,9 @@ export const orderItems = pgTable(
     orderId: integer('order_id')
       .notNull()
       .references(() => orders.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo').notNull(),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
-    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
+    // Phase 31 Deploy 3 (contract): articuloCodigo eliminado. articuloSku es FK única a articulos.sku
     articuloSku: text('articulo_sku')
       .notNull()
       .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
@@ -103,10 +102,9 @@ export const saleItems = pgTable(
     saleId: integer('sale_id')
       .notNull()
       .references(() => sales.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo').notNull(),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
-    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
+    // Phase 31 Deploy 3 (contract): articuloCodigo eliminado. articuloSku es FK única a articulos.sku
     articuloSku: text('articulo_sku')
       .notNull()
       .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
@@ -156,10 +154,9 @@ export const purchaseItems = pgTable(
     purchaseId: integer('purchase_id')
       .notNull()
       .references(() => purchases.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo').notNull(),
     articuloNombre: varchar('articulo_nombre', { length: 255 }).notNull(),
     sku: varchar('sku', { length: 20 }).notNull(),
-    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
+    // Phase 31 Deploy 3 (contract): articuloCodigo eliminado. articuloSku es FK única a articulos.sku
     articuloSku: text('articulo_sku')
       .notNull()
       .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
@@ -297,7 +294,10 @@ export const depositos = pgTable(
 export const existencias = pgTable(
   'existencias',
   {
-    articuloCodigo: text('articulo_codigo').notNull(),
+    // Phase 31 Deploy 3 (contract): articuloCodigo eliminado. PK = (articuloSku, depositoId)
+    articuloSku: text('articulo_sku')
+      .notNull()
+      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
     depositoId: integer('deposito_id')
       .notNull()
       .references(() => depositos.id, { onDelete: 'restrict' }),
@@ -305,16 +305,10 @@ export const existencias = pgTable(
     stockMinimo: integer('stock_minimo').notNull().default(0),
     stockMaximo: integer('stock_maximo').notNull().default(0),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku. PK compuesta cambia.
-    articuloSku: text('articulo_sku')
-      .notNull()
-      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
   },
   table => [
-    // Phase 31 Deploy 2: PK compuesta cambia de (articuloCodigo, depositoId) a (articuloSku, depositoId)
     primaryKey({ columns: [table.articuloSku, table.depositoId] }),
     index('existencias_deposito_id_idx').on(table.depositoId),
-    index('existencias_articulo_codigo_idx').on(table.articuloCodigo),
     index('existencias_articulo_sku_idx').on(table.articuloSku),
   ]
 )
@@ -387,7 +381,10 @@ export const inventariosArticulos = pgTable(
     inventarioId: integer('inventario_id')
       .notNull()
       .references(() => inventarios.id, { onDelete: 'cascade' }),
-    articuloCodigo: text('articulo_codigo').notNull(),
+    // Phase 31 Deploy 3 (contract): articuloCodigo eliminado. articuloSku es FK única a articulos.sku
+    articuloSku: text('articulo_sku')
+      .notNull()
+      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
     cantidadContada: integer('cantidad_contada').notNull().default(0),
     columna: integer('columna'),
     dispositivoId: integer('dispositivo_id').references(() => dispositivosMoviles.id, {
@@ -396,16 +393,11 @@ export const inventariosArticulos = pgTable(
     observaciones: text('observaciones'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    // Phase 31 Deploy 2 (switch): articuloSku es ahora NOT NULL + FK a articulos.sku
-    articuloSku: text('articulo_sku')
-      .notNull()
-      .references(() => articulos.sku, { onDelete: 'restrict', onUpdate: 'cascade' }),
   },
   table => [
     index('inv_articulos_inventario_id_idx').on(table.inventarioId),
-    index('inv_articulos_articulo_codigo_idx').on(table.articuloCodigo),
     index('inv_articulos_dispositivo_id_idx').on(table.dispositivoId),
-    // Phase 31 Deploy 2: unique index ahora sobre (inventarioId, articuloSku)
+    // Phase 31 Deploy 3: unique index sobre (inventarioId, articuloSku) — ya establecido en Deploy 2
     uniqueIndex('inv_articulos_unique_idx').on(table.inventarioId, table.articuloSku),
     index('inv_articulos_articulo_sku_idx').on(table.articuloSku),
   ]

@@ -4,7 +4,7 @@ import { Type } from 'class-transformer'
 export class CreateInventarioArticuloDto {
   @IsString()
   @IsNotEmpty()
-  articuloCodigo!: string
+  articuloSku!: string
 
   @IsOptional()
   @Type(() => Number)

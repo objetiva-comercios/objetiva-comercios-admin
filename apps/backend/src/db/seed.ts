@@ -104,8 +104,7 @@ async function seed() {
     const batch = existenciasData.slice(i, i + 100)
     await db.insert(schema.existencias).values(
       batch.map(e => ({
-        articuloCodigo: e.articuloCodigo,
-        // Phase 31 Deploy 2: articuloSku es NOT NULL
+        // Phase 31 Deploy 3: solo articuloSku (articuloCodigo eliminado)
         articuloSku: articuloSkuMap.get(e.articuloCodigo) ?? codigoToSku(e.articuloCodigo),
         depositoId: e.depositoId,
         cantidad: e.cantidad,
@@ -173,8 +172,7 @@ async function seed() {
     await db.insert(schema.inventariosArticulos).values(
       batch.map(ia => ({
         inventarioId: insertedInventarioIds[ia.inventarioIdx],
-        articuloCodigo: ia.articuloCodigo,
-        // Phase 31 Deploy 2: articuloSku es NOT NULL
+        // Phase 31 Deploy 3: solo articuloSku (articuloCodigo eliminado)
         articuloSku: articuloSkuMap.get(ia.articuloCodigo) ?? codigoToSku(ia.articuloCodigo),
         cantidadContada: ia.cantidadContada,
         columna: ia.columna,
@@ -211,8 +209,7 @@ async function seed() {
       await db.insert(schema.orderItems).values(
         order.items.map(item => ({
           orderId: insertedOrder.id,
-          articuloCodigo: item.articuloCodigo,
-          // Phase 31 Deploy 2: articuloSku es NOT NULL
+          // Phase 31 Deploy 3: solo articuloSku (articuloCodigo eliminado)
           articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? codigoToSku(item.articuloCodigo),
           articuloNombre: item.articuloNombre,
           sku: item.sku,
@@ -251,8 +248,7 @@ async function seed() {
       await db.insert(schema.saleItems).values(
         sale.items.map(item => ({
           saleId: insertedSale.id,
-          articuloCodigo: item.articuloCodigo,
-          // Phase 31 Deploy 2: articuloSku es NOT NULL
+          // Phase 31 Deploy 3: solo articuloSku (articuloCodigo eliminado)
           articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? codigoToSku(item.articuloCodigo),
           articuloNombre: item.articuloNombre,
           sku: item.sku,
@@ -294,8 +290,7 @@ async function seed() {
       await db.insert(schema.purchaseItems).values(
         purchase.items.map(item => ({
           purchaseId: insertedPurchase.id,
-          articuloCodigo: item.articuloCodigo,
-          // Phase 31 Deploy 2: articuloSku es NOT NULL
+          // Phase 31 Deploy 3: solo articuloSku (articuloCodigo eliminado)
           articuloSku: articuloSkuMap.get(item.articuloCodigo) ?? codigoToSku(item.articuloCodigo),
           articuloNombre: item.articuloNombre,
           sku: item.sku,

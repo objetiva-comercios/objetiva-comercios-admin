@@ -63,7 +63,6 @@ export class ExistenciasService {
 
     const data = await this.drizzle.db
       .select({
-        articuloCodigo: existencias.articuloCodigo,
         depositoId: existencias.depositoId,
         cantidad: existencias.cantidad,
         stockMinimo: existencias.stockMinimo,
@@ -73,7 +72,7 @@ export class ExistenciasService {
         articuloSku: articulos.sku,
       })
       .from(existencias)
-      // Phase 31 Deploy 2: join por articuloSku → articulos.sku (PK)
+      // Phase 31 Deploy 3: join por articuloSku → articulos.sku (PK)
       .innerJoin(articulos, eq(existencias.articuloSku, articulos.sku))
       .where(where)
       .orderBy(articulos.nombre)
@@ -107,9 +106,9 @@ export class ExistenciasService {
     // Count distinct articulos
     const [{ total }] = await this.drizzle.db.select({ total: count() }).from(
       this.drizzle.db
-        .selectDistinct({ articuloCodigo: existencias.articuloCodigo })
+        .selectDistinct({ articuloSku: existencias.articuloSku })
         .from(existencias)
-        // Phase 31 Deploy 2: join por articuloSku → articulos.sku (PK)
+        // Phase 31 Deploy 3: join por articuloSku → articulos.sku (PK)
         .innerJoin(articulos, eq(existencias.articuloSku, articulos.sku))
         .where(where)
         .as('distinct_articulos')
@@ -118,40 +117,40 @@ export class ExistenciasService {
     // Get paginated distinct articulos
     const articuloRows = await this.drizzle.db
       .selectDistinct({
-        articuloCodigo: existencias.articuloCodigo,
+        articuloSku: existencias.articuloSku,
         articuloNombre: articulos.nombre,
       })
       .from(existencias)
-      // Phase 31 Deploy 2: join por articuloSku → articulos.sku (PK)
+      // Phase 31 Deploy 3: join por articuloSku → articulos.sku (PK)
       .innerJoin(articulos, eq(existencias.articuloSku, articulos.sku))
       .where(where)
       .orderBy(articulos.nombre)
       .limit(limit)
       .offset(offset)
 
-    const articuloCodigos = articuloRows.map(r => r.articuloCodigo)
+    const articuloSkus = articuloRows.map(r => r.articuloSku)
 
     // Fetch all existencias for these articulos
     let rows: {
-      articuloCodigo: string
+      articuloSku: string
       depositoId: number
       cantidad: number
     }[] = []
 
-    if (articuloCodigos.length > 0) {
+    if (articuloSkus.length > 0) {
       rows = await this.drizzle.db
         .select({
-          articuloCodigo: existencias.articuloCodigo,
+          articuloSku: existencias.articuloSku,
           depositoId: existencias.depositoId,
           cantidad: existencias.cantidad,
         })
         .from(existencias)
-        .where(sql`${existencias.articuloCodigo} IN ${articuloCodigos}`)
+        .where(sql`${existencias.articuloSku} IN ${articuloSkus}`)
     }
 
     // Build matrix rows
     const matrix = articuloRows.map(art => {
-      const artStock = rows.filter(r => r.articuloCodigo === art.articuloCodigo)
+      const artStock = rows.filter(r => r.articuloSku === art.articuloSku)
       const stock: Record<number, number> = {}
       let total = 0
       for (const s of artStock) {
@@ -159,7 +158,7 @@ export class ExistenciasService {
         total += s.cantidad
       }
       return {
-        articuloCodigo: art.articuloCodigo,
+        articuloSku: art.articuloSku,
         articuloNombre: art.articuloNombre,
         stock,
         total,
@@ -170,13 +169,12 @@ export class ExistenciasService {
     return new PaginatedResponseDto(matrix, { total, page, limit, totalPages })
   }
 
-  // Phase 31 Deploy 2: findByArticulo toma articuloCodigo como agrupador (by-codigo).
+  // Phase 31 Deploy 3: findByArticulo toma articuloCodigo (agrupador) como param de path.
   // Internamente filtra por articulo.codigo para retornar todas las existencias de
   // variantes del mismo codigo (en Phase 31 = 1 articulo; Phase 32 = N variantes).
   async findByArticulo(articuloCodigo: string) {
     const data = await this.drizzle.db
       .select({
-        articuloCodigo: existencias.articuloCodigo,
         articuloSku: existencias.articuloSku,
         depositoId: existencias.depositoId,
         cantidad: existencias.cantidad,
@@ -219,24 +217,20 @@ export class ExistenciasService {
   }
 
   async upsert(dto: CreateExistenciaDto) {
-    // Phase 31 Deploy 1: doble-escritura articulo_codigo + articulo_sku (T-31-05)
-    const articuloSku = await this.articulosHelper.resolveSku(dto.articuloCodigo)
-
+    // Phase 31 Deploy 3 (contract): DTO tiene articuloSku directo (T-31-20 mitigado).
+    // articulosHelper.resolveSku() ya no se invoca aquí — helper disponible para Phase 32.
     const rows = await this.drizzle.db
       .insert(existencias)
       .values({
-        articuloCodigo: dto.articuloCodigo,
-        articuloSku,
+        articuloSku: dto.articuloSku,
         depositoId: dto.depositoId,
         cantidad: dto.cantidad ?? 0,
         stockMinimo: dto.stockMinimo ?? 0,
         stockMaximo: dto.stockMaximo ?? 0,
       })
       .onConflictDoUpdate({
-        // Phase 31 Deploy 2: target cambia a PK nueva (articuloSku, depositoId)
         target: [existencias.articuloSku, existencias.depositoId],
         set: {
-          articuloSku: sql`EXCLUDED.articulo_sku`,
           cantidad: sql`EXCLUDED.cantidad`,
           stockMinimo: sql`EXCLUDED.stock_minimo`,
           stockMaximo: sql`EXCLUDED.stock_maximo`,
@@ -304,16 +298,15 @@ export class ExistenciasService {
   async getLowStockAggregated(limit = 5) {
     const rows = await this.drizzle.db
       .select({
-        articuloCodigo: existencias.articuloCodigo,
         articuloSku: existencias.articuloSku,
         articuloNombre: articulos.nombre,
         totalCantidad: sql<number>`COALESCE(sum(${existencias.cantidad}), 0)::int`,
         minStockMinimo: sql<number>`min(${existencias.stockMinimo})`,
       })
       .from(existencias)
-      // Phase 31 Deploy 2: join por articuloSku → articulos.sku (PK)
+      // Phase 31 Deploy 3: join por articuloSku → articulos.sku (PK)
       .innerJoin(articulos, eq(existencias.articuloSku, articulos.sku))
-      .groupBy(existencias.articuloCodigo, existencias.articuloSku, articulos.nombre)
+      .groupBy(existencias.articuloSku, articulos.nombre)
       .having(
         and(
           sql`min(${existencias.stockMinimo}) > 0`,
@@ -332,10 +325,10 @@ export class ExistenciasService {
       .from(
         this.drizzle.db
           .select({
-            articuloCodigo: existencias.articuloCodigo,
+            articuloSku: existencias.articuloSku,
           })
           .from(existencias)
-          .groupBy(existencias.articuloCodigo)
+          .groupBy(existencias.articuloSku)
           .having(
             and(
               sql`min(${existencias.stockMinimo}) > 0`,

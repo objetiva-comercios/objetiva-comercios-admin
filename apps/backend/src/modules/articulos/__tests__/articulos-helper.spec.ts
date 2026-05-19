@@ -2,6 +2,7 @@
  * Unit tests for ArticulosHelper.resolveSku()
  *
  * Phase 31 Plan 31-02 — GREEN: tests implementados y desbloquados.
+ * Phase 31 Plan 31-04 — SMOKE: verificacion post-Deploy-3 de no invocacion de resolveSku.
  */
 
 import { Test, TestingModule } from '@nestjs/testing'
@@ -10,6 +11,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { ArticulosHelper } from '../articulos-helper'
 import { ArticulosModule } from '../articulos.module'
 import { DrizzleService } from '../../../db'
+import { ExistenciasService } from '../../existencias/existencias.service'
 
 // ─── Mock DrizzleService ─────────────────────────────────────────────────────
 
@@ -30,6 +32,36 @@ function buildDrizzleMock(returnValue: Array<{ sku: string | null }>) {
     _whereFn: whereFn,
     _fromFn: fromFn,
     _selectFn: selectFn,
+  }
+}
+
+/**
+ * Construye un mock de DrizzleService para ExistenciasService.upsert()
+ * que soporta la cadena: insert().values().onConflictDoUpdate().returning()
+ */
+function buildDrizzleUpsertMock() {
+  const returningFn = jest
+    .fn()
+    .mockResolvedValue([
+      {
+        articuloSku: 'TEST',
+        depositoId: 1,
+        cantidad: 5,
+        stockMinimo: 0,
+        stockMaximo: 0,
+        updatedAt: new Date(),
+      },
+    ])
+  const onConflictFn = jest.fn().mockReturnValue({ returning: returningFn })
+  const valuesFn = jest.fn().mockReturnValue({ onConflictDoUpdate: onConflictFn })
+  const insertFn = jest.fn().mockReturnValue({ values: valuesFn })
+
+  return {
+    db: { insert: insertFn },
+    _insertFn: insertFn,
+    _valuesFn: valuesFn,
+    _onConflictFn: onConflictFn,
+    _returningFn: returningFn,
   }
 }
 
@@ -103,5 +135,38 @@ describe('ArticulosHelper', () => {
 
     const exportedHelper = moduleRef.get<ArticulosHelper>(ArticulosHelper)
     expect(exportedHelper).toBeInstanceOf(ArticulosHelper)
+  })
+
+  // ─── Smoke test post-Deploy-3 (Phase 31 Plan 31-04) ──────────────────────
+  it('post-Deploy-3: ExistenciasService.upsert no invoca articulosHelper.resolveSku', async () => {
+    // Verifica que post-Deploy-3 el service usa dto.articuloSku directo
+    // y NO invoca resolveSku (T-31-20 mitigado).
+    const upsertDrizzleMock = buildDrizzleUpsertMock()
+
+    const helperMock = {
+      resolveSku: jest.fn(),
+      toRefPair: jest.fn(),
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        ExistenciasService,
+        {
+          provide: DrizzleService,
+          useValue: upsertDrizzleMock,
+        },
+        {
+          provide: ArticulosHelper,
+          useValue: helperMock,
+        },
+      ],
+    }).compile()
+
+    const service = moduleRef.get<ExistenciasService>(ExistenciasService)
+
+    await service.upsert({ articuloSku: 'TEST', depositoId: 1, cantidad: 5 })
+
+    // Post-Deploy-3: resolveSku NO debe ser invocado — el DTO ya trae articuloSku
+    expect(helperMock.resolveSku).toHaveBeenCalledTimes(0)
   })
 })

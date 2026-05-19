@@ -219,7 +219,6 @@ export class InventariosService {
     const rows = await this.drizzle.db
       .select({
         id: inventariosArticulos.id,
-        articuloCodigo: inventariosArticulos.articuloCodigo,
         articuloSku: inventariosArticulos.articuloSku,
         articuloNombre: articulos.nombre,
         cantidadContada: inventariosArticulos.cantidadContada,
@@ -229,7 +228,7 @@ export class InventariosService {
         observaciones: inventariosArticulos.observaciones,
       })
       .from(inventariosArticulos)
-      // Phase 31 Deploy 2: join por articuloSku → articulos.sku (PK)
+      // Phase 31 Deploy 3: join por articuloSku → articulos.sku (PK)
       .innerJoin(articulos, eq(inventariosArticulos.articuloSku, articulos.sku))
       .leftJoin(
         existencias,
@@ -251,16 +250,14 @@ export class InventariosService {
   async addArticulo(inventarioId: number, dto: CreateInventarioArticuloDto) {
     await this.assertEventEditable(inventarioId)
 
-    // Phase 31 Deploy 1: doble-escritura articulo_codigo + articulo_sku (T-31-05)
-    const articuloSku = await this.articulosHelper.resolveSku(dto.articuloCodigo)
-
+    // Phase 31 Deploy 3 (contract): DTO tiene articuloSku directo (T-31-20 mitigado).
+    // articulosHelper.resolveSku() ya no se invoca aquí — helper disponible para Phase 32.
     try {
       const rows = await this.drizzle.db
         .insert(inventariosArticulos)
         .values({
           inventarioId,
-          articuloCodigo: dto.articuloCodigo,
-          articuloSku,
+          articuloSku: dto.articuloSku,
           cantidadContada: dto.cantidadContada ?? 0,
           columna: dto.columna,
           dispositivoId: dto.dispositivoId,
