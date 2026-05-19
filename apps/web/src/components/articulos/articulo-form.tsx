@@ -121,14 +121,35 @@ export function ArticuloForm({
   async function onSubmit(values: ArticuloFormValues) {
     setIsLoading(true)
     try {
+      // Sanitize: drop empty-string optional fields and coerce numeric ones.
+      // The DTO marks erpUnidades as @IsInt() with @IsOptional, so an empty
+      // string from the form trips class-validator. Empty strings on the other
+      // optional text fields also waste payload size and break MaxLength
+      // checks once a future field declares minLength.
+      // On update, the codigo is the PK and the UpdateArticuloDto rejects it
+      // (`property codigo should not exist`), so it is only included when
+      // creating.
+      const payload: Record<string, unknown> = { nombre: values.nombre }
+      if (mode === 'create') payload.codigo = values.codigo
+      for (const [k, v] of Object.entries(values)) {
+        if (k === 'codigo' || k === 'nombre') continue
+        if (v === '' || v === undefined || v === null) continue
+        if (k === 'erpUnidades') {
+          const n = Number(v)
+          if (Number.isFinite(n)) payload[k] = n
+          continue
+        }
+        payload[k] = v
+      }
+
       if (mode === 'create') {
-        await createArticulo(values)
+        await createArticulo(payload)
         toast({
           title: 'Articulo creado',
           description: `El articulo "${values.nombre}" se creo correctamente.`,
         })
       } else {
-        await updateArticulo(articulo!.codigo, values)
+        await updateArticulo(articulo!.codigo, payload)
         toast({
           title: 'Articulo actualizado',
           description: `El articulo "${values.nombre}" se actualizo correctamente.`,
@@ -598,8 +619,7 @@ export function ArticuloForm({
 
                   {mode === 'edit' && articulo?.originSyncedAt && (
                     <div className="text-sm text-muted-foreground">
-                      Ultima sincronizacion:{' '}
-                      {formatDateTimeES(articulo.originSyncedAt)}
+                      Ultima sincronizacion: {formatDateTimeES(articulo.originSyncedAt)}
                     </div>
                   )}
                 </CollapsibleContent>
